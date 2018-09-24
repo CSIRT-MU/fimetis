@@ -1,0 +1,93 @@
+<div class="col-md-12">
+  <div [ngClass]="{'panel-hidden': !panelOpenState, 'panel-visible': panelOpenState}" class="panel-content col-md-12">
+    <mat-tab-group [dynamicHeight]="true">
+      <mat-tab label="QUERY / INITIAL SETUP">
+        <br>
+        <div class="col-md-4">
+          <table>
+            <tr>
+              <td class="text-right">
+                <b>DATASET</b>
+              </td>
+              <td>
+                <mat-form-field>
+                  <mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right">
+                <b>FILTER</b>
+              </td>
+              <td>
+                <mat-form-field>
+                  <mat-select [(value)]="selectedFilter" (valueChange)="loadFilter()" placeholder="Click to select filter">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let filter of filters" [value]="filter['key']">{{filter['key']}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td class="button-right">
+                <button mat-stroked-button (click)="useFilter()" class="timesix-button" [disabled]="paramForm.form.invalid || selectedCase == null">APPLY FILTER</button>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+        <div class="col-md-8">
+          <form #paramForm="ngForm" >
+            <mat-form-field *ngFor="let param of selectedFilterModel.params">
+              <div [ngSwitch]="param.type">
+                <input matInput *ngSwitchCase="'DATE'" type="datetime-local" name="param-{{param.name}}" placeholder="{{param.name}}" [(ngModel)]="param.value" required>
+                <input matInput *ngSwitchDefault name="param-{{param.name}}" placeholder="{{param.name}}" [(ngModel)]="param.value" required>
+              </div>
+            </mat-form-field>
+          </form>
+        </div>
+      </mat-tab>
+      <mat-tab label="SIGNALING GRID"> SIGNALING GRID </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+<div class="panel-header col-md-12">
+  <div class="col-lg-8 col-md-9">
+    <mat-chip-list class="chip-list">
+      <mat-chip *ngFor="let appliedFilter of appliedFiltersKeys" (click)="selectFilter(appliedFilter)" [selectable]="false">
+        {{appliedFilter}}
+        <!--<label for="filter-{{appliedFilter}}">{{appliedFilter}}</label>-->
+        <mat-radio-group [required]="false">
+          <mat-radio-button [disabled]="true" [checked]="selectedAppliedFilters.has(appliedFilter)"></mat-radio-button>
+        </mat-radio-group>
+        <!--<input type="checkbox" id="filter-{{appliedFilter}}" value="filter-{{appliedFilter}}" [checked]="selectedAppliedFilters.includes(appliedFilter)">-->
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+
+  <div class="col-lg-4 col-md-3 panel-controls">
+    <button mat-stroked-button (click)="addNewFilterButton()" class="timesix-button">ADD NEW FILTER</button>
+    <button mat-stroked-button (click)="createFilterFromSelection()" class="timesix-button" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE FILTER FROM SELECTION</button>
+    <span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !panelOpenState, 'glyphicon-chevron-up': panelOpenState}" (click)="panelOpenState = !panelOpenState"></span>
+  </div>
+</div>
+
+
+
+<div class="col-md-3 col-lg-2">
+  <h3 class="text-gray"><b>CLUSTERS</b></h3>
+  <h5 class="text-light-gray">Computed clusters</h5>
+  <app-cluster [clusters]="computedClusters" (selectedClusters)="setComputedClusters($event)" [selectAll]="true"></app-cluster>
+  <button class="cluster-button timesix-button" mat-stroked-button (click)="storeSelectedClusters()" [disabled]="selectedComputedClusters.length < 1">STORE SELECTED CLUSTERS</button>
+  <h5 class="text-light-gray">Stored clusters</h5>
+  <app-cluster [clusters]="storedClusters" (selectedClusters)="setStoredClusters($event)" [selectAll]="false"></app-cluster>
+  <button class="cluster-button timesix-button" mat-stroked-button (click)="deleteSelectedStoredClusters()" [disabled]="selectedStoredClusters.length < 1">DELETE SELECTED CLUSTERS</button>
+  <button class="cluster-button timesix-button" mat-stroked-button (click)="createClusterFromSelection()" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE CLUSTER FROM SELECTION</button>
+</div>
+<div class="col-md-9 col-lg-10">
+<app-show-metadata (graphChangedBoundary)="changeDateBoundary($event)"></app-show-metadata>
+</div>

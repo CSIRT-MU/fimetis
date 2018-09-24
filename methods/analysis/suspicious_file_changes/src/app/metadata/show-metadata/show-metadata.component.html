@@ -1,0 +1,184 @@
+<div class="col-md-12">
+  <div class="col-md-4">
+    <h3 class="text-gray">Histogram</h3>
+  </div>
+  <div class="col-md-8">
+  </div>
+  <div class="col-md-12">
+    <app-show-graph [_index]="index" [_type]="type" [_case]="case" [_filter]="filter" [_clusters]="displayedClusters" [_frequency]="graphFrequency" (getDateChange)="changeDatePickers($event)">
+    </app-show-graph>
+  </div>
+</div>
+<div class="col-md-12">
+  <div class="col-md-4">
+    <h3 class="text-gray">Interactive List View</h3>
+  </div>
+  <div class="col-md-8 table-controls">
+    <div>
+      <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
+        <input type="text" name="searchString" [(ngModel)]="searchString" class="search-field">
+      </form>
+      <span class="glyphicon glyphicon-option-vertical settings-menu-button" [matMenuTriggerFor]="settingsMenu"></span>
+      <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">
+        <button mat-menu-item (click)="editTableColumns()">
+          <span>Edit table columns</span>
+        </button>
+      </mat-menu>
+    </div>
+    <div class="table-radio-type">
+      <input type="radio" class="timesix-radio" name="table-type" id="clusters-radio" [checked]="tableDisplayType == 'clusters'" (click)="tableDisplayType = 'clusters'" />
+      <label for="clusters-radio">group by clusters</label>
+    </div>
+    <div class="table-radio-type">
+      <input type="radio" class="timesix-radio" name="table-type" id="filesystem-radio" [checked]="tableDisplayType == 'filesystem'" (click)="tableDisplayType = 'filesystem'" />
+      <label for="filesystem-radio">reflect filesystem hierarchy</label>
+    </div>
+    <div class="table-radio-type">
+      <input type="radio" class="timesix-radio" name="table-type" id="timestamps-radio" [checked]="tableDisplayType == 'timestamps'" (click)="tableDisplayType = 'timestamps'"/>
+      <label for="timestamps-radio">compact display of timestamps</label>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <div class="table-container">
+      <div class="table-loading-spinner">
+        <div class="spinning-loader" *ngIf="loadingData" ></div>
+      </div>
+      <perfect-scrollbar class="interactive-table" id="interactive-table-scroll">
+      <!--<perfect-scrollbar class="interactive-table" (psYReachEnd)="tableScrolledDown()" (psYReachStart)="tableScrolledUp()" (psScrollY)="showScroll($event)" id="interactive-table-scroll">-->
+        <table mat-table [dataSource]="data" matSort [matSortActive]="pageSortString" matSortDisableClear [matSortDirection]="pageSortOrder" (matSortChange)="tableSort($event)">
+
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <input type="checkbox" class="timesix-checkbox" (change)="$event ? masterToggle() : null"
+                            [checked]="tableSelection.hasValue() && isAllSelected()"
+                            [indeterminate]="tableSelection.hasValue() && !isAllSelected()">
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <input type="checkbox" class="timesix-checkbox" (click)="$event.stopPropagation();"
+                            (change)="$event ? tableSelection.toggle(row) : null"
+                            [checked]="tableSelection.isSelected(row)">
+            </td>
+          </ng-container>
+
+          <!-- Document type Column -->
+          <ng-container matColumnDef="doctype">
+            <th mat-header-cell *matHeaderCellDef>  </th>
+            <td mat-cell *matCellDef="let element">
+              <span *ngIf="element._source['Mode'] != null">
+                <span [ngSwitch]="element._source['Mode'][2]">
+                  <span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>
+                  <span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>
+                  <span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>
+                  <span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>
+                </span>
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Mode Column -->
+          <ng-container matColumnDef="mode">
+            <th mat-header-cell *matHeaderCellDef> Mode </th>
+            <td mat-cell *matCellDef="let element"> {{element._source['Mode']}} </td>
+          </ng-container>
+
+
+          <!-- Timestamp Column -->
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > Timestamp </th>
+            <td mat-cell *matCellDef="let element"> {{element._source['@timestamp']}} </td>
+          </ng-container>
+
+          <!-- M time Timestamp Column -->
+          <ng-container matColumnDef="M-Time">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > M Time </th>
+            <td mat-cell *matCellDef="let element"> {{element._source.Type.includes('m') ? element._source['@timestamp'] : ""}} </td>
+          </ng-container>
+
+          <!-- A time Timestamp Column -->
+          <ng-container matColumnDef="A-Time">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > A Time </th>
+            <td mat-cell *matCellDef="let element"> {{element._source.Type.includes('a') ? element._source['@timestamp'] : ""}} </td>
+          </ng-container>
+
+          <!-- C time Timestamp Column -->
+          <ng-container matColumnDef="C-Time">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > C Time </th>
+            <td mat-cell *matCellDef="let element"> {{element._source.Type.includes('c') ? element._source['@timestamp'] : ""}} </td>
+          </ng-container>
+
+          <!-- B time Timestamp Column -->
+          <ng-container matColumnDef="B-Time">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > B Time </th>
+            <td mat-cell *matCellDef="let element"> {{element._source.Type.includes('b') ? element._source['@timestamp'] : ""}} </td>
+          </ng-container>
+
+          <!-- File Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > Name </th>
+            <td mat-cell *matCellDef="let element"> {{element._source['File Name']}} </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header > Type </th>
+            <td mat-cell *matCellDef="let element"> {{element._source.Type}} </td>
+          </ng-container>
+
+          <!-- Size Column -->
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Size </th>
+            <td mat-cell *matCellDef="let element"> {{element._source.Size}} </td>
+          </ng-container>
+
+          <!-- ID column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let element"> {{element._id}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedTableColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedTableColumns;" (click)="tableSelection.toggle(row)"></tr>
+        </table>
+      </perfect-scrollbar>
+      <mat-paginator #tablePaginator
+                     [pageIndex]="pageEvent.pageIndex"
+                     [length]='total'
+                     [pageSize]='pageEvent.pageSize'
+                     [pageSizeOptions]='pageSizeOptions'
+                     [showFirstLastButtons]="true"
+                     (page)='loadPage($event)'>
+      </mat-paginator>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div>
+    <div class="table-loading-spinner">
+      <div class="spinning-loader" *ngIf="loadingData" ></div>
+    </div>
+    <table>
+      <thead>
+      <th>File Name</th>
+      <th>Timestamp</th>
+      <th>Type</th>
+      </thead>
+    </table>
+    <virtual-scroll style="height: 200px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
+      <div #container>
+        <div style="height: 20px; width: 100%;" *ngFor="let element of visibleData">
+          <span>{{element['_source']['File Name']}}</span>
+          <span>{{element._source['@timestamp']}}</span>
+          <span>{{element._source.Type}}</span>
+        </div>
+      </div>
+
+    </virtual-scroll>
+  </div>
+</div>
+
+<div class="col-md-12">
+  <div id="scrollContainer2"></div>
+</div>
+

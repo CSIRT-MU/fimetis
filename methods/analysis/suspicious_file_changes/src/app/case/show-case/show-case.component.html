@@ -1,0 +1,11 @@
+<h4>TOTAL HITS: {{total}}</h4>
+
+<div class="container" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
+  <mat-accordion class="card-group" *ngFor="let case of data" style="margin-top:20px">
+    <detail-case [case]='case' [type]='type'></detail-case>
+  </mat-accordion>
+</div>
+
+<h3>{{notice}}</h3>
+
+

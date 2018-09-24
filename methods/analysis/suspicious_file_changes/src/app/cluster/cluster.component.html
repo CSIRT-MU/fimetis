@@ -1,0 +1,16 @@
+<div class="col-md-12">
+  <div>
+    <perfect-scrollbar class="computed-cluster-list">
+      <div>
+        <mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">
+          <mat-list-option *ngFor="let compCluster of clusters" [selected]="selectAll" checkboxPosition="before" >
+            {{compCluster?.key ? compCluster.key : compCluster}}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </perfect-scrollbar>
+  </div>
+  <div *ngIf="clusters?.length == 0">
+    There are no computed clusters yet
+  </div>
+</div>

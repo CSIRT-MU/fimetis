@@ -1,0 +1,73 @@
+.d3-chart {	  width: 100%;	  height: 600px;	}
+.d3-chart .axis path,	.d3-chart .axis line {	  stroke: #999;	}
+.d3-chart .axis text { fill: #999;	}
+
+.graph-container{
+  position: relative;
+}
+
+.chart-loader{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 999;
+  margin-left: -40px;
+  margin-top: -40px;
+}
+
+.loader-stat {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.loader-7 .line {
+  width: 14px; /*3px*/
+  position: absolute;
+  border-radius: 2px;
+  bottom: 0;
+  background: -webkit-gradient(linear, left top, left bottom, from(transparent), to(#333333));
+  background: -webkit-linear-gradient(top, transparent, #333333);
+  background: -o-linear-gradient(top, transparent, #333333);
+  background: linear-gradient(to bottom, transparent, #333333);
+
+}
+
+.loader-7 .line1 {
+  left: 0;
+  -webkit-animation: line-grow 0.5s ease alternate infinite;
+  animation: line-grow 0.5s ease alternate infinite;
+}
+
+.loader-7 .line2 {
+  left: 18px; /*7px*/
+  -webkit-animation: line-grow 0.5s 0.2s ease alternate infinite;
+  animation: line-grow 0.5s 0.2s ease alternate infinite;
+}
+
+.loader-7 .line3 {
+  left: 36px;
+  -webkit-animation: line-grow 0.5s 0.4s ease alternate infinite;
+  animation: line-grow 0.5s 0.4s ease alternate infinite;
+}
+
+@-webkit-keyframes line-grow {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 75%;
+  }
+}
+
+@keyframes line-grow {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 75%;
+  }
+}

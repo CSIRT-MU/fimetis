@@ -1,0 +1,15 @@
+.app-bar{
+  text-align: center;
+  font-size: x-large;
+  padding: 0.75em;
+  background-color: #666666;
+}
+
+.app-bar .main-title{
+  color: #fefefe;
+  margin-right: 0.5em;
+}
+
+.app-bar .sub-title{
+  color: #aaaaaa;
+}
