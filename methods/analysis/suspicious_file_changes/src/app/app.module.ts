@@ -38,7 +38,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ClusterComponent } from './cluster/cluster.component';
 import { NameDialogComponent } from './dialog/name-dialog/name-dialog.component';
 import { SelectDialogComponent } from './dialog/select-dialog/select-dialog.component';
-
+import { ComputationDialogComponent } from './dialog/computation-dialog/computation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +52,8 @@ import { SelectDialogComponent } from './dialog/select-dialog/select-dialog.comp
     DashboardComponent,
     ClusterComponent,
     NameDialogComponent,
-    SelectDialogComponent
+    SelectDialogComponent,
+    ComputationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -85,7 +86,7 @@ import { SelectDialogComponent } from './dialog/select-dialog/select-dialog.comp
     MatMenuModule,
     VirtualScrollModule
   ],
-  entryComponents: [NameDialogComponent, SelectDialogComponent],
+  entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
   providers: [ElasticsearchService],
   bootstrap: [AppComponent]
 })

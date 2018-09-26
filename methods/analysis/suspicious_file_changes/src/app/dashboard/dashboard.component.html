@@ -1,5 +1,8 @@
+<div class="col-md-12 panel-header">
+  <span style="margin-right: 20px"><b>FILTERS</b></span><span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
+</div>
 <div class="col-md-12">
-  <div [ngClass]="{'panel-hidden': !panelOpenState, 'panel-visible': panelOpenState}" class="panel-content col-md-12">
+  <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}" class="panel-content col-md-12">
     <mat-tab-group [dynamicHeight]="true">
       <mat-tab label="QUERY / INITIAL SETUP">
         <br>
@@ -58,7 +61,7 @@
 <div class="panel-header col-md-12">
   <div class="col-lg-8 col-md-9">
     <mat-chip-list class="chip-list">
-      <mat-chip *ngFor="let appliedFilter of appliedFiltersKeys" (click)="selectFilter(appliedFilter)" [selectable]="false">
+      <mat-chip *ngFor="let appliedFilter of appliedFiltersKeys" draggable="true" (click)="selectFilter(appliedFilter)" [selectable]="false">
         {{appliedFilter}}
         <!--<label for="filter-{{appliedFilter}}">{{appliedFilter}}</label>-->
         <mat-radio-group [required]="false">
@@ -72,11 +75,29 @@
   <div class="col-lg-4 col-md-3 panel-controls">
     <button mat-stroked-button (click)="addNewFilterButton()" class="timesix-button">ADD NEW FILTER</button>
     <button mat-stroked-button (click)="createFilterFromSelection()" class="timesix-button" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE FILTER FROM SELECTION</button>
-    <span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !panelOpenState, 'glyphicon-chevron-up': panelOpenState}" (click)="panelOpenState = !panelOpenState"></span>
+    <span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
   </div>
 </div>
 
-
+<div class="col-md-12 panel-header">
+  <span style="margin-right: 20px"><b>COMPUTATIONS</b></span><span style="margin-right: 15px" class="glyphicon glyphicon-plus" (click)="addComputation()"></span><span style="margin-right: 15px" class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
+  <span *ngIf="!computationPanelOpenState">
+    <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
+        <span (click)="selectComputation(comp.name)">
+          <div class="computation-colored-circle" [ngStyle]="{'background-color': (selectedComputations.has(comp.name)) ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
+        </span>
+    </div>
+  </span>
+  <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}" class="panel-content col-md-12">
+    <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
+      <span (click)="selectComputation(comp.name)">
+        <div class="computation-colored-circle" [ngStyle]="{'background-color': (selectedComputations.has(comp.name)) ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
+      </span>
+      <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true" (dragstart)="dragFilter($event, filter, comp)">{{filter.name}}</div>
+      <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
+    </div>
+  </div>
+</div>
 
 <div class="col-md-3 col-lg-2">
   <h3 class="text-gray"><b>CLUSTERS</b></h3>

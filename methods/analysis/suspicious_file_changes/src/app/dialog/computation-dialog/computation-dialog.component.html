@@ -1,0 +1,11 @@
+<div class="col-md-12">
+  <h3 class="text-gray">{{data.title}}</h3>
+  <mat-form-field class="dialogInput">
+    <input matInput [(ngModel)]="resultName" placeholder="{{data.namePlaceholder}}">
+  </mat-form-field>
+  <mat-form-field class="dialogInput">
+    <input matInput [(ngModel)]="resultColor" placeholder="{{data.colorPlaceHolder}}">
+  </mat-form-field>
+  <button mat-stroked-button class="leftButton timesix-button" (click)="onCancelClick()">CANCEL</button>
+  <button mat-stroked-button class="rightButton timesix-button" (click)="onOkClick()" [disabled]="resultName == '' || resultColor == ''">CREATE</button>
+</div>

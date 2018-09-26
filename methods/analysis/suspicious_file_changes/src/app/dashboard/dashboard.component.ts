@@ -6,6 +6,8 @@ import {FilterService} from '../filter.service';
 import {FilterParamModel} from '../models/filterParam.model';
 import {FilterModel} from '../models/filter.model';
 import { NameDialogComponent } from '../dialog/name-dialog/name-dialog.component';
+import {ComputationModel} from '../models/computation.model';
+import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +20,8 @@ export class DashboardComponent implements OnInit {
   filterIndex = 'filter';
   filterType = '';
 
-  panelOpenState = true;
+  filterPanelOpenState = true;
+  computationPanelOpenState = true;
 
   cases: any[];
   selectedCase: string;
@@ -26,6 +29,9 @@ export class DashboardComponent implements OnInit {
   filters: any[];
   selectedFilter: string;
   selectedFilterModel: FilterModel = new FilterModel();
+  computations: Set<ComputationModel> = new Set<ComputationModel>();
+  pickedComputaion: ComputationModel;
+  selectedComputations: Set<string> = new Set<string>();
   combinedFilter: string;
 
   appliedFiltersKeys: Set<string> = new Set<string>();
@@ -46,7 +52,22 @@ export class DashboardComponent implements OnInit {
   @ViewChild(MatChipList)
   chipList: MatChipList;
 
-  constructor(private es: ElasticsearchService, private fs: FilterService, public dialog: MatDialog) { }
+  constructor(private es: ElasticsearchService, private fs: FilterService, public dialog: MatDialog) {
+      // test only
+      const comp = new ComputationModel();
+      comp.color = '#336699';
+      comp.name = 'test';
+      const filt = new FilterModel();
+      filt.name = 'new';
+      comp.filters.add(filt);
+      const comp2 = new ComputationModel();
+      comp2.color = '#cc0000';
+      comp2.name = 'test2';
+      this.computations.add(comp);
+      this.computations.add(comp2);
+      this.selectedComputations.add(comp.name);
+      this.pickedComputaion = comp;
+  }
 
   ngOnInit() {
     this.metadataView.displayedClusters = this.selectedStoredClusters;
@@ -79,7 +100,7 @@ export class DashboardComponent implements OnInit {
   }
 
   addNewFilterButton() {
-    this.panelOpenState = true;
+    this.filterPanelOpenState = true;
     this.tabGroup.selectedIndex = 0;
   }
 
@@ -139,6 +160,11 @@ export class DashboardComponent implements OnInit {
       this.selectedAppliedFilters.add(this.selectedFilterModel.name);
       this.appliedFiltersKeys.add(this.selectedFilterModel.name);
       this.combineSelectedFilters();
+      // computations
+      if (this.pickedComputaion != null) {
+          console.log(this.pickedComputaion, this.selectedFilterModel, 'what is wrong');
+          this.pickedComputaion.filters.add(this.selectedFilterModel);
+      }
       this.selectedFilterModel = new FilterModel();
       this.selectedFilter = null;
     }
@@ -345,6 +371,58 @@ export class DashboardComponent implements OnInit {
         }
       }
     }
+  }
+
+  addComputation() {
+      const dialogRef = this.dialog.open(ComputationDialogComponent, {
+          width: '350px',
+          data: {title: 'Create new computation',
+              namePlaceholder: 'Type new filter\'s name',
+              colorPlaceHolder: 'Type new color in #RRGGBB format'
+          }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+          console.log('computation dialog closed', result);
+          if (result != null) {
+              const comp = new ComputationModel();
+              comp.name = result[0];
+              comp.color = result[1];
+              this.selectedComputations.add(comp.name);
+              this.computations.add(comp);
+          }
+      });
+  }
+
+  selectComputation(name) {
+    if (this.selectedComputations.has(name)) {
+      this.selectedComputations.delete(name);
+    } else {
+      this.selectedComputations.add(name);
+    }
+  }
+
+  addFilter(computation) {
+    this.filterPanelOpenState = true;
+    this.pickedComputaion = computation;
+    console.log(this.pickedComputaion);
+  }
+
+  dragFilter($event, filter: FilterModel, computation: ComputationModel) {
+    $event.dataTransfer.setData('filter', JSON.stringify(filter));
+    $event.dataTransfer.dropEffect = 'copy';
+    $event.effectAllowed = 'copyMove';
+  }
+
+  dragOver($event) {
+    $event.preventDefault();
+  }
+
+  dropFilter($event, computation: ComputationModel) {
+    console.log('dropped', computation);
+    $event.preventDefault();
+    const filter = JSON.parse($event.dataTransfer.getData('filter'));
+    console.log('filter', filter);
+    computation.filters.add(filter);
   }
 
 }
