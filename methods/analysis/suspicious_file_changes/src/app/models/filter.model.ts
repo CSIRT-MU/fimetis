@@ -6,4 +6,5 @@ export class FilterModel {
   json: string;
   params: FilterParamModel[];
   completed: string;
+  isSelected = true;
 }

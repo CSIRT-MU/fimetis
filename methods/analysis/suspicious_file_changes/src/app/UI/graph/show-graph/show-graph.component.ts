@@ -1,5 +1,5 @@
 import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
-import {ElasticsearchService} from '../../elasticsearch.service';
+import {ElasticsearchService} from '../../../elasticsearch.service';
 import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
 

@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ElasticsearchService} from '../elasticsearch.service';
-import {ShowMetadataComponent} from '../metadata/show-metadata/show-metadata.component';
+import {ElasticsearchService} from '../../elasticsearch.service';
+import {ListViewComponent} from '../listView/listView.component';
 import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
-import {FilterService} from '../filter.service';
-import {FilterParamModel} from '../models/filterParam.model';
-import {FilterModel} from '../models/filter.model';
+import {FilterService} from '../../filter.service';
+import {FilterParamModel} from '../../models/filterParam.model';
+import {FilterModel} from '../../models/filter.model';
 import { NameDialogComponent } from '../dialog/name-dialog/name-dialog.component';
-import {ComputationModel} from '../models/computation.model';
+import {ComputationModel} from '../../models/computation.model';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 
 @Component({
@@ -30,8 +30,7 @@ export class DashboardComponent implements OnInit {
   selectedFilter: string;
   selectedFilterModel: FilterModel = new FilterModel();
   computations: Set<ComputationModel> = new Set<ComputationModel>();
-  pickedComputaion: ComputationModel;
-  selectedComputations: Set<string> = new Set<string>();
+  pickedComputation: ComputationModel;
   combinedFilter: string;
 
   appliedFiltersKeys: Set<string> = new Set<string>();
@@ -43,8 +42,8 @@ export class DashboardComponent implements OnInit {
   storedClusters: Set<string> = new Set<string>();
   selectedStoredClusters: string[] = [];
 
-  @ViewChild(ShowMetadataComponent)
-  metadataView: ShowMetadataComponent;
+  @ViewChild(ListViewComponent)
+  metadataView: ListViewComponent;
 
   @ViewChild(MatTabGroup)
   tabGroup: MatTabGroup;
@@ -59,14 +58,14 @@ export class DashboardComponent implements OnInit {
       comp.name = 'test';
       const filt = new FilterModel();
       filt.name = 'new';
+      filt.isSelected = true;
       comp.filters.add(filt);
       const comp2 = new ComputationModel();
       comp2.color = '#cc0000';
       comp2.name = 'test2';
       this.computations.add(comp);
       this.computations.add(comp2);
-      this.selectedComputations.add(comp.name);
-      this.pickedComputaion = comp;
+      this.pickedComputation = comp;
   }
 
   ngOnInit() {
@@ -161,9 +160,9 @@ export class DashboardComponent implements OnInit {
       this.appliedFiltersKeys.add(this.selectedFilterModel.name);
       this.combineSelectedFilters();
       // computations
-      if (this.pickedComputaion != null) {
-          console.log(this.pickedComputaion, this.selectedFilterModel, 'what is wrong');
-          this.pickedComputaion.filters.add(this.selectedFilterModel);
+      if (this.pickedComputation != null) {
+          console.log(this.pickedComputation, this.selectedFilterModel, 'what is wrong');
+          this.pickedComputation.filters.add(this.selectedFilterModel);
       }
       this.selectedFilterModel = new FilterModel();
       this.selectedFilter = null;
@@ -387,24 +386,15 @@ export class DashboardComponent implements OnInit {
               const comp = new ComputationModel();
               comp.name = result[0];
               comp.color = result[1];
-              this.selectedComputations.add(comp.name);
               this.computations.add(comp);
           }
       });
   }
 
-  selectComputation(name) {
-    if (this.selectedComputations.has(name)) {
-      this.selectedComputations.delete(name);
-    } else {
-      this.selectedComputations.add(name);
-    }
-  }
-
   addFilter(computation) {
     this.filterPanelOpenState = true;
-    this.pickedComputaion = computation;
-    console.log(this.pickedComputaion);
+    this.pickedComputation = computation;
+    console.log(this.pickedComputation);
   }
 
   dragFilter($event, filter: FilterModel, computation: ComputationModel) {

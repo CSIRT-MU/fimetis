@@ -28,26 +28,18 @@ import { VirtualScrollModule } from 'angular2-virtual-scroll';
 
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
-import {ShowMetadataComponent} from './metadata/show-metadata/show-metadata.component';
-import {DetailMetadataComponent} from './metadata/detail-metadata/detail-metadata.component';
-import {ShowCaseComponent} from './case/show-case/show-case.component';
-import {DetailCaseComponent} from './case/detail-case/detail-case.component';
-import {SubMetadataComponent} from './metadata/sub-metadata/sub-metadata.component';
-import {ShowGraphComponent} from './graph/show-graph/show-graph.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { ClusterComponent } from './cluster/cluster.component';
-import { NameDialogComponent } from './dialog/name-dialog/name-dialog.component';
-import { SelectDialogComponent } from './dialog/select-dialog/select-dialog.component';
-import { ComputationDialogComponent } from './dialog/computation-dialog/computation-dialog.component';
+import {ListViewComponent} from './UI/listView/listView.component';
+import {ShowGraphComponent} from './UI/graph/show-graph/show-graph.component';
+import { DashboardComponent } from './UI/dashboard/dashboard.component';
+import { ClusterComponent } from './UI/cluster/cluster.component';
+import { NameDialogComponent } from './UI/dialog/name-dialog/name-dialog.component';
+import { SelectDialogComponent } from './UI/dialog/select-dialog/select-dialog.component';
+import { ComputationDialogComponent } from './UI/dialog/computation-dialog/computation-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ShowMetadataComponent,
-    DetailMetadataComponent,
-    ShowCaseComponent,
-    DetailCaseComponent,
-    SubMetadataComponent,
+    ListViewComponent,
     ShowGraphComponent,
     DashboardComponent,
     ClusterComponent,

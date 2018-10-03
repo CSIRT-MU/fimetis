@@ -4,10 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ElasticsearchService } from '../../elasticsearch.service';
 import {FormControl} from '@angular/forms';
-import {ShowGraphComponent} from '../../graph/show-graph/show-graph.component';
+import {ShowGraphComponent} from '../graph/show-graph/show-graph.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FilterService} from '../../filter.service';
-import {SelectDialogComponent} from '../../dialog/select-dialog/select-dialog.component';
+import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
 import {Observable} from 'rxjs';
 import 'rxjs/add/observable/of';
 import {fromArray} from 'rxjs/internal/observable/fromArray';
@@ -19,10 +19,10 @@ import * as HyperList from 'hyperlist';
 
 @Component({
   selector: 'app-show-metadata',
-  templateUrl: './show-metadata.component.html',
-  styleUrls: ['./show-metadata.component.css']
+  templateUrl: './listView.component.html',
+  styleUrls: ['./listView.component.css']
 })
-export class ShowMetadataComponent implements OnInit, OnDestroy {
+export class ListViewComponent implements OnInit, OnDestroy {
 
   @Input('index')
   index = 'metadata';
@@ -93,7 +93,7 @@ export class ShowMetadataComponent implements OnInit, OnDestroy {
   }
 
   // ngOnInit() {
-  //   this.es.getAllDocuments(ShowMetadataComponent.INDEX, ShowMetadataComponent.TYPE)
+  //   this.es.getAllDocuments(ListViewComponent.INDEX, ListViewComponent.TYPE)
   //     .then(response => {
   //       this.data = response.hits.hits;
   //       this.metadataSources = response.hits.hits;
@@ -107,9 +107,9 @@ export class ShowMetadataComponent implements OnInit, OnDestroy {
 
   // ngOnInit() {
   //   this.es.getAllDocumentsWithScroll(
-  //     ShowMetadataComponent.INDEX,
-  //     ShowMetadataComponent.TYPE,
-  //     ShowMetadataComponent.SIZE).then(
+  //     ListViewComponent.INDEX,
+  //     ListViewComponent.TYPE,
+  //     ListViewComponent.SIZE).then(
   //     response => {
   //       this.data = response.hits.hits;
   //
