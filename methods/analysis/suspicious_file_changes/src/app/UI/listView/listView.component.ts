@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ElasticsearchService } from '../../elasticsearch.service';
 import {FormControl} from '@angular/forms';
-import {ShowGraphComponent} from '../graph/show-graph/show-graph.component';
+import {GraphComponent} from '../graph/graph.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FilterService} from '../../filter.service';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
@@ -76,7 +76,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) topPaginator: MatPaginator;
   @ViewChild(MatPaginator) bottomPaginator: MatPaginator;
 
-  @ViewChild(ShowGraphComponent) showGraph: ShowGraphComponent;
+  @ViewChild(GraphComponent) showGraph: GraphComponent;
 
   @ViewChild(MatTable) interactiveTable: MatTable<any>;
 

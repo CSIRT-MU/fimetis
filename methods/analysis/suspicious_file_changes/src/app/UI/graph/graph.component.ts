@@ -1,14 +1,14 @@
 import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
-import {ElasticsearchService} from '../../../elasticsearch.service';
+import {ElasticsearchService} from '../../elasticsearch.service';
 import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
 
 @Component({
   selector: 'app-show-graph',
-  templateUrl: './show-graph.component.html',
-  styleUrls: ['./show-graph.component.css']
+  templateUrl: './graph.component.html',
+  styleUrls: ['./graph.component.css']
 })
-export class ShowGraphComponent implements OnInit {
+export class GraphComponent implements OnInit {
 
   @Input() _index: string;
   @Input() _type: string;

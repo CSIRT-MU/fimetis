@@ -29,7 +29,7 @@ import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
 import {ListViewComponent} from './UI/listView/listView.component';
-import {ShowGraphComponent} from './UI/graph/show-graph/show-graph.component';
+import {GraphComponent} from './UI/graph/graph.component';
 import { DashboardComponent } from './UI/dashboard/dashboard.component';
 import { ClusterComponent } from './UI/cluster/cluster.component';
 import { NameDialogComponent } from './UI/dialog/name-dialog/name-dialog.component';
@@ -40,7 +40,7 @@ import { ComputationDialogComponent } from './UI/dialog/computation-dialog/compu
   declarations: [
     AppComponent,
     ListViewComponent,
-    ShowGraphComponent,
+    GraphComponent,
     DashboardComponent,
     ClusterComponent,
     NameDialogComponent,
