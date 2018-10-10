@@ -1,4 +1,4 @@
-export class Metadata {
+export class MetadataModel {
     ['File Name']: string;
     filename = ['File Name'];
     ['@timestamp']: string;
