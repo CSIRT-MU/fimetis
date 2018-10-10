@@ -2,6 +2,7 @@ import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter} f
 import {ElasticsearchService} from '../../elasticsearch.service';
 import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
+import {GraphManager} from '../../businessLayer/graph-manager.service';
 
 @Component({
   selector: 'app-show-graph',
@@ -23,6 +24,7 @@ export class GraphComponent implements OnInit {
   @ViewChild('plot_div') private plotElement: ElementRef;
 
   private data: any;
+  private manager;
 
   private margin: any = { top: 20, bottom: 140, left: 50, right: 20};
   private chart: any;
@@ -46,97 +48,81 @@ export class GraphComponent implements OnInit {
     // data: {x: [], y: [], type: 'scatter', mode: 'lines+points', marker: {color: 'red'}},
     // layout: {width: 320, height: 240, title: 'A Fancy Plot'}
     data: [
-       { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'mtime', type: 'scatter', mode: 'lines+points', marker: {color: '#FF7F0E'}},
-      { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'atime', type: 'scatter', mode: 'lines+points', marker: {color: '#D62728'}},
-      { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'scatter', mode: 'lines+points', marker: {color: '#2CA02C'}},
-      { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'scatter', mode: 'lines+points', marker: {color: '#976CBF'}},
-      // { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
+        { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'mtime', type: 'scatter', mode: 'lines+points', marker: {color: '#FF7F0E'}},
+        { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'atime', type: 'scatter', mode: 'lines+points', marker: {color: '#D62728'}},
+        { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'scatter', mode: 'lines+points', marker: {color: '#2CA02C'}},
+        { x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'scatter', mode: 'lines+points', marker: {color: '#976CBF'}},
+        // { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
     ],
     layout: {autosize: true, xaxis: {range: []}, dataversion: 0, showlegend: true} // log y axis > yaxis: {type: 'log'}
   };
 
-  constructor(private es: ElasticsearchService) { }
+  constructor(private es: ElasticsearchService) {
+      this.manager = new GraphManager(es);
+
+  }
+
 
   ngOnInit() {
-    this.loadingMTimes = true;
-    this.loadingATimes = true;
-    this.loadingCTimes = true;
-    this.loadingBTimes = true;
-    this.es.getFilteredGraphData(this._index, this._type, this._case, 'm', this._filter, this._clusters, this._frequency).then(
-      response => {
-        this.data = response.aggregations.dates.buckets;
-        // this.createChart();
-        // if (this.data) {
-        //   this.updateChart();
-        // }
-        this.graphPlot.data[0].x = this.data.map(d => d['key_as_string']);
-        this.graphPlot.data[0].y = this.data.map(d => d['doc_count']);
+      this.manager.index = this._index;
+      this.manager.type = this._type;
+      this.manager.case = this._case;
+      this.manager.filter = this._filter;
+      this.manager.clusters = this._clusters;
+      this.manager.frequency = this._frequency;
 
-        // console.log(response);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Graph data loaded! - mtime');
-      this.loadingMTimes = false;
-    });
-    this.es.getFilteredGraphData(this._index, this._type, this._case, 'a', this._filter, this._clusters, this._frequency).then(
-      response => {
-        this.data = response.aggregations.dates.buckets;
-        // this.createChart();
-        // if (this.data) {
-        //   this.updateChart();
-        // }
-        this.graphPlot.data[1].x = this.data.map(d => d['key_as_string']);
-        this.graphPlot.data[1].y = this.data.map(d => d['doc_count']);
+      this.loadingMTimes = true;
+      this.loadingATimes = true;
+      this.loadingCTimes = true;
+      this.loadingBTimes = true;
 
-        // console.log(response);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Graph data loaded! - atime');
-      this.loadingATimes = false;
-    });
-    this.es.getFilteredGraphData(this._index, this._type, this._case, 'c', this._filter, this._clusters, this._frequency).then(
-      response => {
-        this.data = response.aggregations.dates.buckets;
-        // this.createChart();
-        // if (this.data) {
-        //   this.updateChart();
-        // }
-        this.graphPlot.data[2].x = this.data.map(d => d['key_as_string']);
-        this.graphPlot.data[2].y = this.data.map(d => d['doc_count']);
 
-        // console.log(response);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Graph data loaded! - ctime');
-      this.loadingCTimes = false;
-    });
-    this.es.getFilteredGraphData(this._index, this._type, this._case, 'b', this._filter, this._clusters, this._frequency).then(
-      response => {
-        this.data = response.aggregations.dates.buckets;
-        // this.createChart();
-        // if (this.data) {
-        //   this.updateChart();
-        // }
-        this.graphPlot.data[3].x = this.data.map(d => d['key_as_string']);
-        this.graphPlot.data[3].y = this.data.map(d => d['doc_count']);
+      // Loading mactimes - modified
+      this.manager.getData('m')
+          .then(response => {
+              this.graphPlot.data[0].x = response.x;
+              this.graphPlot.data[0].y = response.y;
+              this.loadingMTimes = false;
+              console.log('Graph data loaded async! - m', response);
 
-        // console.log(response);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Graph data loaded! - btime');
-      this.loadingBTimes = false;
-    });
+          });
 
-    // make graph responsive
-    const plotDiv = document.getElementById(this.plotDivIdentifier);
-    window.onresize = function() {
-      Plotly.Plots.resize(plotDiv);
-    };
+      // Loading mactimes - access
+      this.manager.getData('a')
+          .then(response => {
+              this.graphPlot.data[1].x = response.x;
+              this.graphPlot.data[1].y = response.y;
+              this.loadingATimes = false;
+              console.log('Graph data loaded async! - a', response);
+          });
+
+      // Loading mactimes - changed
+      this.manager.getData('c')
+          .then(response => {
+              this.graphPlot.data[2].x = response.x;
+              this.graphPlot.data[2].y = response.y;
+              this.loadingCTimes = false;
+              console.log('Graph data loaded async! - c', response);
+          });
+
+      // Loading mactimes - birth
+      this.manager.getData('b')
+          .then(response => {
+              this.graphPlot.data[3].x = response.x;
+              this.graphPlot.data[3].y = response.y;
+              this.loadingBTimes = false;
+              console.log('Graph data loaded async! - b', response);
+          });
+
+      // make graph responsive
+      const plotDiv = document.getElementById(this.plotDivIdentifier);
+      window.onresize = function() {
+          Plotly.Plots.resize(plotDiv);
+      };
+
+    console.log(this.graphPlot.data);
   }
+
 
   // createChart() {
   //   const element = this.chartElement.nativeElement;
@@ -230,29 +216,29 @@ export class GraphComponent implements OnInit {
   // }
 
   pickedZoomFunction($event) {
-    console.log('zoom', $event['xaxis.range[0]'], $event['xaxis.range[1]']);
-    this.getDateChange.emit($event);
+      console.log('zoom', $event['xaxis.range[0]'], $event['xaxis.range[1]']);
+      this.getDateChange.emit($event);
   }
 
   setFromBoundary(fromDate) {
-    console.log('from-date change + ' + fromDate['value'] );
-    const date = new Date(fromDate['value']);
-    const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' 00:00:00.0000';
-    // const update = {'xaxis.range[0]': dateString};
-    const reference = document.getElementById(this.plotDivIdentifier);
-    this.graphPlot.layout.xaxis.range[0] = dateString;
-    this.graphPlot.layout.dataversion += 1;
-    console.log('setup xaxis [0]', this.graphPlot.layout.xaxis.range[0]);
+      console.log('from-date change + ' + fromDate['value'] );
+      const date = new Date(fromDate['value']);
+      const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' 00:00:00.0000';
+      // const update = {'xaxis.range[0]': dateString};
+      const reference = document.getElementById(this.plotDivIdentifier);
+      this.graphPlot.layout.xaxis.range[0] = dateString;
+      this.graphPlot.layout.dataversion += 1;
+      console.log('setup xaxis [0]', this.graphPlot.layout.xaxis.range[0]);
   }
 
   setToBoundary(toDate) {
-    console.log('to-date change + ' + toDate['value'] );
-    const date = new Date(toDate['value']);
-    const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' 00:00:00.0000';
-    // const update = {'xaxis.range[1]': dateString};
-    const reference = document.getElementById(this.plotDivIdentifier);
-    this.graphPlot.layout.xaxis.range[1] = dateString;
-    this.graphPlot.layout.dataversion += 1;
-    console.log('setup xaxis [1]', this.graphPlot.layout.xaxis.range[1]);
+      console.log('to-date change + ' + toDate['value'] );
+      const date = new Date(toDate['value']);
+      const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' 00:00:00.0000';
+      // const update = {'xaxis.range[1]': dateString};
+      const reference = document.getElementById(this.plotDivIdentifier);
+      this.graphPlot.layout.xaxis.range[1] = dateString;
+      this.graphPlot.layout.dataversion += 1;
+      console.log('setup xaxis [1]', this.graphPlot.layout.xaxis.range[1]);
   }
 }
