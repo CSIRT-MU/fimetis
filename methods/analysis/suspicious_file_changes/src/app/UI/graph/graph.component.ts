@@ -3,6 +3,7 @@ import {ElasticsearchService} from '../../elasticsearch.service';
 import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
 import {GraphManager} from '../../businessLayer/graph-manager.service';
+import {ClusterModel} from '../../models/cluster.model';
 
 @Component({
   selector: 'app-show-graph',
@@ -15,7 +16,7 @@ export class GraphComponent implements OnInit {
   @Input() _type: string;
   @Input() _case: string;
   @Input() _filter: string;
-  @Input() _clusters: string[];
+  @Input() _clusters: ClusterModel[] = [];
   @Input() _frequency: string;
   @Output() getDateChange = new EventEmitter<boolean>();
   @Input() fromDate: Date;
@@ -67,16 +68,16 @@ export class GraphComponent implements OnInit {
       this.manager.index = this._index;
       this.manager.type = this._type;
       this.manager.case = this._case;
-      this.manager.filter = this._filter;
+      // this.manager.filter = this._filter;
       this.manager.clusters = this._clusters;
-      this.manager.frequency = this._frequency;
+      // this.manager.frequency = this._frequency;
 
       this.loadingMTimes = true;
       this.loadingATimes = true;
       this.loadingCTimes = true;
       this.loadingBTimes = true;
 
-
+        console.log('compute graph');
       // Loading mactimes - modified
       this.manager.getData('m')
           .then(response => {

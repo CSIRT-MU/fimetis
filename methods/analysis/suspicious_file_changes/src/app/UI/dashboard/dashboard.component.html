@@ -116,5 +116,8 @@
   <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="createClusterFromSelection()" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE CLUSTER FROM SELECTION</button>-->
 </div>
 <div class="col-md-9 col-lg-10">
+
+<app-show-graph [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)">
+</app-show-graph>
 <app-list-view (graphChangedBoundary)="changeDateBoundary($event)"></app-list-view>
 </div>

@@ -1,13 +1,22 @@
+<div class="col-md-12">
+  <div class="col-md-4">
+    <h3 class="text-gray">Histogram</h3>
+  </div>
+  <div class="col-md-8">
+  </div>
+  <div class="col-md-12">
 <!--<div>GRAPH AGGREGATED BY MONTH</div>-->
 <!--<div #graph class="d3-chart"></div>-->
-<div class="graph-container">
-  <div class="chart-loader" *ngIf="loadingMTimes || loadingATimes || loadingBTimes || loadingCTimes">
-    <div class="loader-stat loader-7">
-      <div class="line line1"></div>
-      <div class="line line2"></div>
-      <div class="line line3"></div>
+    <div class="graph-container">
+      <div class="chart-loader" *ngIf="loadingMTimes || loadingATimes || loadingBTimes || loadingCTimes">
+        <div class="loader-stat loader-7">
+          <div class="line line1"></div>
+          <div class="line line2"></div>
+          <div class="line line3"></div>
+        </div>
+      </div>
+      <plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout" (relayout)="pickedZoomFunction($event)"></plotly-plot>
     </div>
   </div>
-  <plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout" (relayout)="pickedZoomFunction($event)"></plotly-plot>
 </div>
 <!--<div #new_plot id="new_plot"></div>-->

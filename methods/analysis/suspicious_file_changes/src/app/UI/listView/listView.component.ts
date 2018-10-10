@@ -40,7 +40,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   @Input('displayedClusters')
   displayedClusters: string[];
   @Input('clusters')
-  clusters: Set<ClusterModel> = new Set<ClusterModel>();
+  clusters: ClusterModel[] = [];
   private SIZE = 25;
   private sub: any;
 
@@ -241,7 +241,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
       this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
       this.clusterManager.case = this.case;
       console.log('list clust', this.clusters);
-      this.clusterManager.clusters = Array.from(this.clusters);
+      this.clusterManager.clusters = this.clusters;
       this.clusterManager.getData(this.index, this.type, this.pageEvent.pageIndex, this.pageEvent.pageSize)
           .then(resp => {
             console.log('??? async called', resp, resp.data, resp.total);

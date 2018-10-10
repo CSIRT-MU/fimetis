@@ -1,10 +1,11 @@
 import {ElasticsearchService} from '../elasticsearch.service';
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/toPromise';
-import {ClusterSelectMode} from '../models/cluster.model';
+import {ClusterModel, ClusterSelectMode} from '../models/cluster.model';
 import {ComputationModel} from '../models/computation.model';
 import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
+import {query} from '@angular/animations';
 
 
 @Injectable()
@@ -13,8 +14,7 @@ export class GraphManager {
     private _index;
     private _type;
     private _case;
-    private _filter;
-    private _clusters;
+    private _clusters: ClusterModel[] = [];
     private _frequency;
     private _additionalFilters;
 
@@ -46,14 +46,6 @@ export class GraphManager {
         this._case = value;
     }
 
-    get filter() {
-        return this._filter;
-    }
-
-    set filter(value) {
-        this._filter = value;
-    }
-
     get clusters() {
         return this._clusters;
     }
@@ -81,13 +73,12 @@ export class GraphManager {
 
 
     async getData(mactime_type): Promise<any> {
-        console.log('filter: ' + this._filter);
         console.log('clusters ' + this._clusters);
         let frequency;
         frequency = await this.getFrequency();
-
+        const queryString = this.buildQuery(mactime_type);
         const promise = new Promise((resolve, reject) => {
-            this.es.runQuery(this._index, this._type, this.build_query(mactime_type))
+            this.es.runQuery(this._index, this._type, queryString)
                 .then(response => {
                         const data = response.aggregations.dates.buckets;
                         const x = data.map(d => d['key_as_string']);
@@ -105,17 +96,19 @@ export class GraphManager {
 
 
     async getFrequency() {
-        let first;
-        let last;
+        let first = 0;
+        let last = 0;
         const one_day = 1000 * 60 * 60 * 24;
 
-        first = await this.getFirstOrLast('asc');
-        last = await this.getFirstOrLast('desc');
+        // TODO: fix getFirstOrLast method
+
+        // first = await this.getFirstOrLast('asc');
+        // last = await this.getFirstOrLast('desc');
         console.log('first ' + first);
         console.log('last ' +  last);
 
         let graphFrequency = 'day';
-        if (first !== 0 && last !== 0) {
+        if (first !== 0 && last !== 0 && first !== undefined && last !== undefined) {
             const diff = (new Date(last).getTime() - new Date(first).getTime()) / one_day;
             if (diff > 365) {
                 graphFrequency = 'day';
@@ -132,14 +125,31 @@ export class GraphManager {
         } else {
             graphFrequency = 'day';
         }
-
+        console.log('frequency', graphFrequency);
         this.frequency = graphFrequency;
     }
 
 
+    // TODO: fix getFirstOrLast method
     // asc for first entry, desc for last entry
     getFirstOrLast(ascOrDesc): Promise<any>  {
+        console.log('run first or last');
         let entry;
+        const tags = [];
+        let filter = '{"bool": {' +
+            '"should": [ ';
+        for (const clust of this._clusters) {
+            if (clust.selectMode === ClusterSelectMode.added){
+                if (clust.tagged) {
+                    tags.push(clust.tag);
+                } else {
+                    filter += this.getComputationFilterString(clust.computation);
+                    filter += ',';
+                }
+            }
+        }
+        filter = filter.slice(0, -1);
+        filter += ']}}';
 
         const promise = new Promise((resolve, reject) => {
             this.es.getFilteredPage(
@@ -148,8 +158,8 @@ export class GraphManager {
                 this._case,
                 1,
                 0,
-                this._filter,
-                this._clusters,
+                filter,
+                tags,
                 'timestamp',
                 ascOrDesc,
                 this._additionalFilters
@@ -169,7 +179,7 @@ export class GraphManager {
 
     }
 
-    build_query(mactime_type) {
+    buildQuery(mactime_type) {
         console.log('clust', this._clusters);
         const _tags: string[] = [];
         const _filters: string[] = [];
@@ -192,6 +202,10 @@ export class GraphManager {
                 }
             }
         }
+        const graphFilter = ', ' +
+            '{"match": { ' +
+            '"Type": "' + mactime_type + '"' +
+            '}}';
         let bodyString = '{' ;
         bodyString += '"query": {' +
             '"bool": {' +
@@ -216,7 +230,7 @@ export class GraphManager {
                     '"tags.keyword": "' + _tags[index] + '"' +
                     '}}';
                 if (mactime_type != null && mactime_type !== undefined) {
-                    bodyString = bodyString + mactime_type;
+                    bodyString = bodyString + graphFilter;
                 }
                 bodyString = bodyString + '] } }';
                 if (index < (_tags.length - 1)) {
@@ -238,7 +252,7 @@ export class GraphManager {
                     '}}';
                 bodyString = bodyString + ',' + _filters[index];
                 if (mactime_type != null && mactime_type !== undefined) {
-                    bodyString = bodyString + mactime_type;
+                    bodyString = bodyString + graphFilter;
                 }
                 bodyString = bodyString + '] } }';
                 if (index < (_filters.length - 1)) {
@@ -253,7 +267,7 @@ export class GraphManager {
                 '"must_not": [' +
                 '{"match_all": {}}';
             if (mactime_type != null && mactime_type !== undefined) {
-                bodyString = bodyString + mactime_type;
+                bodyString = bodyString + graphFilter;
             }
             bodyString = bodyString + '] }}';
         }
@@ -265,7 +279,6 @@ export class GraphManager {
             '"date_histogram": {' +
             '"field": "@timestamp",' +
             '"interval": "' + this.frequency + '"' +
-            '}' +
             '}' +
             '}' +
             '}';

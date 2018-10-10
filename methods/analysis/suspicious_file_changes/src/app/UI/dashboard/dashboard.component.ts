@@ -10,6 +10,7 @@ import {ComputationModel} from '../../models/computation.model';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 import {ClusterModel} from '../../models/cluster.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
+import {GraphComponent} from '../graph/graph.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,6 +52,9 @@ export class DashboardComponent implements OnInit {
   @ViewChild(ListViewComponent)
   metadataView: ListViewComponent;
 
+  @ViewChild(GraphComponent)
+  graphComponent: GraphComponent;
+
   @ViewChild(MatTabGroup)
   tabGroup: MatTabGroup;
 
@@ -74,7 +78,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.metadataView.displayedClusters = this.selectedStoredClusters;
-    this.metadataView.clusters = this.clusters;
+    this.graphComponent._clusters = this.getClusters();
+    this.metadataView.clusters = this.getClusters();
     this.es.getCases(
       this.index,
       this.type
@@ -121,20 +126,20 @@ export class DashboardComponent implements OnInit {
         response => {
           this.clusters = response;
         });
-    this.es.getTags(
-      this.index,
-      this.type,
-      this.selectedCase
-    ).then(
-      response => {
-        this.storedClusters = new Set<string>(response.aggregations.tags.buckets);
-        console.log(response);
-        console.log(this.storedClusters);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Show Tags Completed!');
-    });
+    // this.es.getTags(
+    //   this.index,
+    //   this.type,
+    //   this.selectedCase
+    // ).then(
+    //   response => {
+    //     this.storedClusters = new Set<string>(response.aggregations.tags.buckets);
+    //     console.log(response);
+    //     console.log(this.storedClusters);
+    //   }, error => {
+    //     console.error(error);
+    //   }).then(() => {
+    //   console.log('Show Tags Completed!');
+    // });
   }
 
   getClusters() {
@@ -160,20 +165,20 @@ export class DashboardComponent implements OnInit {
   }
 
   useFilter() {
-    if (this.selectedFilter == null) {
-      this.combineSelectedFilters();
-    } else {
-      this.selectedFilterModel.completed = this.fs.applyFilter(this.selectedFilterModel.json, this.selectedFilterModel.params);
-      for (const oneParam of this.selectedFilterModel.params) {
-        this.selectedFilterModel.name = this.selectedFilterModel.name + '-' + oneParam.name + ':' + oneParam.value;
-      }
-      // // copy object without reference
-      // const copy = JSON.parse(JSON.stringify(this.selectedFilterModel));
-      // this.appliedFilters.set(this.selectedFilterModel.name, copy);
-      // this.selectedAppliedFilters.add(this.selectedFilterModel.name);
-      // this.appliedFiltersKeys.add(this.selectedFilterModel.name);
-      // this.combineSelectedFilters();
-    }
+    // if (this.selectedFilter == null) {
+    //   this.combineSelectedFilters();
+    // } else {
+    //   this.selectedFilterModel.completed = this.fs.applyFilter(this.selectedFilterModel.json, this.selectedFilterModel.params);
+    //   for (const oneParam of this.selectedFilterModel.params) {
+    //     this.selectedFilterModel.name = this.selectedFilterModel.name + '-' + oneParam.name + ':' + oneParam.value;
+    //   }
+    //   // // copy object without reference
+    //   // const copy = JSON.parse(JSON.stringify(this.selectedFilterModel));
+    //   // this.appliedFilters.set(this.selectedFilterModel.name, copy);
+    //   // this.selectedAppliedFilters.add(this.selectedFilterModel.name);
+    //   // this.appliedFiltersKeys.add(this.selectedFilterModel.name);
+    //   // this.combineSelectedFilters();
+    // }
     if (this.pickedComputation != null) {
         this.pickedComputation.filters.add(this.selectedFilterModel);
     }
@@ -236,8 +241,10 @@ export class DashboardComponent implements OnInit {
 
   clusterSelectionChanged($event) {
     console.log(this.clusters);
-    this.metadataView.clusters = this.clusters;
+    this.metadataView.clusters = this.getClusters();
+    this.graphComponent._clusters = this.getClusters();
     this.metadataView.init();
+    this.graphComponent.ngOnInit();
   }
 
   setStoredClusters($event) {
@@ -432,6 +439,10 @@ export class DashboardComponent implements OnInit {
     const filter = JSON.parse($event.dataTransfer.getData('filter'));
     console.log('filter', filter);
     computation.filters.add(filter);
+  }
+
+  computeComputations() {
+
   }
 
 }
