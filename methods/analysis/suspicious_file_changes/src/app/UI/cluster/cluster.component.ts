@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MatSelectionList} from '@angular/material';
+import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 
 @Component({
   selector: 'app-cluster',
@@ -12,28 +13,27 @@ export class ClusterComponent implements OnInit {
   clusterList: MatSelectionList;
 
   @Input('clusters')
-  clusters: string[] = [];
-  @Output('selectedClusters')
-  selectedClusters: EventEmitter<string[]> = new EventEmitter<string[]>();
-  @Input('selectAll')
-  selectAll: boolean;
-
-  computedClusterEmpty: boolean = (this.clusters.length > 0);
-
-  savedClusters: any[];
+  clusters: ClusterModel[] = [];
+  @Output('selectionChanged')
+  selectionChanged: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  emitSelectedClusters() {
-    const selected = this.clusterList.selectedOptions.selected;
-    const selClusters: string[] = [];
-    for (const sel of selected) {
-      selClusters.push(sel._text.nativeElement.innerText);
-    }
-    this.selectedClusters.emit(selClusters);
+  // emitSelectedClusters() {
+  //   const selected = this.clusterList.selectedOptions.selected;
+  //   const selClusters: string[] = [];
+  //   for (const sel of selected) {
+  //     selClusters.push(sel._text.nativeElement.innerText);
+  //   }
+  //   this.selectedClusters.emit(selClusters);
+  // }
+
+  nextVal(cluster) {
+      cluster.selectMode = ClusterSelectMode.next(cluster.selectMode);
+      this.selectionChanged.emit(null);
   }
 
 }

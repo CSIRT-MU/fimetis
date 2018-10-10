@@ -2,3 +2,45 @@
   max-height: 200px;
   min-height: 200px;
 }
+
+.cluster-item{
+  cursor: pointer;
+}
+
+.cluster-icon{
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  position: relative;
+}
+
+.cluster-not-selected::before{
+  content: "\25cb";
+  font-size: 19px;
+  margin-left: 6px;
+  margin-bottom: 4px;
+  color: #666666;
+  font-weight: bold;
+  max-height: 20px;
+}
+
+.cluster-added::before{
+  content: "+";
+  font-size: 19px;
+  margin-left: 6px;
+  margin-bottom: 4px;
+  color: green;
+  font-weight: bold;
+  max-height: 20px;
+}
+
+.cluster-deducted::before{
+  content: "–";
+  font-size: 19px;
+  margin-left: 6px;
+  margin-bottom: 4px;
+  color: red;
+  font-weight: bold;
+  max-height: 20px;
+}

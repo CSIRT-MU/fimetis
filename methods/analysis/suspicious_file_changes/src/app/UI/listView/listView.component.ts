@@ -16,9 +16,12 @@ import PerfectScrollbar from 'perfect-scrollbar';
 import {VirtualArrayModel} from '../../models/virtualArray.model';
 import 'hyperlist/dist/hyperlist.js';
 import * as HyperList from 'hyperlist';
+import {ComputationModel} from '../../models/computation.model';
+import {ClusterManager} from '../../businessLayer/clusterManager';
+import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 
 @Component({
-  selector: 'app-show-metadata',
+  selector: 'app-list-view',
   templateUrl: './listView.component.html',
   styleUrls: ['./listView.component.css']
 })
@@ -32,8 +35,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
   case: string;
   @Input('filter')
   filter: string;
+  @Input('computations')
+  computations: ComputationModel[];
   @Input('displayedClusters')
   displayedClusters: string[];
+  @Input('clusters')
+  clusters: Set<ClusterModel> = new Set<ClusterModel>();
   private SIZE = 25;
   private sub: any;
 
@@ -73,6 +80,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   pageSizeOptions: number[] = [5, 10, 25, 100, 500, 1000];
   pageEvent: PageEvent;
 
+  private clusterManager: ClusterManager;
+
   @ViewChild(MatPaginator) topPaginator: MatPaginator;
   @ViewChild(MatPaginator) bottomPaginator: MatPaginator;
 
@@ -90,6 +99,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.SIZE;
+    this.clusterManager = new ClusterManager(this.es);
   }
 
   // ngOnInit() {
@@ -171,7 +181,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   init() {
     this.initDataSet();
-    this.initGraph();
+    // this.initGraph();
   }
 
   ngOnDestroy() {
@@ -180,54 +190,69 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   initDataSet() {
     this.loadingData = true;
-    if (this.type === 'aggregated-mactimes') {
-      this.es.getAggregatedPage(
-        this.index,
-        this.type,
-        this.case,
-        this.pageEvent.pageSize,
-        this.pageEvent.pageIndex
-      ).then(
-        response => {
-          this.data = response.hits.hits;
-          this.total = response.hits.total;
-          this.scrollID = response._scroll_id;
-          console.log(response);
-          this.showGraph.ngOnInit();
-        }, error => {
-          console.error(error);
-        }).then(() => {
-        console.log('Show Metadata Completed!');
-        this.loadingData = false;
-      });
-    } else {
-      this.es.getFilteredPage(
-        this.index,
-        this.type,
-        this.case,
-        this.pageEvent.pageSize,
-        this.pageEvent.pageIndex,
-        this.filter,
-        this.displayedClusters,
-        this.pageSortString,
-        this.pageSortOrder,
-        Array.from(this.additionalFilters.values())
-      ).then(
-        response => {
-          this.data = response.hits.hits;
-          this.total = response.hits.total;
-          this.scrollID = response._scroll_id;
-          this.preloadedData = response.hits.hits;
-          this.preloadedBegin = 0;
-          this.preloadedEnd = this.pageEvent.pageSize;
-          this.virtualArray.length = this.total;
-        }, error => {
-          console.error(error);
-        }).then(() => {
-        console.log('Show Metadata Completed!');
-        this.loadingData = false;
-      });
-    }
+    // if (this.type === 'aggregated-mactimes') {
+    //   this.es.getAggregatedPage(
+    //     this.index,
+    //     this.type,
+    //     this.case,
+    //     this.pageEvent.pageSize,
+    //     this.pageEvent.pageIndex
+    //   ).then(
+    //     response => {
+    //       this.data = response.hits.hits;
+    //       this.total = response.hits.total;
+    //       this.scrollID = response._scroll_id;
+    //       console.log(response);
+    //       this.showGraph.ngOnInit();
+    //     }, error => {
+    //       console.error(error);
+    //     }).then(() => {
+    //     console.log('Show Metadata Completed!');
+    //     this.loadingData = false;
+    //   });
+    // } else {
+    //   this.es.getFilteredPage2(
+    //     this.index,
+    //     this.type,
+    //     this.case,
+    //     this.pageEvent.pageSize,
+    //     this.pageEvent.pageIndex,
+    //     this.computations,
+    //     this.displayedClusters,
+    //     this.pageSortString,
+    //     this.pageSortOrder,
+    //     Array.from(this.additionalFilters.values())
+    //   ).then(
+    //     response => {
+    //       this.data = response.hits.hits;
+    //       this.total = response.hits.total;
+    //       this.scrollID = response._scroll_id;
+    //       this.preloadedData = response.hits.hits;
+    //       this.preloadedBegin = 0;
+    //       this.preloadedEnd = this.pageEvent.pageSize;
+    //       this.virtualArray.length = this.total;
+    //     }, error => {
+    //       console.error(error);
+    //     }).then(() => {
+    //     console.log('Show Metadata Completed!');
+    //     this.loadingData = false;
+    //   });
+    // }
+      this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
+      this.clusterManager.case = this.case;
+      console.log('list clust', this.clusters);
+      this.clusterManager.clusters = Array.from(this.clusters);
+      this.clusterManager.getData(this.index, this.type, this.pageEvent.pageIndex, this.pageEvent.pageSize)
+          .then(resp => {
+            console.log('??? async called', resp, resp.data, resp.total);
+            this.data = resp.data;
+            this.total = resp.total;
+            this.preloadedData = resp.data;
+            this.preloadedBegin = 0;
+            this.preloadedEnd = this.pageEvent.pageSize;
+            this.virtualArray.length = this.total;
+            this.loadingData = false;
+          });
   }
 
   initGraph() {

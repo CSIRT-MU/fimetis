@@ -8,6 +8,8 @@ import {FilterModel} from '../../models/filter.model';
 import { NameDialogComponent } from '../dialog/name-dialog/name-dialog.component';
 import {ComputationModel} from '../../models/computation.model';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
+import {ClusterModel} from '../../models/cluster.model';
+import {ClusterManager} from '../../businessLayer/clusterManager';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +21,8 @@ export class DashboardComponent implements OnInit {
   type = '';
   filterIndex = 'filter';
   filterType = '';
+
+  clusterManager: ClusterManager;
 
   filterPanelOpenState = true;
   computationPanelOpenState = true;
@@ -42,6 +46,8 @@ export class DashboardComponent implements OnInit {
   storedClusters: Set<string> = new Set<string>();
   selectedStoredClusters: string[] = [];
 
+  clusters: Set<ClusterModel> = new Set<ClusterModel>();
+
   @ViewChild(ListViewComponent)
   metadataView: ListViewComponent;
 
@@ -52,17 +58,15 @@ export class DashboardComponent implements OnInit {
   chipList: MatChipList;
 
   constructor(private es: ElasticsearchService, private fs: FilterService, public dialog: MatDialog) {
-      // test only
+      this.clusterManager = new ClusterManager(this.es);
+    // test only
       const comp = new ComputationModel();
       comp.color = '#336699';
       comp.name = 'test';
-      const filt = new FilterModel();
-      filt.name = 'new';
-      filt.isSelected = true;
-      comp.filters.add(filt);
       const comp2 = new ComputationModel();
       comp2.color = '#cc0000';
       comp2.name = 'test2';
+      comp2.isSelected = false;
       this.computations.add(comp);
       this.computations.add(comp2);
       this.pickedComputation = comp;
@@ -70,6 +74,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.metadataView.displayedClusters = this.selectedStoredClusters;
+    this.metadataView.clusters = this.clusters;
     this.es.getCases(
       this.index,
       this.type
@@ -106,11 +111,16 @@ export class DashboardComponent implements OnInit {
   selectedCaseChanged() {
     this.metadataView.case = this.selectedCase;
     this.metadataView.displayedClusters = [];
-    this.metadataView.init();
+    this.clusterManager.case = this.selectedCase;
     this.loadStoredClusters();
+    this.metadataView.init();
   }
 
   loadStoredClusters() {
+    this.clusterManager.getStoredClusters(this.index, this.type).then(
+        response => {
+          this.clusters = response;
+        });
     this.es.getTags(
       this.index,
       this.type,
@@ -125,6 +135,10 @@ export class DashboardComponent implements OnInit {
       }).then(() => {
       console.log('Show Tags Completed!');
     });
+  }
+
+  getClusters() {
+    return Array.from(this.clusters);
   }
 
   loadFilter() {
@@ -153,20 +167,18 @@ export class DashboardComponent implements OnInit {
       for (const oneParam of this.selectedFilterModel.params) {
         this.selectedFilterModel.name = this.selectedFilterModel.name + '-' + oneParam.name + ':' + oneParam.value;
       }
-      // copy object without reference
-      const copy = JSON.parse(JSON.stringify(this.selectedFilterModel));
-      this.appliedFilters.set(this.selectedFilterModel.name, copy);
-      this.selectedAppliedFilters.add(this.selectedFilterModel.name);
-      this.appliedFiltersKeys.add(this.selectedFilterModel.name);
-      this.combineSelectedFilters();
-      // computations
-      if (this.pickedComputation != null) {
-          console.log(this.pickedComputation, this.selectedFilterModel, 'what is wrong');
-          this.pickedComputation.filters.add(this.selectedFilterModel);
-      }
-      this.selectedFilterModel = new FilterModel();
-      this.selectedFilter = null;
+      // // copy object without reference
+      // const copy = JSON.parse(JSON.stringify(this.selectedFilterModel));
+      // this.appliedFilters.set(this.selectedFilterModel.name, copy);
+      // this.selectedAppliedFilters.add(this.selectedFilterModel.name);
+      // this.appliedFiltersKeys.add(this.selectedFilterModel.name);
+      // this.combineSelectedFilters();
     }
+    if (this.pickedComputation != null) {
+        this.pickedComputation.filters.add(this.selectedFilterModel);
+    }
+    this.selectedFilterModel = new FilterModel();
+    this.selectedFilter = null;
   }
 
   selectFilter(filter) {
@@ -199,6 +211,7 @@ export class DashboardComponent implements OnInit {
     this.metadataView.case = this.selectedCase;
     this.metadataView.filter = this.combinedFilter;
     this.metadataView.displayedClusters = this.selectedStoredClusters;
+    this.metadataView.computations = Array.from(this.computations);
     this.metadataView.init();
 
     // TODO WARNING - only one cluster at a time
@@ -219,6 +232,12 @@ export class DashboardComponent implements OnInit {
       this.metadataView.filter = null;
       this.metadataView.init();
     }
+  }
+
+  clusterSelectionChanged($event) {
+    console.log(this.clusters);
+    this.metadataView.clusters = this.clusters;
+    this.metadataView.init();
   }
 
   setStoredClusters($event) {
