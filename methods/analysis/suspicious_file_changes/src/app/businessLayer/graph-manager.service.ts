@@ -1,6 +1,10 @@
 import {ElasticsearchService} from '../elasticsearch.service';
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/toPromise';
+import {ClusterSelectMode} from '../models/cluster.model';
+import {ComputationModel} from '../models/computation.model';
+import {FilterModel} from '../models/filter.model';
+import {FilterParamModel} from '../models/filterParam.model';
 
 
 @Injectable()
@@ -83,7 +87,7 @@ export class GraphManager {
         frequency = await this.getFrequency();
 
         const promise = new Promise((resolve, reject) => {
-            this.es.getFilteredGraphData(this._index, this._type, this._case, mactime_type, this._filter, this._clusters, this._frequency)
+            this.es.runQuery(this._index, this._type, this.build_query(mactime_type))
                 .then(response => {
                         const data = response.aggregations.dates.buckets;
                         const x = data.map(d => d['key_as_string']);
@@ -163,5 +167,137 @@ export class GraphManager {
     });
     return promise;
 
+    }
+
+    build_query(mactime_type) {
+        console.log('clust', this._clusters);
+        const _tags: string[] = [];
+        const _filters: string[] = [];
+        if (this._clusters != null && this._clusters !== undefined) {
+            for (const cluster of this._clusters) {
+                if (cluster.selectMode !== ClusterSelectMode.notSelected) {
+                    if (cluster.selectMode === ClusterSelectMode.added) {
+                        if (cluster.tagged) {
+                            _tags.push(cluster.tag);
+
+                        } else {
+                            if (cluster.computation.isSelected) {
+                                const filter = this.getComputationFilterString(cluster.computation);
+                                if (filter != null && filter !== undefined) {
+                                    _filters.push(filter);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        let bodyString = '{' ;
+        bodyString += '"query": {' +
+            '"bool": {' +
+            '"must": [';
+        if (this.additionalFilters != null && this.additionalFilters !== undefined) {
+            for (let index = 0; index < this.additionalFilters.length; index++ ) {
+                bodyString = bodyString + '{';
+                bodyString = bodyString + this.additionalFilters[index];
+                bodyString = bodyString + '},';
+            }
+        }
+        bodyString = bodyString + '{"bool": {' +
+            '"should": [';
+        if (_tags != null && _tags !== undefined) {
+            for (let index = 0; index < _tags.length; index++) {
+                bodyString = bodyString + '{"bool": {' +
+                    '"must": [' +
+                    '{"match": {' +
+                    '"case.keyword": "' + this._case + '"' +
+                    '}},' +
+                    '{"match": {' +
+                    '"tags.keyword": "' + _tags[index] + '"' +
+                    '}}';
+                if (mactime_type != null && mactime_type !== undefined) {
+                    bodyString = bodyString + mactime_type;
+                }
+                bodyString = bodyString + '] } }';
+                if (index < (_tags.length - 1)) {
+                    bodyString = bodyString + ',';
+                }
+            }
+        }
+        if (_filters != null && _filters !== undefined) {
+            for (let index = 0; index < _filters.length; index++) {
+                if (_tags != null && _tags !== undefined) {
+                    if (_tags.length > 0) {
+                        bodyString = bodyString + ',';
+                    }
+                }
+                bodyString = bodyString + '{"bool": {' +
+                    '"must": [' +
+                    '{"match": {' +
+                    '"case.keyword": "' + this._case + '"' +
+                    '}}';
+                bodyString = bodyString + ',' + _filters[index];
+                if (mactime_type != null && mactime_type !== undefined) {
+                    bodyString = bodyString + mactime_type;
+                }
+                bodyString = bodyString + '] } }';
+                if (index < (_filters.length - 1)) {
+                    bodyString += ',';
+                }
+            }
+        } else {
+            if (_tags.length > 0) {
+                bodyString = bodyString + ',';
+            }
+            bodyString = bodyString + '{"bool": {' +
+                '"must_not": [' +
+                '{"match_all": {}}';
+            if (mactime_type != null && mactime_type !== undefined) {
+                bodyString = bodyString + mactime_type;
+            }
+            bodyString = bodyString + '] }}';
+        }
+        bodyString = bodyString + '] } }] } }';
+
+        bodyString = bodyString + ',' +
+            '"aggs": {' +
+            '"dates": {' +
+            '"date_histogram": {' +
+            '"field": "@timestamp",' +
+            '"interval": "' + this.frequency + '"' +
+            '}' +
+            '}' +
+            '}' +
+            '}';
+        bodyString += '}';
+        return bodyString;
+
+    }
+
+    getComputationFilterString(computation: ComputationModel) {
+        const appliedFilters = [];
+        let filter: FilterModel;
+        for (filter of Array.from(computation.filters)) {
+            if (filter.isSelected) {
+                appliedFilters.push(this.applyFilter(filter.json, filter.params));
+            }
+        }
+        return this.getFilterCombination(appliedFilters);
+    }
+
+    applyFilter(filter: string, params: FilterParamModel[]) {
+        let result = filter;
+        for (const param of params) {
+            result = result.replace('${{' + param.name + '}}$', param.value);
+        }
+        return result;
+    }
+
+    getFilterCombination(filters: string[]) {
+        let result = filters[0];
+        for (let i = 1; i < filters.length; i++) {
+            result = result + ', ' + filters[i];
+        }
+        return result;
     }
 }

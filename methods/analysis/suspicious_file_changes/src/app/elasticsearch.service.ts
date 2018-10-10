@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 
 import { Client } from 'elasticsearch-browser';
-import {FilterManager} from './businessLayer/filterManager';
 import {ComputationModel} from './models/computation.model';
 
 @Injectable()
 export class ElasticsearchService {
 
   private client: Client;
-  private filterManager: FilterManager = new FilterManager();
 
   constructor() {
     if (!this.client) {
@@ -406,50 +404,50 @@ export class ElasticsearchService {
     });
   }
 
-    getFilteredPage2(_index, _type, _case, _size, _page_index, _computations: ComputationModel[], _clusters: string[], _sort: string, _sort_order: string, _additional_filters: string[]): any {
-        let bodyString = '{' +
-            '"from": ' + (_size * _page_index) + ',' +
-            '"size": ' + _size + ',';
-        bodyString = bodyString + this.filterManager.queryBuilder(_computations, _case, _clusters, null, _additional_filters);
-        bodyString = bodyString +
-            ',' +
-            '"sort": [' +
-            '{';
-        switch (_sort) {
-            case 'timestamp': {
-                bodyString = bodyString + '"@timestamp"';
-                break;
-            }
-            case 'name': {
-                bodyString = bodyString + '"File Name.keyword"';
-                break;
-            }
-            case 'size': {
-                bodyString = bodyString + '"Size.keyword"';
-                break;
-            }
-            case 'type': {
-                bodyString = bodyString + '"Type.keyword"';
-                break;
-            }
-            default: {
-                bodyString = bodyString + '"@timestamp"';
-                break;
-            }
-        }
-        bodyString = bodyString +
-            ': {' +
-            '"order": "' + _sort_order + '"' +
-            '}' +
-            '}' +
-            ']' +
-            '}';
-        return this.client.search({
-            index: _index,
-            type: _type,
-            body: bodyString
-        });
-    }
+    // getFilteredPage2(_index, _type, _case, _size, _page_index, _computations: ComputationModel[], _clusters: string[], _sort: string, _sort_order: string, _additional_filters: string[]): any {
+    //     let bodyString = '{' +
+    //         '"from": ' + (_size * _page_index) + ',' +
+    //         '"size": ' + _size + ',';
+    //     bodyString = bodyString + this.filterManager.queryBuilder(_computations, _case, _clusters, null, _additional_filters);
+    //     bodyString = bodyString +
+    //         ',' +
+    //         '"sort": [' +
+    //         '{';
+    //     switch (_sort) {
+    //         case 'timestamp': {
+    //             bodyString = bodyString + '"@timestamp"';
+    //             break;
+    //         }
+    //         case 'name': {
+    //             bodyString = bodyString + '"File Name.keyword"';
+    //             break;
+    //         }
+    //         case 'size': {
+    //             bodyString = bodyString + '"Size.keyword"';
+    //             break;
+    //         }
+    //         case 'type': {
+    //             bodyString = bodyString + '"Type.keyword"';
+    //             break;
+    //         }
+    //         default: {
+    //             bodyString = bodyString + '"@timestamp"';
+    //             break;
+    //         }
+    //     }
+    //     bodyString = bodyString +
+    //         ': {' +
+    //         '"order": "' + _sort_order + '"' +
+    //         '}' +
+    //         '}' +
+    //         ']' +
+    //         '}';
+    //     return this.client.search({
+    //         index: _index,
+    //         type: _type,
+    //         body: bodyString
+    //     });
+    // }
 
     runQuery(_index, _type, _query): any {
         return this.client.search({
