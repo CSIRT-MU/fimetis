@@ -7,7 +7,7 @@ export class ClusterModel {
     computation: ComputationModel;
     tagged: boolean;
     tag: string;
-    selectMode: ClusterSelectMode;
+    selectMode: ClusterSelectMode = ClusterSelectMode.notSelected;
 }
 
 export enum ClusterSelectMode {

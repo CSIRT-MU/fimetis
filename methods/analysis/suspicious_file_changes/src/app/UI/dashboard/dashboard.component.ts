@@ -11,6 +11,7 @@ import {ComputationDialogComponent} from '../dialog/computation-dialog/computati
 import {ClusterModel} from '../../models/cluster.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {GraphComponent} from '../graph/graph.component';
+import {ComputationManager} from '../../businessLayer/computationManager';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +25,7 @@ export class DashboardComponent implements OnInit {
   filterType = '';
 
   clusterManager: ClusterManager;
+  computationManager: ComputationManager;
 
   filterPanelOpenState = true;
   computationPanelOpenState = true;
@@ -47,6 +49,7 @@ export class DashboardComponent implements OnInit {
   storedClusters: Set<string> = new Set<string>();
   selectedStoredClusters: string[] = [];
 
+  savedClusters: Set<ClusterModel> = new Set<ClusterModel>();
   clusters: Set<ClusterModel> = new Set<ClusterModel>();
 
   @ViewChild(ListViewComponent)
@@ -63,17 +66,18 @@ export class DashboardComponent implements OnInit {
 
   constructor(private es: ElasticsearchService, private fs: FilterService, public dialog: MatDialog) {
       this.clusterManager = new ClusterManager(this.es);
+      this.computationManager = new ComputationManager(this.es);
     // test only
-      const comp = new ComputationModel();
-      comp.color = '#336699';
-      comp.name = 'test';
-      const comp2 = new ComputationModel();
-      comp2.color = '#cc0000';
-      comp2.name = 'test2';
-      comp2.isSelected = false;
-      this.computations.add(comp);
-      this.computations.add(comp2);
-      this.pickedComputation = comp;
+    //   const comp = new ComputationModel();
+    //   comp.color = '#336699';
+    //   comp.name = 'test';
+    //   const comp2 = new ComputationModel();
+    //   comp2.color = '#cc0000';
+    //   comp2.name = 'test2';
+    //   comp2.isSelected = false;
+    //   this.computations.add(comp);
+    //   this.computations.add(comp2);
+    //   this.pickedComputation = comp;
   }
 
   ngOnInit() {
@@ -124,7 +128,7 @@ export class DashboardComponent implements OnInit {
   loadStoredClusters() {
     this.clusterManager.getStoredClusters(this.index, this.type).then(
         response => {
-          this.clusters = response;
+          this.savedClusters = response;
         });
     // this.es.getTags(
     //   this.index,
@@ -143,7 +147,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getClusters() {
-    return Array.from(this.clusters);
+    return Array.from(this.savedClusters).concat(Array.from(this.clusters));
   }
 
   loadFilter() {
@@ -180,6 +184,7 @@ export class DashboardComponent implements OnInit {
     //   // this.combineSelectedFilters();
     // }
     if (this.pickedComputation != null) {
+        this.selectedFilterModel.isSelected = true;
         this.pickedComputation.filters.add(this.selectedFilterModel);
     }
     this.selectedFilterModel = new FilterModel();
@@ -442,7 +447,15 @@ export class DashboardComponent implements OnInit {
   }
 
   computeComputations() {
-
+    console.log('compute');
+      this.computationManager.case = this.selectedCase;
+      this.computationManager.computations = Array.from(this.computations);
+      const clusters = this.computationManager.getClusters(this.index, this.type);
+      this.clusters.clear();
+      for (const cluster of clusters) {
+        this.clusters.add(cluster);
+        console.log('added/', cluster);
+      }
   }
 
 }

@@ -90,6 +90,7 @@
         </span>
     </div>
   </span>
+    <button class="timesix-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>
   <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}" class="panel-content col-md-12">
     <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
       <span (click)="comp.isSelected = !comp.isSelected">

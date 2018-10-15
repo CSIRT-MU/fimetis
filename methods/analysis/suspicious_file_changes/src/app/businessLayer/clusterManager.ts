@@ -13,7 +13,6 @@ export class ClusterManager {
     private _case: string;
     private _graph_filter: string;
     private _additional_filters: string[];
-    private _sort_by: string = null;
 
     constructor(private es: ElasticsearchService) {}
 
