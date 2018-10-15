@@ -102,8 +102,8 @@ export class GraphManager {
 
         // TODO: fix getFirstOrLast method
 
-        // first = await this.getFirstOrLast('asc');
-        // last = await this.getFirstOrLast('desc');
+        first = await this.getFirstOrLast('asc');
+        last = await this.getFirstOrLast('desc');
         console.log('first ' + first);
         console.log('last ' +  last);
 
@@ -136,7 +136,7 @@ export class GraphManager {
         console.log('run first or last');
         let entry;
         const tags = [];
-        let filter = '{"bool": {' +
+        let filter = ',{"bool": {' +
             '"should": [ ';
         for (const clust of this._clusters) {
             if (clust.selectMode === ClusterSelectMode.added){

@@ -70,7 +70,7 @@ export class GraphComponent implements OnInit {
       this.manager.case = this._case;
       // this.manager.filter = this._filter;
       this.manager.clusters = this._clusters;
-      // this.manager.frequency = this._frequency;
+      this.manager.frequency = this._frequency;
 
       this.loadingMTimes = true;
       this.loadingATimes = true;
