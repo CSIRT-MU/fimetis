@@ -100,8 +100,6 @@ export class GraphManager {
         let last = 0;
         const one_day = 1000 * 60 * 60 * 24;
 
-        // TODO: fix getFirstOrLast method
-
         first = await this.getFirstOrLast('asc');
         last = await this.getFirstOrLast('desc');
         console.log('first ' + first);
@@ -130,7 +128,6 @@ export class GraphManager {
     }
 
 
-    // TODO: fix getFirstOrLast method
     // asc for first entry, desc for last entry
     getFirstOrLast(ascOrDesc): Promise<any>  {
         console.log('run first or last');
