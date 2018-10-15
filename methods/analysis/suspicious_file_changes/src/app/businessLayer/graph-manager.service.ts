@@ -268,6 +268,19 @@ export class GraphManager {
             }
             bodyString = bodyString + '] }}';
         }
+
+        /* fix to not display anything when nothing is selected, TODO in FUTURE:refactor with above else,check if filters is empty */
+        if (_tags.length > 0) {
+            bodyString = bodyString + ',';
+        }
+
+        bodyString = bodyString + '{"bool": {' +
+            '"must_not": [' +
+            '{"match_all": {}}';
+
+        bodyString = bodyString + '] }}';
+        /* end of fix */
+
         bodyString = bodyString + '] } }] } }';
 
         bodyString = bodyString + ',' +
