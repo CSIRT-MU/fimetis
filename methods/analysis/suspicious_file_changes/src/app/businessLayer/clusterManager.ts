@@ -49,9 +49,9 @@ export class ClusterManager {
         this._clusters = value;
     }
 
-    getData(index, type, page_index, page_size): Promise<DataModel> {
+    getData(index, type, page_index, page_size, sort, sort_order): Promise<DataModel> {
         return new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, this.buildQuery(page_index, page_size)).then(
+            this.es.runQuery(index, type, this.buildQuery(page_index, page_size, sort, sort_order)).then(
                 response => {
                     const data = new DataModel();
                     data.data = response.hits.hits;
@@ -89,7 +89,7 @@ export class ClusterManager {
         });
     }
 
-    buildQuery(page_index, size) {
+    buildQuery(page_index, size, sort, sort_order) {
         console.log('clust', this._clusters);
         const _tags: string[] = [];
         const _filters: string[] = [];
@@ -180,6 +180,38 @@ export class ClusterManager {
             bodyString = bodyString + '] }}';
         }
         bodyString = bodyString + '] } }] } }';
+        bodyString = bodyString +
+            ',' +
+            '"sort": [' +
+            '{';
+        switch (sort) {
+            case 'timestamp': {
+                bodyString = bodyString + '"@timestamp"';
+                break;
+            }
+            case 'name': {
+                bodyString = bodyString + '"File Name.keyword"';
+                break;
+            }
+            case 'size': {
+                bodyString = bodyString + '"Size.keyword"';
+                break;
+            }
+            case 'type': {
+                bodyString = bodyString + '"Type.keyword"';
+                break;
+            }
+            default: {
+                bodyString = bodyString + '"@timestamp"';
+                break;
+            }
+        }
+        bodyString = bodyString +
+            ': {' +
+            '"order": "' + sort_order + '"' +
+            '}' +
+            '}' +
+            ']';
         bodyString += '}';
         return bodyString;
     }

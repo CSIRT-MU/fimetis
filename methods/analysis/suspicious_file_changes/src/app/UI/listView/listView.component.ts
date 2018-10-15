@@ -242,7 +242,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
       this.clusterManager.case = this.case;
       console.log('list clust', this.clusters);
       this.clusterManager.clusters = this.clusters;
-      this.clusterManager.getData(this.index, this.type, this.pageEvent.pageIndex, this.pageEvent.pageSize)
+      this.clusterManager.getData(this.index, this.type, this.pageEvent.pageIndex, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
           .then(resp => {
             console.log('??? async called', resp, resp.data, resp.total);
             this.data = resp.data;
