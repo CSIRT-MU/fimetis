@@ -139,3 +139,7 @@ mat-chip{
   margin-left: 15px;
   cursor: pointer;
 }
+
+.panel-header-computations{
+    margin-left: 15px;
+}

@@ -83,7 +83,7 @@
 
 <div class="col-md-12 panel-header">
   <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
-  <span *ngIf="!computationPanelOpenState">
+  <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
     <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
         <span (click)="comp.isSelected = !comp.isSelected">
           <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
