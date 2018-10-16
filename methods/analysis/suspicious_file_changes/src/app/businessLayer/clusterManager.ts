@@ -180,7 +180,7 @@ export class ClusterManager {
         }
 
         /* fix to not display anything when nothing is selected, TODO in FUTURE:refactor with above else,check if filters is empty */
-        if (_tags.length > 0) {
+        if (_tags.length > 0  || _filters.length > 0) {
             bodyString = bodyString + ',';
         }
 
