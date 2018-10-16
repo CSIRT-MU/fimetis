@@ -242,7 +242,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
       this.clusterManager.case = this.case;
       console.log('list clust', this.clusters);
       this.clusterManager.clusters = this.clusters;
-      this.clusterManager.getData(this.index, this.type, this.pageEvent.pageIndex, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
+      this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
           .then(resp => {
             console.log('??? async called', resp, resp.data, resp.total);
             this.data = resp.data;
@@ -549,38 +549,56 @@ export class ListViewComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.preloadedRequestedBegin === begin) {
         if (loadingState) {
-          this.loadingData = true;
+            this.loadingData = true;
         }
-        this.es.getFilteredPageScroll(
-          this.index,
-          this.type,
-          this.case,
-          size,
-          begin,
-          this.filter,
-          this.displayedClusters,
-          this.pageSortString,
-          this.pageSortOrder,
-          Array.from(this.additionalFilters.values())
-        ).then(
-          response => {
-            this.preloadedData = response.hits.hits;
-            this.preloadedBegin = begin;
-            this.preloadedEnd = this.preloadedBegin + 100;
-            if (visibleDataStart != null && visibleDataEnd != null) {
-              this.visibleData = this.preloadedData.slice(
-                (visibleDataStart - this.preloadedBegin),
-                (visibleDataEnd - (this.preloadedBegin) + 1)
-              );
-            }
-          }, error => {
-            console.error(error);
+        this.clusterManager.getData(this.index, this.type, begin, size, this.pageSortString, this.pageSortOrder)
+          .then(resp => {
+              console.log('??? async called virtual scroll', resp, resp.data, resp.total);
+              this.preloadedData = resp.data;
+              this.preloadedBegin = begin;
+              this.preloadedEnd = this.preloadedBegin + size;
+              if (visibleDataStart != null && visibleDataEnd != null) {
+                  this.visibleData = this.preloadedData.slice(
+                      (visibleDataStart - this.preloadedBegin),
+                      (visibleDataEnd - (this.preloadedBegin) + 1)
+                  );
+              }
           }).then(() => {
           console.log('Preload data - done!');
           if (loadingState) {
-            this.loadingData = false;
+              this.loadingData = false;
           }
         });
+        // this.es.getFilteredPageScroll(
+        //   this.index,
+        //   this.type,
+        //   this.case,
+        //   size,
+        //   begin,
+        //   this.filter,
+        //   this.displayedClusters,
+        //   this.pageSortString,
+        //   this.pageSortOrder,
+        //   Array.from(this.additionalFilters.values())
+        // ).then(
+        //   response => {
+        //     this.preloadedData = response.hits.hits;
+        //     this.preloadedBegin = begin;
+        //     this.preloadedEnd = this.preloadedBegin + 100;
+        //     if (visibleDataStart != null && visibleDataEnd != null) {
+        //       this.visibleData = this.preloadedData.slice(
+        //         (visibleDataStart - this.preloadedBegin),
+        //         (visibleDataEnd - (this.preloadedBegin) + 1)
+        //       );
+        //     }
+        //   }, error => {
+        //     console.error(error);
+        //   }).then(() => {
+        //   console.log('Preload data - done!');
+        //   if (loadingState) {
+        //     this.loadingData = false;
+        //   }
+        // });
       }
     }, 300);
 

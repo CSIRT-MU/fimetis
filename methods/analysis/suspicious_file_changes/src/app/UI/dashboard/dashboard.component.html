@@ -1,5 +1,5 @@
 <div class="col-md-12 panel-header">
-  <span style="margin-right: 20px"><b>FILTERS</b></span><span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
+  <span><b>FILTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
 </div>
 <div class="col-md-12">
   <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}" class="panel-content col-md-12">
@@ -82,7 +82,7 @@
 <!--</div>-->
 
 <div class="col-md-12 panel-header">
-  <span style="margin-right: 20px"><b>COMPUTATIONS</b></span><span style="margin-right: 15px" class="glyphicon glyphicon-plus" (click)="addComputation()"></span><span style="margin-right: 15px" class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
+  <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
   <span *ngIf="!computationPanelOpenState">
     <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
         <span (click)="comp.isSelected = !comp.isSelected">
@@ -90,7 +90,7 @@
         </span>
     </div>
   </span>
-    <button class="timesix-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>
+    <button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>
   <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}" class="panel-content col-md-12">
     <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
       <span (click)="comp.isSelected = !comp.isSelected">

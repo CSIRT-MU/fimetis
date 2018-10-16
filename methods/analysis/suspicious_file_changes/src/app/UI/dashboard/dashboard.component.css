@@ -134,3 +134,8 @@ mat-chip{
   z-index: 150;
   content: "";
 }
+
+.panel-header-button{
+  margin-left: 15px;
+  cursor: pointer;
+}

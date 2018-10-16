@@ -96,3 +96,22 @@ virtual-scroll {
   /*height: 250px;*/
   /*margin-bottom: 20px;*/
 }
+
+.table-block{
+  display: inline-block;
+  overflow: hidden;
+  height: 20px;
+  text-wrap: none;
+}
+
+.small-table-block{
+  width: 20px;
+}
+
+.medium-table-block{
+  width: 100px;
+}
+
+.large-table-block{
+  width: 300px;
+}

@@ -154,23 +154,31 @@
 </div>
 
 <div class="col-md-12">
+  <span>Total: {{total}}</span>
   <div>
     <div class="table-loading-spinner">
       <div class="spinning-loader" *ngIf="loadingData" ></div>
     </div>
-    <table>
-      <thead>
-      <th>File Name</th>
-      <th>Timestamp</th>
-      <th>Type</th>
-      </thead>
-    </table>
+    <div>
+      <div class="table-block small-table-block glyphicon glyphicon-file"></div>
+      <div class="table-block large-table-block">File Name</div>
+      <div class="table-block large-table-block">Timestamp</div>
+      <div class="table-block medium-table-block">Type</div>
+    </div>
     <virtual-scroll style="height: 200px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
         <div style="height: 20px; width: 100%;" *ngFor="let element of visibleData">
-          <span>{{element['_source']['File Name']}}</span>
-          <span>{{element._source['@timestamp']}}</span>
-          <span>{{element._source.Type}}</span>
+          <div *ngIf="element._source['Mode'] != null" class="table-block small-table-block">
+                <span [ngSwitch]="element._source['Mode'][2]">
+                  <span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>
+                  <span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>
+                  <span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>
+                  <span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>
+                </span>
+              </div>
+          <div class="table-block large-table-block">{{element['_source']['File Name']}}</div>
+          <div class="table-block large-table-block">{{element._source['@timestamp']}}</div>
+          <div class="table-block medium-table-block">{{element._source.Type}}</div>
         </div>
       </div>
 

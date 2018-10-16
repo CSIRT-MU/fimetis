@@ -48,9 +48,9 @@ export class ClusterManager {
         this._clusters = value;
     }
 
-    getData(index, type, page_index, page_size, sort, sort_order): Promise<DataModel> {
+    getData(index, type, begin, page_size, sort, sort_order): Promise<DataModel> {
         return new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, this.buildQuery(page_index, page_size, sort, sort_order)).then(
+            this.es.runQuery(index, type, this.buildQuery(begin, page_size, sort, sort_order)).then(
                 response => {
                     const data = new DataModel();
                     data.data = response.hits.hits;
@@ -88,7 +88,7 @@ export class ClusterManager {
         });
     }
 
-    buildQuery(page_index, size, sort, sort_order) {
+    buildQuery(begin, size, sort, sort_order) {
         console.log('clust', this._clusters);
         const _tags: string[] = [];
         const _filters: string[] = [];
@@ -112,7 +112,7 @@ export class ClusterManager {
             }
         }
         let bodyString = '{' +
-            '"from": ' + (size * page_index) + ',' +
+            '"from": ' + begin + ',' +
             '"size": ' + size + ',';
         bodyString += '"query": {' +
             '"bool": {' +

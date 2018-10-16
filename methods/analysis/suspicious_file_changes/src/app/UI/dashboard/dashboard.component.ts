@@ -407,8 +407,8 @@ export class DashboardComponent implements OnInit {
       const dialogRef = this.dialog.open(ComputationDialogComponent, {
           width: '350px',
           data: {title: 'Create new computation',
-              namePlaceholder: 'Type new filter\'s name',
-              colorPlaceHolder: 'Type new color in #RRGGBB format'
+              namePlaceholder: 'Type new clustering\'s name',
+              colorPlaceHolder: 'Select clustering color'
           }
       });
       dialogRef.afterClosed().subscribe(result => {
