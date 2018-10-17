@@ -457,6 +457,14 @@ export class ElasticsearchService {
         });
     }
 
+    updateQuery(_index, _type, _query): any {
+        return this.client.updateByQuery({
+            index: _index,
+            type: _type,
+            body: _query
+        });
+    }
+
   getFilterByName(_index, _type, _name) {
     return this.client.search({
       index: _index,

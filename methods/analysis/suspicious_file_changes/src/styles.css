@@ -109,25 +109,25 @@
   border-color: #cccccc !important;
 }
 
-virtual-scroll.vertical.selfScroll::-webkit-scrollbar {
+virtual-scroller.vertical.selfScroll::-webkit-scrollbar {
   width: 6px;
   background-color: transparent;
 }
 
-virtual-scroll.vertical.selfScroll::-webkit-scrollbar-track {
+virtual-scroller.vertical.selfScroll::-webkit-scrollbar-track {
   border-radius: 10px;
   background: transparent;
   border: none;
 }
 
-virtual-scroll.vertical.selfScroll::-webkit-scrollbar:hover {
+virtual-scroller.vertical.selfScroll::-webkit-scrollbar:hover {
   border-radius: 10px;
   background: #e4e4e4;
   border: none;
   width: 11px;
 }
 
-virtual-scroll.vertical.selfScroll::-webkit-scrollbar-thumb {
+virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb {
   border-radius: 10px;
   /*background: linear-gradient(left, #fff, #e4e4e4);*/
   /*border: 1px solid #aaa;*/
@@ -135,7 +135,7 @@ virtual-scroll.vertical.selfScroll::-webkit-scrollbar-thumb {
   background: #888888;
 }
 
-virtual-scroll.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
+virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
   background: #333333;
 }
 

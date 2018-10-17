@@ -11,7 +11,6 @@ import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.compo
 import {Observable} from 'rxjs';
 import 'rxjs/add/observable/of';
 import {fromArray} from 'rxjs/internal/observable/fromArray';
-import {VirtualScrollComponent} from 'angular2-virtual-scroll';
 import PerfectScrollbar from 'perfect-scrollbar';
 import {VirtualArrayModel} from '../../models/virtualArray.model';
 import 'hyperlist/dist/hyperlist.js';
@@ -88,8 +87,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
   @ViewChild(GraphComponent) showGraph: GraphComponent;
 
   @ViewChild(MatTable) interactiveTable: MatTable<any>;
-
-  @ViewChild(VirtualScrollComponent) scroll: VirtualScrollComponent;
 
   constructor(private es: ElasticsearchService, private fs: FilterService, private route: ActivatedRoute, public dialog: MatDialog) {
     this.scrollID = '';

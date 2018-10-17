@@ -475,4 +475,46 @@ export class ClusterManager {
     return query;
 
     }
+
+    storeCluster(index, type, cluster: ClusterModel) {
+        if (!cluster.tagged) {
+            const filter = this.getComputationFilterString(cluster.computation);
+            this.es.addTag(
+                index,
+                type,
+                this._case,
+                filter,
+                cluster.name
+            ).then(response => {
+                if (response.failures.length < 1) {
+                    console.log(cluster.name, ' tagged');
+                } else {
+                    console.log('failures: ', response.failures);
+                }
+            }, error => {
+                console.error(error);
+            });
+        }
+    }
+
+    removeStoredCluster(index, type, cluster: ClusterModel) {
+        if (cluster.tagged) {
+            this.es.removeTag(
+                index,
+                type,
+                this._case,
+                cluster.tag,
+                null,
+                cluster.name
+            ).then(response => {
+                if (response.failures.length < 1) {
+                    console.log(cluster.name, ' tagged');
+                } else {
+                    console.log('failures: ', response.failures);
+                }
+            }, error => {
+                console.error(error);
+            });
+        }
+    }
 }

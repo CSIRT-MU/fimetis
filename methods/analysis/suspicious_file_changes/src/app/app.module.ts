@@ -24,7 +24,7 @@ import { MatCheckboxModule } from '@angular/material';
 import {MatSortModule} from '@angular/material/sort';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu';
-import { VirtualScrollModule } from 'angular2-virtual-scroll';
+import {VirtualScrollerModule} from 'ngx-virtual-scroller';
 
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
@@ -76,7 +76,7 @@ import { ComputationDialogComponent } from './UI/dialog/computation-dialog/compu
     MatSortModule,
     MatDialogModule,
     MatMenuModule,
-    VirtualScrollModule
+    VirtualScrollerModule
   ],
   entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
   providers: [ElasticsearchService],

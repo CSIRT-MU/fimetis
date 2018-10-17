@@ -1,62 +1,66 @@
-<div class="col-md-12 panel-header">
-  <span><b>FILTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
-</div>
-<div class="col-md-12">
-  <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}" class="panel-content col-md-12">
-    <mat-tab-group [dynamicHeight]="true">
-      <mat-tab label="QUERY / INITIAL SETUP">
-        <br>
-        <div class="col-md-4">
-          <table>
-            <tr>
-              <td class="text-right">
-                <b>DATASET</b>
-              </td>
-              <td>
-                <mat-form-field>
-                  <mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">
-                    <mat-option>None</mat-option>
-                    <mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </td>
-            </tr>
-            <tr>
-              <td class="text-right">
-                <b>FILTER</b>
-              </td>
-              <td>
-                <mat-form-field>
-                  <mat-select [(value)]="selectedFilter" (valueChange)="loadFilter()" placeholder="Click to select filter">
-                    <mat-option>None</mat-option>
-                    <mat-option *ngFor="let filter of filters" [value]="filter['key']">{{filter['key']}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td class="button-right">
-                <button mat-stroked-button (click)="useFilter()" class="timesix-button" [disabled]="paramForm.form.invalid || selectedCase == null || pickedComputation == null || selectedFilter == null">APPLY FILTER</button>
-              </td>
-            </tr>
-          </table>
+<div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
+    <div class="grid-filter">
+        <div class="col-md-12 panel-header">
+          <span><b>FILTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
+        </div>
+        <div class="col-md-12">
+          <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}" class="panel-content col-md-12">
+            <mat-tab-group [dynamicHeight]="true">
+              <mat-tab label="QUERY / INITIAL SETUP">
+                <br>
+                <div class="col-md-4">
+                  <table>
+                    <tr>
+                      <td class="text-right">
+                        <b>DATASET</b>
+                      </td>
+                      <td>
+                        <mat-form-field>
+                          <mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">
+                            <mat-option>None</mat-option>
+                            <mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-right">
+                        <b>FILTER</b>
+                      </td>
+                      <td>
+                        <mat-form-field>
+                          <mat-select [(value)]="selectedFilter" (valueChange)="loadFilter()" placeholder="Click to select filter">
+                            <mat-option>None</mat-option>
+                            <mat-option *ngFor="let filter of filters" [value]="filter['key']">{{filter['key']}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td class="button-right">
+                        <button mat-stroked-button (click)="useFilter()" class="timesix-button" [disabled]="paramForm.form.invalid || selectedCase == null || pickedComputation == null || selectedFilter == null">APPLY FILTER</button>
+                      </td>
+                    </tr>
+                  </table>
 
+                </div>
+
+                <div class="col-md-8">
+                  <form #paramForm="ngForm" >
+                    <mat-form-field *ngFor="let param of selectedFilterModel.params">
+                      <div [ngSwitch]="param.type">
+                        <input matInput *ngSwitchCase="'DATE'" type="datetime-local" name="param-{{param.name}}" placeholder="{{param.name}}" [(ngModel)]="param.value" required>
+                        <input matInput *ngSwitchDefault name="param-{{param.name}}" placeholder="{{param.name}}" [(ngModel)]="param.value" required>
+                      </div>
+                    </mat-form-field>
+                  </form>
+                </div>
+              </mat-tab>
+              <mat-tab label="SIGNALING GRID"> SIGNALING GRID </mat-tab>
+            </mat-tab-group>
+          </div>
         </div>
-        <div class="col-md-8">
-          <form #paramForm="ngForm" >
-            <mat-form-field *ngFor="let param of selectedFilterModel.params">
-              <div [ngSwitch]="param.type">
-                <input matInput *ngSwitchCase="'DATE'" type="datetime-local" name="param-{{param.name}}" placeholder="{{param.name}}" [(ngModel)]="param.value" required>
-                <input matInput *ngSwitchDefault name="param-{{param.name}}" placeholder="{{param.name}}" [(ngModel)]="param.value" required>
-              </div>
-            </mat-form-field>
-          </form>
-        </div>
-      </mat-tab>
-      <mat-tab label="SIGNALING GRID"> SIGNALING GRID </mat-tab>
-    </mat-tab-group>
-  </div>
 </div>
 <!--OLD FILTER PANEL-->
 
@@ -80,45 +84,53 @@
     <!--<span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>-->
   <!--</div>-->
 <!--</div>-->
-
-<div class="col-md-12 panel-header">
-  <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
-  <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
-    <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
-        <span (click)="comp.isSelected = !comp.isSelected">
-          <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
-        </span>
-    </div>
-  </span>
-    <button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>
-  <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}" class="panel-content col-md-12">
-    <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
-      <span (click)="comp.isSelected = !comp.isSelected">
-        <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
+<div class="grid-computation">
+    <div class="col-md-12 panel-header">
+      <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
+      <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
+        <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
+            <span (click)="comp.isSelected = !comp.isSelected">
+              <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
+            </span>
+        </div>
       </span>
-      <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true" (dragstart)="dragFilter($event, filter, comp)" (click)="filter.isSelected = !filter.isSelected">
-        {{filter.name}}
-        <div [ngClass]="{'filter-circle-full': filter.isSelected}" class="filter-circle filter-circle-full"></div>
+        <button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>
+      <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}" class="panel-content col-md-12">
+        <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
+          <span (click)="comp.isSelected = !comp.isSelected">
+            <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
+          </span>
+          <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true" (dragstart)="dragFilter($event, filter, comp)" (click)="filter.isSelected = !filter.isSelected">
+            {{filter.name}}
+            <div [ngClass]="{'filter-circle-full': filter.isSelected}" class="filter-circle filter-circle-full"></div>
+          </div>
+          <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
+        </div>
       </div>
-      <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
     </div>
-  </div>
 </div>
 
-<div class="col-md-3 col-lg-2">
-  <h3 class="text-gray"><b>CLUSTERS</b></h3>
-  <app-cluster [clusters]="getClusters()" (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
-  <!--<h5 class="text-light-gray">Computed clusters</h5>-->
-  <!--<app-cluster [clusters]="computedClusters" (selectedClusters)="setComputedClusters($event)" [selectAll]="true"></app-cluster>-->
-  <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="storeSelectedClusters()" [disabled]="selectedComputedClusters.length < 1">STORE SELECTED CLUSTERS</button>-->
-  <!--<h5 class="text-light-gray">Stored clusters</h5>-->
-  <!--<app-cluster [clusters]="storedClusters" (selectedClusters)="setStoredClusters($event)" [selectAll]="false"></app-cluster>-->
-  <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="deleteSelectedStoredClusters()" [disabled]="selectedStoredClusters.length < 1">DELETE SELECTED CLUSTERS</button>-->
-  <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="createClusterFromSelection()" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE CLUSTER FROM SELECTION</button>-->
+
+
+<div class="grid-cluster">
+    <div class="panel-header">
+        <h3 class="text-gray"><b>CLUSTERS</b></h3><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}" (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
+    </div>
+    <div [ngClass]="{'panel-hidden': !clusterPanelOpenState, 'panel-visible': clusterPanelOpenState}" class="panel-content col-md-12">
+      <app-cluster [clusters]="getClusters()" (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
+      <!--<h5 class="text-light-gray">Computed clusters</h5>-->
+      <!--<app-cluster [clusters]="computedClusters" (selectedClusters)="setComputedClusters($event)" [selectAll]="true"></app-cluster>-->
+      <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="storeSelectedClusters()" [disabled]="selectedComputedClusters.length < 1">STORE SELECTED CLUSTERS</button>-->
+      <!--<h5 class="text-light-gray">Stored clusters</h5>-->
+      <!--<app-cluster [clusters]="storedClusters" (selectedClusters)="setStoredClusters($event)" [selectAll]="false"></app-cluster>-->
+      <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="deleteSelectedStoredClusters()" [disabled]="selectedStoredClusters.length < 1">DELETE SELECTED CLUSTERS</button>-->
+      <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="createClusterFromSelection()" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE CLUSTER FROM SELECTION</button>-->
+    </div>
 </div>
-<div class="col-md-9 col-lg-10">
+<div class="grid-main">
 
 <app-show-graph [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)">
 </app-show-graph>
 <app-list-view (graphChangedBoundary)="changeDateBoundary($event)"></app-list-view>
+</div>
 </div>

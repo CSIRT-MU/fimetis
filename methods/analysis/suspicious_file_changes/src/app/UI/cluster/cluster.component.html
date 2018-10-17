@@ -15,11 +15,14 @@
         <!--</mat-selection-list>-->
 
       </div>
-      <div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">
+      <virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">
+      <div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">
+      <!--<div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">-->
         <div class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
         {{cluster.name}}
         {{cluster.count}}
       </div>
+      </virtual-scroller>
     </perfect-scrollbar>
   </div>
   <div *ngIf="clusters?.length == 0">

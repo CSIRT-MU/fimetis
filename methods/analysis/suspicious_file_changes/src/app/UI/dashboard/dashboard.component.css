@@ -1,3 +1,37 @@
+.container-all-opened{
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-template-areas:
+        "grid-cluster grid-filter grid-filter grid-filter"
+        "grid-cluster grid-computation grid-computation grid-computation"
+        "grid-cluster grid-main grid-main grid-main"
+}
+
+.container-all-closed{
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-template-areas:
+            "grid-cluster grid-filter grid-filter grid-filter"
+            "grid-computation grid-computation grid-computation grid-computation"
+            "grid-main grid-main grid-main grid-main"
+}
+
+.grid-cluster{
+    grid-area: grid-cluster;
+}
+
+.grid-filter{
+    grid-area: grid-filter;
+}
+
+.grid-computation{
+    grid-area: grid-computation;
+}
+
+.grid-main{
+    grid-area: grid-main;
+}
+
 .panel-header{
   /*border: 2px solid #a9a9a9;*/
   padding: 0.75em;

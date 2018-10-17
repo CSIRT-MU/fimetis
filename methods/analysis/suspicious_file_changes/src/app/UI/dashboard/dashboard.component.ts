@@ -29,6 +29,7 @@ export class DashboardComponent implements OnInit {
 
   filterPanelOpenState = true;
   computationPanelOpenState = true;
+  clusterPanelOpenState = true;
 
   cases: any[];
   selectedCase: string;
@@ -147,7 +148,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getClusters() {
-    return Array.from(this.savedClusters).concat(Array.from(this.clusters));
+    return Array.from(this.clusters).concat(Array.from(this.savedClusters));
   }
 
   loadFilter() {
@@ -258,7 +259,7 @@ export class DashboardComponent implements OnInit {
     this.metadataView.init();
   }
 
-  // TODO save more tags - now only one combined filter is used
+  // TODO save more tags - now only one combined filter is used - solved in cluster manager method (need to test it)
   storeSelectedClusters() {
     console.log('store');
     for (const cluster of this.selectedComputedClusters) {
@@ -444,6 +445,10 @@ export class DashboardComponent implements OnInit {
     const filter = JSON.parse($event.dataTransfer.getData('filter'));
     console.log('filter', filter);
     computation.filters.add(filter);
+  }
+
+  elementResized($event) {
+    console.log($event, 'resized');
   }
 
   computeComputations() {
