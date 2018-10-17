@@ -88,31 +88,193 @@ export class ClusterManager {
         });
     }
 
-    buildQuery(begin, size, sort, sort_order) {
+    buildQuery(page_index, size, sort, sort_order) {
         console.log('clust', this._clusters);
-        const _tags: string[] = [];
-        const _filters: string[] = [];
+        const must_tags: string[] = [];
+        const must_filters: string[] = [];
+        const must_not_tags: string[] = [];
+        const must_not_filters: string[] = [];
+
         if (this._clusters != null && this._clusters !== undefined) {
             for (const cluster of this._clusters) {
                 if (cluster.selectMode !== ClusterSelectMode.notSelected) {
                     if (cluster.selectMode === ClusterSelectMode.added) {
                         if (cluster.tagged) {
-                            _tags.push(cluster.tag);
+                            must_tags.push(cluster.tag);
 
                         } else {
                             if (cluster.computation.isSelected) {
                                 const filter = this.getComputationFilterString(cluster.computation);
                                 if (filter != null && filter !== undefined) {
-                                    _filters.push(filter);
+                                    must_filters.push(filter);
                                 }
                             }
                         }
                     }
+                    if (cluster.selectMode === ClusterSelectMode.deducted) {
+                        if (cluster.tagged) {
+                            must_not_tags.push(cluster.tag);
+                        } else {
+                            if (cluster.computation.isSelected) {
+                                const filter = this.getComputationFilterString(cluster.computation);
+                                if (filter != null && filter !== undefined) {
+                                    must_not_filters.push(filter);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+
+        const must_clusters: string[] = [];
+        must_clusters.push(...this.getMatchStringFromTags(must_tags));
+        must_clusters.push(...must_filters);
+
+        const must_not_clusters: string[] = [];
+        must_not_clusters.push(...this.getMatchStringFromTags(must_not_tags));
+        must_not_clusters.push(...must_not_filters);
+
+        // Must params, case_name, graph_filter (if available), additional_filter (if available)
+        const must_params: string[] = [];
+        must_params.push(this.getMatchStringFromCase(this._case));
+        if (this.additional_filters !== undefined) {
+            must_params.push(...this.additional_filters);
+        }
+        if (this.graph_filter !== undefined) {
+            must_params.push(this.graph_filter);
+        }
+
+
+        // if must clusters are empty, don't display anything
+        if (must_clusters.length == 0) {
+            must_not_clusters.push('{"match_all": {}}');
+        }
+
+        console.log('additional_filter:' + this._additional_filters[0]);
+
+        let query = '{'; // start of all query string
+        query += '"from": ' + (size * page_index);
+        query += ','; // separator between from and size
+        query += '"size": ' + size;
+        query += ','; // separator between size and query
+
+        query += '"query": {'; // start of query
+        query += '"bool": {'; // start of bool in query
+        query += '"must": ['; // start of main must
+
+        // must params
+        query += '{'; // start of item with case selection
+        query += '"bool": {'; // start bool in case selection
+        query += '"must": {'; // start of must in case selection
+
+        if (must_params != null && must_params !== undefined) {
+            if (must_params.length > 0) {
+                for (let i = 0; i < must_params.length; i++) {
+                    query += must_params[i];
+
+                    if (i < (must_params.length - 1)) {
+                        query += ','; // seperator between selected params
+                    }
                 }
             }
         }
-        let bodyString = '{' +
-            '"from": ' + begin + ',' +
+
+        query += '}'; // end of must in case selection
+        query += '}'; // end of bool in case selection
+        query += '}'; // end of item with case selection
+
+        query += ','; // seperator between case selection and selected clusters
+
+        query += '{'; // start of selected clusters
+        query += '"bool" : {'; // start of bool in selected clusters
+        query += '"should": ['; // start of should array of selected clusters
+
+        if (must_clusters != null && must_clusters !== undefined) {
+            if (must_clusters.length > 0) {
+                for (let i = 0; i < must_clusters.length; i++) {
+                    query += must_clusters[i];
+
+                    if (i < (must_clusters.length - 1)) {
+                        query += ','; // seperator between selected clusters
+                    }
+                }
+            }
+        }
+
+        query += ']'; // end of should array in selected clusters
+        query += '}'; // end of bool in selected clusters
+        query += '}'; // end of selected clusters
+
+        query += ','; // seperator between selected clusters and minus clusters
+
+        query += '{'; // start of substracted clusters
+        query += '"bool": {'; // start of bool in substracted clusters
+        query += '"must_not": ['; // start of must_not array of substracted clusters
+
+        if (must_not_clusters != null && must_not_clusters !== undefined) {
+            if (must_not_clusters.length > 0) {
+                for (let i = 0; i < must_not_clusters.length; i++) {
+                    query += must_not_clusters[i];
+
+                    if (i < (must_not_clusters.length - 1)) {
+                        query += ','; // seperator between selected clusters
+                    }
+                }
+            }
+        }
+
+        query += ']'; // end of must_not array of substracted clusters
+        query += '}'; // end of bool in substracted clusters
+        query += '}'; // end of substracted clusters
+
+
+
+
+        query += ']'; // end of first must
+        query += '}'; // end of first bool
+        query += '}'; // end of query
+
+        query += ','; // separator between query and sort
+        query += '"sort": ['; // begin of sort field
+        query += '{'; // begin of sort parametr
+
+        switch (sort) {
+            case 'timestamp': {
+                query += '"@timestamp": ';
+                break;
+            }
+            case 'name': {
+                query += '"File Name.keyword": ';
+                break;
+            }
+            case 'size': {
+                query += '"Size.keyword": ';
+                break;
+            }
+            case 'type': {
+                query += '"Type.keyword": ';
+                break;
+            }
+            default: {
+                query += '"@timestamp": ';
+                break;
+            }
+        }
+        query += '{'; // begin of sort order
+        query += '"order": "' + sort_order + '"'; // Adding sorting order
+        query += '}'; // end of sorting order
+        query += '}'; // end of sort parametr
+        query += ']'; // end of sort field
+        query += '}'; // end of all string
+
+        return query;
+
+
+        /*let bodyString = '{' +
+            '"from": ' + (size * page_index) + ',' +
             '"size": ' + size + ',';
         bodyString += '"query": {' +
             '"bool": {' +
@@ -126,29 +288,59 @@ export class ClusterManager {
         }
         bodyString = bodyString + '{"bool": {' +
             '"should": [';
-        if (_tags != null && _tags !== undefined) {
-            for (let index = 0; index < _tags.length; index++) {
-                bodyString = bodyString + '{"bool": {' +
-                    '"must": [' +
-                    '{"match": {' +
-                    '"case.keyword": "' + this._case + '"' +
-                    '}},' +
-                    '{"match": {' +
-                    '"tags.keyword": "' + _tags[index] + '"' +
+        if (must_tags != null && must_tags !== undefined) {
+            bodyString = bodyString + '{"bool": {' +
+                '"must": [' +
+                '{"match": {' +
+                '"case.keyword": "' + this._case + '"' +
+                '}}';
+            if (must_tags.length > 0) {
+                bodyString = bodyString + ',';
+            }
+
+            for (let index = 0; index < must_tags.length; index++) {
+                bodyString = bodyString + '{"match": {' +
+                    '"tags.keyword": "' + must_tags[index] + '"' +
                     '}}';
+
                 if (this._graph_filter != null && this._graph_filter !== undefined) {
                     bodyString = bodyString + this._graph_filter;
                 }
-                bodyString = bodyString + '] } }';
-                if (index < (_tags.length - 1)) {
+
+                if (index < (must_tags.length - 1)) {
                     bodyString = bodyString + ',';
                 }
             }
+
+
+            bodyString = bodyString + ',{"bool": {' +
+                '"must_not": [{';
+
+            for (let index = 0; index < must_not_tags.length; index++) {
+                bodyString = bodyString + '"match": {' +
+                    '"tags.keyword": "' + must_not_tags[index] + '"'
+                    + '}}';
+                if (index < (must_not_tags.length - 1)) {
+                    bodyString = bodyString + ',';
+                }
+
+
+            }
+
+            bodyString = bodyString + '}';
+
+            bodyString = bodyString + '] } }';
+
+
+
+
+
+
         }
-        if (_filters != null && _filters !== undefined) {
-            for (let index = 0; index < _filters.length; index++) {
-                if (_tags != null && _tags !== undefined) {
-                    if (_tags.length > 0) {
+        if (must_filters != null && must_filters !== undefined) {
+            for (let index = 0; index < must_filters.length; index++) {
+                if (must_tags != null && must_tags !== undefined) {
+                    if (must_tags.length > 0) {
                         bodyString = bodyString + ',';
                     }
                 }
@@ -157,17 +349,17 @@ export class ClusterManager {
                     '{"match": {' +
                     '"case.keyword": "' + this._case + '"' +
                     '}}';
-                bodyString = bodyString + ',' + _filters[index];
+                bodyString = bodyString + ',' + must_filters[index];
                 if (this._graph_filter != null && this._graph_filter !== undefined) {
                     bodyString = bodyString + this._graph_filter;
                 }
                 bodyString = bodyString + '] } }';
-                if (index < (_filters.length - 1)) {
+                if (index < (must_filters.length - 1)) {
                     bodyString += ',';
                 }
             }
         } else {
-            if (_tags.length > 0) {
+            if (must_tags.length > 0) {
                 bodyString = bodyString + ',';
             }
             bodyString = bodyString + '{"bool": {' +
@@ -179,8 +371,8 @@ export class ClusterManager {
             bodyString = bodyString + '] }}';
         }
 
-        /* fix to not display anything when nothing is selected, TODO in FUTURE:refactor with above else,check if filters is empty */
-        if (_tags.length > 0  || _filters.length > 0) {
+        /!* fix to not display anything when nothing is selected, TODO in FUTURE:refactor with above else,check if filters is empty *!/
+        if (must_tags.length > 0) {
             bodyString = bodyString + ',';
         }
 
@@ -189,11 +381,11 @@ export class ClusterManager {
             '{"match_all": {}}';
 
         bodyString = bodyString + '] }}';
-        /* end of fix */
+        /!* end of fix *!/
 
         bodyString = bodyString + '] } }] } }';
         bodyString = bodyString +
-            ',' +
+            '],' +
             '"sort": [' +
             '{';
         switch (sort) {
@@ -225,7 +417,9 @@ export class ClusterManager {
             '}' +
             ']';
         bodyString += '}';
-        return bodyString;
+
+        bodyString += '}}';
+        return bodyString;*/
     }
 
     getComputationFilterString(computation: ComputationModel) {
@@ -253,5 +447,32 @@ export class ClusterManager {
             result = result + ', ' + filters[i];
         }
         return result;
+    }
+
+    getMatchStringFromTags(clusters: string[]) {
+        const result = [];
+
+        for (let i = 0; i < clusters.length; i++) {
+            let query = '';
+            query += '{'; // start of cluster substracted selection
+            query += '"match": {'; // start of match in cluster substracted selection
+            query += '"tags.keyword": "' + clusters[i] + '"';
+            query += '}'; // end of match in cluster substracted selection
+            query += '}'; // end of cluster substracted selection
+
+            result.push(query);
+
+        }
+        return result;
+    }
+
+    getMatchStringFromCase(case_name: string) {
+        let query = '';
+        query += '"match": {'; // start of match in case selection
+        query += '"case.keyword": "' + case_name + '"';
+        query += '}'; // end of match in case selection
+
+    return query;
+
     }
 }
