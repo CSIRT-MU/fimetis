@@ -168,7 +168,7 @@ export class ClusterManager {
         // must params
         query += '{'; // start of item with case selection
         query += '"bool": {'; // start bool in case selection
-        query += '"must": {'; // start of must in case selection
+        query += '"must": ['; // start of must array in case selection
 
         if (must_params != null && must_params !== undefined) {
             if (must_params.length > 0) {
@@ -182,7 +182,7 @@ export class ClusterManager {
             }
         }
 
-        query += '}'; // end of must in case selection
+        query += ']'; // end of must array in case selection
         query += '}'; // end of bool in case selection
         query += '}'; // end of item with case selection
 
@@ -468,11 +468,13 @@ export class ClusterManager {
 
     getMatchStringFromCase(case_name: string) {
         let query = '';
+        query += '{'; // start of match
         query += '"match": {'; // start of match in case selection
         query += '"case.keyword": "' + case_name + '"';
         query += '}'; // end of match in case selection
+        query += '}'; // end of match
 
-    return query;
+        return query;
 
     }
 
