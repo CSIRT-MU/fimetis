@@ -45,6 +45,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   @Output('graphChangedBoundary') graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
 
+  tablePanelOpenState = true;
+
   graphFrequency = 'day';
 
   searchString = '';

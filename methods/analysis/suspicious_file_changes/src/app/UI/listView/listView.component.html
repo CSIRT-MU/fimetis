@@ -9,8 +9,10 @@
     <!--</app-show-graph>-->
   <!--</div>-->
 <!--</div>-->
-<div class="col-md-4">
-  <h3 class="text-gray">Interactive List View</h3>
+<div class="col-md-12">
+    <div class="col-md-4">
+        <span class="text-gray title"><h3>Interactive List View</h3></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}" (click)="tablePanelOpenState = !tablePanelOpenState"></span>
+    </div>
 </div>
 <!--<div class="col-md-12">-->
 
@@ -154,7 +156,7 @@
   <!--</div>-->
 <!--</div>-->
 
-<div class="col-md-12">
+<div class="col-md-12" [ngClass]="{'panel-hidden': !tablePanelOpenState, 'panel-visible': tablePanelOpenState}">
   <span>Total: {{total}}</span>
   <div>
     <div class="table-loading-spinner">

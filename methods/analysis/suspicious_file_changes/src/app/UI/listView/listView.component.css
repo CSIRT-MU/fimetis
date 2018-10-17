@@ -1,3 +1,20 @@
+.title h3{
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.panel-header-button{
+  cursor: pointer;
+}
+
+.panel-hidden{
+  display: none;
+}
+
+.panel-visible{
+  display: inline-block;
+}
+
 .interactive-table{
   max-height: 550px;
   width: 100%;

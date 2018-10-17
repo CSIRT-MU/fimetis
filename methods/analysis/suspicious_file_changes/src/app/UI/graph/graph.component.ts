@@ -6,7 +6,7 @@ import {GraphManager} from '../../businessLayer/graph-manager.service';
 import {ClusterModel} from '../../models/cluster.model';
 
 @Component({
-  selector: 'app-show-graph',
+  selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.css']
 })
@@ -23,6 +23,8 @@ export class GraphComponent implements OnInit {
 
   @ViewChild('graph') private chartElement: ElementRef;
   @ViewChild('plot_div') private plotElement: ElementRef;
+
+  graphPanelOpenState = true;
 
   private data: any;
   private manager;

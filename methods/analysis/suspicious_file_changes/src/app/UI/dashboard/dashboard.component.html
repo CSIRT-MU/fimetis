@@ -114,7 +114,7 @@
 
 <div class="grid-cluster">
     <div class="panel-header">
-        <h3 class="text-gray"><b>CLUSTERS</b></h3><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}" (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
+        <span class="text-gray"><b>CLUSTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}" (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
     </div>
     <div [ngClass]="{'panel-hidden': !clusterPanelOpenState, 'panel-visible': clusterPanelOpenState}" class="panel-content col-md-12">
       <app-cluster [clusters]="getClusters()" (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
@@ -129,8 +129,8 @@
 </div>
 <div class="grid-main">
 
-<app-show-graph [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)">
-</app-show-graph>
+<app-graph [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)">
+</app-graph>
 <app-list-view (graphChangedBoundary)="changeDateBoundary($event)"></app-list-view>
 </div>
 </div>

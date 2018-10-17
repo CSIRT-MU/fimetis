@@ -1,10 +1,10 @@
 <div class="col-md-12">
   <div class="col-md-4">
-    <h3 class="text-gray">Histogram</h3>
+    <span class="text-gray title"><h3>Histogram</h3></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !graphPanelOpenState, 'glyphicon-chevron-up': graphPanelOpenState}" (click)="graphPanelOpenState = !graphPanelOpenState"></span>
   </div>
   <div class="col-md-8">
   </div>
-  <div class="col-md-12">
+  <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
 <!--<div>GRAPH AGGREGATED BY MONTH</div>-->
 <!--<div #graph class="d3-chart"></div>-->
     <div class="graph-container">
