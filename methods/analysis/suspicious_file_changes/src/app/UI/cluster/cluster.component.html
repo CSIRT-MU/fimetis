@@ -1,7 +1,7 @@
 <div class="col-md-12">
   <div>
-    <perfect-scrollbar class="computed-cluster-list">
-      <div>
+    <!--<perfect-scrollbar class="computed-cluster-list">-->
+      <!--<div>-->
         <!--<mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">-->
           <!--<mat-list-option *ngFor="let compCluster of clusters" [selected]="selectAll" checkboxPosition="before" >-->
             <!--{{compCluster?.key ? compCluster.key : compCluster}}-->
@@ -14,7 +14,7 @@
           <!--</mat-list-option>-->
         <!--</mat-selection-list>-->
 
-      </div>
+      <!--</div>-->
       <virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">
       <div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">
       <!--<div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">-->
@@ -23,7 +23,7 @@
         {{cluster.count}}
       </div>
       </virtual-scroller>
-    </perfect-scrollbar>
+    <!--</perfect-scrollbar>-->
   </div>
   <div *ngIf="clusters?.length == 0">
     There are no clusters yet
