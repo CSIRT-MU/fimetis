@@ -1,5 +1,5 @@
 <div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
-    <div class="grid-filter">
+    <div class="grid-filter panel">
         <div class="col-md-12 panel-header">
           <span><b>FILTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
         </div>
@@ -62,29 +62,7 @@
           </div>
         </div>
 </div>
-<!--OLD FILTER PANEL-->
-
-<!--<div class="panel-header col-md-12">-->
-  <!--<div class="col-lg-8 col-md-9">-->
-    <!--<mat-chip-list class="chip-list">-->
-      <!--<mat-chip *ngFor="let appliedFilter of appliedFiltersKeys" draggable="true" (click)="selectFilter(appliedFilter)" [selectable]="false">-->
-        <!--{{appliedFilter}}-->
-        <!--&lt;!&ndash;<label for="filter-{{appliedFilter}}">{{appliedFilter}}</label>&ndash;&gt;-->
-        <!--<mat-radio-group [required]="false">-->
-          <!--<mat-radio-button [disabled]="true" [checked]="selectedAppliedFilters.has(appliedFilter)"></mat-radio-button>-->
-        <!--</mat-radio-group>-->
-        <!--&lt;!&ndash;<input type="checkbox" id="filter-{{appliedFilter}}" value="filter-{{appliedFilter}}" [checked]="selectedAppliedFilters.includes(appliedFilter)">&ndash;&gt;-->
-      <!--</mat-chip>-->
-    <!--</mat-chip-list>-->
-  <!--</div>-->
-
-  <!--<div class="col-lg-4 col-md-3 panel-controls">-->
-    <!--<button mat-stroked-button (click)="addNewFilterButton()" class="timesix-button">ADD NEW FILTER</button>-->
-    <!--<button mat-stroked-button (click)="createFilterFromSelection()" class="timesix-button" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE FILTER FROM SELECTION</button>-->
-    <!--<span class="glyphicon" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>-->
-  <!--</div>-->
-<!--</div>-->
-<div class="grid-computation">
+<div class="grid-computation panel">
     <div class="col-md-12 panel-header">
       <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
       <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
@@ -112,19 +90,12 @@
 
 
 
-<div class="grid-cluster">
+<div class="grid-cluster panel">
     <div class="panel-header">
         <span class="text-gray"><b>CLUSTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}" (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
     </div>
     <div [ngClass]="{'panel-hidden': !clusterPanelOpenState, 'panel-visible': clusterPanelOpenState}" class="panel-content col-md-12">
       <app-cluster [clusters]="getClusters()" (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
-      <!--<h5 class="text-light-gray">Computed clusters</h5>-->
-      <!--<app-cluster [clusters]="computedClusters" (selectedClusters)="setComputedClusters($event)" [selectAll]="true"></app-cluster>-->
-      <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="storeSelectedClusters()" [disabled]="selectedComputedClusters.length < 1">STORE SELECTED CLUSTERS</button>-->
-      <!--<h5 class="text-light-gray">Stored clusters</h5>-->
-      <!--<app-cluster [clusters]="storedClusters" (selectedClusters)="setStoredClusters($event)" [selectAll]="false"></app-cluster>-->
-      <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="deleteSelectedStoredClusters()" [disabled]="selectedStoredClusters.length < 1">DELETE SELECTED CLUSTERS</button>-->
-      <!--<button class="cluster-button timesix-button" mat-stroked-button (click)="createClusterFromSelection()" [disabled]="metadataView.tableSelection.selected.length < 1">CREATE CLUSTER FROM SELECTION</button>-->
     </div>
 </div>
 <div class="grid-main">

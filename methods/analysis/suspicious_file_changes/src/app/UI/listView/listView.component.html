@@ -168,9 +168,9 @@
       <div class="table-block large-table-block">Timestamp</div>
       <div class="table-block medium-table-block">Type</div>
     </div>
-    <virtual-scroller style="height: 200px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
+    <virtual-scroller style="scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
-        <div style="height: 20px; width: 100%;" *ngFor="let element of visibleData">
+        <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData">
           <div *ngIf="element._source['Mode'] != null" class="table-block small-table-block">
                 <span [ngSwitch]="element._source['Mode'][2]">
                   <span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>

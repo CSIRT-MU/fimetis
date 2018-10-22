@@ -1,5 +1,5 @@
 <div class="col-md-12">
-  <div>
+  <div class="cluster-list">
     <!--<perfect-scrollbar class="computed-cluster-list">-->
       <!--<div>-->
         <!--<mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">-->
@@ -15,17 +15,20 @@
         <!--</mat-selection-list>-->
 
       <!--</div>-->
-      <virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">
-      <div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">
-      <!--<div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">-->
-        <div class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
-        {{cluster.name}}
-        {{cluster.count}}
+      <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
+      <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
+      <div #container>
+        <div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">
+          <div class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
+          <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
+          {{cluster.name}}
+          {{cluster.count}}
+        </div>
       </div>
-      </virtual-scroller>
+      <!--</virtual-scroller>-->
     <!--</perfect-scrollbar>-->
-  </div>
-  <div *ngIf="clusters?.length == 0">
-    There are no clusters yet
+    <div *ngIf="clusters?.length == 0">
+      There are no clusters yet
+    </div>
   </div>
 </div>

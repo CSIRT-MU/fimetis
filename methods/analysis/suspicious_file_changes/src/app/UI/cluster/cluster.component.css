@@ -44,3 +44,18 @@
   font-weight: bold;
   max-height: 20px;
 }
+
+.cluster-color{
+  visibility: visible;
+  height: 20px;
+  margin-bottom: -5px;
+  display: inline-block;
+  border-left: 4px solid gray;
+}
+
+.cluster-list{
+  background-color: #fefefe;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 8px;
+}

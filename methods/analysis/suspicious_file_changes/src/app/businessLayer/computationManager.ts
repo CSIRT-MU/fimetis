@@ -42,8 +42,10 @@ export class ComputationManager {
     private getClustersForComputation(index, type, computation: ComputationModel): ClusterModel[] {
         const _clusters: ClusterModel[] = [];
         // TODO return more than one cluster
-        // this.es.runQuery(index, type, this.buildComputationQuery(computation));
         const cluster = new ClusterModel();
+        this.getDatabaseData(index, type, computation).then(res => {
+            cluster.count = res;
+        });
         cluster.name = 'cluster-' + computation.name;
         cluster.color = computation.color;
         cluster.tagged = false;
@@ -53,11 +55,22 @@ export class ComputationManager {
         return _clusters;
     }
 
+    private async getDatabaseData(index, type, computation): Promise<any> {
+        const promise = new Promise((resolve, reject) => {
+            this.es.runQuery(index, type, this.buildComputationQuery(computation)).then(
+                response => {
+                    resolve(response.hits.total);
+                }
+            );
+        });
+        return promise;
+    }
+
     private buildComputationQuery(computation: ComputationModel) {
         let bodyString = '{"query": {' +
             '"bool": {' +
             ' "must": [' +
-            ' "match": {"case.keyword": "' + this._case + '"}';
+            ' {"match": {"case.keyword": "' + this._case + '"}}';
         bodyString += ', ' + this.getComputationFilterString(computation);
         bodyString += ']}}}';
         return bodyString;

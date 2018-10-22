@@ -485,10 +485,9 @@ export class GraphManager {
     }
 
     getFilterCombination(filters: string[]) {
-        let result = filters[0];
-        for (let i = 1; i < filters.length; i++) {
-            result = result + ', ' + filters[i];
-        }
+        let result = '{"bool": {"must":[';
+        result += filters.join(', ');
+        result += ']}}';
         return result;
     }
 
