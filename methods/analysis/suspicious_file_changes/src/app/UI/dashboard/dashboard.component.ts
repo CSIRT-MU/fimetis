@@ -250,7 +250,7 @@ export class DashboardComponent implements OnInit {
     this.metadataView.clusters = this.getClusters();
     this.graphComponent._clusters = this.getClusters();
     this.metadataView.init();
-    this.graphComponent.ngOnInit();
+    this.graphComponent.init();
   }
 
   setStoredClusters($event) {

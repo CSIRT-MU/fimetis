@@ -67,6 +67,9 @@ export class GraphComponent implements OnInit {
 
 
   ngOnInit() {
+  }
+
+  init() {
       this.manager.index = this._index;
       this.manager.type = this._type;
       this.manager.case = this._case;
@@ -79,7 +82,7 @@ export class GraphComponent implements OnInit {
       this.loadingCTimes = true;
       this.loadingBTimes = true;
 
-        console.log('compute graph');
+      console.log('compute graph');
       // Loading mactimes - modified
       this.manager.getData('m')
           .then(response => {
@@ -123,9 +126,8 @@ export class GraphComponent implements OnInit {
           Plotly.Plots.resize(plotDiv);
       };
 
-    console.log(this.graphPlot.data);
+      console.log(this.graphPlot.data);
   }
-
 
   // createChart() {
   //   const element = this.chartElement.nativeElement;

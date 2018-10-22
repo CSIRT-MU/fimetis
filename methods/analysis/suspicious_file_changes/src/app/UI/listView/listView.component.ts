@@ -517,29 +517,31 @@ export class ListViewComponent implements OnInit, OnDestroy {
     const count = $event['end'] - $event['start'];
     console.log(offset, count);
     console.log(this.virtualArray.length);
-    this.preloadVisibleStart = start - this.preloadedBegin;
-    if (end <= this.preloadedEnd && start >= this.preloadedBegin) {
-      this.visibleData = this.preloadedData.slice(
-        (start - this.preloadedBegin),
-        (end - (this.preloadedBegin) + 1)
-      );
-      console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
-      if ((start - this.preloadedBegin < 20) && (start > 20)) {
-        const begVal = start - 40 < 0 ? 0 : start - 40;
-        this.preloadData(begVal, 100, null, null, false);
-      }
-      if (this.preloadedEnd - end < 20 && this.preloadedEnd < this.total) {
-        const begVal = start - 40 < 0 ? 0 : start - 40;
-        this.preloadData(begVal, 100, null, null, false);
-      }
-    } else {
-      if (end > this.preloadedEnd) {
-        const begVal = end - 60 < 0 ? 0 : end - 60;
-        this.preloadData(begVal, 100, start, end, true);
-      } else {
-        const begVal = start - 40 < 0 ? 0 : start - 40;
-        this.preloadData(begVal, 100, start, end, true);
-      }
+    if (this.virtualArray.length > 0) { // fake loading state if empty
+        this.preloadVisibleStart = start - this.preloadedBegin;
+        if (end <= this.preloadedEnd && start >= this.preloadedBegin) {
+          this.visibleData = this.preloadedData.slice(
+            (start - this.preloadedBegin),
+            (end - (this.preloadedBegin) + 1)
+          );
+          console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
+          if ((start - this.preloadedBegin < 20) && (start > 20)) {
+            const begVal = start - 40 < 0 ? 0 : start - 40;
+            this.preloadData(begVal, 100, null, null, false);
+          }
+          if (this.preloadedEnd - end < 20 && this.preloadedEnd < this.total) {
+            const begVal = start - 40 < 0 ? 0 : start - 40;
+            this.preloadData(begVal, 100, null, null, false);
+          }
+        } else {
+          if (end > this.preloadedEnd) {
+            const begVal = end - 60 < 0 ? 0 : end - 60;
+            this.preloadData(begVal, 100, start, end, true);
+          } else {
+            const begVal = start - 40 < 0 ? 0 : start - 40;
+            this.preloadData(begVal, 100, start, end, true);
+          }
+        }
     }
   }
 
@@ -564,9 +566,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
               }
           }).then(() => {
           console.log('Preload data - done!');
-          if (loadingState) {
               this.loadingData = false;
-          }
         });
         // this.es.getFilteredPageScroll(
         //   this.index,
