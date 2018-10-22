@@ -251,6 +251,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
             this.preloadedEnd = this.pageEvent.pageSize;
             this.virtualArray.length = this.total;
             this.loadingData = false;
+            this.visibleData = this.data;
           });
   }
 
@@ -566,7 +567,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
               }
           }).then(() => {
           console.log('Preload data - done!');
-              this.loadingData = false;
+            if (loadingState) {
+                this.loadingData = false;
+            }
         });
         // this.es.getFilteredPageScroll(
         //   this.index,

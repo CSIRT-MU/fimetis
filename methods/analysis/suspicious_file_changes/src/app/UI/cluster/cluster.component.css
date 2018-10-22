@@ -51,11 +51,32 @@
   margin-bottom: -5px;
   display: inline-block;
   border-left: 4px solid gray;
+  margin-right: 3px;
 }
 
 .cluster-list{
   background-color: #fefefe;
   border-radius: 8px;
   margin-top: 8px;
-  padding: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.cluster-list-content{
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.list-header{
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.cluster-name-field{
+  display: inline-block;
+  width: 120px;
+}
+
+.cluster-items-field{
+  display: inline-block;
+  width: 70px;
 }

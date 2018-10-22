@@ -15,20 +15,32 @@
         <!--</mat-selection-list>-->
 
       <!--</div>-->
-      <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
-      <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
+      <div class="list-header">
+        <div class="cluster-list-content">
+          <div class="cluster-icon cluster-not-selected"></div>
+          <div class="cluster-name-field">cluster name</div>
+          <div class="cluster-items-field">items #</div>
+        </div>
+      </div>
+    <div class="cluster-list-content">
+    <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
       <div #container>
+      <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
+
         <div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">
-          <div class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
-          <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
-          {{cluster.name}}
-          {{cluster.count}}
+
+            <div class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
+            <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
+            <div class="cluster-name-field">{{cluster.name}}</div>
+            <div class="cluster-items-field">{{cluster.count}}</div>
         </div>
       </div>
       <!--</virtual-scroller>-->
     <!--</perfect-scrollbar>-->
-    <div *ngIf="clusters?.length == 0">
-      There are no clusters yet
+      <div *ngIf="clusters?.length == 0">
+        There are no clusters yet
+      </div>
     </div>
+
   </div>
 </div>
