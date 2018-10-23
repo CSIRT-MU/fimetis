@@ -130,37 +130,28 @@ export class GraphManager {
 
     // asc for first entry, desc for last entry
     getFirstOrLast(ascOrDesc): Promise<any>  {
-        console.log('run first or last');
-        let entry;
-        const tags = [];
-        let filter = ',{"bool": {' +
-            '"should": [ ';
-        for (const clust of this._clusters) {
-            if (clust.selectMode === ClusterSelectMode.added){
-                if (clust.tagged) {
-                    tags.push(clust.tag);
-                } else {
-                    filter += this.getComputationFilterString(clust.computation);
-                    filter += ',';
-                }
-            }
-        }
-        filter = filter.slice(0, -1);
-        filter += ']}}';
+        // console.log('run first or last');
+        // let entry;
+        // const tags = [];
+        // let filter = ',{"bool": {' +
+        //     '"should": [ ';
+        // for (const clust of this._clusters) {
+        //     if (clust.selectMode === ClusterSelectMode.added) {
+        //         if (clust.tagged) {
+        //             tags.push(clust.tag);
+        //         } else {
+        //             filter += this.getComputationFilterString(clust.computation);
+        //             filter += ',';
+        //         }
+        //     }
+        // }
+        // filter = filter.slice(0, -1);
+        // filter += ']}}';
 
         const promise = new Promise((resolve, reject) => {
-            this.es.getFilteredPage(
-                this._index,
-                this._type,
-                this._case,
-                1,
-                0,
-                filter,
-                tags,
-                'timestamp',
-                ascOrDesc,
-                this._additionalFilters
-            ).then(
+            let entry;
+            this.es.runQuery(this._index, this._type, this.buildFirstOrLastQuery(ascOrDesc))
+            .then(
                 response => {
                     if (response.hits.total !== 0) {
                         entry = response.hits.hits[0]._source['@timestamp'];
@@ -173,6 +164,171 @@ export class GraphManager {
             );
         });
         return promise;
+
+    }
+
+
+    buildFirstOrLastQuery(first_or_last) {
+        const must_tags: string[] = [];
+        const must_filters: string[] = [];
+        const must_not_tags: string[] = [];
+        const must_not_filters: string[] = [];
+
+        if (this._clusters != null && this._clusters !== undefined) {
+            for (const cluster of this._clusters) {
+                if (cluster.selectMode !== ClusterSelectMode.notSelected) {
+                    if (cluster.selectMode === ClusterSelectMode.added) {
+                        if (cluster.tagged) {
+                            must_tags.push(cluster.tag);
+
+                        } else {
+                            if (cluster.computation.isSelected) {
+                                const filter = this.getComputationFilterString(cluster.computation);
+                                if (filter != null && filter !== undefined) {
+                                    must_filters.push(filter);
+                                }
+                            }
+                        }
+                    }
+                    if (cluster.selectMode === ClusterSelectMode.deducted) {
+                        if (cluster.tagged) {
+                            must_not_tags.push(cluster.tag);
+                        } else {
+                            if (cluster.computation.isSelected) {
+                                const filter = this.getComputationFilterString(cluster.computation);
+                                if (filter != null && filter !== undefined) {
+                                    must_not_filters.push(filter);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+
+        const must_clusters: string[] = [];
+        must_clusters.push(...this.getMatchStringFromTags(must_tags));
+        must_clusters.push(...must_filters);
+
+        const must_not_clusters: string[] = [];
+        must_not_clusters.push(...this.getMatchStringFromTags(must_not_tags));
+        must_not_clusters.push(...must_not_filters);
+
+        // Must params, case_name, graph_filter (if available), additional_filter (if available)
+        const must_params: string[] = [];
+        must_params.push(this.getMatchStringFromCase(this._case));
+        if (this.additionalFilters !== undefined) {
+            must_params.push(...this.additionalFilters);
+        }
+        // if (this.graph_filter !== undefined) {
+        //     must_params.push(this.graph_filter);
+        // }
+
+
+        // if must clusters are empty, don't display anything
+        if (must_clusters.length === 0) {
+            must_not_clusters.push('{"match_all": {}}');
+        }
+
+        let query = '{'; // start of all query string
+        query += '"from": 0';
+        query += ',';
+        query += '"size": 1';
+        query += ',';
+
+        query += '"query": {'; // start of query
+        query += '"bool": {'; // start of bool in query
+        query += '"must": ['; // start of main must
+
+        // must params
+        query += '{'; // start of item with case selection
+        query += '"bool": {'; // start bool in case selection
+        query += '"must": ['; // start of must array in case selection
+
+        if (must_params != null && must_params !== undefined) {
+            if (must_params.length > 0) {
+                for (let i = 0; i < must_params.length; i++) {
+                    query += must_params[i];
+
+                    if (i < (must_params.length - 1)) {
+                        query += ','; // seperator between selected params
+                    }
+                }
+            }
+        }
+
+        query += ']'; // end of must array in case selection
+        query += '}'; // end of bool in case selection
+        query += '}'; // end of item with case selection
+
+        query += ','; // seperator between case selection and selected clusters
+
+        query += '{'; // start of selected clusters
+        query += '"bool" : {'; // start of bool in selected clusters
+        query += '"should": ['; // start of should array of selected clusters
+
+        if (must_clusters != null && must_clusters !== undefined) {
+            if (must_clusters.length > 0) {
+                for (let i = 0; i < must_clusters.length; i++) {
+                    query += must_clusters[i];
+
+                    if (i < (must_clusters.length - 1)) {
+                        query += ','; // seperator between selected clusters
+                    }
+                }
+            }
+        }
+
+        query += ']'; // end of should array in selected clusters
+        query += '}'; // end of bool in selected clusters
+        query += '}'; // end of selected clusters
+
+        query += ','; // seperator between selected clusters and minus clusters
+
+        query += '{'; // start of substracted clusters
+        query += '"bool": {'; // start of bool in substracted clusters
+        query += '"must_not": ['; // start of must_not array of substracted clusters
+
+        if (must_not_clusters != null && must_not_clusters !== undefined) {
+            if (must_not_clusters.length > 0) {
+                for (let i = 0; i < must_not_clusters.length; i++) {
+                    query += must_not_clusters[i];
+
+                    if (i < (must_not_clusters.length - 1)) {
+                        query += ','; // seperator between selected clusters
+                    }
+                }
+            }
+        }
+
+        query += ']'; // end of must_not array of substracted clusters
+        query += '}'; // end of bool in substracted clusters
+        query += '}'; // end of substracted clusters
+
+
+
+
+        query += ']'; // end of first must
+        query += '}'; // end of first bool
+        query += '}'; // end of query
+
+        query += ','; // separator between query and sort
+        query += '"sort": ['; // begin of sort field
+        query += '{'; // begin of sort parametr
+
+        query += '"@timestamp": ';
+
+        query += '{'; // begin of sort order
+        query += '"order": "' + first_or_last + '"'; // Adding sorting order
+        query += '}'; // end of sorting order
+        query += '}'; // end of sort parametr
+        query += ']'; // end of sort field
+        query += '}'; // end of all string
+
+        return query;
+
 
     }
 
