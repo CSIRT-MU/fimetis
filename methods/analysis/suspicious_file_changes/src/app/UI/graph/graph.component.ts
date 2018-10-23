@@ -2,7 +2,7 @@ import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter} f
 import {ElasticsearchService} from '../../elasticsearch.service';
 import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
-import {GraphManager} from '../../businessLayer/graph-manager.service';
+import {GraphManager} from '../../businessLayer/graphManager';
 import {ClusterModel} from '../../models/cluster.model';
 
 @Component({

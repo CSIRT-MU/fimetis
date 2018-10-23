@@ -6,6 +6,7 @@ import {ComputationModel} from '../models/computation.model';
 import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
 import {query} from '@angular/animations';
+import {ElasticsearchBaseQueryManager} from './elasticsearchBaseQueryManager';
 
 
 @Injectable()
@@ -18,7 +19,11 @@ export class GraphManager {
     private _frequency;
     private _additionalFilters;
 
+    private commonManagerFunctions;
+
     constructor(private es: ElasticsearchService) {
+        this.commonManagerFunctions = new ElasticsearchBaseQueryManager();
+
     }
 
 
@@ -401,86 +406,8 @@ export class GraphManager {
         // console.log('additional_filter:' + this._additionalFilters[0]);
 
         let query = '{'; // start of all query string
-        // query += '"from": ' + (size * page_index);
-        // query += ','; // separator between from and size
-        // query += '"size": ' + size;
-        // query += ','; // separator between size and query
 
-        query += '"query": {'; // start of query
-        query += '"bool": {'; // start of bool in query
-        query += '"must": ['; // start of main must
-
-        // must params
-        query += '{'; // start of item with case selection
-        query += '"bool": {'; // start bool in case selection
-        query += '"must": ['; // start of must array in case selection
-
-        if (must_params != null && must_params !== undefined) {
-            if (must_params.length > 0) {
-                for (let i = 0; i < must_params.length; i++) {
-                    query += must_params[i];
-
-                    if (i < (must_params.length - 1)) {
-                        query += ','; // seperator between selected params
-                    }
-                }
-            }
-        }
-
-        query += ']'; // end of must array in case selection
-        query += '}'; // end of bool in case selection
-        query += '}'; // end of item with case selection
-
-        query += ','; // seperator between case selection and selected clusters
-
-        query += '{'; // start of selected clusters
-        query += '"bool" : {'; // start of bool in selected clusters
-        query += '"should": ['; // start of should array of selected clusters
-
-        if (must_clusters != null && must_clusters !== undefined) {
-            if (must_clusters.length > 0) {
-                for (let i = 0; i < must_clusters.length; i++) {
-                    query += must_clusters[i];
-
-                    if (i < (must_clusters.length - 1)) {
-                        query += ','; // seperator between selected clusters
-                    }
-                }
-            }
-        }
-
-        query += ']'; // end of should array in selected clusters
-        query += '}'; // end of bool in selected clusters
-        query += '}'; // end of selected clusters
-
-        query += ','; // seperator between selected clusters and minus clusters
-
-        query += '{'; // start of substracted clusters
-        query += '"bool": {'; // start of bool in substracted clusters
-        query += '"must_not": ['; // start of must_not array of substracted clusters
-
-        if (must_not_clusters != null && must_not_clusters !== undefined) {
-            if (must_not_clusters.length > 0) {
-                for (let i = 0; i < must_not_clusters.length; i++) {
-                    query += must_not_clusters[i];
-
-                    if (i < (must_not_clusters.length - 1)) {
-                        query += ','; // seperator between selected clusters
-                    }
-                }
-            }
-        }
-
-        query += ']'; // end of must_not array of substracted clusters
-        query += '}'; // end of bool in substracted clusters
-        query += '}'; // end of substracted clusters
-
-
-
-
-        query += ']'; // end of first must
-        query += '}'; // end of first bool
-        query += '}'; // end of query
+        query += this.commonManagerFunctions.getBaseQueryString(this.case, this.clusters, this.additionalFilters, this.commonManagerFunctions.getGraphFilterFromMactimeType(mactime_type));
 
         query += ','; // separator between query and aggs
         query += '"aggs": {'; // start of aggregation
