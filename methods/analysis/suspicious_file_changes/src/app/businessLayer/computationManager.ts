@@ -43,9 +43,14 @@ export class ComputationManager {
         const _clusters: ClusterModel[] = [];
         // TODO return more than one cluster
         const cluster = new ClusterModel();
-        this.getDatabaseData(index, type, computation).then(res => {
-            cluster.count = res;
-        });
+        this.es.runQuery(index, type, this.buildComputationQuery(computation)).then(
+            response => {
+                cluster.count = response.hits.total;
+            }
+        );
+        // this.getDatabaseData(index, type, computation).then(res => {
+        //     cluster.count = res;
+        // });
         cluster.name = 'cluster-' + computation.name;
         cluster.color = computation.color;
         cluster.tagged = false;

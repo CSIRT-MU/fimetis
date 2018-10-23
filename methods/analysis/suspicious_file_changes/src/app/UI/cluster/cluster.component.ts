@@ -33,6 +33,11 @@ export class ClusterComponent implements OnInit {
 
   nextVal(cluster) {
       cluster.selectMode = ClusterSelectMode.next(cluster.selectMode);
+      if (cluster.subClusters.length > 0) {
+        for (const clust of cluster.subClusters) {
+          clust.selectMode = cluster.selectMode;
+        }
+      }
       this.selectionChanged.emit(null);
   }
 

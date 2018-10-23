@@ -48,6 +48,32 @@ export class ClusterManager {
         this._clusters = value;
     }
 
+    private getBaseClusters() {
+        const result = [];
+        if (this._clusters != null && this._clusters !== undefined) {
+            let clusters = [];
+            let tmp = [];
+            clusters.push(...this._clusters);
+            let found_subClusters = false;
+            do {
+                found_subClusters = false;
+                for (const cluster of clusters) {
+                    if (cluster.subClusters.length > 0) {
+                        for (const sub of cluster.subClusters) {
+                           tmp.push(sub);
+                        }
+                        found_subClusters = true;
+                    } else {
+                        result.push(cluster);
+                    }
+                }
+                clusters = tmp;
+                tmp = [];
+            } while (found_subClusters);
+        }
+        return result;
+    }
+
     getData(index, type, begin, page_size, sort, sort_order): Promise<DataModel> {
         return new Promise((resolve, reject) => {
             this.es.runQuery(index, type, this.buildQuery(begin, page_size, sort, sort_order)).then(
@@ -68,6 +94,9 @@ export class ClusterManager {
         return new Promise((resolve, reject) => {
             this.es.getTags(index, type, this.case).then(
                 response => {
+                    const aggrCluster = new ClusterModel();
+                    aggrCluster.name = 'Aggregation';
+                    aggrCluster.count = 0;
                     const data: Set<ClusterModel> = new Set<ClusterModel>();
                     const tags = response.aggregations.tags.buckets;
                     for (const tag of tags) {
@@ -77,7 +106,15 @@ export class ClusterManager {
                         cluster.count = tag.doc_count;
                         cluster.tagged = true;
                         cluster.selectMode = ClusterSelectMode.notSelected;
-                        data.add(cluster);
+                        if (tag.key.startsWith('aggr-')) {
+                            aggrCluster.subClusters.push(cluster);
+                            aggrCluster.count += cluster.count;
+                        } else {
+                            data.add(cluster);
+                        }
+                    }
+                    if (aggrCluster.subClusters.length > 0) {
+                        data.add(aggrCluster);
                     }
                     resolve(data);
                 }, error => {
@@ -96,7 +133,8 @@ export class ClusterManager {
         const must_not_filters: string[] = [];
 
         if (this._clusters != null && this._clusters !== undefined) {
-            for (const cluster of this._clusters) {
+            const subClusters = this.getBaseClusters();
+            for (const cluster of subClusters) {
                 if (cluster.selectMode !== ClusterSelectMode.notSelected) {
                     if (cluster.selectMode === ClusterSelectMode.added) {
                         if (cluster.tagged) {
