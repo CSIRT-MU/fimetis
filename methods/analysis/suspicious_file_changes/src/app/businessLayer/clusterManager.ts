@@ -125,7 +125,7 @@ export class ClusterManager {
         });
     }
 
-    buildQuery(page_index, size, sort, sort_order) {
+    buildQuery(from, size, sort, sort_order) {
         console.log('clust', this._clusters);
         const must_tags: string[] = [];
         const must_filters: string[] = [];
@@ -194,7 +194,7 @@ export class ClusterManager {
         console.log('additional_filter:' + this._additional_filters[0]);
 
         let query = '{'; // start of all query string
-        query += '"from": ' + (size * page_index);
+        query += '"from": ' + from;
         query += ','; // separator between from and size
         query += '"size": ' + size;
         query += ','; // separator between size and query

@@ -11,7 +11,7 @@
 <!--</div>-->
 <div class="col-md-12">
     <div class="col-md-4">
-        <span class="text-gray title"><h3>Interactive List View</h3></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}" (click)="tablePanelOpenState = !tablePanelOpenState"></span>
+        <span class="text-gray title"><h4>Interactive List View</h4></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}" (click)="tablePanelOpenState = !tablePanelOpenState"></span>
     </div>
 </div>
 <!--<div class="col-md-12">-->
@@ -163,6 +163,7 @@
       <div class="spinning-loader" *ngIf="loadingData" ></div>
     </div>
     <div>
+      <div class="table-select"></div>
       <div class="table-block small-table-block glyphicon glyphicon-file"></div>
       <div class="table-block large-table-block">File Name</div>
       <div class="table-block large-table-block">Timestamp</div>
@@ -171,6 +172,7 @@
     <virtual-scroller style="scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
         <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData">
+          <div class="table-select" [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}" (click)="tableSelect(element._id)"></div>
           <div *ngIf="element._source['Mode'] != null" class="table-block small-table-block">
                 <span [ngSwitch]="element._source['Mode'][2]">
                   <span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>
@@ -180,7 +182,7 @@
                 </span>
               </div>
           <div class="table-block large-table-block">{{element['_source']['File Name']}}</div>
-          <div class="table-block large-table-block">{{element._source['@timestamp']}}</div>
+          <div class="table-block large-table-block">{{element._source['@timestamp'] | date:'dd.MM.yyyy'}}</div>
           <div class="table-block medium-table-block">{{element._source.Type}}</div>
         </div>
       </div>

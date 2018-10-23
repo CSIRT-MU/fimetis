@@ -2,9 +2,10 @@
 .d3-chart .axis path,	.d3-chart .axis line {	  stroke: #999;	}
 .d3-chart .axis text { fill: #999;	}
 
-.title h3{
+.title h4{
   display: inline-block;
   margin-right: 8px;
+  font-weight: bold;
 }
 
 .panel-header-button{

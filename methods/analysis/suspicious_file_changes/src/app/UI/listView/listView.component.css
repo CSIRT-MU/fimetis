@@ -1,6 +1,7 @@
-.title h3{
+.title h4{
   display: inline-block;
   margin-right: 8px;
+  font-weight: bold;
 }
 
 .panel-header-button{
@@ -131,4 +132,26 @@ virtual-scroll {
 
 .large-table-block{
   width: 300px;
+}
+
+.table-select{
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #666666;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+.table-select-selected::before{
+  content: " ";
+  border-radius: 50%;
+  display: inline-block;
+  visibility: visible;
+  width: 8px;
+  height: 8px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  background-color: #666666;
 }

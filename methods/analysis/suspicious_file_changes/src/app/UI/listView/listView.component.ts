@@ -57,6 +57,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   displayedTableColumns = ['select', 'doctype', 'mode', 'timestamp', 'name', 'type', 'size', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
   data: any[];
 
+  selected_rows_id: Set<string> = new Set<string>();
 
   haveNextPage = false;
   scrollID = '';
@@ -604,5 +605,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
       }
     }, 300);
 
+  }
+
+  tableSelect(id) {
+    if (this.selected_rows_id.has(id)) {
+      this.selected_rows_id.delete(id);
+    } else {
+      this.selected_rows_id.add(id);
+    }
   }
 }
