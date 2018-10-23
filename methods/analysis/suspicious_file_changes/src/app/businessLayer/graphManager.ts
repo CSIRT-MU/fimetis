@@ -19,10 +19,10 @@ export class GraphManager {
     private _frequency;
     private _additionalFilters;
 
-    private commonManagerFunctions;
+    private elasticsearchBaseQueryManager;
 
     constructor(private es: ElasticsearchService) {
-        this.commonManagerFunctions = new ElasticsearchBaseQueryManager();
+        this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
 
     }
 
@@ -135,27 +135,10 @@ export class GraphManager {
 
     // asc for first entry, desc for last entry
     getFirstOrLast(ascOrDesc): Promise<any>  {
-        // console.log('run first or last');
-        // let entry;
-        // const tags = [];
-        // let filter = ',{"bool": {' +
-        //     '"should": [ ';
-        // for (const clust of this._clusters) {
-        //     if (clust.selectMode === ClusterSelectMode.added) {
-        //         if (clust.tagged) {
-        //             tags.push(clust.tag);
-        //         } else {
-        //             filter += this.getComputationFilterString(clust.computation);
-        //             filter += ',';
-        //         }
-        //     }
-        // }
-        // filter = filter.slice(0, -1);
-        // filter += ']}}';
 
         const promise = new Promise((resolve, reject) => {
             let entry;
-            this.es.runQuery(this._index, this._type, this.buildFirstOrLastQuery(ascOrDesc))
+            this.es.runQuery(this._index, this._type, this.buildFirstOrLastQuery(ascOrDesc, null))
             .then(
                 response => {
                     if (response.hits.total !== 0) {
@@ -173,151 +156,18 @@ export class GraphManager {
     }
 
 
-    buildFirstOrLastQuery(first_or_last) {
-        const must_tags: string[] = [];
-        const must_filters: string[] = [];
-        const must_not_tags: string[] = [];
-        const must_not_filters: string[] = [];
-
-        if (this._clusters != null && this._clusters !== undefined) {
-            for (const cluster of this._clusters) {
-                if (cluster.selectMode !== ClusterSelectMode.notSelected) {
-                    if (cluster.selectMode === ClusterSelectMode.added) {
-                        if (cluster.tagged) {
-                            must_tags.push(cluster.tag);
-
-                        } else {
-                            if (cluster.computation.isSelected) {
-                                const filter = this.getComputationFilterString(cluster.computation);
-                                if (filter != null && filter !== undefined) {
-                                    must_filters.push(filter);
-                                }
-                            }
-                        }
-                    }
-                    if (cluster.selectMode === ClusterSelectMode.deducted) {
-                        if (cluster.tagged) {
-                            must_not_tags.push(cluster.tag);
-                        } else {
-                            if (cluster.computation.isSelected) {
-                                const filter = this.getComputationFilterString(cluster.computation);
-                                if (filter != null && filter !== undefined) {
-                                    must_not_filters.push(filter);
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-
-        }
-
-        const must_clusters: string[] = [];
-        must_clusters.push(...this.getMatchStringFromTags(must_tags));
-        must_clusters.push(...must_filters);
-
-        const must_not_clusters: string[] = [];
-        must_not_clusters.push(...this.getMatchStringFromTags(must_not_tags));
-        must_not_clusters.push(...must_not_filters);
-
-        // Must params, case_name, graph_filter (if available), additional_filter (if available)
-        const must_params: string[] = [];
-        must_params.push(this.getMatchStringFromCase(this._case));
-        if (this.additionalFilters !== undefined) {
-            must_params.push(...this.additionalFilters);
-        }
-        // if (this.graph_filter !== undefined) {
-        //     must_params.push(this.graph_filter);
-        // }
-
-
-        // if must clusters are empty, don't display anything
-        if (must_clusters.length === 0) {
-            must_not_clusters.push('{"match_all": {}}');
-        }
-
+    buildFirstOrLastQuery(first_or_last, mactime_type) {
         let query = '{'; // start of all query string
         query += '"from": 0';
         query += ',';
         query += '"size": 1';
         query += ',';
 
-        query += '"query": {'; // start of query
-        query += '"bool": {'; // start of bool in query
-        query += '"must": ['; // start of main must
-
-        // must params
-        query += '{'; // start of item with case selection
-        query += '"bool": {'; // start bool in case selection
-        query += '"must": ['; // start of must array in case selection
-
-        if (must_params != null && must_params !== undefined) {
-            if (must_params.length > 0) {
-                for (let i = 0; i < must_params.length; i++) {
-                    query += must_params[i];
-
-                    if (i < (must_params.length - 1)) {
-                        query += ','; // seperator between selected params
-                    }
-                }
-            }
-        }
-
-        query += ']'; // end of must array in case selection
-        query += '}'; // end of bool in case selection
-        query += '}'; // end of item with case selection
-
-        query += ','; // seperator between case selection and selected clusters
-
-        query += '{'; // start of selected clusters
-        query += '"bool" : {'; // start of bool in selected clusters
-        query += '"should": ['; // start of should array of selected clusters
-
-        if (must_clusters != null && must_clusters !== undefined) {
-            if (must_clusters.length > 0) {
-                for (let i = 0; i < must_clusters.length; i++) {
-                    query += must_clusters[i];
-
-                    if (i < (must_clusters.length - 1)) {
-                        query += ','; // seperator between selected clusters
-                    }
-                }
-            }
-        }
-
-        query += ']'; // end of should array in selected clusters
-        query += '}'; // end of bool in selected clusters
-        query += '}'; // end of selected clusters
-
-        query += ','; // seperator between selected clusters and minus clusters
-
-        query += '{'; // start of substracted clusters
-        query += '"bool": {'; // start of bool in substracted clusters
-        query += '"must_not": ['; // start of must_not array of substracted clusters
-
-        if (must_not_clusters != null && must_not_clusters !== undefined) {
-            if (must_not_clusters.length > 0) {
-                for (let i = 0; i < must_not_clusters.length; i++) {
-                    query += must_not_clusters[i];
-
-                    if (i < (must_not_clusters.length - 1)) {
-                        query += ','; // seperator between selected clusters
-                    }
-                }
-            }
-        }
-
-        query += ']'; // end of must_not array of substracted clusters
-        query += '}'; // end of bool in substracted clusters
-        query += '}'; // end of substracted clusters
-
-
-
-
-        query += ']'; // end of first must
-        query += '}'; // end of first bool
-        query += '}'; // end of query
+        query += this.elasticsearchBaseQueryManager.getBaseQueryString(
+            this.case,
+            this.clusters,
+            this.additionalFilters,
+            this.elasticsearchBaseQueryManager.getGraphFilterFromMactimeType(mactime_type));
 
         query += ','; // separator between query and sort
         query += '"sort": ['; // begin of sort field
@@ -338,76 +188,14 @@ export class GraphManager {
     }
 
     buildQuery(mactime_type) {
-        const must_tags: string[] = [];
-        const must_filters: string[] = [];
-        const must_not_tags: string[] = [];
-        const must_not_filters: string[] = [];
-
-        if (this._clusters != null && this._clusters !== undefined) {
-            for (const cluster of this._clusters) {
-                if (cluster.selectMode !== ClusterSelectMode.notSelected) {
-                    if (cluster.selectMode === ClusterSelectMode.added) {
-                        if (cluster.tagged) {
-                            must_tags.push(cluster.tag);
-
-                        } else {
-                            if (cluster.computation.isSelected) {
-                                const filter = this.getComputationFilterString(cluster.computation);
-                                if (filter != null && filter !== undefined) {
-                                    must_filters.push(filter);
-                                }
-                            }
-                        }
-                    }
-                    if (cluster.selectMode === ClusterSelectMode.deducted) {
-                        if (cluster.tagged) {
-                            must_not_tags.push(cluster.tag);
-                        } else {
-                            if (cluster.computation.isSelected) {
-                                const filter = this.getComputationFilterString(cluster.computation);
-                                if (filter != null && filter !== undefined) {
-                                    must_not_filters.push(filter);
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-
-        }
-
-        const must_clusters: string[] = [];
-        must_clusters.push(...this.getMatchStringFromTags(must_tags));
-        must_clusters.push(...must_filters);
-
-        const must_not_clusters: string[] = [];
-        must_not_clusters.push(...this.getMatchStringFromTags(must_not_tags));
-        must_not_clusters.push(...must_not_filters);
-
-        // Must params, case_name, graph_filter (if available), additional_filter (if available)
-        const must_params: string[] = [];
-        must_params.push(this.getMatchStringFromCase(this._case));
-        if (this.additionalFilters !== undefined) {
-            must_params.push(...this.additionalFilters);
-        }
-
-
-        if (this.getGraphFilterFromMactimeType(mactime_type) !== undefined) {
-            must_params.push(this.getGraphFilterFromMactimeType(mactime_type));
-        }
-
-
-        // if must clusters are empty, don't display anything
-        if (must_clusters.length == 0) {
-            must_not_clusters.push('{"match_all": {}}');
-        }
-
-        // console.log('additional_filter:' + this._additionalFilters[0]);
-
         let query = '{'; // start of all query string
 
-        query += this.commonManagerFunctions.getBaseQueryString(this.case, this.clusters, this.additionalFilters, this.commonManagerFunctions.getGraphFilterFromMactimeType(mactime_type));
+        // get the base query string
+        query += this.elasticsearchBaseQueryManager.getBaseQueryString(
+            this.case,
+            this.clusters,
+            this.additionalFilters,
+            this.elasticsearchBaseQueryManager.getGraphFilterFromMactimeType(mactime_type));
 
         query += ','; // separator between query and aggs
         query += '"aggs": {'; // start of aggregation
@@ -428,189 +216,5 @@ export class GraphManager {
         console.log(query);
 
         return query;
-        // console.log('clust', this._clusters);
-        // const _tags: string[] = [];
-        // const _filters: string[] = [];
-        // if (this._clusters != null && this._clusters !== undefined) {
-        //     for (const cluster of this._clusters) {
-        //         if (cluster.selectMode !== ClusterSelectMode.notSelected) {
-        //             if (cluster.selectMode === ClusterSelectMode.added) {
-        //                 if (cluster.tagged) {
-        //                     _tags.push(cluster.tag);
-        //
-        //                 } else {
-        //                     if (cluster.computation.isSelected) {
-        //                         const filter = this.getComputationFilterString(cluster.computation);
-        //                         if (filter != null && filter !== undefined) {
-        //                             _filters.push(filter);
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // const graphFilter = ', ' +
-        //     '{"match": { ' +
-        //     '"Type": "' + mactime_type + '"' +
-        //     '}}';
-        // let bodyString = '{' ;
-        // bodyString += '"query": {' +
-        //     '"bool": {' +
-        //     '"must": [';
-        // if (this.additionalFilters != null && this.additionalFilters !== undefined) {
-        //     for (let index = 0; index < this.additionalFilters.length; index++ ) {
-        //         bodyString = bodyString + '{';
-        //         bodyString = bodyString + this.additionalFilters[index];
-        //         bodyString = bodyString + '},';
-        //     }
-        // }
-        // bodyString = bodyString + '{"bool": {' +
-        //     '"should": [';
-        // if (_tags != null && _tags !== undefined) {
-        //     for (let index = 0; index < _tags.length; index++) {
-        //         bodyString = bodyString + '{"bool": {' +
-        //             '"must": [' +
-        //             '{"match": {' +
-        //             '"case.keyword": "' + this._case + '"' +
-        //             '}},' +
-        //             '{"match": {' +
-        //             '"tags.keyword": "' + _tags[index] + '"' +
-        //             '}}';
-        //         if (mactime_type != null && mactime_type !== undefined) {
-        //             bodyString = bodyString + graphFilter;
-        //         }
-        //         bodyString = bodyString + '] } }';
-        //         if (index < (_tags.length - 1)) {
-        //             bodyString = bodyString + ',';
-        //         }
-        //     }
-        // }
-        // if (_filters != null && _filters !== undefined) {
-        //     for (let index = 0; index < _filters.length; index++) {
-        //         if (_tags != null && _tags !== undefined) {
-        //             if (_tags.length > 0) {
-        //                 bodyString = bodyString + ',';
-        //             }
-        //         }
-        //         bodyString = bodyString + '{"bool": {' +
-        //             '"must": [' +
-        //             '{"match": {' +
-        //             '"case.keyword": "' + this._case + '"' +
-        //             '}}';
-        //         bodyString = bodyString + ',' + _filters[index];
-        //         if (mactime_type != null && mactime_type !== undefined) {
-        //             bodyString = bodyString + graphFilter;
-        //         }
-        //         bodyString = bodyString + '] } }';
-        //         if (index < (_filters.length - 1)) {
-        //             bodyString += ',';
-        //         }
-        //     }
-        // } else {
-        //     if (_tags.length > 0) {
-        //         bodyString = bodyString + ',';
-        //     }
-        //     bodyString = bodyString + '{"bool": {' +
-        //         '"must_not": [' +
-        //         '{"match_all": {}}';
-        //     if (mactime_type != null && mactime_type !== undefined) {
-        //         bodyString = bodyString + graphFilter;
-        //     }
-        //     bodyString = bodyString + '] }}';
-        // }
-        //
-        // /* fix to not display anything when nothing is selected, TODO in FUTURE:refactor with above else,check if filters is empty */
-        // if (_tags.length > 0  || _filters.length > 0) {
-        //     bodyString = bodyString + ',';
-        // }
-        //
-        // bodyString = bodyString + '{"bool": {' +
-        //     '"must_not": [' +
-        //     '{"match_all": {}}';
-        //
-        // bodyString = bodyString + '] }}';
-        // /* end of fix */
-        //
-        // bodyString = bodyString + '] } }] } }';
-        //
-        // bodyString = bodyString + ',' +
-        //     '"aggs": {' +
-        //     '"dates": {' +
-        //     '"date_histogram": {' +
-        //     '"field": "@timestamp",' +
-        //     '"interval": "' + this.frequency + '"' +
-        //     '}' +
-        //     '}' +
-        //     '}';
-        // bodyString += '}';
-        // return bodyString;
-
-    }
-
-    getComputationFilterString(computation: ComputationModel) {
-        const appliedFilters = [];
-        let filter: FilterModel;
-        for (filter of Array.from(computation.filters)) {
-            if (filter.isSelected) {
-                appliedFilters.push(this.applyFilter(filter.json, filter.params));
-            }
-        }
-        return this.getFilterCombination(appliedFilters);
-    }
-
-    applyFilter(filter: string, params: FilterParamModel[]) {
-        let result = filter;
-        for (const param of params) {
-            result = result.replace('${{' + param.name + '}}$', param.value);
-        }
-        return result;
-    }
-
-    getFilterCombination(filters: string[]) {
-        let result = '{"bool": {"must":[';
-        result += filters.join(', ');
-        result += ']}}';
-        return result;
-    }
-
-    getGraphFilterFromMactimeType(mactime_type: string) {
-        let query = '';
-        query += '{';
-        query += '"match": {';
-        query += '"Type": "' + mactime_type + '"';
-        query += '}';
-        query += '}';
-
-        return query;
-    }
-
-    getMatchStringFromTags(clusters: string[]) {
-        const result = [];
-
-        for (let i = 0; i < clusters.length; i++) {
-            let query = '';
-            query += '{'; // start of cluster substracted selection
-            query += '"match": {'; // start of match in cluster substracted selection
-            query += '"tags.keyword": "' + clusters[i] + '"';
-            query += '}'; // end of match in cluster substracted selection
-            query += '}'; // end of cluster substracted selection
-
-            result.push(query);
-
-        }
-        return result;
-    }
-
-    getMatchStringFromCase(case_name: string) {
-        let query = '';
-        query += '{'; // start of match
-        query += '"match": {'; // start of match in case selection
-        query += '"case.keyword": "' + case_name + '"';
-        query += '}'; // end of match in case selection
-        query += '}'; // end of match
-
-        return query;
-
     }
 }

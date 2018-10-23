@@ -68,7 +68,7 @@ export class ElasticsearchBaseQueryManager {
             if (additional_filters !== undefined) {
                 must_params.push(...additional_filters);
             }
-            if (graph_filter !== undefined) {
+            if (graph_filter !== undefined && graph_filter !== null) {
                 must_params.push(graph_filter);
             }
 
@@ -190,6 +190,9 @@ export class ElasticsearchBaseQueryManager {
     }
 
     getGraphFilterFromMactimeType(mactime_type: string) {
+        if (mactime_type ==  null) {
+            return null;
+        }
         let query = '';
         query += '{';
         query += '"match": {';
