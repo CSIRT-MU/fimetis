@@ -78,7 +78,6 @@ export class GraphManager {
 
 
     async getData(mactime_type): Promise<any> {
-        console.log('clusters ', this._clusters);
         await this.getFrequency();
         const queryString = this.buildQuery(mactime_type);
         const promise = new Promise((resolve, reject) => {
@@ -106,8 +105,6 @@ export class GraphManager {
 
         first = await this.getFirstOrLast('asc');
         last = await this.getFirstOrLast('desc');
-        console.log('first ' + first);
-        console.log('last ' +  last);
 
         let graphFrequency = 'day';
         if (first !== 0 && last !== 0 && first !== undefined && last !== undefined) {
@@ -127,7 +124,6 @@ export class GraphManager {
         } else {
             graphFrequency = 'day';
         }
-        console.log('frequency', graphFrequency);
         this._frequency = graphFrequency;
     }
 
@@ -142,7 +138,6 @@ export class GraphManager {
                 response => {
                     if (response.hits.total !== 0) {
                         entry = response.hits.hits[0]._source['@timestamp'];
-                        console.log('Getting first single entry by ' + ascOrDesc + ' ' + entry);
                     } else {
                         entry = 0;
                     }
@@ -156,65 +151,60 @@ export class GraphManager {
 
 
     buildFirstOrLastQuery(first_or_last, mactime_type) {
-        let query = '{'; // start of all query string
-        query += '"from": 0';
-        query += ',';
-        query += '"size": 1';
-        query += ',';
+        let first_or_lastquery = '{'; // start of all query string
+        first_or_lastquery += '"from": 0';
+        first_or_lastquery += ',';
+        first_or_lastquery += '"size": 1';
+        first_or_lastquery += ',';
 
-        query += this.elasticsearchBaseQueryManager.getBaseQueryString(
+        first_or_lastquery += this.elasticsearchBaseQueryManager.getBaseQueryString(
             this.case,
             this.clusters,
             this.additionalFilters,
             this.elasticsearchBaseQueryManager.getGraphFilterFromMactimeType(mactime_type));
 
-        query += ','; // separator between query and sort
-        query += '"sort": ['; // begin of sort field
-        query += '{'; // begin of sort parametr
+        first_or_lastquery += ','; // separator between query and sort
+        first_or_lastquery += '"sort": ['; // begin of sort field
+        first_or_lastquery += '{'; // begin of sort parametr
 
-        query += '"@timestamp": ';
+        first_or_lastquery += '"@timestamp": ';
 
-        query += '{'; // begin of sort order
-        query += '"order": "' + first_or_last + '"'; // Adding sorting order
-        query += '}'; // end of sorting order
-        query += '}'; // end of sort parametr
-        query += ']'; // end of sort field
-        query += '}'; // end of all string
+        first_or_lastquery += '{'; // begin of sort order
+        first_or_lastquery += '"order": "' + first_or_last + '"'; // Adding sorting order
+        first_or_lastquery += '}'; // end of sorting order
+        first_or_lastquery += '}'; // end of sort parametr
+        first_or_lastquery += ']'; // end of sort field
+        first_or_lastquery += '}'; // end of all string
 
-        return query;
+        return first_or_lastquery;
 
 
     }
 
     buildQuery(mactime_type) {
-        let query = '{'; // start of all query string
+        let builded_query = '{'; // start of all query string
 
-        console.log('test', this.elasticsearchBaseQueryManager.getGraphFilterFromMactimeType(mactime_type));
         // get the base query string
-        query += this.elasticsearchBaseQueryManager.getBaseQueryString(
+        builded_query += this.elasticsearchBaseQueryManager.getBaseQueryString(
             this.case,
             this.clusters,
             this.additionalFilters,
             this.elasticsearchBaseQueryManager.getGraphFilterFromMactimeType(mactime_type));
 
-        query += ','; // separator between query and aggs
-        query += '"aggs": {'; // start of aggregation
-        query += '"dates": {'; // start of dates
-        query += '"date_histogram": {'; // start of date histogram
-        query += '"field": "@timestamp"';
-        query += ','; // separator between field and interval
-        query += '"interval": "' + this._frequency + '"';
+        builded_query += ','; // separator between query and aggs
+        builded_query += '"aggs": {'; // start of aggregation
+        builded_query += '"dates": {'; // start of dates
+        builded_query += '"date_histogram": {'; // start of date histogram
+        builded_query += '"field": "@timestamp"';
+        builded_query += ','; // separator between field and interval
+        builded_query += '"interval": "' + this._frequency + '"';
 
-        query += '}'; // end of histogram
-        query += '}'; // end of dates
-        query += '}'; // end of aggregations
+        builded_query += '}'; // end of histogram
+        builded_query += '}'; // end of dates
+        builded_query += '}'; // end of aggregations
 
+        builded_query += '}'; // end of all string
 
-
-        query += '}'; // end of all string
-
-        console.log(query);
-
-        return query;
+        return builded_query;
     }
 }
