@@ -53,8 +53,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   additionalFilters: Map<string, string> = new Map<string, string>();
 
   tableSelection = new SelectionModel<any>(true, []);
-  availableTableColumns = ['select', 'doctype', 'mode', 'timestamp', 'name', 'type', 'size', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
-  displayedTableColumns = ['select', 'doctype', 'mode', 'timestamp', 'name', 'type', 'size', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
+  availableTableColumns = ['select', 'doctype', 'name', 'timestamp', 'type', 'mode', 'size', 'inode', 'uid', 'gid', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
+  displayedTableColumns = ['select', 'doctype', 'name', 'timestamp', 'type', 'mode', 'size', 'inode', 'uid', 'gid'];
   data: any[];
 
   selected_rows_id: Set<string> = new Set<string>();

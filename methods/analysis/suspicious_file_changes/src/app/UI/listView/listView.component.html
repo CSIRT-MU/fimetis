@@ -10,24 +10,25 @@
   <!--</div>-->
 <!--</div>-->
 <div class="col-md-12">
-    <div class="col-md-4">
+    <div class="col-md-5">
         <span class="text-gray title"><h4>Interactive List View</h4></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}" (click)="tablePanelOpenState = !tablePanelOpenState"></span>
+    </div>
+    <div class="col-md-7 table-controls">
+      <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
+        <input type="text" name="searchString" [(ngModel)]="searchString" class="search-field">
+      </form>
+      <span class="glyphicon glyphicon-option-vertical settings-menu-button" [matMenuTriggerFor]="settingsMenu"></span>
+      <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">
+        <button mat-menu-item (click)="editTableColumns()">
+          <span>Edit table columns</span>
+        </button>
+      </mat-menu>
     </div>
 </div>
 <!--<div class="col-md-12">-->
 
   <!--<div class="col-md-8 table-controls">-->
-    <!--<div>-->
-      <!--<form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">-->
-        <!--<input type="text" name="searchString" [(ngModel)]="searchString" class="search-field">-->
-      <!--</form>-->
-      <!--<span class="glyphicon glyphicon-option-vertical settings-menu-button" [matMenuTriggerFor]="settingsMenu"></span>-->
-      <!--<mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">-->
-        <!--<button mat-menu-item (click)="editTableColumns()">-->
-          <!--<span>Edit table columns</span>-->
-        <!--</button>-->
-      <!--</mat-menu>-->
-    <!--</div>-->
+
     <!--<div class="table-radio-type">-->
       <!--<input type="radio" class="timesix-radio" name="table-type" id="clusters-radio" [checked]="tableDisplayType == 'clusters'" (click)="tableDisplayType = 'clusters'" />-->
       <!--<label for="clusters-radio">group by clusters</label>-->
@@ -164,16 +165,25 @@
     </div>
     <div>
       <div class="table-select"></div>
-      <div class="table-block small-table-block glyphicon glyphicon-file"></div>
-      <div class="table-block large-table-block">File Name</div>
-      <div class="table-block medium-table-block">Timestamp</div>
-      <div class="table-block medium-table-block">Type</div>
+      <div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>
+      <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">File Name</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">Timestamp</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">Type</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">Mode</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">Size</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('inode') !== -1">I-node</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('uid') !== -1">UID</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('gid') !== -1">GID</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('M-Time') !== -1">M-Time</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('A-Time') !== -1">A-Time</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">C-Time</div>
+      <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">B-Time</div>
     </div>
     <virtual-scroller style="scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
         <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData">
           <div class="table-select" [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}" (click)="tableSelect(element._id)"></div>
-          <div *ngIf="element._source['Mode'] != null" class="table-block small-table-block">
+          <div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">
                 <span [ngSwitch]="element._source['Mode'][2]">
                   <span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>
                   <span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>
@@ -181,9 +191,18 @@
                   <span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>
                 </span>
               </div>
-          <div class="table-block large-table-block">{{element['_source']['File Name']}}</div>
-          <div class="table-block medium-table-block">{{element._source['@timestamp'] | date:'dd.MM.yyyy'}}</div>
-          <div class="table-block medium-table-block">{{element._source.Type}}</div>
+          <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">{{element['_source']['File Name']}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">{{element._source['@timestamp'] | date:'dd.MM.yyyy'}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">{{element._source.Type}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">{{element._source.Mode}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">{{element._source.Size}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('inode') !== -1">{{element._source.Meta}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('uid') !== -1">{{element._source.UID}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('gid') !== -1">{{element._source.GID}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('M-Time') !== -1">{{element._source.Type.includes('m') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('A-Time') !== -1">{{element._source.Type.includes('a') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">{{element._source.Type.includes('c') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+          <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">{{element._source.Type.includes('b') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
         </div>
       </div>
 
