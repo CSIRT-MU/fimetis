@@ -73,6 +73,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadedRequestedBegin: number;
   preloadedEnd;
   preloadVisibleStart = 0;
+  preloadedBufferSize = 300; // buffer window size
+  preloadBufferOffset = 150; // shift of buffer window
+  preloadBufferBorder = 50; // when to trigger buffer shift (to the end of buffer window)
 
   loadingData = false;
 
@@ -179,16 +182,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  init() {
-    this.initDataSet();
-    // this.initGraph();
-  }
-
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
 
-  initDataSet() {
+  init() {
     this.loadingData = true;
     // if (this.type === 'aggregated-mactimes') {
     //   this.es.getAggregatedPage(
@@ -254,77 +252,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
             this.loadingData = false;
             this.visibleData = this.data;
           });
-  }
-
-  initGraph() {
-    let first;
-    let last;
-    const one_day = 1000 * 60 * 60 * 24;
-    this.es.getFilteredPage(
-      this.index,
-      this.type,
-      this.case,
-      1,
-      0,
-      this.filter,
-      this.displayedClusters,
-      'timestamp',
-      'asc',
-      Array.from(this.additionalFilters.values())
-    ).then(
-      response => {
-        if (response.hits.total !== 0) {
-          first = response.hits.hits[0]._source['@timestamp'];
-        } else {
-          first = 0;
-        }
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Graph frequency computed first step!');
-      this.es.getFilteredPage(
-        this.index,
-        this.type,
-        this.case,
-        1,
-        0,
-        this.filter,
-        this.displayedClusters,
-        'timestamp',
-        'desc',
-        Array.from(this.additionalFilters.values())
-      ).then(
-        response => {
-          if (response.hits.total !== 0) {
-            last = response.hits.hits[0]._source['@timestamp'];
-          } else {
-            last = 0;
-          }
-          if (first !== 0 && last !== 0) {
-            const diff = (new Date(last).getTime() - new Date(first).getTime()) / one_day;
-            if (diff > 365) {
-              this.graphFrequency = 'day';
-            }
-            if (diff <= 365 && diff > 60) {
-              this.graphFrequency = 'hour';
-            }
-            if (diff <= 60 && diff > 30) {
-              this.graphFrequency = 'minute';
-            }
-            if (diff <= 30) {
-              this.graphFrequency = 'second';
-            }
-          } else {
-            this.graphFrequency = 'day';
-          }
-          this.showGraph._frequency = this.graphFrequency;
-          this.showGraph.ngOnInit();
-        }, error => {
-          console.error(error);
-        }).then(() => {
-        console.log('Graph frequency computed with frequency: ', this.graphFrequency);
-      });
-    });
   }
 
   showNextPage() {
@@ -467,7 +394,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     }
     this.pageSortString = pageSort;
     this.pageSortOrder = $event['direction'];
-    this.initDataSet();
+    this.init();
   }
 
   searchByString() {
@@ -527,21 +454,21 @@ export class ListViewComponent implements OnInit, OnDestroy {
             (end - (this.preloadedBegin) + 1)
           );
           console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
-          if ((start - this.preloadedBegin < 20) && (start > 20)) {
-            const begVal = start - 40 < 0 ? 0 : start - 40;
-            this.preloadData(begVal, 100, null, null, false);
+          if ((start - this.preloadedBegin < this.preloadBufferBorder) && (start > this.preloadBufferBorder)) {
+            const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
+            this.preloadData(begVal, this.preloadedBufferSize, null, null, false);
           }
-          if (this.preloadedEnd - end < 20 && this.preloadedEnd < this.total) {
-            const begVal = start - 40 < 0 ? 0 : start - 40;
-            this.preloadData(begVal, 100, null, null, false);
+          if (this.preloadedEnd - end < this.preloadBufferBorder && this.preloadedEnd < this.total) {
+            const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
+            this.preloadData(begVal, this.preloadedBufferSize, null, null, false);
           }
         } else {
           if (end > this.preloadedEnd) {
-            const begVal = end - 60 < 0 ? 0 : end - 60;
-            this.preloadData(begVal, 100, start, end, true);
+            const begVal = end - (this.preloadedBufferSize - this.preloadBufferOffset) < 0 ? 0 : end - (this.preloadedBufferSize - this.preloadBufferOffset);
+            this.preloadData(begVal, this.preloadedBufferSize, start, end, true);
           } else {
-            const begVal = start - 40 < 0 ? 0 : start - 40;
-            this.preloadData(begVal, 100, start, end, true);
+            const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
+            this.preloadData(begVal, this.preloadedBufferSize, start, end, true);
           }
         }
     }
