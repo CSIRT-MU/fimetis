@@ -178,6 +178,7 @@
       <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('A-Time') !== -1">A-Time</div>
       <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">C-Time</div>
       <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">B-Time</div>
+      <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('id') !== -1">ID</div>
     </div>
     <virtual-scroller style="scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
@@ -191,7 +192,7 @@
                   <span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>
                 </span>
               </div>
-          <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">{{element['_source']['File Name']}}</div>
+          <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">{{element['_source']['File Name'].length > 43 ? element['_source']['File Name'].substr(0, 10) + '...' + element['_source']['File Name'].substr(-30, 30)  : element['_source']['File Name'] }}</div>
           <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">{{element._source['@timestamp'] | date:'dd.MM.yyyy'}}</div>
           <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">{{element._source.Type}}</div>
           <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">{{element._source.Mode}}</div>
@@ -203,6 +204,7 @@
           <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('A-Time') !== -1">{{element._source.Type.includes('a') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
           <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">{{element._source.Type.includes('c') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
           <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">{{element._source.Type.includes('b') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+          <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('id') !== -1">{{element._id}}</div>
         </div>
       </div>
 
