@@ -407,7 +407,7 @@ export class DashboardComponent implements OnInit {
   addComputation() {
       const dialogRef = this.dialog.open(ComputationDialogComponent, {
           width: '350px',
-          data: {title: 'Create new computation',
+          data: {title: 'Create new clustering',
               namePlaceholder: 'Type new clustering\'s name',
               colorPlaceHolder: 'Select clustering color'
           }

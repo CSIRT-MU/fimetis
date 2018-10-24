@@ -78,9 +78,8 @@ export class GraphManager {
 
 
     async getData(mactime_type): Promise<any> {
-        console.log('clusters ' + this._clusters);
-        let frequency;
-        frequency = await this.getFrequency();
+        console.log('clusters ', this._clusters);
+        await this.getFrequency();
         const queryString = this.buildQuery(mactime_type);
         const promise = new Promise((resolve, reject) => {
             this.es.runQuery(this._index, this._type, queryString)
@@ -129,7 +128,7 @@ export class GraphManager {
             graphFrequency = 'day';
         }
         console.log('frequency', graphFrequency);
-        this.frequency = graphFrequency;
+        this._frequency = graphFrequency;
     }
 
 
@@ -144,10 +143,10 @@ export class GraphManager {
                     if (response.hits.total !== 0) {
                         entry = response.hits.hits[0]._source['@timestamp'];
                         console.log('Getting first single entry by ' + ascOrDesc + ' ' + entry);
-                        resolve(entry);
                     } else {
                         entry = 0;
                     }
+                    resolve(entry);
                 }
             );
         });
@@ -190,6 +189,7 @@ export class GraphManager {
     buildQuery(mactime_type) {
         let query = '{'; // start of all query string
 
+        console.log('test', this.elasticsearchBaseQueryManager.getGraphFilterFromMactimeType(mactime_type));
         // get the base query string
         query += this.elasticsearchBaseQueryManager.getBaseQueryString(
             this.case,
@@ -203,7 +203,7 @@ export class GraphManager {
         query += '"date_histogram": {'; // start of date histogram
         query += '"field": "@timestamp"';
         query += ','; // separator between field and interval
-        query += '"interval": "' + 'day' + '"';
+        query += '"interval": "' + this._frequency + '"';
 
         query += '}'; // end of histogram
         query += '}'; // end of dates

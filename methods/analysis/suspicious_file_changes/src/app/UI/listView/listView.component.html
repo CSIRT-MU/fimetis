@@ -166,7 +166,7 @@
       <div class="table-select"></div>
       <div class="table-block small-table-block glyphicon glyphicon-file"></div>
       <div class="table-block large-table-block">File Name</div>
-      <div class="table-block large-table-block">Timestamp</div>
+      <div class="table-block medium-table-block">Timestamp</div>
       <div class="table-block medium-table-block">Type</div>
     </div>
     <virtual-scroller style="scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
@@ -182,7 +182,7 @@
                 </span>
               </div>
           <div class="table-block large-table-block">{{element['_source']['File Name']}}</div>
-          <div class="table-block large-table-block">{{element._source['@timestamp'] | date:'dd.MM.yyyy'}}</div>
+          <div class="table-block medium-table-block">{{element._source['@timestamp'] | date:'dd.MM.yyyy'}}</div>
           <div class="table-block medium-table-block">{{element._source.Type}}</div>
         </div>
       </div>

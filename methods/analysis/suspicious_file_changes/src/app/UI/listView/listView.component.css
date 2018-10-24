@@ -120,6 +120,8 @@ virtual-scroll {
   overflow: hidden;
   height: 20px;
   text-wrap: none;
+  margin-left: 2px;
+  margin-right: 2px;
 }
 
 .small-table-block{
