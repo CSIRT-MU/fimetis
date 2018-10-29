@@ -237,6 +237,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     //   });
     // }
       this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
+      console.log(this.clusterManager.additional_filters);
       this.clusterManager.case = this.case;
       console.log('list clust', this.clusters);
       this.clusterManager.clusters = this.clusters;
@@ -401,10 +402,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
     console.log('search', this.searchString);
     if  (this.searchString !== '')  {
       this.additionalFilters.set('searchString', this.fs.buildAdditionSearchFilter(this.searchString));
-      this.loadPage(this.pageEvent);
+      // this.loadPage(this.pageEvent);
+      this.init();
     } else if (this.additionalFilters.has('searchString')) {
       this.additionalFilters.delete('searchString');
-      this.loadPage(this.pageEvent);
+      // this.loadPage(this.pageEvent);
+      this.init();
     }
   }
 

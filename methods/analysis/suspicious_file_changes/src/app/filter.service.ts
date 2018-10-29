@@ -65,10 +65,10 @@ export class FilterService {
   }
 
   buildAdditionSearchFilter(searchString: string) {
-    return '"multi_match": {' +
+    return '{"multi_match": {' +
         '"query": "' + searchString + '",' +
         '"fields": ["File Name", "Size"]' +
-      '}';
+      '}}';
   }
 
   buildAdditionRangeFilter(from: string, to: string) {
