@@ -76,20 +76,20 @@ export class DashboardComponent implements OnInit {
         this.baseManager = new BaseManager(this.es);
 
         // test only
-          const comp = new ComputationModel();
-          comp.color = '#336699';
-          comp.name = 'test';
-          const filt = new FilterModel();
-          filt.name = 'test_filter';
-          filt.isSelected = true;
-          comp.filters.add(filt);
-          const comp2 = new ComputationModel();
-          comp2.color = '#cc0000';
-          comp2.name = 'test2';
-          comp2.isSelected = false;
-          this.computations.add(comp);
-          this.computations.add(comp2);
-          this.pickedComputation = comp;
+        //   const comp = new ComputationModel();
+        //   comp.color = '#336699';
+        //   comp.name = 'test';
+        //   const filt = new FilterModel();
+        //   filt.name = 'test_filter';
+        //   filt.isSelected = true;
+        //   comp.filters.add(filt);
+        //   const comp2 = new ComputationModel();
+        //   comp2.color = '#cc0000';
+        //   comp2.name = 'test2';
+        //   comp2.isSelected = false;
+        //   this.computations.add(comp);
+        //   this.computations.add(comp2);
+        //   this.pickedComputation = comp;
     }
 
     ngOnInit() {
@@ -466,6 +466,15 @@ export class DashboardComponent implements OnInit {
         this.selectedFilterModel = filter;
         this.pickedComputation = computation;
         this.selectedFilter = filter.name;
+        this.filterPanelOpenState = true;
+        this.collapse();
+    }
+
+    copyFilter(filter: FilterModel) {
+        this.selectedFilterModel = JSON.parse(JSON.stringify(filter));
+        this.selectedFilter = this.selectedFilterModel.name;
+        this.filterPanelOpenState = true;
+        this.collapse();
     }
 
     computeComputations() {
