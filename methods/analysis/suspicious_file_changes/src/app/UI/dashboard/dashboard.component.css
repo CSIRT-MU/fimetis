@@ -157,6 +157,7 @@ mat-chip{
 }
 
 .computation-filter{
+    position: relative;
     display: inline-block;
     background-color: #fefefe;
     border-radius: 25px;
@@ -167,6 +168,56 @@ mat-chip{
     cursor: pointer;
 }
 
+.computation-filter .text{
+    display: inline-block;
+    margin-right: 5px;
+    min-width: 65px;
+}
+
+.computation-filter:hover {
+    background-color: #333333;
+}
+
+.computation-filter:hover > .text{
+    opacity: 0.6;
+}
+
+.computation-filter:hover > .icon1,
+.computation-filter:hover > .icon2,
+.computation-filter:hover > .icon3 {
+    display: inline-block;
+    color: #e4e4e4;
+}
+
+.computation-filter:hover .filter-circle{
+    border-color: #e4e4e4;
+}
+
+.computation-filter:hover .filter-circle-full:before{
+    background-color: #e4e4e4;
+}
+
+.computation-filter .icon1,
+.computation-filter .icon2,
+.computation-filter .icon3{
+    display: none;
+    position: absolute;
+    margin-top: 3px;
+    z-index: 500;
+}
+
+.computation-filter .icon1{
+    left: 10%;
+}
+
+.computation-filter .icon2{
+    left: 35%;
+}
+
+.computation-filter .icon3{
+    left: 60%;
+}
+
 .filter-circle{
     display: inline-block;
     border-radius: 50%;
@@ -174,6 +225,7 @@ mat-chip{
     width: 16px;
     margin-bottom: -4px;
     border: 2px solid #666666;
+    z-index: 500;
 }
 
 .filter-circle-full:before{

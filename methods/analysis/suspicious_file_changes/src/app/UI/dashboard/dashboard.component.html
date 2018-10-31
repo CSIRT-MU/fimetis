@@ -79,10 +79,11 @@
             <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
           </span>
           <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true" (dragstart)="dragFilter($event, filter, comp)" (click)="filter.isSelected = !filter.isSelected">
-            {{filter.name}}
+            <span class="text">{{filter.name}}</span>
+            <span class="icon1 glyphicon glyphicon-pencil" (click)="editFilter(filter, comp)"></span><span class="icon2 glyphicon glyphicon glyphicon-new-window"></span><span class="icon3 glyphicon glyphicon-trash" (click)="deleteFilter(filter, comp)"></span>
             <div [ngClass]="{'filter-circle-full': filter.isSelected}" class="filter-circle filter-circle-full"></div>
           </div>
-          <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
+            <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
         </div>
       </div>
     </div>

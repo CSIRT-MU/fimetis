@@ -76,16 +76,20 @@ export class DashboardComponent implements OnInit {
         this.baseManager = new BaseManager(this.es);
 
         // test only
-        //   const comp = new ComputationModel();
-        //   comp.color = '#336699';
-        //   comp.name = 'test';
-        //   const comp2 = new ComputationModel();
-        //   comp2.color = '#cc0000';
-        //   comp2.name = 'test2';
-        //   comp2.isSelected = false;
-        //   this.computations.add(comp);
-        //   this.computations.add(comp2);
-        //   this.pickedComputation = comp;
+          const comp = new ComputationModel();
+          comp.color = '#336699';
+          comp.name = 'test';
+          const filt = new FilterModel();
+          filt.name = 'test_filter';
+          filt.isSelected = true;
+          comp.filters.add(filt);
+          const comp2 = new ComputationModel();
+          comp2.color = '#cc0000';
+          comp2.name = 'test2';
+          comp2.isSelected = false;
+          this.computations.add(comp);
+          this.computations.add(comp2);
+          this.pickedComputation = comp;
     }
 
     ngOnInit() {
@@ -184,8 +188,10 @@ export class DashboardComponent implements OnInit {
         //   // this.combineSelectedFilters();
         // }
         if (this.pickedComputation != null) {
-            this.selectedFilterModel.isSelected = true;
-            this.pickedComputation.filters.add(this.selectedFilterModel);
+            if (!this.pickedComputation.filters.has(this.selectedFilterModel)) {
+                this.selectedFilterModel.isSelected = true;
+                this.pickedComputation.filters.add(this.selectedFilterModel);
+            }
         }
         this.selectedFilterModel = new FilterModel();
         this.selectedFilter = null;
@@ -450,6 +456,16 @@ export class DashboardComponent implements OnInit {
 
     elementResized($event) {
         console.log($event, 'resized');
+    }
+
+    deleteFilter(filter: FilterModel, computation: ComputationModel) {
+        computation.filters.delete(filter);
+    }
+
+    editFilter(filter: FilterModel, computation: ComputationModel) {
+        this.selectedFilterModel = filter;
+        this.pickedComputation = computation;
+        this.selectedFilter = filter.name;
     }
 
     computeComputations() {
