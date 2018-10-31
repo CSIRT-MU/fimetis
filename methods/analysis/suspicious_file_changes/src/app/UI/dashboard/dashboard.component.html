@@ -1,7 +1,7 @@
 <div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
     <div class="grid-filter panel">
         <div class="col-md-12 panel-header">
-          <span><b>FILTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState"></span>
+          <span><b>FILTERS</b></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}" (click)="filterPanelOpenState = !filterPanelOpenState; collapse()"></span>
         </div>
         <div class="col-md-12">
           <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}" class="panel-content col-md-12">
@@ -64,7 +64,7 @@
 </div>
 <div class="grid-computation panel">
     <div class="col-md-12 panel-header">
-      <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState"></span>
+      <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState; collapse()"></span>
       <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
         <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
             <span (click)="comp.isSelected = !comp.isSelected">
@@ -100,8 +100,8 @@
 </div>
 <div class="grid-main">
 
-<app-graph [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)">
+<app-graph class="graph-block" [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)" (openStateChange)="histogramPanelOpenState = $event; collapse()">
 </app-graph>
-<app-list-view (graphChangedBoundary)="changeDateBoundary($event)"></app-list-view>
+<app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"></app-list-view>
 </div>
 </div>

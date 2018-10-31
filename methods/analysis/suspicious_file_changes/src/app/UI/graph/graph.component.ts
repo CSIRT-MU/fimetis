@@ -19,6 +19,7 @@ export class GraphComponent implements OnInit {
   @Input() _clusters: ClusterModel[] = [];
   @Input() _frequency: string;
   @Output() getDateChange = new EventEmitter<boolean>();
+  @Output() openStateChange = new EventEmitter<boolean>();
   @Input() fromDate: Date;
 
   @ViewChild('graph') private chartElement: ElementRef;
@@ -245,5 +246,10 @@ export class GraphComponent implements OnInit {
       this.graphPlot.layout.xaxis.range[1] = dateString;
       this.graphPlot.layout.dataversion += 1;
       console.log('setup xaxis [1]', this.graphPlot.layout.xaxis.range[1]);
+  }
+
+  collapseGraphPanel() {
+      this.graphPanelOpenState = !this.graphPanelOpenState;
+      this.openStateChange.emit(this.graphPanelOpenState);
   }
 }

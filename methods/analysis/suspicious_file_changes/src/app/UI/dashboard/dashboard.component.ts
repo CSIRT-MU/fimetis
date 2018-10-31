@@ -34,6 +34,7 @@ export class DashboardComponent implements OnInit {
     filterPanelOpenState = true;
     computationPanelOpenState = true;
     clusterPanelOpenState = true;
+    histogramPanelOpenState = true;
 
     cases: any[];
     selectedCase: string;
@@ -58,7 +59,7 @@ export class DashboardComponent implements OnInit {
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
 
     @ViewChild(ListViewComponent)
-    metadataView: ListViewComponent;
+    listViewComponent: ListViewComponent;
 
     @ViewChild(GraphComponent)
     graphComponent: GraphComponent;
@@ -88,9 +89,9 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.metadataView.displayedClusters = this.selectedStoredClusters;
+        this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.graphComponent._clusters = this.getClusters();
-        this.metadataView.clusters = this.getClusters();
+        this.listViewComponent.clusters = this.getClusters();
 
         this.baseManager.getCases(this.index, this.type).then(
         response => {
@@ -117,11 +118,11 @@ export class DashboardComponent implements OnInit {
     }
 
     selectedCaseChanged() {
-        this.metadataView.case = this.selectedCase;
-        this.metadataView.displayedClusters = [];
+        this.listViewComponent.case = this.selectedCase;
+        this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
         this.loadStoredClusters();
-        this.metadataView.init();
+        this.listViewComponent.init();
     }
 
     loadStoredClusters() {
@@ -216,13 +217,13 @@ export class DashboardComponent implements OnInit {
             this.combinedFilter = null;
         }
         console.log(resFilter);
-        this.metadataView.index = this.index;
-        this.metadataView.type = this.type;
-        this.metadataView.case = this.selectedCase;
-        this.metadataView.filter = this.combinedFilter;
-        this.metadataView.displayedClusters = this.selectedStoredClusters;
-        this.metadataView.computations = Array.from(this.computations);
-        this.metadataView.init();
+        this.listViewComponent.index = this.index;
+        this.listViewComponent.type = this.type;
+        this.listViewComponent.case = this.selectedCase;
+        this.listViewComponent.filter = this.combinedFilter;
+        this.listViewComponent.displayedClusters = this.selectedStoredClusters;
+        this.listViewComponent.computations = Array.from(this.computations);
+        this.listViewComponent.init();
 
         // TODO WARNING - only one cluster at a time
         this.computedClusters.clear();
@@ -236,26 +237,26 @@ export class DashboardComponent implements OnInit {
     setComputedClusters($event) {
         this.selectedComputedClusters = $event;
         if (this.selectedComputedClusters.length > 0) {
-            this.metadataView.filter = this.combinedFilter;
-            this.metadataView.init();
+            this.listViewComponent.filter = this.combinedFilter;
+            this.listViewComponent.init();
         } else {
-            this.metadataView.filter = null;
-            this.metadataView.init();
+            this.listViewComponent.filter = null;
+            this.listViewComponent.init();
         }
     }
 
     clusterSelectionChanged($event) {
         console.log(this.clusters);
-        this.metadataView.clusters = this.getClusters();
+        this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
-        this.metadataView.init();
+        this.listViewComponent.init();
         this.graphComponent.init();
     }
 
     setStoredClusters($event) {
         this.selectedStoredClusters = $event;
-        this.metadataView.displayedClusters =  this.selectedStoredClusters;
-        this.metadataView.init();
+        this.listViewComponent.displayedClusters =  this.selectedStoredClusters;
+        this.listViewComponent.init();
     }
 
     // TODO save more tags - now only one combined filter is used - solved in cluster manager method (need to test it)
@@ -284,8 +285,8 @@ export class DashboardComponent implements OnInit {
     }
 
     deleteSelectedStoredClusters() {
-        this.metadataView.displayedClusters = [];
-        this.metadataView.init();
+        this.listViewComponent.displayedClusters = [];
+        this.listViewComponent.init();
         for (const cluster of this.selectedStoredClusters) {
             this.es.removeTag(
             this.index,
@@ -315,7 +316,7 @@ export class DashboardComponent implements OnInit {
         const dialogRef = this.dialog.open(NameDialogComponent, {
             width: '350px',
             data: {title: 'Create new cluster',
-            itemsNumber: this.metadataView.tableSelection.selected.length,
+            itemsNumber: this.listViewComponent.tableSelection.selected.length,
             placeholder: 'Type new cluster\'s name'}
         });
 
@@ -324,9 +325,9 @@ export class DashboardComponent implements OnInit {
         if (result != null) {
             const params = [];
             const values = [];
-            for (let index = 0; index < this.metadataView.tableSelection.selected.length; index++) {
+            for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
                 params.push('_id');
-                values.push(this.metadataView.tableSelection.selected[index]._id);
+                values.push(this.listViewComponent.tableSelection.selected[index]._id);
             }
         let filter = this.fs.buildShouldMatchFilter(params, values);
         console.log(filter);
@@ -348,7 +349,7 @@ export class DashboardComponent implements OnInit {
             console.log('Tag saved');
         });
         this.storedClusters.add((namePrefix + result));
-        this.metadataView.tableSelection.clear();
+        this.listViewComponent.tableSelection.clear();
         }
         });
     }
@@ -357,7 +358,7 @@ export class DashboardComponent implements OnInit {
         const dialogRef = this.dialog.open(NameDialogComponent, {
         width: '350px',
         data: {title: 'Create new filter',
-            itemsNumber: this.metadataView.tableSelection.selected.length,
+            itemsNumber: this.listViewComponent.tableSelection.selected.length,
             placeholder: 'Type new filter\'s name'}
         });
         dialogRef.afterClosed().subscribe(result => {
@@ -366,12 +367,12 @@ export class DashboardComponent implements OnInit {
                 const params = [];
                 const values = [];
                 const filterParams = [];
-                for (let index = 0; index < this.metadataView.tableSelection.selected.length; index ++) {
+                for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index ++) {
                     params.push('_id');
-                    values.push(this.metadataView.tableSelection.selected[index]._id);
+                    values.push(this.listViewComponent.tableSelection.selected[index]._id);
                     const filParam = new FilterParamModel();
                     filParam.name = '_id';
-                    filParam.value = this.metadataView.tableSelection.selected[index]._id;
+                    filParam.value = this.listViewComponent.tableSelection.selected[index]._id;
                     filterParams.push(filParam);
                 }
                 const filter = this.fs.buildShouldMatchFilter(params, values);
@@ -383,7 +384,7 @@ export class DashboardComponent implements OnInit {
                 this.appliedFilters.set(model.name, model);
                 this.selectedAppliedFilters.add(model.name);
                 this.appliedFiltersKeys.add(model.name);
-                this.metadataView.tableSelection.clear();
+                this.listViewComponent.tableSelection.clear();
                 this.combineSelectedFilters();
               }
         });
@@ -461,6 +462,26 @@ export class DashboardComponent implements OnInit {
             this.clusters.add(cluster);
             console.log('added/', cluster);
         }
+    }
+
+    collapse() {
+        console.log(this.filterPanelOpenState);
+        let height = 10;
+        if (!this.filterPanelOpenState) {
+            height += 20;
+        }
+        if (this.computationPanelOpenState) {
+            let index = 0;
+            height -= 2;
+            while (index < this.computations.size) {
+                height -= 2;
+                index++;
+            }
+        }
+        if (!this.histogramPanelOpenState) {
+            height += 42;
+        }
+        this.listViewComponent.resizeList(height);
     }
 
 }

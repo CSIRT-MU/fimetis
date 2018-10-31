@@ -180,7 +180,7 @@
       <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">B-Time</div>
       <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('id') !== -1">ID</div>
     </div>
-    <virtual-scroller style="scroll-snap-type: y mandatory;" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
+    <virtual-scroller [style.height.vh]="listViewScrollHeight" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
         <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData">
           <div class="table-select" [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}" (click)="tableSelect(element._id)"></div>

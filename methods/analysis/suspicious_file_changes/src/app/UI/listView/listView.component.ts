@@ -47,8 +47,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   tablePanelOpenState = true;
 
-  graphFrequency = 'day';
-
   searchString = '';
   additionalFilters: Map<string, string> = new Map<string, string>();
 
@@ -66,6 +64,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
 
   // Virtual scroll
+  listViewScrollHeight = 10;
   virtualArray: VirtualArrayModel = new VirtualArrayModel();
   visibleData: any[] = [];
   preloadedData: any[] = [];
@@ -237,13 +236,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
     //   });
     // }
       this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
-      console.log(this.clusterManager.additional_filters);
       this.clusterManager.case = this.case;
-      console.log('list clust', this.clusters);
       this.clusterManager.clusters = this.clusters;
       this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
           .then(resp => {
-            console.log('??? async called', resp, resp.data, resp.total);
+            console.log('list data loaded async', resp, resp.data, resp.total);
             this.data = resp.data;
             this.total = resp.total;
             this.preloadedData = resp.data;
@@ -402,11 +399,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
     console.log('search', this.searchString);
     if  (this.searchString !== '')  {
       this.additionalFilters.set('searchString', this.fs.buildAdditionSearchFilter(this.searchString));
-      // this.loadPage(this.pageEvent);
       this.init();
     } else if (this.additionalFilters.has('searchString')) {
       this.additionalFilters.delete('searchString');
-      // this.loadPage(this.pageEvent);
       this.init();
     }
   }
@@ -543,5 +538,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
     } else {
       this.selected_rows_id.add(id);
     }
+  }
+
+  resizeList(height) {
+    this.listViewScrollHeight = height;
   }
 }
