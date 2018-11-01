@@ -136,8 +136,12 @@ virtual-scroll {
   width: 100px;
 }
 
+.larger-table-block{
+    width: 140px;
+}
+
 .large-table-block{
-  width: 300px;
+  width: 500px;
 }
 
 .table-select{

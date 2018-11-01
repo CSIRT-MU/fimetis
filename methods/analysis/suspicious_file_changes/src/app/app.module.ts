@@ -25,6 +25,7 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu';
 import {VirtualScrollerModule} from 'ngx-virtual-scroller';
+import {MatTooltipModule} from '@angular/material';
 
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
@@ -35,6 +36,7 @@ import { ClusterComponent } from './UI/cluster/cluster.component';
 import { NameDialogComponent } from './UI/dialog/name-dialog/name-dialog.component';
 import { SelectDialogComponent } from './UI/dialog/select-dialog/select-dialog.component';
 import { ComputationDialogComponent } from './UI/dialog/computation-dialog/computation-dialog.component';
+import { ClusteringOverviewComponent } from './UI/clustering-overview/clustering-overview.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,8 @@ import { ComputationDialogComponent } from './UI/dialog/computation-dialog/compu
     ClusterComponent,
     NameDialogComponent,
     SelectDialogComponent,
-    ComputationDialogComponent
+    ComputationDialogComponent,
+    ClusteringOverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -76,7 +79,8 @@ import { ComputationDialogComponent } from './UI/dialog/computation-dialog/compu
     MatSortModule,
     MatDialogModule,
     MatMenuModule,
-    VirtualScrollerModule
+    VirtualScrollerModule,
+    MatTooltipModule
   ],
   entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
   providers: [ElasticsearchService],

@@ -14,6 +14,7 @@ import {GraphComponent} from '../graph/graph.component';
 import {ComputationManager} from '../../businessLayer/computationManager';
 import {GraphManager} from '../../businessLayer/graphManager';
 import {BaseManager} from '../../businessLayer/baseManager';
+import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -57,6 +58,7 @@ export class DashboardComponent implements OnInit {
 
     savedClusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
+    clusteringOverview: ClusteringOverviewModel[] = [];
 
     @ViewChild(ListViewComponent)
     listViewComponent: ListViewComponent;
@@ -481,6 +483,7 @@ export class DashboardComponent implements OnInit {
         console.log('compute');
         this.computationManager.case = this.selectedCase;
         this.computationManager.computations = Array.from(this.computations);
+        this.clusteringOverview = this.computationManager.getClusterings(this.index, this.type);
         const clusters = this.computationManager.getClusters(this.index, this.type);
         this.clusters.clear();
         for (const cluster of clusters) {

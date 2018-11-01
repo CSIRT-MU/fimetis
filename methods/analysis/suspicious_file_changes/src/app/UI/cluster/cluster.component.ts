@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
+import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 
 @Component({
   selector: 'app-cluster',
@@ -12,6 +13,8 @@ export class ClusterComponent implements OnInit {
   @ViewChild(MatSelectionList)
   clusterList: MatSelectionList;
 
+  @Input('clusteringOverview')
+  clusteringOverview: ClusteringOverviewModel[] = [];
   @Input('clusters')
   clusters: ClusterModel[] = [];
   @Output('selectionChanged')
