@@ -95,6 +95,10 @@
   background-color: #666666;
 }
 
+.clickable{
+  cursor: pointer;
+}
+
 .text-gray{
   color: #666666;
 }

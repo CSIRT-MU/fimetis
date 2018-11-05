@@ -63,25 +63,39 @@
         </div>
 </div>
 <div class="grid-computation panel">
-    <div class="col-md-12 panel-header">
-      <span><b>RUNTIME CLUSTERING</b></span><span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState; collapse()"></span>
-      <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
-        <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
-            <span (click)="comp.isSelected = !comp.isSelected">
-              <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
-            </span>
-        </div>
-      </span>
-        <button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>
+    <div class="panel-header">
+      <div class="col-md-3">
+      <span><b>RUNTIME CLUSTERING</b></span>
+      <span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span>
+      <span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState; collapse()"></span>
+      </div>
+      <div class="col-md-7">
+        <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
+          <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
+              <span (click)="comp.isSelected = !comp.isSelected">
+                <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
+                <span class="computation-name">{{comp.name}}</span>
+              </span>
+          </div>
+        </span>
+      </div>
+      <div class="col-md-2">
+        <div class="clickable" (click)="computeComputations()">Run all clustering <span class="glyphicon glyphicon-play"></span></div>
+        <!--<button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>-->
+      </div>
       <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}" class="panel-content col-md-12">
         <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)" (drop)="dropFilter($event, comp)">
           <span (click)="comp.isSelected = !comp.isSelected">
-            <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div><span class="computation-name">{{comp.name}}</span>
+            <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
+            <span class="computation-name">{{comp.name}}</span>
+            <span class="glyphicon glyphicon-play clickable" matTooltip="Run this clustering" [matTooltipPosition]="'below'" (click)="computeSelectedComputation(comp)"></span>
           </span>
           <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true" (dragstart)="dragFilter($event, filter, comp)">
             <span class="text">{{filter.name}}</span>
-            <span class="icon1 glyphicon glyphicon-pencil" (click)="editFilter(filter, comp)"></span><span class="icon2 glyphicon glyphicon glyphicon-new-window" (click)="copyFilter(filter)"></span><span class="icon3 glyphicon glyphicon-trash" (click)="deleteFilter(filter, comp)"></span>
-            <div [ngClass]="{'filter-circle-full': filter.isSelected}" class="filter-circle filter-circle-full" (click)="filter.isSelected = !filter.isSelected"></div>
+            <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'" (click)="editFilter(filter, comp)"></span>
+            <span class="icon2 glyphicon glyphicon glyphicon-new-window" matTooltip="copy" [matTooltipPosition]="'below'"  (click)="copyFilter(filter)"></span>
+            <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'" (click)="deleteFilter(filter, comp)"></span>
+            <div [ngClass]="{'filter-circle-full': filter.isSelected}" class="filter-circle filter-circle-full" matTooltip="de/select" [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
           </div>
             <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
         </div>

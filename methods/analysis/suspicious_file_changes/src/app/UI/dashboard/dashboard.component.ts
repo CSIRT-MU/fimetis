@@ -496,6 +496,12 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    // TODO method that computes clustering overview only for selected computation
+    computeSelectedComputation(computation: ComputationModel) {
+        console.log(computation);
+        this.computeComputations();
+    }
+
     collapse() {
         console.log(this.filterPanelOpenState);
         let height = 10;
