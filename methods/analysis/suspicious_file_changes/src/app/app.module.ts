@@ -36,7 +36,6 @@ import { ClusterComponent } from './UI/cluster/cluster.component';
 import { NameDialogComponent } from './UI/dialog/name-dialog/name-dialog.component';
 import { SelectDialogComponent } from './UI/dialog/select-dialog/select-dialog.component';
 import { ComputationDialogComponent } from './UI/dialog/computation-dialog/computation-dialog.component';
-import { ClusteringOverviewComponent } from './UI/clustering-overview/clustering-overview.component';
 
 @NgModule({
   declarations: [
@@ -47,8 +46,7 @@ import { ClusteringOverviewComponent } from './UI/clustering-overview/clustering
     ClusterComponent,
     NameDialogComponent,
     SelectDialogComponent,
-    ComputationDialogComponent,
-    ClusteringOverviewComponent
+    ComputationDialogComponent
   ],
   imports: [
     BrowserModule,
