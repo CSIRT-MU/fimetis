@@ -127,9 +127,13 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.case = this.selectedCase;
         this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
+        this.computationManager.case = this.selectedCase;
         this.loadStoredClusters();
+        this.clusteringOverview = this.computationManager.getPreloadedClusterings(this.index, this.type);
         this.listViewComponent.init();
     }
+
+
 
     loadStoredClusters() {
         this.clusterManager.getStoredClusters(this.index, this.type).then(

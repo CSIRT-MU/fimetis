@@ -73,12 +73,28 @@ export class ComputationManager {
             clusterings.push(clustering);
             _clusters = [];
         }
+
+
         console.log('Im returning clusterings: ', clusterings);
         return clusterings;
     }
 
     getPreloadedClusterings(index, type): ClusteringOverviewModel[] {
         const clusterings: ClusteringOverviewModel[] = [];
+
+        const init_clustering = new ClusteringOverviewModel();
+        init_clustering.name = 'Init clustering';
+        init_clustering.color = 'red';
+        init_clustering.clusters = this.clusterDao.getStoredClusters(index, type, this.case);
+
+        clusterings.push(init_clustering);
+
+        const aggregations = new ClusteringOverviewModel();
+        aggregations.name = 'Aggregations clustering';
+        aggregations.color = 'blue';
+
+        clusterings.push(aggregations);
+
 
         return clusterings;
     }
