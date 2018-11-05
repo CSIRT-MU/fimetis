@@ -88,8 +88,8 @@
           <span (click)="comp.isSelected = !comp.isSelected">
             <div class="computation-colored-circle" [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
             <span class="computation-name">{{comp.name}}</span>
-            <span class="glyphicon glyphicon-play clickable" matTooltip="Run this clustering" [matTooltipPosition]="'below'" (click)="computeSelectedComputation(comp)"></span>
           </span>
+          <span class="glyphicon glyphicon-play clickable" matTooltip="Run this clustering" [matTooltipPosition]="'below'" (click)="computeSelectedComputation(comp)"></span>
           <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true" (dragstart)="dragFilter($event, filter, comp)">
             <span class="text">{{filter.name}}</span>
             <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'" (click)="editFilter(filter, comp)"></span>
