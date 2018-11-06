@@ -72,7 +72,25 @@ export class FilterService {
   // }
 
   buildAdditionSearchFilter(searchString: string) {
-    let search = searchString.replace('/', '\\/').replace('.', '\\.');
+    let search = searchString
+        .replace('/', '\\\\/')
+        .replace('.', '\\\\.')
+        .replace('-', '\\\\-')
+        .replace('(', '\\\\(')
+        .replace(')', '\\\\)')
+        .replace('[', '\\\\[')
+        .replace(']', '\\\\]')
+        .replace('*', '\\\\*')
+        .replace('+', '\\\\+')
+        .replace('{', '\\\\{')
+        .replace('}', '\\\\}')
+        .replace('^', '\\\\^')
+        .replace('?', '\\\\?')
+        .replace('<', '\\\\<')
+        .replace('>', '\\\\>')
+        .replace('&', '\\\\&')
+        .replace('$', '\\\\$')
+        .replace('|', '\\\\|');
     search = '.*' + search + '.*';
      console.log('search string:', search);
     return '{"regexp": {' +
