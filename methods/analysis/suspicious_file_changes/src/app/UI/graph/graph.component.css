@@ -28,7 +28,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 999;
+  z-index: 9;
   margin-left: -40px;
   margin-top: -40px;
 }

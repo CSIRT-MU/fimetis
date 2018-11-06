@@ -53,19 +53,19 @@
                 <br>
                 <div class="col-md-4">
                   <table>
-                    <tr>
-                      <td class="text-right">
-                        <b>DATASET</b>
-                      </td>
-                      <td>
-                        <mat-form-field>
-                          <mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">
-                            <mat-option>None</mat-option>
-                            <mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </td>
-                    </tr>
+                    <!--<tr>-->
+                      <!--<td class="text-right">-->
+                        <!--<b>DATASET</b>-->
+                      <!--</td>-->
+                      <!--<td>-->
+                        <!--<mat-form-field>-->
+                          <!--<mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">-->
+                            <!--<mat-option>None</mat-option>-->
+                            <!--<mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>-->
+                          <!--</mat-select>-->
+                        <!--</mat-form-field>-->
+                      <!--</td>-->
+                    <!--</tr>-->
                     <tr>
                       <td class="text-right">
                         <b>FILTER</b>
@@ -158,7 +158,7 @@
 </div>
 <div class="grid-main">
 
-<app-graph class="graph-block" [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)" (openStateChange)="histogramPanelOpenState = $event; collapse()">
+<app-graph class="graph-block" [_index]="index" [_type]="type" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)" [graphPanelOpenState]="histogramPanelOpenState"  (openStateChange)="histogramPanelOpenState = $event; collapse()">
 </app-graph>
 <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"></app-list-view>
 </div>

@@ -40,7 +40,7 @@
   width: 20%;
   left: 40%;
   top: 40%;
-  z-index: 999;
+  z-index: 9;
 }
 
 .spinning-loader {
@@ -126,6 +126,7 @@ virtual-scroll {
   text-wrap: none;
   margin-left: 2px;
   margin-right: 2px;
+  /*position: relative;*/
 }
 
 .small-table-block{
@@ -133,7 +134,7 @@ virtual-scroll {
 }
 
 .medium-table-block{
-  width: 100px;
+  width: 80px;
 }
 
 .larger-table-block{
@@ -164,4 +165,28 @@ virtual-scroll {
   margin-bottom: 5px;
   margin-left: 2px;
   background-color: #666666;
+}
+
+.table-block .timesix-tooltip-wrapper{
+  position: absolute;
+  display: none;
+}
+
+.table-block:hover > .timesix-tooltip-wrapper{
+  display: block;
+}
+
+.timesix-tooltip {
+  position: relative;
+  background-color: #666666;
+  color: #fefefe;
+  z-index: 200000;
+  top: -2.5em;
+  padding: 1px 5px 1px 5px;
+  margin: -5px -5px -5px -5px;
+}
+
+.tooltip-filename {
+  width: 500px;
+  text-wrap: normal;
 }

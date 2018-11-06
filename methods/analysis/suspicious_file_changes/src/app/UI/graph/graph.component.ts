@@ -25,6 +25,7 @@ export class GraphComponent implements OnInit {
   @ViewChild('graph') private chartElement: ElementRef;
   @ViewChild('plot_div') private plotElement: ElementRef;
 
+  @Input()
   graphPanelOpenState = true;
 
   private data: any;

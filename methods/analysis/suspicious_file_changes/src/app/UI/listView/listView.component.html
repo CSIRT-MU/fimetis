@@ -167,8 +167,8 @@
         <div class="table-select"></div>
         <div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>
         <div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">Timestamp</div>
-        <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">File Name</div>
         <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">Type</div>
+        <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">File Name</div>
         <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">Mode</div>
         <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">Size</div>
         <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('inode') !== -1">I-node</div>
@@ -192,9 +192,17 @@
                   <span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>
                 </span>
             </div>
+          <!---->
             <div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">{{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}</div>
-            <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1" matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'">{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}</div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">{{element._source.Type}}</div>
+            <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1" matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'" >
+              {{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}
+              <!--<div class="timesix-tooltip-wrapper">-->
+                <!--<div class="timesix-tooltip">-->
+                  <!--{{element['_source']['File Name']}}-->
+                <!--</div>-->
+              <!--</div>-->
+            </div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">{{element._source.Mode}}</div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">{{element._source.Size}}</div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('inode') !== -1">{{element._source.Meta}}</div>

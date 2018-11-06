@@ -33,10 +33,10 @@ export class DashboardComponent implements OnInit {
     baseManager: BaseManager;
 
     setupWindowOpen = true;
-    filterPanelOpenState = true;
+    filterPanelOpenState = false;
     computationPanelOpenState = true;
     clusterPanelOpenState = true;
-    histogramPanelOpenState = true;
+    histogramPanelOpenState = false;
 
     cases: any[];
     selectedCase: string;
@@ -117,6 +117,7 @@ export class DashboardComponent implements OnInit {
                 }).then(() => {
                     console.log('Show Filters completed!');
         });
+        this.collapse();
     }
 
     addNewFilterButton() {
