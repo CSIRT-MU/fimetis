@@ -1,3 +1,46 @@
+<div class="app-bar">
+  <span class="main-title">
+    <b>SUSPICIOUS FILE CHANGES</b>
+  </span>
+  <span class="sub-title">
+    <b>DASHBOARD</b>
+  </span>
+  <div class="settings">
+    <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
+    <mat-menu #settings="matMenu" [overlapTrigger]="false">
+      <button mat-menu-item (click)="setupWindowOpen = true">
+        <span>SETUP</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<div *ngIf="setupWindowOpen" class="setup-window">
+  <div class="setup-tab">
+    <table>
+      <tr>
+        <td class="text-right">
+          <b>DATASET</b>
+        </td>
+        <td>
+          <mat-form-field>
+            <mat-select [(value)]="selectedCase" placeholder="Click to select dataset">
+              <mat-option>None</mat-option>
+              <mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="button-right">
+          <button mat-stroked-button (click)="selectedCaseChanged()" class="timesix-button" [disabled]="selectedCase == null">SELECT CASE</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
 <div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
     <div class="grid-filter panel">
         <div class="col-md-12 panel-header">
@@ -66,7 +109,7 @@
     <div class="panel-header">
       <div class="col-md-3">
       <span><b>RUNTIME CLUSTERING</b></span>
-      <span class="glyphicon glyphicon-plus panel-header-button" (click)="addComputation()"></span>
+      <span class="glyphicon glyphicon-plus panel-header-button" matTooltip="add new runtime clustering" [matTooltipPosition]="'above'" (click)="addComputation()"></span>
       <span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}" (click)="computationPanelOpenState = !computationPanelOpenState; collapse()"></span>
       </div>
       <div class="col-md-7">
@@ -97,7 +140,7 @@
             <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'" (click)="deleteFilter(filter, comp)"></span>
             <div [ngClass]="{'filter-circle-full': filter.isSelected}" class="filter-circle filter-circle-full" matTooltip="de/select" [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
           </div>
-            <span class="computation-add-filter glyphicon glyphicon-plus" (click)="addFilter(comp)"></span>
+            <span class="computation-add-filter glyphicon glyphicon-plus" matTooltip="add new filter" [matTooltipPosition]="'below'" (click)="addFilter(comp)"></span>
         </div>
       </div>
     </div>

@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit {
     computationManager: ComputationManager;
     baseManager: BaseManager;
 
+    setupWindowOpen = true;
     filterPanelOpenState = true;
     computationPanelOpenState = true;
     clusterPanelOpenState = true;
@@ -124,6 +125,7 @@ export class DashboardComponent implements OnInit {
     }
 
     selectedCaseChanged() {
+        this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
         this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;

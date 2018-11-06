@@ -1,3 +1,31 @@
+.app-bar{
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.5em;
+    padding-top: 0.8em;
+    background-color: #666666;
+    height: 5vh;
+}
+
+.app-bar .main-title{
+    color: #fefefe;
+    font-size: x-large;
+    margin-right: 0.5em;
+}
+
+.app-bar .sub-title{
+    color: #aaaaaa;
+    font-size: x-large;
+}
+
+.settings {
+    display: inline-block;
+    float: right;
+    margin-right: 25px;
+    color: #fefefe;
+    font-size: x-large;
+}
+
 .container-all-opened{
     display: grid;
     min-height: 95vh;
@@ -46,6 +74,30 @@
 
 .list-view-block{
     grid-area: list-view-block;
+}
+
+.setup-window{
+    position: fixed;
+    height: 95vh;
+    top: 5vh;
+    width: 100%;
+    background-color: #666666;
+    /*opacity: 0.8;*/
+    z-index: 10;
+}
+
+.setup-tab{
+    background-color: #fefefe;
+    position: relative;
+    top: 30%;
+    height: 40%;
+    width: 60%;
+    left: 20%;
+    padding: 20px;
+    border-radius: 18px;
+    /*for now*/
+    padding-left: 20%;
+    padding-top: 10%;
 }
 
 .panel {
