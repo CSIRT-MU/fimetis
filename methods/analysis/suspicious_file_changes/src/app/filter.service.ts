@@ -64,10 +64,19 @@ export class FilterService {
     return filter;
   }
 
+  // buildAdditionSearchFilter(searchString: string) {
+  //   return '{"multi_match": {' +
+  //       '"query": "' + searchString + '",' +
+  //       '"fields": ["File Name", "Size"]' +
+  //     '}}';
+  // }
+
   buildAdditionSearchFilter(searchString: string) {
-    return '{"multi_match": {' +
-        '"query": "' + searchString + '",' +
-        '"fields": ["File Name", "Size"]' +
+    let search = searchString.replace('/', '\\/').replace('.', '\\.');
+    search = '.*' + search + '.*';
+     console.log('search string:', search);
+    return '{"regexp": {' +
+        '"File Name.keyword": "' + search + '"' +
       '}}';
   }
 
