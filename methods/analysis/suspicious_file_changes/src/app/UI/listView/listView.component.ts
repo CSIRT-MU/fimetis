@@ -578,7 +578,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     console.log('text', this.highlightedText);
     const computation = new ComputationModel();
     computation.name = this.highlightedText;
-    computation.color = '#998833';
+    computation.color = '#3d9fea';
     computation.isSelected = true;
     const filter = new FilterModel();
     filter.json = this.fs.buildAdditionSearchFilter(this.highlightedText);

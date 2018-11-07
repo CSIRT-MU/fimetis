@@ -193,7 +193,7 @@
                 </span>
             </div>
           <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
-            <div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1" (textSelect)="openHighlightedTextMenu( $event )">
+            <div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1" >
               {{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}
             </div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">{{element._source.Type}}</div>
