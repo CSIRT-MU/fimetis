@@ -162,7 +162,13 @@ export class ElasticsearchBaseQueryDao {
     applyFilter(filter: string, params: FilterParamModel[]) {
         let result = filter;
         for (const param of params) {
-            result = result.replace('${{' + param.name + '}}$', param.value);
+            let escaped_param = param.value;
+            console.log('before', param);
+            if (param.type === 'REGEX') {
+                escaped_param = escaped_param.replace('\\', '\\\\');
+            }
+            console.log('after', param);
+            result = result.replace('${{' + param.name + '}}$', escaped_param);
         }
         return result;
     }
