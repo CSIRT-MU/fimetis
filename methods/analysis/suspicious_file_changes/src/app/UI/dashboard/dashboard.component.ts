@@ -179,11 +179,11 @@ export class DashboardComponent implements OnInit {
         this.computationManager.addComputation(preloaded_computation);
 
         preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'authorized keys';
+        preloaded_computation.name = 'SSH settings';
         preloaded_computation.color = '#886644';
         preloaded_computation.isSelected = true;
         filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*\\.ssh\\/authorized_keys.*';
+        filter.params[0].value = '.*.ssh\\/(id_rsa|authorized_keys*).*';
         preloaded_computation.filters.add(filter);
         console.log(preloaded_computation);
         this.computationManager.addComputation(preloaded_computation);
