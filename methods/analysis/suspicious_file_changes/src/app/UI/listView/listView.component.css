@@ -102,8 +102,8 @@
   /*display: block;*/
   visibility: visible;
   width: 100%;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
+  /*overflow-y: scroll;*/
+  /*scroll-snap-type: y mandatory;*/
   /*height: auto;*/
   /*max-height: 250px;*/
   min-height: 5px;
@@ -121,7 +121,7 @@ virtual-scroll {
 
 .table-block{
   display: inline-block;
-  overflow: hidden;
+  /*overflow: hidden;*/
   height: 20px;
   text-wrap: none;
   margin-left: 2px;
@@ -189,4 +189,59 @@ virtual-scroll {
 .tooltip-filename {
   width: 500px;
   text-wrap: normal;
+}
+
+.indicator {
+  /*background-color: fade(gold, 10%);*/
+  background-color: #666666;
+  position: absolute;
+  /*z-index: 2147483647;*/
+  z-index: 1000;
+}
+.indicator__cta {
+   top: -20px ;
+   left: 50% ;
+   position: absolute ;
+ }
+
+.indicator__cta-link {
+   background-color: #333333 ;
+   border-radius: 5px 5px 5px 5px ;
+   bottom: 0px ;
+   /*box-shadow: 2px 2px 5px fade( #000000, 30% ) ;*/
+   color: #FFFFFF ;
+   cursor: pointer ;
+   left: 0px ;
+   padding: 11px 22px 10px 22px ;
+   position: absolute ;
+   transform: translateX( -50% ) ;
+   white-space: nowrap ;
+}
+
+.indicator__cta-link:after {
+   bottom: -11px ;
+   font-size: 15px ;
+   left: 50% ;
+   line-height: 15px ;
+   content: "▼" ;
+   color: #333333 ;
+   position: absolute ;
+   transform: translateX( -50% ) ;
+ }
+
+.indicator__cta-link:hover {
+  background-color: gold;
+  color: #000000;
+}
+
+.indicator__cta-link:hover:after {
+   color: gold ;
+ }
+
+.highlightedBox{
+  display: none;
+  position: absolute;
+  background-color: #666666;
+  padding: 5px;
+  border-radius: 8px;
 }

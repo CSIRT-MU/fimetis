@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, AfterViewInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, AfterViewInit, ElementRef} from '@angular/core';
 import {MatDatepickerInputEvent, MatDialog, MatPaginator, MatSort, MatTable, MatTableDataSource, PageEvent} from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 
@@ -18,6 +18,7 @@ import * as HyperList from 'hyperlist';
 import {ComputationModel} from '../../models/computation.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
+import { TextSelectEvent, SelectionRectangle } from '../text-select.directive';
 
 @Component({
   selector: 'app-list-view',
@@ -54,6 +55,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   availableTableColumns = ['select', 'doctype', 'name', 'timestamp', 'type', 'mode', 'size', 'inode', 'uid', 'gid', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
   displayedTableColumns = ['select', 'doctype', 'name', 'timestamp', 'type', 'mode', 'size', 'inode', 'uid', 'gid'];
   data: any[];
+  public highlightedTextBox: SelectionRectangle | null;
+  highlightedText: string;
 
   selected_rows_id: Set<string> = new Set<string>();
 
@@ -92,6 +95,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   @ViewChild(GraphComponent) showGraph: GraphComponent;
 
   @ViewChild(MatTable) interactiveTable: MatTable<any>;
+  @ViewChild('highlightedBox') highlightedBox: ElementRef;
 
   constructor(private es: ElasticsearchService, private fs: FilterService, private route: ActivatedRoute, public dialog: MatDialog) {
     this.scrollID = '';
@@ -102,6 +106,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.SIZE;
     this.clusterManager = new ClusterManager(this.es);
+      this.highlightedTextBox = null;
+      this.highlightedText = '';
   }
 
   // ngOnInit() {
@@ -542,5 +548,31 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   resizeList(height) {
     this.listViewScrollHeight = height;
+  }
+
+  openHighlightedTextMenu(event: TextSelectEvent) {
+      console.group( 'Text Select Event' );
+      console.log( 'Text:', event.text );
+      console.log( 'Viewport Rectangle:', event.viewportRectangle );
+      console.log( 'Host Rectangle:', event.hostRectangle );
+      console.groupEnd();
+      if ( event.hostRectangle ) {
+
+          this.highlightedTextBox = event.hostRectangle;
+          this.highlightedText = event.text;
+          this.highlightedBox.nativeElement.style.display = 'block';
+          this.highlightedBox.nativeElement.style.top = (event.viewportRectangle.top - 35 ) + 'px';
+          this.highlightedBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
+
+      } else {
+          this.highlightedBox.nativeElement.style.display = 'none';
+          this.highlightedTextBox = null;
+          this.highlightedText = '';
+
+      }
+  }
+
+  makeClusterByHighlight(): void {
+    console.log('text', this.highlightedText);
   }
 }

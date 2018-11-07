@@ -160,8 +160,8 @@
 <div class="col-md-12" [ngClass]="{'panel-hidden': !tablePanelOpenState, 'panel-visible': tablePanelOpenState}">
   <span>Total: {{total}}</span>
   <div>
-    <div class="table-loading-spinner">
-      <div class="spinning-loader" *ngIf="loadingData" ></div>
+    <div class="table-loading-spinner" *ngIf="loadingData">
+      <div class="spinning-loader"></div>
     </div>
     <div>
         <div class="table-select"></div>
@@ -192,16 +192,19 @@
                   <span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>
                 </span>
             </div>
-          <!---->
-            <div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">{{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}</div>
+          <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
+            <div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1" (textSelect)="openHighlightedTextMenu( $event )">
+              {{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}
+            </div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">{{element._source.Type}}</div>
-            <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1" matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'" >
+            <div class="table-block large-table-block file-name-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1" (textSelect)="openHighlightedTextMenu( $event )">
               {{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}
               <!--<div class="timesix-tooltip-wrapper">-->
                 <!--<div class="timesix-tooltip">-->
                   <!--{{element['_source']['File Name']}}-->
                 <!--</div>-->
               <!--</div>-->
+
             </div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">{{element._source.Mode}}</div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">{{element._source.Size}}</div>
@@ -213,14 +216,42 @@
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">{{element._source.Type.includes('c') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
             <div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">{{element._source.Type.includes('b') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
             <div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('id') !== -1">{{element._id}}</div>
+
         </div>
       </div>
+
+      <!--<div-->
+              <!--*ngIf="highlightedTextBox"-->
+              <!--class="indicator"-->
+              <!--[style.left.px]="highlightedTextBox.left"-->
+              <!--[style.top.px]="highlightedTextBox.top"-->
+              <!--[style.width.px]="highlightedTextBox.width"-->
+              <!--[style.height.px]="0">-->
+
+        <!--<div class="indicator__cta">-->
+          <!--&lt;!&ndash;-->
+              <!--NOTE: Because we DON'T WANT the selected text to get deselected-->
+              <!--when we click on the call-to-action, we have to PREVENT THE-->
+              <!--DEFAULT BEHAVIOR and STOP PROPAGATION on some of the events. The-->
+              <!--byproduct of this is that the (click) event won't fire. As such,-->
+              <!--we then have to consume the click-intent by way of the (mouseup)-->
+              <!--event.-->
+          <!--&ndash;&gt;-->
+          <!--<a-->
+                  <!--(mousedown)="$event.preventDefault()"-->
+                  <!--(mouseup)="$event.stopPropagation(); makeClusterByHighlight()"-->
+                  <!--class="indicator__cta-link">-->
+            <!--Make cluster by: {{highlightedText}}-->
+          <!--</a>-->
+        <!--</div>-->
+
+      <!--</div>-->
 
     </virtual-scroller>
   </div>
 </div>
 
-<div class="col-md-12">
-  <div id="scrollContainer2"></div>
+<div #highlightedBox id="highlightedBox" class="highlightedBox">
+  {{highlightedText}}
+  <span class="glyphicon gl" (click)="makeClusterByHighlight()"></span>
 </div>
-

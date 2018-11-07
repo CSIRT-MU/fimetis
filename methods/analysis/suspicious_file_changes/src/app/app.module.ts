@@ -36,6 +36,7 @@ import { ClusterComponent } from './UI/cluster/cluster.component';
 import { NameDialogComponent } from './UI/dialog/name-dialog/name-dialog.component';
 import { SelectDialogComponent } from './UI/dialog/select-dialog/select-dialog.component';
 import { ComputationDialogComponent } from './UI/dialog/computation-dialog/computation-dialog.component';
+import { TextSelectDirective } from './UI/text-select.directive';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { ComputationDialogComponent } from './UI/dialog/computation-dialog/compu
     ClusterComponent,
     NameDialogComponent,
     SelectDialogComponent,
-    ComputationDialogComponent
+    ComputationDialogComponent,
+    TextSelectDirective
   ],
   imports: [
     BrowserModule,
