@@ -3,10 +3,13 @@ import {ComputationModel} from '../models/computation.model';
 import {ClusterModel} from '../models/cluster.model';
 import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
+import {ElasticsearchBaseQueryDao} from './elasticsearchBaseQueryDao';
 
 export class ComputationDao {
 
+    private elasticsearchBaseQueryDao;
     constructor(private es: ElasticsearchService) {
+        this.elasticsearchBaseQueryDao = new ElasticsearchBaseQueryDao();
     }
 
     getClustersForComputation(index, type, case_name, computation: ComputationModel): ClusterModel[] {
@@ -56,32 +59,7 @@ export class ComputationDao {
 
 
     getComputationFilterString(computation: ComputationModel) {
-        const appliedFilters = [];
-        let filter: FilterModel;
-        for (filter of Array.from(computation.filters)) {
-            if (filter.isSelected) {
-                appliedFilters.push(this.applyFilter(filter.json, filter.params));
-            }
-        }
-        return this.getFilterCombination(appliedFilters);
-    }
-
-
-    applyFilter(filter: string, params: FilterParamModel[]) {
-        let result = filter;
-        for (const param of params) {
-            result = result.replace('${{' + param.name + '}}$', param.value);
-        }
-        return result;
-    }
-
-
-    getFilterCombination(filters: string[]) {
-        let result = filters[0];
-        for (let i = 1; i < filters.length; i++) {
-            result = result + ', ' + filters[i];
-        }
-        return result;
+        return this.elasticsearchBaseQueryDao.getComputationFilterString(computation);
     }
 
 }
