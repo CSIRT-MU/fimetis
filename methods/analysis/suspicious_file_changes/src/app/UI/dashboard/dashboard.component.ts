@@ -57,6 +57,7 @@ export class DashboardComponent implements OnInit {
     storedClusters: Set<string> = new Set<string>();
     selectedStoredClusters: string[] = [];
 
+    preloadedClusters: ClusterModel[] = [];
     savedClusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusteringOverview: ClusteringOverviewModel[] = [];
@@ -131,6 +132,7 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
         this.computationManager.case = this.selectedCase;
+        this.initPreLoadedClusters();
         this.loadStoredClusters();
         this.clusteringOverview = this.computationManager.getPreloadedClusterings(this.index, this.type);
         this.listViewComponent.init();
@@ -159,8 +161,109 @@ export class DashboardComponent implements OnInit {
     // });
     }
 
+    async initPreLoadedClusters() {
+        // preloaded clusters
+        const regex_filter: FilterModel = await this.getFilter('filename_regex');
+        regex_filter.isSelected = true;
+        this.computationManager.computations = [];
+        this.preloadedClusters = [];
+
+        this.computationManager.case = this.selectedCase;
+        let preloaded_computation = new ComputationModel();
+        preloaded_computation.name = '/etc/ files';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        let filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '\\/etc\\/.*';
+        preloaded_computation.filters.add(filter);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'authorized keys';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '.*\\.ssh\\/authorized_keys.*';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'bin | sbin';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'python files';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '.*\\.py';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = '.sh files';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '.*\\.sh';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'php files';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '.*\\.php';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'perl files';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '.*\\.pl';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'cron tabs';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '\\/var\\/spool\\/crontabs.*';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+        preloaded_computation = new ComputationModel();
+        preloaded_computation.name = 'dot files';
+        preloaded_computation.color = '#886644';
+        preloaded_computation.isSelected = true;
+        filter = JSON.parse(JSON.stringify(regex_filter));
+        filter.params[0].value = '.*\\/\\..*';
+        preloaded_computation.filters.add(filter);
+        console.log(preloaded_computation);
+        this.computationManager.addComputation(preloaded_computation);
+
+
+        this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters(this.index, this.type));
+    }
+
     getClusters() {
-        return Array.from(this.clusters).concat(Array.from(this.savedClusters));
+        return this.preloadedClusters.concat(Array.from(this.clusters)).concat(Array.from(this.savedClusters));
     }
 
     loadFilter() {
@@ -178,6 +281,24 @@ export class DashboardComponent implements OnInit {
             console.error(error);
         }).then(() => {
         console.log('Filter loaded');
+        });
+    }
+
+    async getFilter(name): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.es.getFilterByName(
+                this.filterIndex,
+                this.filterType,
+                name
+            ).then(
+                response => {
+                    resolve(response.hits.hits[0]._source);
+                }, error => {
+                    reject();
+                    console.error(error);
+                }).then(() => {
+                console.log('Filter loaded');
+            });
         });
     }
 

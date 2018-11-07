@@ -26,7 +26,7 @@ export class ComputationDao {
         // this.getDatabaseData(index, type, computation).then(res => {
         //     cluster.count = res;
         // });
-        cluster.name = 'cluster-' + computation.name;
+        cluster.name = computation.name;
         cluster.color = computation.color;
         cluster.tagged = false;
         cluster.computation = computation;

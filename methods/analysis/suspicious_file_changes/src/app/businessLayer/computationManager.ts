@@ -8,7 +8,7 @@ import {ClusteringOverviewModel} from '../models/clusteringOverview.model';
 import {ClusterDao} from '../dao/clusterDao';
 
 export class ComputationManager {
-    private _computations: ComputationModel[];
+    private _computations: ComputationModel[] = [];
     private _case: string;
 
     private computationDao;
@@ -25,6 +25,10 @@ export class ComputationManager {
 
     set computations(value: ComputationModel[]) {
         this._computations = value;
+    }
+
+    addComputation(value: ComputationModel) {
+        this._computations.push(value);
     }
 
     get case(): string {
