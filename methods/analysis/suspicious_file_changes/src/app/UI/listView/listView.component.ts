@@ -19,6 +19,7 @@ import {ComputationModel} from '../../models/computation.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import { TextSelectEvent, SelectionRectangle } from '../text-select.directive';
+import {FilterModel} from '../../models/filter.model';
 
 @Component({
   selector: 'app-list-view',
@@ -45,6 +46,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   private sub: any;
 
   @Output('graphChangedBoundary') graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
+  @Output('makeManualCluster') makeManualCluster: EventEmitter<ComputationModel> = new EventEmitter<ComputationModel>();
 
   tablePanelOpenState = true;
 
@@ -574,5 +576,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   makeClusterByHighlight(): void {
     console.log('text', this.highlightedText);
+    const computation = new ComputationModel();
+    computation.name = this.highlightedText;
+    computation.color = '#998833';
+    computation.isSelected = true;
+    const filter = new FilterModel();
+    filter.json = this.fs.buildAdditionSearchFilter(this.highlightedText);
+    filter.isSelected = true;
+    filter.name = 'highlighted_text';
+    filter.type = 'REGEX';
+    computation.filters.add(filter);
+    this.makeManualCluster.emit(computation);
   }
 }

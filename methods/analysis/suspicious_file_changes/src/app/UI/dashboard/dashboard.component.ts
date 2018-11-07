@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit {
     selectedStoredClusters: string[] = [];
 
     preloadedClusters: ClusterModel[] = [];
+    manualClusters: ClusterModel[] = [];
     savedClusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusteringOverview: ClusteringOverviewModel[] = [];
@@ -102,21 +103,21 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.clusters = this.getClusters();
 
         this.baseManager.getCases(this.index, this.type).then(
-        response => {
-            this.cases = response;
-        }, error => {
-            console.error(error);
-        }).then(() => {
-          console.log('Show Cases completed!');
+            response => {
+                this.cases = response;
+            }, error => {
+                console.error(error);
+            }).then(() => {
+            console.log('Show Cases completed!');
         });
 
         this.baseManager.getFilters(this.filterIndex, this.filterType).then(
             response => {
                 this.filters = response;
-                }, error => {
-                    console.error(error);
-                }).then(() => {
-                    console.log('Show Filters completed!');
+            }, error => {
+                console.error(error);
+            }).then(() => {
+            console.log('Show Filters completed!');
         });
         this.collapse();
     }
@@ -144,21 +145,21 @@ export class DashboardComponent implements OnInit {
         this.clusterManager.getStoredClusters(this.index, this.type).then(
             response => {
                 this.savedClusters = response;
-        });
-    // this.es.getTags(
-    //   this.index,
-    //   this.type,
-    //   this.selectedCase
-    // ).then(
-    //   response => {
-    //     this.storedClusters = new Set<string>(response.aggregations.tags.buckets);
-    //     console.log(response);
-    //     console.log(this.storedClusters);
-    //   }, error => {
-    //     console.error(error);
-    //   }).then(() => {
-    //   console.log('Show Tags Completed!');
-    // });
+            });
+        // this.es.getTags(
+        //   this.index,
+        //   this.type,
+        //   this.selectedCase
+        // ).then(
+        //   response => {
+        //     this.storedClusters = new Set<string>(response.aggregations.tags.buckets);
+        //     console.log(response);
+        //     console.log(this.storedClusters);
+        //   }, error => {
+        //     console.error(error);
+        //   }).then(() => {
+        //   console.log('Show Tags Completed!');
+        // });
     }
 
     async initPreLoadedClusters() {
@@ -263,7 +264,7 @@ export class DashboardComponent implements OnInit {
     }
 
     getClusters() {
-        return this.preloadedClusters.concat(Array.from(this.clusters)).concat(Array.from(this.savedClusters));
+        return this.preloadedClusters.concat(this.manualClusters).concat(Array.from(this.clusters)).concat(Array.from(this.savedClusters));
     }
 
     loadFilter() {
@@ -272,15 +273,15 @@ export class DashboardComponent implements OnInit {
             this.filterType,
             this.selectedFilter
         ).then(
-        response => {
-            const test = response.hits.hits;
-            this.selectedFilterModel = response.hits.hits[0]._source;
-            console.log(test);
-            console.log(this.selectedFilterModel);
-        }, error => {
-            console.error(error);
-        }).then(() => {
-        console.log('Filter loaded');
+            response => {
+                const test = response.hits.hits;
+                this.selectedFilterModel = response.hits.hits[0]._source;
+                console.log(test);
+                console.log(this.selectedFilterModel);
+            }, error => {
+                console.error(error);
+            }).then(() => {
+            console.log('Filter loaded');
         });
     }
 
@@ -341,10 +342,10 @@ export class DashboardComponent implements OnInit {
         let clusterName = 'cluster';
         let resFilter = '';
         this.selectedAppliedFilters.forEach((value) => {
-        console.log(value);
-        resFilter = this.fs.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
-        console.log(this.appliedFilters.get(value));
-        clusterName = clusterName + '-' + value;
+            console.log(value);
+            resFilter = this.fs.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
+            console.log(this.appliedFilters.get(value));
+            clusterName = clusterName + '-' + value;
         });
 
         if (this.selectedAppliedFilters.size > 0) {
@@ -404,17 +405,17 @@ export class DashboardComponent implements OnInit {
                 this.type,
                 this.selectedCase,
                 this.combinedFilter,
-            cluster
-        ).then(
-            response => {
-                if (response.failures.length < 1) {
-                console.log('No failures', response.failures);
-            }
-        }, error => {
-            console.error(error);
-        }).then(() => {
-            console.log('Tag saved');
-        });
+                cluster
+            ).then(
+                response => {
+                    if (response.failures.length < 1) {
+                        console.log('No failures', response.failures);
+                    }
+                }, error => {
+                    console.error(error);
+                }).then(() => {
+                console.log('Tag saved');
+            });
             console.log(this.storedClusters);
             this.storedClusters.add(cluster.toString());
         }
@@ -425,24 +426,24 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.init();
         for (const cluster of this.selectedStoredClusters) {
             this.es.removeTag(
-            this.index,
-            this.type,
-            this.selectedCase,
-            this.combinedFilter,
-            this.selectedStoredClusters,
-            cluster
+                this.index,
+                this.type,
+                this.selectedCase,
+                this.combinedFilter,
+                this.selectedStoredClusters,
+                cluster
             ).then(
-            response => {
-                this.storedClusters.delete(cluster);
-                if (response.failures.length < 1) {
-                console.log('No failures', response.failures);
-                } else {
-                    console.log(response);
-                }
-            }, error => {
-            console.error(error);
-            }).then(() => {
-            console.log('Tag removed');
+                response => {
+                    this.storedClusters.delete(cluster);
+                    if (response.failures.length < 1) {
+                        console.log('No failures', response.failures);
+                    } else {
+                        console.log(response);
+                    }
+                }, error => {
+                    console.error(error);
+                }).then(() => {
+                console.log('Tag removed');
             });
         }
     }
@@ -452,50 +453,50 @@ export class DashboardComponent implements OnInit {
         const dialogRef = this.dialog.open(NameDialogComponent, {
             width: '350px',
             data: {title: 'Create new cluster',
-            itemsNumber: this.listViewComponent.tableSelection.selected.length,
-            placeholder: 'Type new cluster\'s name'}
+                itemsNumber: this.listViewComponent.tableSelection.selected.length,
+                placeholder: 'Type new cluster\'s name'}
         });
 
         dialogRef.afterClosed().subscribe(result => {
-        console.log('dialog closed', result);
-        if (result != null) {
-            const params = [];
-            const values = [];
-            for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
-                params.push('_id');
-                values.push(this.listViewComponent.tableSelection.selected[index]._id);
-            }
-        let filter = this.fs.buildShouldMatchFilter(params, values);
-        console.log(filter);
-        filter = ',' + filter;
-        this.es.addTag(
-            this.index,
-            this.type,
-            this.selectedCase,
-            filter,
-            (namePrefix + result)
-            ).then(
-            response => {
-                if (response.failures.length < 1) {
-                console.log('No failures', response.failures);
+            console.log('dialog closed', result);
+            if (result != null) {
+                const params = [];
+                const values = [];
+                for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
+                    params.push('_id');
+                    values.push(this.listViewComponent.tableSelection.selected[index]._id);
                 }
-            }, error => {
-            console.error(error);
-            }).then(() => {
-            console.log('Tag saved');
-        });
-        this.storedClusters.add((namePrefix + result));
-        this.listViewComponent.tableSelection.clear();
-        }
+                let filter = this.fs.buildShouldMatchFilter(params, values);
+                console.log(filter);
+                filter = ',' + filter;
+                this.es.addTag(
+                    this.index,
+                    this.type,
+                    this.selectedCase,
+                    filter,
+                    (namePrefix + result)
+                ).then(
+                    response => {
+                        if (response.failures.length < 1) {
+                            console.log('No failures', response.failures);
+                        }
+                    }, error => {
+                        console.error(error);
+                    }).then(() => {
+                    console.log('Tag saved');
+                });
+                this.storedClusters.add((namePrefix + result));
+                this.listViewComponent.tableSelection.clear();
+            }
         });
     }
 
     createFilterFromSelection() {
         const dialogRef = this.dialog.open(NameDialogComponent, {
-        width: '350px',
-        data: {title: 'Create new filter',
-            itemsNumber: this.listViewComponent.tableSelection.selected.length,
-            placeholder: 'Type new filter\'s name'}
+            width: '350px',
+            data: {title: 'Create new filter',
+                itemsNumber: this.listViewComponent.tableSelection.selected.length,
+                placeholder: 'Type new filter\'s name'}
         });
         dialogRef.afterClosed().subscribe(result => {
             console.log('dialog closed', result);
@@ -522,7 +523,7 @@ export class DashboardComponent implements OnInit {
                 this.appliedFiltersKeys.add(model.name);
                 this.listViewComponent.tableSelection.clear();
                 this.combineSelectedFilters();
-              }
+            }
         });
     }
 
@@ -646,4 +647,10 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.resizeList(height);
     }
 
+    makeManualCluster(computation: ComputationModel) {
+        console.log('comp', computation);
+        this.computationManager.computations = [];
+        this.computationManager.addComputation(computation);
+        this.manualClusters = this.manualClusters.concat(this.computationManager.getClusters(this.index, this.type));
+    }
 }
