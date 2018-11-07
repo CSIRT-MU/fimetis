@@ -52,7 +52,14 @@ export class ComputationDao {
             '"bool": {' +
             ' "must": [' +
             ' {"match": {"case.keyword": "' + case_name + '"}}';
-        bodyString += ', ' + this.getComputationFilterString(computation);
+
+        const computationFilterString = this.getComputationFilterString(computation);
+        if (computationFilterString != null) {
+            bodyString += ', ' + this.getComputationFilterString(computation);
+        } else {
+            bodyString += ',{"bool": {' +
+                ' "must_not": [' + '{ "match_all": {}}]}}';
+        }
         bodyString += ']}}}';
         return bodyString;
     }

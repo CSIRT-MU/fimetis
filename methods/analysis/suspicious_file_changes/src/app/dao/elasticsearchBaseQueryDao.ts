@@ -173,10 +173,15 @@ export class ElasticsearchBaseQueryDao {
 
 
     getFilterCombination(filters: string[]) {
-        let result = '{"bool": {"must":[';
-        result += filters.join(', ');
-        result += ']}}';
-        return result;
+        if (filters.length > 0) {
+            let result = '';
+            result = '{"bool": {"must":[';
+            result += filters.join(', ');
+            result += ']}}';
+            return result;
+        }
+
+        return null;
     }
 
 
