@@ -54,8 +54,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   additionalFilters: Map<string, string> = new Map<string, string>();
 
   tableSelection = new SelectionModel<any>(true, []);
-  availableTableColumns = ['select', 'doctype', 'name', 'timestamp', 'type', 'mode', 'size', 'inode', 'uid', 'gid', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
-  displayedTableColumns = ['select', 'doctype', 'name', 'timestamp', 'type', 'mode', 'size', 'inode', 'uid', 'gid'];
+  availableTableColumns = ['select', 'doctype', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'inode', 'name', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
+  displayedTableColumns = ['select', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'inode', 'name'];
   data: any[];
   public highlightedTextBox: SelectionRectangle | null;
   highlightedText: string;
@@ -77,9 +77,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadedRequestedBegin: number;
   preloadedEnd;
   preloadVisibleStart = 0;
-  preloadedBufferSize = 300; // buffer window size
-  preloadBufferOffset = 150; // shift of buffer window
-  preloadBufferBorder = 50; // when to trigger buffer shift (to the end of buffer window)
+  preloadedBufferSize = 1000; // buffer window size
+  preloadBufferOffset = 400; // shift of buffer window
+  preloadBufferBorder = 300; // when to trigger buffer shift (to the end of buffer window)
 
   loadingData = false;
 
