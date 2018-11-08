@@ -121,7 +121,7 @@ virtual-scroll {
 
 .table-block{
   display: inline-block;
-  /*overflow: hidden;*/
+  overflow: hidden;
   height: 20px;
   text-wrap: none;
   margin-left: 2px;
@@ -130,7 +130,11 @@ virtual-scroll {
 }
 
 .small-table-block{
-  width: 25px;
+  width: 20px;
+}
+
+.medium-small-table-block{
+    width: 40px;
 }
 
 .medium-table-block{
@@ -142,27 +146,35 @@ virtual-scroll {
 }
 
 .large-table-block{
-  width: 500px;
+  width: 800px;
+}
+
+.file-name-table-block{
+    padding-left: 5px;
+    text-overflow: clip;
 }
 
 .table-select{
   display: inline-block;
+    position: relative;
   width: 14px;
   height: 14px;
   border: 1px solid #666666;
   border-radius: 50%;
   cursor: pointer;
+    margin-bottom: 4px
 }
 
 
 .table-select-selected::before{
   content: " ";
+    position: absolute;
   border-radius: 50%;
   display: inline-block;
   visibility: visible;
   width: 8px;
   height: 8px;
-  margin-bottom: 5px;
+  margin-top: 2px;
   margin-left: 2px;
   background-color: #666666;
 }
