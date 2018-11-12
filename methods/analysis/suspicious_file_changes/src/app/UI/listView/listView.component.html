@@ -222,7 +222,7 @@
               <div class="table-block medium-small-table-block" *ngIf="tableItem == 'uid'">{{element._source.UID}}</div>
               <div class="table-block medium-small-table-block" *ngIf="tableItem == 'gid'">{{element._source.GID}}</div>
               <div class="table-block medium-table-block" *ngIf="tableItem == 'inode'">{{element._source.Meta}}</div>
-              <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'" (textSelect)="openHighlightedTextMenu( $event )">
+              <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'" (textSelect)="openHighlightedTextMenu( $event, i )">
                 <!--{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}-->
                 {{element['_source']['File Name']}}
                 <!--<div class="timesix-tooltip-wrapper">-->
@@ -276,6 +276,6 @@
 <div #highlightedBox id="highlightedBox" class="highlightedBox">
   {{highlightedText}}
   <span class="glyphicon glyphicon-indent-right clickable highlighted-icon" matTooltip="Make cluster by path" [matTooltipPosition]="'above'" (click)="makeClusterByHighlight()"></span>
-  <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(true, 0)"></span>
-  <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(false, 0)"></span>
+  <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(true)"></span>
+  <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(false)"></span>
 </div>

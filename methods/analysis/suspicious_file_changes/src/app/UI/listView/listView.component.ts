@@ -21,6 +21,7 @@ import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import { TextSelectEvent, SelectionRectangle } from '../text-select.directive';
 import {FilterModel} from '../../models/filter.model';
 import * as lodash from 'lodash';
+import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 
 @Component({
   selector: 'app-list-view',
@@ -61,6 +62,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   data: any[];
   public highlightedTextBox: SelectionRectangle | null;
   highlightedText: string;
+  highlightedTextId: number;
 
   selected_rows_id: Set<string> = new Set<string>();
 
@@ -83,6 +85,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadBufferOffset = 1000; // shift of buffer window
   preloadBufferBorder = 1200; // when to trigger buffer shift (to the end of buffer window)
   preloadBufferState = false;
+  visibleDataFirstIndex = 0;
+
 
   loadingData = false;
 
@@ -101,6 +105,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatTable) interactiveTable: MatTable<any>;
   @ViewChild('highlightedBox') highlightedBox: ElementRef;
+  @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
   constructor(private es: ElasticsearchService, private fs: FilterService, private route: ActivatedRoute, public dialog: MatDialog) {
     this.scrollID = '';
@@ -202,7 +207,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
     this.clusterManager.case = this.case;
     this.clusterManager.clusters = this.clusters;
-    // this.clusterManager.getDifferenceShift(this.oldClusters, this.preloadVisibleStart, this.visibleData[0]);
+    // this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
     this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
         .then(resp => {
           console.log('list data loaded async', resp, resp.data, resp.total);
@@ -411,8 +416,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
     const count = $event['end'] - $event['start'];
     console.log(offset, count);
     console.log(this.virtualArray.length);
-    if (this.virtualArray.length > 0) { // fake loading state if empty
+    this.visibleDataFirstIndex = start;
+    if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
+        console.log('preload visible start:', this.preloadVisibleStart);
         this.preloadVisibleStart = start - this.preloadedBegin;
+        console.log('preload visible start changed:', this.preloadVisibleStart);
         if (end <= this.preloadedEnd && start >= this.preloadedBegin) {
           this.visibleData = this.preloadedData.slice(
             (start - this.preloadedBegin),
@@ -497,12 +505,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.listViewScrollHeight = height;
   }
 
-  openHighlightedTextMenu(event: TextSelectEvent) {
+  openHighlightedTextMenu(event: TextSelectEvent, index) {
       console.group( 'Text Select Event' );
       console.log( 'Text:', event.text );
       console.log( 'Viewport Rectangle:', event.viewportRectangle );
       console.log( 'Host Rectangle:', event.hostRectangle );
       console.groupEnd();
+      this.highlightedTextId = index + this.visibleDataFirstIndex;
       if ( event.hostRectangle ) {
 
           this.highlightedTextBox = event.hostRectangle;
@@ -534,7 +543,50 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.makeManualCluster.emit(computation);
   }
 
-  skipTheBlockByHighlight(toTheEnd: boolean, index): void {
-        console.log('skip');
+  skipTheBlockByHighlight(toTheEnd: boolean): void {
+        console.log('skip from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadVisibleStart, this.preloadedBegin);
+        let skipIndex = this.highlightedTextId;
+        let test = this.highlightedText;
+        test = test.replace('/', '\\/')
+            .replace('.', '\\.')
+            .replace('-', '\\-')
+            .replace('(', '\\(')
+            .replace(')', '\\)')
+            .replace('[', '\\[')
+            .replace(']', '\\]')
+            .replace('*', '\\*')
+            .replace('+', '\\+')
+            .replace('{', '\\{')
+            .replace('}', '\\}')
+            .replace('^', '\\^')
+            .replace('?', '\\?')
+            .replace('<', '\\<')
+            .replace('>', '\\>')
+            .replace('&', '\\&')
+            .replace('$', '\\$')
+            .replace('|', '\\|');
+        test += '.*';
+        const regex = new RegExp(test);
+        console.log(test);
+        console.log(regex);
+        if (toTheEnd) {
+            for (let index = (this.highlightedTextId - this.preloadedBegin + 1); index < this.preloadedBufferSize; index++) {
+                if (regex.test(this.preloadedData[index]._source['File Name']) === false) {
+                    skipIndex = index;
+                    break;
+                }
+            }
+        } else {
+            for (let index = (this.highlightedTextId - this.preloadedBegin - 1); index >= 0; index--) {
+                if (regex.test(this.preloadedData[index]._source['File Name']) === false) {
+                    skipIndex = index;
+                    break;
+                }
+            }
+        }
+        console.log('skip to:', skipIndex + this.preloadedBegin);
+        this.virtualScroller.scrollToIndex(skipIndex);
+        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        this.openHighlightedTextMenu(hideEvent, 0);
   }
 }
