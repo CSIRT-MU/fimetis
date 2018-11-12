@@ -20,6 +20,7 @@ import {ClusterManager} from '../../businessLayer/clusterManager';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import { TextSelectEvent, SelectionRectangle } from '../text-select.directive';
 import {FilterModel} from '../../models/filter.model';
+import * as lodash from 'lodash';
 
 @Component({
   selector: 'app-list-view',
@@ -42,6 +43,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   displayedClusters: string[];
   @Input('clusters')
   clusters: ClusterModel[] = [];
+  oldClusters: ClusterModel[] = [];
   private SIZE = 25;
   private sub: any;
 
@@ -77,7 +79,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadedRequestedBegin: number;
   preloadedEnd;
   preloadVisibleStart = 0;
-  preloadedBufferSize = 3000; // buffer window size
+  preloadedBufferSize = 4000; // buffer window size minimum = (2*preloadBufferBorder) + preloadBufferOffset
   preloadBufferOffset = 1000; // shift of buffer window
   preloadBufferBorder = 1200; // when to trigger buffer shift (to the end of buffer window)
   preloadBufferState = false;
@@ -196,69 +198,24 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   init() {
     this.loadingData = true;
-    // if (this.type === 'aggregated-mactimes') {
-    //   this.es.getAggregatedPage(
-    //     this.index,
-    //     this.type,
-    //     this.case,
-    //     this.pageEvent.pageSize,
-    //     this.pageEvent.pageIndex
-    //   ).then(
-    //     response => {
-    //       this.data = response.hits.hits;
-    //       this.total = response.hits.total;
-    //       this.scrollID = response._scroll_id;
-    //       console.log(response);
-    //       this.showGraph.ngOnInit();
-    //     }, error => {
-    //       console.error(error);
-    //     }).then(() => {
-    //     console.log('Show Metadata Completed!');
-    //     this.loadingData = false;
-    //   });
-    // } else {
-    //   this.es.getFilteredPage2(
-    //     this.index,
-    //     this.type,
-    //     this.case,
-    //     this.pageEvent.pageSize,
-    //     this.pageEvent.pageIndex,
-    //     this.computations,
-    //     this.displayedClusters,
-    //     this.pageSortString,
-    //     this.pageSortOrder,
-    //     Array.from(this.additionalFilters.values())
-    //   ).then(
-    //     response => {
-    //       this.data = response.hits.hits;
-    //       this.total = response.hits.total;
-    //       this.scrollID = response._scroll_id;
-    //       this.preloadedData = response.hits.hits;
-    //       this.preloadedBegin = 0;
-    //       this.preloadedEnd = this.pageEvent.pageSize;
-    //       this.virtualArray.length = this.total;
-    //     }, error => {
-    //       console.error(error);
-    //     }).then(() => {
-    //     console.log('Show Metadata Completed!');
-    //     this.loadingData = false;
-    //   });
-    // }
-      this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
-      this.clusterManager.case = this.case;
-      this.clusterManager.clusters = this.clusters;
-      this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
-          .then(resp => {
-            console.log('list data loaded async', resp, resp.data, resp.total);
-            this.data = resp.data;
-            this.total = resp.total;
-            this.preloadedData = resp.data;
-            this.preloadedBegin = 0;
-            this.preloadedEnd = this.pageEvent.pageSize;
-            this.virtualArray.length = this.total;
-            this.loadingData = false;
-            this.visibleData = this.data;
-          });
+    console.log('CLUSTERS DIFF', this.clusters, this.oldClusters, this.preloadVisibleStart, this.visibleData[0]);
+    this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
+    this.clusterManager.case = this.case;
+    this.clusterManager.clusters = this.clusters;
+    // this.clusterManager.getDifferenceShift(this.oldClusters, this.preloadVisibleStart, this.visibleData[0]);
+    this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
+        .then(resp => {
+          console.log('list data loaded async', resp, resp.data, resp.total);
+          this.data = resp.data;
+          this.total = resp.total;
+          this.preloadedData = resp.data;
+          this.preloadedBegin = 0;
+          this.preloadedEnd = this.pageEvent.pageSize;
+          this.virtualArray.length = this.total;
+          this.loadingData = false;
+          this.visibleData = this.data;
+        });
+    this.oldClusters = lodash.cloneDeep(this.clusters);
   }
 
   showNextPage() {
@@ -575,5 +532,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
     filter.type = 'REGEX';
     computation.filters.add(filter);
     this.makeManualCluster.emit(computation);
+  }
+
+  skipTheBlockByHighlight(toTheEnd: boolean, index): void {
+        console.log('skip');
   }
 }

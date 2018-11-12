@@ -201,7 +201,7 @@
     </div>
     <virtual-scroller [style.height.vh]="listViewScrollHeight" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
       <div #container>
-        <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData">
+        <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData; index as i">
           <span *ngFor="let tableItem of displayedTableColumns">
             <div class="table-select" *ngIf="tableItem == 'select'" [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}" (click)="tableSelect(element._id)"></div>
               <!--<div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">-->
@@ -276,4 +276,6 @@
 <div #highlightedBox id="highlightedBox" class="highlightedBox">
   {{highlightedText}}
   <span class="glyphicon glyphicon-indent-right clickable highlighted-icon" matTooltip="Make cluster by path" [matTooltipPosition]="'above'" (click)="makeClusterByHighlight()"></span>
+  <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(true, 0)"></span>
+  <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(false, 0)"></span>
 </div>
