@@ -77,9 +77,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadedRequestedBegin: number;
   preloadedEnd;
   preloadVisibleStart = 0;
-  preloadedBufferSize = 1000; // buffer window size
-  preloadBufferOffset = 400; // shift of buffer window
-  preloadBufferBorder = 300; // when to trigger buffer shift (to the end of buffer window)
+  preloadedBufferSize = 3000; // buffer window size
+  preloadBufferOffset = 1000; // shift of buffer window
+  preloadBufferBorder = 1200; // when to trigger buffer shift (to the end of buffer window)
+  preloadBufferState = false;
 
   loadingData = false;
 
@@ -444,6 +445,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   // TODO struktura s predbezne nahranymy daty - napr preload, kde bude +/- 50 vic dat nez v zobrazenych,
   // TODO z toho se budou brat data pro zobrazeni pokud budou v rozsahu. Pokud se budu blizit k hranici, tak nahraju novou strukturu preload
+  // Method called by virtual scroll to get visible data.
   loadVisibleData($event) {
     console.log($event);
     const start = $event['start'];
@@ -462,34 +464,50 @@ export class ListViewComponent implements OnInit, OnDestroy {
           console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
           if ((start - this.preloadedBegin < this.preloadBufferBorder) && (start > this.preloadBufferBorder)) {
             const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
-            this.preloadData(begVal, this.preloadedBufferSize, null, null, false);
+            this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
           }
           if (this.preloadedEnd - end < this.preloadBufferBorder && this.preloadedEnd < this.total) {
             const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
-            this.preloadData(begVal, this.preloadedBufferSize, null, null, false);
+            this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
           }
         } else {
           if (end > this.preloadedEnd) {
             const begVal = end - (this.preloadedBufferSize - this.preloadBufferOffset) < 0 ? 0 : end - (this.preloadedBufferSize - this.preloadBufferOffset);
-            this.preloadData(begVal, this.preloadedBufferSize, start, end, true);
+            this.preloadData(begVal, this.preloadedBufferSize, start, end, true, false);
           } else {
             const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
-            this.preloadData(begVal, this.preloadedBufferSize, start, end, true);
+            this.preloadData(begVal, this.preloadedBufferSize, start, end, true, false);
           }
         }
     }
   }
 
-  preloadData(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean) {
+  // Method called to preload data to buffer for virtual scroll.
+  preloadData(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean, preloadBuffer: boolean) {
     this.preloadedRequestedBegin = begin;
-    setTimeout(() => {
-      if (this.preloadedRequestedBegin === begin) {
-        if (loadingState) {
-            this.loadingData = true;
-        }
-        this.clusterManager.getData(this.index, this.type, begin, size, this.pageSortString, this.pageSortOrder)
+    console.log('preload data: ', begin, size, loadingState, preloadBuffer);
+    if (!this.preloadBufferState && preloadBuffer) {
+        console.log('calling preload');
+        this.preloadBufferState = true;
+        this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
+    } else {
+        setTimeout(() => {
+            if (this.preloadedRequestedBegin === begin) {
+                this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
+            }
+        }, 300);
+    }
+
+  }
+
+  // Method called to load data from database into buffer.
+  dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean, preloadBuffer: boolean) {
+      if (loadingState) {
+          this.loadingData = true;
+      }
+      this.clusterManager.getData(this.index, this.type, begin, size, this.pageSortString, this.pageSortOrder)
           .then(resp => {
-              console.log('??? async called virtual scroll', resp, resp.data, resp.total);
+              console.log('??? async called virtual scroll', resp, resp.data, resp.total, 'from: ', begin, 'size: ', size);
               this.preloadedData = resp.data;
               this.preloadedBegin = begin;
               this.preloadedEnd = this.preloadedBegin + size;
@@ -501,43 +519,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
               }
           }).then(() => {
           console.log('Preload data - done!');
-            if (loadingState) {
-                this.loadingData = false;
-            }
-        });
-        // this.es.getFilteredPageScroll(
-        //   this.index,
-        //   this.type,
-        //   this.case,
-        //   size,
-        //   begin,
-        //   this.filter,
-        //   this.displayedClusters,
-        //   this.pageSortString,
-        //   this.pageSortOrder,
-        //   Array.from(this.additionalFilters.values())
-        // ).then(
-        //   response => {
-        //     this.preloadedData = response.hits.hits;
-        //     this.preloadedBegin = begin;
-        //     this.preloadedEnd = this.preloadedBegin + 100;
-        //     if (visibleDataStart != null && visibleDataEnd != null) {
-        //       this.visibleData = this.preloadedData.slice(
-        //         (visibleDataStart - this.preloadedBegin),
-        //         (visibleDataEnd - (this.preloadedBegin) + 1)
-        //       );
-        //     }
-        //   }, error => {
-        //     console.error(error);
-        //   }).then(() => {
-        //   console.log('Preload data - done!');
-        //   if (loadingState) {
-        //     this.loadingData = false;
-        //   }
-        // });
-      }
-    }, 300);
-
+          if (loadingState) {
+              this.loadingData = false;
+          }
+          if (preloadBuffer) {
+              this.preloadBufferState = false;
+          }
+      });
   }
 
   tableSelect(id) {
