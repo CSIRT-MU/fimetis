@@ -36,6 +36,51 @@ export class ClusterDao {
         });
     }
 
+    getNumberOfEntries(index, type, case_name, clusters, time_border): Promise<DataModel> {
+        let time_filter = '';
+        // time_filter += '{';     // start of time_filter
+        // time_filter += '"query": {'; // start of query
+
+        time_filter += '{';
+        time_filter += '"range": {'; // start of range
+        time_filter += '"@timestamp": {';   // start of timestamp definition
+        time_filter += '"lt": "' + time_border + '"';
+        time_filter += '}';     // end of timestamp definition
+        time_filter += '}';     // end of range
+        time_filter += '}';
+
+        // time_filter += '}';     // end of query
+        // time_filter += '}';     // end of time_filter
+
+        const from = 0;
+        const size = 1;
+        const sort = 'timestamp';
+        const sort_order = 'asc';
+        const graph_filter = null;
+
+        return new Promise((resolve, reject) => {
+            this.es.runQuery(index, type, this.buildQuery(
+                case_name,
+                clusters,
+                [time_filter],
+                graph_filter,
+                from,
+                size,
+                sort,
+                sort_order)
+            ).then(
+                    response => {
+                        const count = response.hits.total;
+                        resolve(count);
+                        console.log(count);
+                    }, error => {
+                        console.error(error);
+                        reject();
+                    }
+            );
+        });
+    }
+
 
     getStoredClusters(index, type, case_name): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -165,6 +210,10 @@ export class ClusterDao {
                 console.error(error);
             });
         }
+    }
+
+    getNumberOfEntriesFromResult(index, type, clusters, additional_filters) {
+
     }
 
 }

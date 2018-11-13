@@ -74,4 +74,33 @@ export class ClusterManager {
         this.clusterDao.removeStoredCluster(index, type, cluster, this.case);
 
     }
+
+    async getDifferenceShift(oldClusters, preloadVisibleStart, mactime_entry) {
+        if (oldClusters == null || oldClusters === undefined || mactime_entry === undefined) {
+            return null;
+        }
+
+        if (oldClusters.length === 0) {
+            return null;
+        }
+        // console.log(oldClusters);
+        // console.log(preloadVisibleStart);
+        // console.log(mactime_entry);
+
+        // how many entries before given mactime_entry left or were added
+        // add to both old and new the criterium time  get the number of results and count difference,
+
+        const index = 'metadata';
+        const type = '';
+
+        const old_number = await this.clusterDao.getNumberOfEntries(index, type, this.case, oldClusters, mactime_entry._source['@timestamp']);
+        const new_number = await this.clusterDao.getNumberOfEntries(index, type, this.case, this.clusters, mactime_entry._source['@timestamp']);
+        console.log(old_number);
+        console.log(new_number);
+
+        console.log(new_number - old_number);
+
+
+        return new_number - old_number;
+    }
 }
