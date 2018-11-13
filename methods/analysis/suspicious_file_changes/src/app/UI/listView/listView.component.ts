@@ -81,8 +81,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadedRequestedBegin: number;
   preloadedEnd;
   // preloadVisibleStart = 0;
-  preloadedBufferSize = 4000; // buffer window size minimum = (2*preloadBufferBorder) + preloadBufferOffset
-  preloadBufferOffset = 1200; // shift of buffer window
+  preloadedBufferSize = 4000; // buffer window size - minimum = (2*preloadBufferBorder) + preloadBufferOffset
+  preloadBufferOffset = 1200; // shift of buffer window - should be bigger than preloadBufferBorder
   preloadBufferBorder = 1000; // when to trigger buffer shift (to the end of buffer window)
   preloadBufferState = false;
   visibleDataFirstIndex = 0;
@@ -201,13 +201,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
-  init() {
+  async init() {
     this.loadingData = true;
     console.log('CLUSTERS DIFF', this.clusters, this.oldClusters, this.visibleData[0]);
     this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
     this.clusterManager.case = this.case;
     this.clusterManager.clusters = this.clusters;
-    // this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
+    const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
     this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
         .then(resp => {
           console.log('list data loaded async', resp, resp.data, resp.total);
@@ -219,6 +219,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
           this.virtualArray.length = this.total;
           this.loadingData = false;
           this.visibleData = this.data;
+          this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
         });
     this.oldClusters = lodash.cloneDeep(this.clusters);
   }

@@ -77,11 +77,11 @@ export class ClusterManager {
 
     async getDifferenceShift(oldClusters, preloadVisibleStart, mactime_entry) {
         if (oldClusters == null || oldClusters === undefined || mactime_entry === undefined) {
-            return null;
+            return 0;
         }
 
         if (oldClusters.length === 0) {
-            return null;
+            return 0;
         }
         // console.log(oldClusters);
         // console.log(preloadVisibleStart);
