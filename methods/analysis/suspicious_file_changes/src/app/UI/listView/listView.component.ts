@@ -82,8 +82,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadedEnd;
   // preloadVisibleStart = 0;
   preloadedBufferSize = 4000; // buffer window size minimum = (2*preloadBufferBorder) + preloadBufferOffset
-  preloadBufferOffset = 1000; // shift of buffer window
-  preloadBufferBorder = 1200; // when to trigger buffer shift (to the end of buffer window)
+  preloadBufferOffset = 1200; // shift of buffer window
+  preloadBufferBorder = 1000; // when to trigger buffer shift (to the end of buffer window)
   preloadBufferState = false;
   visibleDataFirstIndex = 0;
 
@@ -409,11 +409,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
   // TODO z toho se budou brat data pro zobrazeni pokud budou v rozsahu. Pokud se budu blizit k hranici, tak nahraju novou strukturu preload
   // Method called by virtual scroll to get visible data.
   loadVisibleData($event) {
-    console.log($event);
+    // console.log($event);
     const start = $event['start'];
     const end = $event['end'];
-  console.log('visible start index:', this.visibleDataFirstIndex);
-  this.visibleDataFirstIndex = start;
+    // console.log('visible start index:', this.visibleDataFirstIndex);
+    this.visibleDataFirstIndex = start;
     if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
         if (end <= this.preloadedEnd && start >= this.preloadedBegin) {
           this.visibleData = this.preloadedData.slice(
@@ -422,12 +422,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
           );
           console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
           if ((start - this.preloadedBegin < this.preloadBufferBorder) && (start > this.preloadBufferBorder)) {
-            console.log('start border triggered');
+            // console.log('start border triggered', 'start:', start, 'preload begin:', this.preloadedBegin, 'buffer border:', this.preloadBufferBorder);
             const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
             this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
           }
           if (this.preloadedEnd - end < this.preloadBufferBorder && this.preloadedEnd < this.total) {
-            console.log('end border triggered');
+            // console.log('end border triggered', 'end:', end, 'preload end:', this.preloadedEnd, 'buffer border:', this.preloadBufferBorder);
             const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
             this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
           }
@@ -451,7 +451,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('calling preload');
         this.preloadBufferState = true;
         this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
-    } else {
+    } else if (!preloadBuffer) {
         setTimeout(() => {
             if (this.preloadedRequestedBegin === begin) {
                 this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
