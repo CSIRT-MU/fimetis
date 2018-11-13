@@ -86,6 +86,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   preloadBufferBorder = 1000; // when to trigger buffer shift (to the end of buffer window)
   preloadBufferState = false;
   visibleDataFirstIndex = 0;
+  visibleDataLastIndex = 0;
 
 
   loadingData = false;
@@ -208,19 +209,27 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.clusterManager.case = this.case;
     this.clusterManager.clusters = this.clusters;
     const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
-    this.clusterManager.getData(this.index, this.type, 0, this.pageEvent.pageSize, this.pageSortString, this.pageSortOrder)
+    // const loadEvent = {};
+    // loadEvent['start'] = this.visibleDataFirstIndex;
+    // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;
+    // this.loadVisibleData(loadEvent);
+    let size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+    if (size === 0) {
+        size = 20;
+    }
+    this.clusterManager.getData(this.index, this.type, this.visibleDataFirstIndex, size, this.pageSortString, this.pageSortOrder)
         .then(resp => {
           console.log('list data loaded async', resp, resp.data, resp.total);
           this.data = resp.data;
           this.total = resp.total;
           this.preloadedData = resp.data;
-          this.preloadedBegin = 0;
-          this.preloadedEnd = this.pageEvent.pageSize;
+          this.preloadedBegin = this.visibleDataFirstIndex;
+          this.preloadedEnd = size;
           this.virtualArray.length = this.total;
           this.loadingData = false;
           this.visibleData = this.data;
-          this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
         });
+    this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
     this.oldClusters = lodash.cloneDeep(this.clusters);
   }
 
@@ -415,6 +424,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     const end = $event['end'];
     // console.log('visible start index:', this.visibleDataFirstIndex);
     this.visibleDataFirstIndex = start;
+    this.visibleDataLastIndex = end;
     if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
         if (end <= this.preloadedEnd && start >= this.preloadedBegin) {
           this.visibleData = this.preloadedData.slice(
