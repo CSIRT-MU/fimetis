@@ -30,10 +30,6 @@ import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 })
 export class ListViewComponent implements OnInit, OnDestroy {
 
-  @Input('index')
-  index = 'metadata';
-  @Input('type')
-  type: string;
   @Input('case')
   case: string;
   @Input('filter')
@@ -71,7 +67,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
   notice = '';
   total = 0;
 
-
+  // pagination
+    page_number = 1;
+    page_size = 1500000;
   // Virtual scroll
   listViewScrollHeight = 10;
   virtualArray: VirtualArrayModel = new VirtualArrayModel();
@@ -157,7 +155,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       this.case = params['case'];
-      this.type = params['type'];
       // if (this.type === 'aggregated-mactimes') {
       //   this.es.getAggregatedPage(
       //     this.index,
@@ -217,7 +214,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     if (size === 0) {
         size = 20;
     }
-    this.clusterManager.getData(this.index, this.type, this.visibleDataFirstIndex, size, this.pageSortString, this.pageSortOrder)
+    this.clusterManager.getData(this.visibleDataFirstIndex, size, this.pageSortString, this.pageSortOrder)
         .then(resp => {
           console.log('list data loaded async', resp, resp.data, resp.total);
           this.data = resp.data;
@@ -233,116 +230,116 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.oldClusters = lodash.cloneDeep(this.clusters);
   }
 
-  showNextPage() {
-    if (this.scrollID == null) {
-      this.pageEvent.pageIndex --;
-      if (this.type === 'aggregated-mactimes') {
-        this.es.getAggregatedPageWithScroll(
-          this.index,
-          this.type,
-          this.case,
-          this.pageEvent.pageSize,
-          this.pageEvent.pageIndex
-        ).then(
-          response => {
-            this.data = response.hits.hits;
-            this.total = response.hits.total;
-            this.scrollID = response._scroll_id;
-            console.log(response);
-          }, error => {
-            console.error(error);
-          }).then(() => {
-          console.log('Show Metadata Completed!');
-        });
-      } else {
-        this.es.getPageWithScroll(
-          this.index,
-          this.type,
-          this.case,
-          this.pageEvent.pageSize,
-          this.pageEvent.pageIndex
-        ).then(
-          response => {
-            this.data = response.hits.hits;
-            this.total = response.hits.total;
-            this.scrollID = response._scroll_id;
-            console.log(response);
-          }, error => {
-            console.error(error);
-          }).then(() => {
-          console.log('Show Metadata Completed!');
-        });
-      }
-    }
-    this.es.getNextPage(this.scrollID).then(
-      response => {
-        if (response.hits.hits) {
-          this.data = this.data.concat(response.hits.hits);
-          this.pageEvent.pageIndex ++;
-        } else {
-          this.haveNextPage = false;
-          this.notice = 'There are no more metadata!';
-        }
-        console.log(response);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-      console.log('Show next page of Metadata Completed!');
-    });
-  }
+  // showNextPage() {
+  //   if (this.scrollID == null) {
+  //     this.pageEvent.pageIndex --;
+  //     if (this.type === 'aggregated-mactimes') {
+  //       this.es.getAggregatedPageWithScroll(
+  //         this.index,
+  //         this.type,
+  //         this.case,
+  //         this.pageEvent.pageSize,
+  //         this.pageEvent.pageIndex
+  //       ).then(
+  //         response => {
+  //           this.data = response.hits.hits;
+  //           this.total = response.hits.total;
+  //           this.scrollID = response._scroll_id;
+  //           console.log(response);
+  //         }, error => {
+  //           console.error(error);
+  //         }).then(() => {
+  //         console.log('Show Metadata Completed!');
+  //       });
+  //     } else {
+  //       this.es.getPageWithScroll(
+  //         this.index,
+  //         this.type,
+  //         this.case,
+  //         this.pageEvent.pageSize,
+  //         this.pageEvent.pageIndex
+  //       ).then(
+  //         response => {
+  //           this.data = response.hits.hits;
+  //           this.total = response.hits.total;
+  //           this.scrollID = response._scroll_id;
+  //           console.log(response);
+  //         }, error => {
+  //           console.error(error);
+  //         }).then(() => {
+  //         console.log('Show Metadata Completed!');
+  //       });
+  //     }
+  //   }
+  //   this.es.getNextPage(this.scrollID).then(
+  //     response => {
+  //       if (response.hits.hits) {
+  //         this.data = this.data.concat(response.hits.hits);
+  //         this.pageEvent.pageIndex ++;
+  //       } else {
+  //         this.haveNextPage = false;
+  //         this.notice = 'There are no more metadata!';
+  //       }
+  //       console.log(response);
+  //     }, error => {
+  //       console.error(error);
+  //     }).then(() => {
+  //     console.log('Show next page of Metadata Completed!');
+  //   });
+  // }
 
-  loadPage($event) {
-    this.loadingData = true;
-    this.pageEvent = $event;
-    // let topPaginator = document.querySelector('#topPaginator');
-    // let bottomPaginator = document.querySelector('#bottomPaginator');
-    // topPaginator.page = this.pageEvent.pageIndex;
-    // bottomPaginator.page = this.pageEvent.pageIndex;
-    if (this.type === 'aggregated-mactimes') {
-      this.es.getAggregatedPage(
-        this.index,
-        this.type,
-        this.case,
-        this.pageEvent.pageSize,
-        this.pageEvent.pageIndex
-      ).then(
-        response => {
-          this.data = response.hits.hits;
-          this.total = response.hits.total;
-          this.scrollID = response._scroll_id;
-          // console.log(response);
-        }, error => {
-          console.error(error);
-        }).then(() => {
-        console.log('Show Metadata Completed!');
-        this.loadingData = false;
-      });
-    } else {
-      this.es.getFilteredPage(
-        this.index,
-        this.type,
-        this.case,
-        this.pageEvent.pageSize,
-        this.pageEvent.pageIndex,
-        this.filter,
-        this.displayedClusters,
-        this.pageSortString,
-        this.pageSortOrder,
-        Array.from(this.additionalFilters.values())
-      ).then(
-        response => {
-          this.data = response.hits.hits;
-          this.total = response.hits.total;
-          this.scrollID = response._scroll_id;
-          // console.log(response);
-        }, error => {
-          console.error(error);
-        }).then(() => {
-        console.log('Show Metadata Completed!');
-        this.loadingData = false;
-      });
-    }
-  }
+  // loadPage($event) {
+  //   this.loadingData = true;
+  //   this.pageEvent = $event;
+  //   // let topPaginator = document.querySelector('#topPaginator');
+  //   // let bottomPaginator = document.querySelector('#bottomPaginator');
+  //   // topPaginator.page = this.pageEvent.pageIndex;
+  //   // bottomPaginator.page = this.pageEvent.pageIndex;
+  //   if (this.type === 'aggregated-mactimes') {
+  //     this.es.getAggregatedPage(
+  //       this.index,
+  //       this.type,
+  //       this.case,
+  //       this.pageEvent.pageSize,
+  //       this.pageEvent.pageIndex
+  //     ).then(
+  //       response => {
+  //         this.data = response.hits.hits;
+  //         this.total = response.hits.total;
+  //         this.scrollID = response._scroll_id;
+  //         // console.log(response);
+  //       }, error => {
+  //         console.error(error);
+  //       }).then(() => {
+  //       console.log('Show Metadata Completed!');
+  //       this.loadingData = false;
+  //     });
+  //   } else {
+  //     this.es.getFilteredPage(
+  //       this.index,
+  //       this.type,
+  //       this.case,
+  //       this.pageEvent.pageSize,
+  //       this.pageEvent.pageIndex,
+  //       this.filter,
+  //       this.displayedClusters,
+  //       this.pageSortString,
+  //       this.pageSortOrder,
+  //       Array.from(this.additionalFilters.values())
+  //     ).then(
+  //       response => {
+  //         this.data = response.hits.hits;
+  //         this.total = response.hits.total;
+  //         this.scrollID = response._scroll_id;
+  //         // console.log(response);
+  //       }, error => {
+  //         console.error(error);
+  //       }).then(() => {
+  //       console.log('Show Metadata Completed!');
+  //       this.loadingData = false;
+  //     });
+  //   }
+  // }
 
   setPageSizeOptions(setPageSizeOptionsInput: string) {
     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
@@ -477,7 +474,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
       if (loadingState) {
           this.loadingData = true;
       }
-      this.clusterManager.getData(this.index, this.type, begin, size, this.pageSortString, this.pageSortOrder)
+      const begin_with_page = begin + ((this.page_number - 1) * this.page_size);
+      this.clusterManager.getData(begin_with_page, size, this.pageSortString, this.pageSortOrder)
           .then(resp => {
               console.log('??? async called virtual scroll', resp, resp.data, resp.total, 'from: ', begin, 'size: ', size);
               this.preloadedData = resp.data;
