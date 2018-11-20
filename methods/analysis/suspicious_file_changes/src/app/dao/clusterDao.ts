@@ -11,9 +11,9 @@ export class ClusterDao {
     }
 
 
-    getData(index, type, case_name, clusters, additional_filters, graph_filter, from, size, sort, sort_order): Promise<DataModel> {
+    getData(case_name, clusters, additional_filters, graph_filter, from, size, sort, sort_order): Promise<DataModel> {
         return new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, this.buildQuery(
+            this.es.runQuery(this.buildQuery(
                 case_name,
                 clusters,
                 additional_filters,
@@ -36,7 +36,7 @@ export class ClusterDao {
         });
     }
 
-    getNumberOfEntries(index, type, case_name, clusters, time_border): Promise<DataModel> {
+    getNumberOfEntries(case_name, clusters, time_border): Promise<DataModel> {
         let time_filter = '';
         // time_filter += '{';     // start of time_filter
         // time_filter += '"query": {'; // start of query
@@ -59,7 +59,7 @@ export class ClusterDao {
         const graph_filter = null;
 
         return new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, this.buildQuery(
+            this.es.runQuery(this.buildQuery(
                 case_name,
                 clusters,
                 [time_filter],
@@ -82,9 +82,9 @@ export class ClusterDao {
     }
 
 
-    getStoredClusters(index, type, case_name): Promise<any> {
+    getStoredClusters(case_name): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.es.getTags(index, type, case_name).then(
+            this.es.getTags(case_name).then(
                 response => {
                     const aggrCluster = new ClusterModel();
                     aggrCluster.name = 'Aggregation';
@@ -169,12 +169,10 @@ export class ClusterDao {
     }
 
 
-    storeCluster(index, type, cluster: ClusterModel, case_name) {
+    storeCluster(cluster: ClusterModel, case_name) {
         if (!cluster.tagged) {
             const filter = this.elasticsearchBaseQueryDao.getComputationFilterString(cluster.computation);
             this.es.addTag(
-                index,
-                type,
                 case_name,
                 filter,
                 cluster.name
@@ -191,11 +189,9 @@ export class ClusterDao {
     }
 
 
-    removeStoredCluster(index, type, cluster: ClusterModel, case_name) {
+    removeStoredCluster(cluster: ClusterModel, case_name) {
         if (cluster.tagged) {
             this.es.removeTag(
-                index,
-                type,
                 case_name,
                 cluster.tag,
                 null,
@@ -210,10 +206,6 @@ export class ClusterDao {
                 console.error(error);
             });
         }
-    }
-
-    getNumberOfEntriesFromResult(index, type, clusters, additional_filters) {
-
     }
 
 }

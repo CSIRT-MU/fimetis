@@ -12,11 +12,11 @@ export class BaseManager {
         this.baseManagerDao = new BaseDao(es);
     }
 
-    async getCases(index, type) {
-        return this.baseManagerDao.getCases(index, type);
+    async getCases() {
+        return this.baseManagerDao.getCases();
     }
 
-    async getFilters(index, type) {
-        return this.baseManagerDao.getFilters(index, type);
+    async getFilters() {
+        return this.baseManagerDao.getFilters();
     }
 }

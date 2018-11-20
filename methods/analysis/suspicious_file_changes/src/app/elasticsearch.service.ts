@@ -7,6 +7,12 @@ import {ComputationModel} from './models/computation.model';
 export class ElasticsearchService {
 
   private client: Client;
+  private metadata_index = 'metadata';
+  private metadata_type = 'mactimes';
+
+  private filter_index = 'filter';
+  private filter_type = '';
+
 
   constructor() {
     if (!this.client) {
@@ -35,8 +41,8 @@ export class ElasticsearchService {
 
   getAllDocumentsWithScroll(_index, _type, _size): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       // Set to 1 minute because we are calling right back
       scroll: '1m',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
@@ -66,8 +72,8 @@ export class ElasticsearchService {
 
   getPageWithScroll(_index, _type, _case, _size, _page_index): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       scroll: '10s',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
@@ -93,8 +99,8 @@ export class ElasticsearchService {
 
   getAggregatedPageWithScroll(_index, _type, _case, _size, _page_index): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       scroll: '10s',
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
@@ -129,8 +135,8 @@ export class ElasticsearchService {
 
   getPage(_index, _type, _case, _size, _page_index): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
         'from': (_size * _page_index),
@@ -155,8 +161,8 @@ export class ElasticsearchService {
 
   getPageFiltered(_index, _type, _case, _size, _page_index, from, to): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
         'from': (_size * _page_index),
@@ -188,8 +194,8 @@ export class ElasticsearchService {
 
   getAggregatedPage(_index, _type, _case, _size, _page_index): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
       body: {
         'from': (_size * _page_index),
@@ -223,8 +229,8 @@ export class ElasticsearchService {
 
   getSubEntries(_index, _type, _case, _size, _id): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: {
         'from': 0,
         'size': _size,
@@ -263,8 +269,8 @@ export class ElasticsearchService {
 
   getCases(_index, _type): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: {
         'aggs': {
           'cases': {
@@ -280,8 +286,8 @@ export class ElasticsearchService {
 
   getFilters(_index, _type): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.filter_index,
+      type: this.filter_type,
       body: {
         'aggs': {
           'filters': {
@@ -295,10 +301,10 @@ export class ElasticsearchService {
     });
   }
 
-  getTags(_index, _type, _case): any {
+  getTags(_case): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: {
         'query': {
           'bool': {
@@ -323,8 +329,8 @@ export class ElasticsearchService {
 
   getGraphData(_index, _type, _case, _stampType): any {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: {
         'query': {
           // 'term': {
@@ -398,8 +404,8 @@ export class ElasticsearchService {
       ']' +
       '}';
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: bodyString
     });
   }
@@ -449,26 +455,34 @@ export class ElasticsearchService {
     //     });
     // }
 
-    runQuery(_index, _type, _query): any {
+    runQuery(_query): any {
         return this.client.search({
-            index: _index,
-            type: _type,
+            index: this.metadata_index,
+            type: this.metadata_type,
+            body: _query
+        });
+    }
+
+    runFilterQuery(_query): any {
+        return this.client.search({
+            index: this.filter_index,
+            type: this.filter_type,
             body: _query
         });
     }
 
     updateQuery(_index, _type, _query): any {
         return this.client.updateByQuery({
-            index: _index,
-            type: _type,
+            index: this.metadata_index,
+            type: this.metadata_type,
             body: _query
         });
     }
 
-  getFilterByName(_index, _type, _name) {
+  getFilterByName(_name) {
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.filter_index,
+      type: this.filter_type,
       body: {
         'query': {
           'term': {
@@ -500,13 +514,13 @@ export class ElasticsearchService {
     '}' +
     '}';
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: bodyString
     });
   }
 
-  addTag(_index, _type, _case, _filter: string, _tag: string): any {
+  addTag(_case, _filter: string, _tag: string): any {
     let bodyString = '{';
     bodyString = bodyString + this.queryBuilder(_filter, _case, null, null, null);
     bodyString = bodyString + ',' +
@@ -519,13 +533,13 @@ export class ElasticsearchService {
       '}' +
       '}';
     return this.client.updateByQuery({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: bodyString
     });
   }
 
-  removeTag(_index, _type, _case, _filter: string, _clusters: string[], _tag: string): any {
+  removeTag(_case, _filter: string, _clusters: string[], _tag: string): any {
     let bodyString = '{';
     bodyString = bodyString + this.queryBuilder(_filter, _case, _clusters, null, null);
     bodyString = bodyString + ',' +
@@ -538,8 +552,8 @@ export class ElasticsearchService {
       '}' +
       '}';
     return this.client.updateByQuery({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: bodyString
     });
   }
@@ -583,8 +597,8 @@ export class ElasticsearchService {
       ']' +
       '}';
     return this.client.search({
-      index: _index,
-      type: _type,
+      index: this.metadata_index,
+      type: this.metadata_type,
       body: bodyString
     });
   }

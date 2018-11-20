@@ -8,7 +8,7 @@ export class BaseDao {
     }
 
 
-    async getCases(index, type): Promise<any> {
+    async getCases(): Promise<any> {
         const query = {
             'aggs': {
                 'cases': {
@@ -21,7 +21,7 @@ export class BaseDao {
         };
 
         const promise = new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, query)
+            this.es.runQuery(query)
                 .then(response => {
                         const cases = response.aggregations.cases.buckets;
                         resolve(cases);
@@ -35,7 +35,7 @@ export class BaseDao {
     }
 
 
-    async getFilters(index, type): Promise<any> {
+    async getFilters(): Promise<any> {
         const query = {
             'aggs': {
                 'filters': {
@@ -48,7 +48,7 @@ export class BaseDao {
         };
 
         const promise = new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, query)
+            this.es.runFilterQuery(query)
                 .then(response => {
                         const filters = response.aggregations.filters.buckets;
                         console.log(filters);

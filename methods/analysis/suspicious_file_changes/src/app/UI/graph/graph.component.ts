@@ -12,8 +12,6 @@ import {ClusterModel} from '../../models/cluster.model';
 })
 export class GraphComponent implements OnInit {
 
-  @Input() _index: string;
-  @Input() _type: string;
   @Input() _case: string;
   @Input() _filter: string;
   @Input() _clusters: ClusterModel[] = [];
@@ -72,8 +70,6 @@ export class GraphComponent implements OnInit {
   }
 
   init() {
-      this.manager.index = this._index;
-      this.manager.type = this._type;
       this.manager.case = this._case;
       // this.manager.filter = this._filter;
       this.manager.clusters = this._clusters;

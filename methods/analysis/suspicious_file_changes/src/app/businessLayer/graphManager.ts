@@ -13,8 +13,6 @@ import {GraphDao} from '../dao/graphDao';
 @Injectable()
 export class GraphManager {
 
-    private _index;
-    private _type;
     private _case;
     private _clusters: ClusterModel[] = [];
     private _frequency;
@@ -27,22 +25,6 @@ export class GraphManager {
 
     }
 
-
-    get index() {
-        return this._index;
-    }
-
-    set index(value) {
-        this._index = value;
-    }
-
-    get type() {
-        return this._type;
-    }
-
-    set type(value) {
-        this._type = value;
-    }
 
     get case() {
         return this._case;
@@ -81,12 +63,12 @@ export class GraphManager {
         const frequency = await this.getFrequency();
 
 
-        return this.graphDao.getData(this.index, this.type, this.case, this.clusters, this.additionalFilters, mactime_type, frequency);
+        return this.graphDao.getData(this.case, this.clusters, this.additionalFilters, mactime_type, frequency);
 
     }
 
     async getFirstOrLast(ascOrDesc) {
-        return this.graphDao.getFirstOrLast(this.index, this.type, this.case, this.clusters, this.additionalFilters, ascOrDesc);
+        return this.graphDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, ascOrDesc);
     }
 
 
@@ -95,8 +77,8 @@ export class GraphManager {
         let last = 0;
         const one_day = 1000 * 60 * 60 * 24;
 
-        first = await this.graphDao.getFirstOrLast(this.index, this.type, this.case, this.clusters, this.additionalFilters, 'asc');
-        last = await this.graphDao.getFirstOrLast(this.index, this.type, this.case, this.clusters, this.additionalFilters, 'desc');
+        first = await this.graphDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
+        last = await this.graphDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
 
         let frequency = 'day';
         if (first !== 0 && last !== 0 && first !== undefined && last !== undefined) {

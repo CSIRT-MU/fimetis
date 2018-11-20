@@ -10,10 +10,10 @@ export class GraphDao {
     }
 
 
-    async getData(index, type, case_name, clusters, additional_filters,  mactime_type, frequency): Promise<any> {
+    async getData(case_name, clusters, additional_filters,  mactime_type, frequency): Promise<any> {
         const queryString = this.buildQuery(case_name, clusters, additional_filters, mactime_type, frequency);
         const promise = new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, queryString)
+            this.es.runQuery(queryString)
                 .then(response => {
                         const data = response.aggregations.dates.buckets;
                         const x = data.map(d => d['key_as_string']);
@@ -30,10 +30,10 @@ export class GraphDao {
     }
 
     // asc for first entry, desc for last entry
-    getFirstOrLast(index, type, case_name, clusters, additional_filters, ascOrDesc): Promise<any>  {
+    getFirstOrLast(case_name, clusters, additional_filters, ascOrDesc): Promise<any>  {
         const promise = new Promise((resolve, reject) => {
             let entry;
-            this.es.runQuery(index, type, this.buildFirstOrLastQuery(case_name, clusters, additional_filters, ascOrDesc, null))
+            this.es.runQuery(this.buildFirstOrLastQuery(case_name, clusters, additional_filters, ascOrDesc, null))
                 .then(
                     response => {
                         if (response.hits.total !== 0) {
@@ -81,6 +81,7 @@ export class GraphDao {
 
 
     buildQuery(case_name, clusters, additional_filters, mactime_type, frequency) {
+        console.log(additional_filters);
         let builded_query = '{'; // start of all query string
 
         // get the base query string

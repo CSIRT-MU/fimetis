@@ -23,11 +23,6 @@ import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 })
 
 export class DashboardComponent implements OnInit {
-    index = 'metadata';
-    type = '';
-    filterIndex = 'filter';
-    filterType = '';
-
     clusterManager: ClusterManager;
     computationManager: ComputationManager;
     baseManager: BaseManager;
@@ -102,7 +97,7 @@ export class DashboardComponent implements OnInit {
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
 
-        this.baseManager.getCases(this.index, this.type).then(
+        this.baseManager.getCases().then(
             response => {
                 this.cases = response;
             }, error => {
@@ -111,7 +106,7 @@ export class DashboardComponent implements OnInit {
             console.log('Show Cases completed!');
         });
 
-        this.baseManager.getFilters(this.filterIndex, this.filterType).then(
+        this.baseManager.getFilters().then(
             response => {
                 this.filters = response;
             }, error => {
@@ -135,31 +130,17 @@ export class DashboardComponent implements OnInit {
         this.computationManager.case = this.selectedCase;
         this.initPreLoadedClusters();
         this.loadStoredClusters();
-        this.clusteringOverview = this.computationManager.getPreloadedClusterings(this.index, this.type);
+        this.clusteringOverview = this.computationManager.getPreloadedClusterings();
         this.listViewComponent.init();
     }
 
 
 
     loadStoredClusters() {
-        this.clusterManager.getStoredClusters(this.index, this.type).then(
+        this.clusterManager.getStoredClusters().then(
             response => {
                 this.savedClusters = response;
             });
-        // this.es.getTags(
-        //   this.index,
-        //   this.type,
-        //   this.selectedCase
-        // ).then(
-        //   response => {
-        //     this.storedClusters = new Set<string>(response.aggregations.tags.buckets);
-        //     console.log(response);
-        //     console.log(this.storedClusters);
-        //   }, error => {
-        //     console.error(error);
-        //   }).then(() => {
-        //   console.log('Show Tags Completed!');
-        // });
     }
 
     async initPreLoadedClusters() {
@@ -260,7 +241,7 @@ export class DashboardComponent implements OnInit {
         this.computationManager.addComputation(preloaded_computation);
 
 
-        this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters(this.index, this.type));
+        this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
     }
 
     getClusters() {
@@ -269,8 +250,6 @@ export class DashboardComponent implements OnInit {
 
     loadFilter() {
         this.es.getFilterByName(
-            this.filterIndex,
-            this.filterType,
             this.selectedFilter
         ).then(
             response => {
@@ -288,8 +267,6 @@ export class DashboardComponent implements OnInit {
     async getFilter(name): Promise<any> {
         return new Promise((resolve, reject) => {
             this.es.getFilterByName(
-                this.filterIndex,
-                this.filterType,
                 name
             ).then(
                 response => {
@@ -354,8 +331,6 @@ export class DashboardComponent implements OnInit {
             this.combinedFilter = null;
         }
         console.log(resFilter);
-        this.listViewComponent.index = this.index;
-        this.listViewComponent.type = this.type;
         this.listViewComponent.case = this.selectedCase;
         this.listViewComponent.filter = this.combinedFilter;
         this.listViewComponent.displayedClusters = this.selectedStoredClusters;
@@ -401,8 +376,6 @@ export class DashboardComponent implements OnInit {
         console.log('store');
         for (const cluster of this.selectedComputedClusters) {
             this.es.addTag(
-                this.index,
-                this.type,
                 this.selectedCase,
                 this.combinedFilter,
                 cluster
@@ -426,8 +399,6 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.init();
         for (const cluster of this.selectedStoredClusters) {
             this.es.removeTag(
-                this.index,
-                this.type,
                 this.selectedCase,
                 this.combinedFilter,
                 this.selectedStoredClusters,
@@ -470,8 +441,6 @@ export class DashboardComponent implements OnInit {
                 console.log(filter);
                 filter = ',' + filter;
                 this.es.addTag(
-                    this.index,
-                    this.type,
                     this.selectedCase,
                     filter,
                     (namePrefix + result)
@@ -612,8 +581,8 @@ export class DashboardComponent implements OnInit {
         console.log('compute');
         this.computationManager.case = this.selectedCase;
         this.computationManager.computations = Array.from(this.computations);
-        this.clusteringOverview = this.computationManager.getClusterings(this.index, this.type);
-        const clusters = this.computationManager.getClusters(this.index, this.type);
+        this.clusteringOverview = this.computationManager.getClusterings();
+        const clusters = this.computationManager.getClusters();
         this.clusters.clear();
         for (const cluster of clusters) {
             this.clusters.add(cluster);
@@ -651,6 +620,6 @@ export class DashboardComponent implements OnInit {
         console.log('comp', computation);
         this.computationManager.computations = [];
         this.computationManager.addComputation(computation);
-        this.manualClusters = this.manualClusters.concat(this.computationManager.getClusters(this.index, this.type));
+        this.manualClusters = this.manualClusters.concat(this.computationManager.getClusters());
     }
 }

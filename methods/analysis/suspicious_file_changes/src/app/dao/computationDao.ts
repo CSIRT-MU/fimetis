@@ -12,20 +12,17 @@ export class ComputationDao {
         this.elasticsearchBaseQueryDao = new ElasticsearchBaseQueryDao();
     }
 
-    getClustersForComputation(index, type, case_name, computation: ComputationModel): ClusterModel[] {
+    getClustersForComputation(case_name, computation: ComputationModel): ClusterModel[] {
         const _clusters: ClusterModel[] = [];
         // TODO return more than one cluster
         const cluster = new ClusterModel();
         console.log(this.buildComputationQuery(case_name, computation));
-        this.es.runQuery(index, type, this.buildComputationQuery(case_name, computation)).then(
+        this.es.runQuery(this.buildComputationQuery(case_name, computation)).then(
             response => {
                 cluster.count = response.hits.total;
                 console.log(response);
             }
         );
-        // this.getDatabaseData(index, type, computation).then(res => {
-        //     cluster.count = res;
-        // });
         cluster.name = computation.name;
         cluster.color = computation.color;
         cluster.tagged = false;
@@ -35,9 +32,9 @@ export class ComputationDao {
         return _clusters;
     }
 
-    async getDatabaseData(index, type, case_name, computation): Promise<any> {
+    async getDatabaseData(case_name, computation): Promise<any> {
         const promise = new Promise((resolve, reject) => {
-            this.es.runQuery(index, type, this.buildComputationQuery(computation, case_name)).then(
+            this.es.runQuery(this.buildComputationQuery(computation, case_name)).then(
                 response => {
                     resolve(response.hits.total);
                 }

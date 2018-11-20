@@ -39,21 +39,21 @@ export class ComputationManager {
         this._case = value;
     }
 
-    getClustersForComputation(index, type, computation: ComputationModel): ClusterModel[] {
-        return this.computationDao.getClustersForComputation(index, type, this.case, computation);
+    getClustersForComputation(computation: ComputationModel): ClusterModel[] {
+        return this.computationDao.getClustersForComputation(this.case, computation);
     }
 
-    async getDatabaseData(index, type, computation): Promise<any> {
-        return this.computationDao.getDatabaseData(index, type, this.case, computation);
+    async getDatabaseData(computation): Promise<any> {
+        return this.computationDao.getDatabaseData(this.case, computation);
     }
 
 
-    getClusters(index, type): ClusterModel[] {
+    getClusters(): ClusterModel[] {
         let _clusters: ClusterModel[] = [];
 
         for (const computation of this.computations) {
             if (computation.isSelected) {
-                const result = this.computationDao.getClustersForComputation(index, type, this.case, computation);
+                const result = this.computationDao.getClustersForComputation(this.case, computation);
                 _clusters = _clusters.concat(result);
             }
         }
@@ -61,13 +61,13 @@ export class ComputationManager {
         return _clusters;
     }
 
-    getClusterings(index, type): ClusteringOverviewModel[] {
+    getClusterings(): ClusteringOverviewModel[] {
         let _clusters: ClusterModel[] = [];
         const clusterings: ClusteringOverviewModel[] = [];
 
         for (const computation of this.computations) {
             if (computation.isSelected) {
-                const result = this.computationDao.getClustersForComputation(index, type, this.case, computation);
+                const result = this.computationDao.getClustersForComputation(this.case, computation);
                 _clusters = _clusters.concat(result);
             }
             const clustering = new ClusteringOverviewModel();
@@ -83,13 +83,13 @@ export class ComputationManager {
         return clusterings;
     }
 
-    getPreloadedClusterings(index, type): ClusteringOverviewModel[] {
+    getPreloadedClusterings(): ClusteringOverviewModel[] {
         const clusterings: ClusteringOverviewModel[] = [];
 
         const init_clustering = new ClusteringOverviewModel();
         init_clustering.name = 'Init clustering';
         init_clustering.color = 'red';
-        init_clustering.clusters = this.clusterDao.getStoredClusters(index, type, this.case);
+        init_clustering.clusters = this.clusterDao.getStoredClusters(this.case);
 
         clusterings.push(init_clustering);
 
