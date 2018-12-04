@@ -6,7 +6,6 @@ import { ElasticsearchService } from '../../elasticsearch.service';
 import {FormControl} from '@angular/forms';
 import {GraphComponent} from '../graph/graph.component';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FilterService} from '../../filter.service';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
 import {Observable} from 'rxjs';
 import 'rxjs/add/observable/of';
@@ -22,6 +21,7 @@ import { TextSelectEvent, SelectionRectangle } from '../text-select.directive';
 import {FilterModel} from '../../models/filter.model';
 import * as lodash from 'lodash';
 import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
+import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 
 @Component({
   selector: 'app-list-view',
@@ -96,6 +96,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   pageEvent: PageEvent;
 
   private clusterManager: ClusterManager;
+  private elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
 
   @ViewChild(MatPaginator) topPaginator: MatPaginator;
   @ViewChild(MatPaginator) bottomPaginator: MatPaginator;
@@ -106,7 +107,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   @ViewChild('highlightedBox') highlightedBox: ElementRef;
   @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
-  constructor(private es: ElasticsearchService, private fs: FilterService, private route: ActivatedRoute, public dialog: MatDialog) {
+  constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog) {
     this.scrollID = '';
     this.notice = '';
     this.haveNextPage = true;
@@ -114,6 +115,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.SIZE;
+    this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
     this.clusterManager = new ClusterManager(this.es);
       this.highlightedTextBox = null;
       this.highlightedText = '';
@@ -376,7 +378,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   searchByString() {
     console.log('search', this.searchString);
     if  (this.searchString !== '')  {
-      this.additionalFilters.set('searchString', this.fs.buildAdditionSearchFilter(this.searchString));
+      this.additionalFilters.set('searchString', this.elasticsearchBaseQueryManager.buildAdditionSearchFilter(this.searchString));
       this.init();
     } else if (this.additionalFilters.has('searchString')) {
       this.additionalFilters.delete('searchString');
@@ -540,7 +542,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     computation.color = '#3d9fea';
     computation.isSelected = true;
     const filter = new FilterModel();
-    filter.json = this.fs.buildAdditionSearchFilter(this.highlightedText);
+    filter.json = this.elasticsearchBaseQueryManager.buildAdditionSearchFilter(this.highlightedText);
     filter.isSelected = true;
     filter.name = 'highlighted_text';
     filter.type = 'REGEX';

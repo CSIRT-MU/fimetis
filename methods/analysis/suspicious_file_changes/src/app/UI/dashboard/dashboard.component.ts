@@ -2,7 +2,6 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ElasticsearchService} from '../../elasticsearch.service';
 import {ListViewComponent} from '../listView/listView.component';
 import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
-import {FilterService} from '../../filter.service';
 import {FilterParamModel} from '../../models/filterParam.model';
 import {FilterModel} from '../../models/filter.model';
 import { NameDialogComponent } from '../dialog/name-dialog/name-dialog.component';
@@ -15,6 +14,7 @@ import {ComputationManager} from '../../businessLayer/computationManager';
 import {GraphManager} from '../../businessLayer/graphManager';
 import {BaseManager} from '../../businessLayer/baseManager';
 import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
+import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 
 @Component({
     selector: 'app-dashboard',
@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
     clusterManager: ClusterManager;
     computationManager: ComputationManager;
     baseManager: BaseManager;
+    elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
 
     setupWindowOpen = true;
     filterPanelOpenState = false;
@@ -70,10 +71,11 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatChipList)
     chipList: MatChipList;
 
-    constructor(private es: ElasticsearchService, private fs: FilterService, public dialog: MatDialog) {
+    constructor(private es: ElasticsearchService, public dialog: MatDialog) {
         this.clusterManager = new ClusterManager(this.es);
         this.computationManager = new ComputationManager(this.es);
         this.baseManager = new BaseManager(this.es);
+        this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
 
         // test only
         //   const comp = new ComputationModel();
@@ -320,7 +322,7 @@ export class DashboardComponent implements OnInit {
         let resFilter = '';
         this.selectedAppliedFilters.forEach((value) => {
             console.log(value);
-            resFilter = this.fs.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
+            resFilter = this.elasticsearchBaseQueryManager.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
             console.log(this.appliedFilters.get(value));
             clusterName = clusterName + '-' + value;
         });
@@ -437,7 +439,7 @@ export class DashboardComponent implements OnInit {
                     params.push('_id');
                     values.push(this.listViewComponent.tableSelection.selected[index]._id);
                 }
-                let filter = this.fs.buildShouldMatchFilter(params, values);
+                let filter = this.elasticsearchBaseQueryManager.buildShouldMatchFilter(params, values);
                 console.log(filter);
                 filter = ',' + filter;
                 this.es.addTag(
@@ -481,7 +483,7 @@ export class DashboardComponent implements OnInit {
                     filParam.value = this.listViewComponent.tableSelection.selected[index]._id;
                     filterParams.push(filParam);
                 }
-                const filter = this.fs.buildShouldMatchFilter(params, values);
+                const filter = this.elasticsearchBaseQueryManager.buildShouldMatchFilter(params, values);
                 const model = new FilterModel();
                 model.name = result;
                 model.completed = filter;
