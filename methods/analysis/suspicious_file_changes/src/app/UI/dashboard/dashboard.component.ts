@@ -646,15 +646,8 @@ export class DashboardComponent implements OnInit {
 
     async setDateSliderBoundary() {
         const firstAndLast = await this.baseManager.getFirstAndLast(this.selectedCase, this.getClusters(), null);
-        // this.dateSliderComponent.min = (new Date(firstAndLast[0])).getTime();
-        // this.dateSliderComponent.max = (new Date(firstAndLast[1])).getTime();
-        // this.dateSliderConfig.range.min = (new Date(firstAndLast[0])).getTime();
-        // this.dateSliderConfig.range.max = (new Date(firstAndLast[1])).getTime();
-        // this.dateSliderComponent.config = this.dateSliderConfig;
-        // this.dateSliderComponent.range = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
         this.dateSliderBoundary.min = (new Date(firstAndLast[0])).getTime();
         this.dateSliderBoundary.max = (new Date(firstAndLast[1])).getTime();
-        // this.dateSliderComponent.slider.updateUptions({range: {min: (new Date(firstAndLast[0])).getTime(), max: (new Date(firstAndLast[1])).getTime()}});
         this.dateSliderInit = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
         console.log('first', new Date(firstAndLast[0]).getTime());
         this.dateSliderComponent.step = 24 * 60 * 60 * 1000;
@@ -663,6 +656,8 @@ export class DashboardComponent implements OnInit {
 
     dateSliderChanged($event) {
         console.log($event);
+        console.log(new Date($event[0]).toISOString());
+        this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
     }
 }
 

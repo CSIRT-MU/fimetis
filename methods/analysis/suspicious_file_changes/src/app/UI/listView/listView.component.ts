@@ -388,6 +388,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
     }
   }
 
+  timeRangeFilter(from: string, to: string) {
+      console.log('time range filter: from:', from, 'to:', to);
+      if (from != null || to != null) {
+        if (from !== undefined || to !== undefined) {
+            this.additionalFilters.set('timeRange', this.elasticsearchBaseQueryManager.buildAdditionRangeFilter(from, to));
+            this.init();
+        }
+      }
+  }
+
   editTableColumns() {
     const dialogRef = this.dialog.open(SelectDialogComponent, {
       width: '350px',

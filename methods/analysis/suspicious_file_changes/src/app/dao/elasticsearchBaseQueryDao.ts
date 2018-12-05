@@ -338,7 +338,7 @@ export class ElasticsearchBaseQueryDao {
     }
 
     buildAdditionRangeFilter(from: string, to: string) {
-        let filter = '"range": {' +
+        let filter = '{"range": {' +
             '"@timestamp": {';
         if (from != null && from !== undefined) {
             filter += '"gte": "' + from + '"';
