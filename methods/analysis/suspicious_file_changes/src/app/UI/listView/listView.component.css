@@ -198,6 +198,14 @@ virtual-scroll {
   margin: -5px -5px -5px -5px;
 }
 
+.monospace-text{
+    font-family: "Bitstream Vera Sans Mono";
+}
+
+.text-align-right{
+    text-align: right;
+}
+
 .tooltip-filename {
   width: 500px;
   text-wrap: normal;
