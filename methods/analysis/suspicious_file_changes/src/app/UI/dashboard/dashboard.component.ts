@@ -16,6 +16,7 @@ import {BaseManager} from '../../businessLayer/baseManager';
 import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {NouiFormatter, NouisliderComponent} from 'ng2-nouislider';
+import {ConfigManager} from '../../../assets/configManager';
 
 @Component({
     selector: 'app-dashboard',
@@ -165,101 +166,23 @@ export class DashboardComponent implements OnInit {
 
     async initPreLoadedClusters() {
         // preloaded clusters
-        const regex_filter: FilterModel = await this.getFilter('filename_regex');
-        regex_filter.isSelected = true;
         this.computationManager.computations = [];
         this.preloadedClusters = [];
 
-        this.computationManager.case = this.selectedCase;
-        let preloaded_computation = new ComputationModel();
-        preloaded_computation.name = '/etc/ files';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        let filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '\\/etc\\/.*';
-        preloaded_computation.filters.add(filter);
-        this.computationManager.addComputation(preloaded_computation);
 
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'SSH settings';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*.ssh\\/(id_rsa|authorized_keys*).*';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
+        const configManager = new ConfigManager();
 
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'bin | sbin';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
+        const preparedComputationsFromJson = configManager.load()['prepared_computations'];
 
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'python files';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*\\.py';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
+        for (let i = 0; i < preparedComputationsFromJson.length; i++) {
+            const tmpComputation = new ComputationModel();
+            tmpComputation.name = preparedComputationsFromJson[i]['name'];
+            tmpComputation.color = preparedComputationsFromJson[i]['color'];
+            tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
+            tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
+            this.computationManager.addComputation(tmpComputation);
 
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = '.sh files';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*\\.sh';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
-
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'php files';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*\\.php';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
-
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'perl files';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*\\.pl';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
-
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'cron tabs';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '\\/var\\/spool\\/crontabs.*';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
-
-        preloaded_computation = new ComputationModel();
-        preloaded_computation.name = 'dot files';
-        preloaded_computation.color = '#886644';
-        preloaded_computation.isSelected = true;
-        filter = JSON.parse(JSON.stringify(regex_filter));
-        filter.params[0].value = '.*\\/\\..*';
-        preloaded_computation.filters.add(filter);
-        console.log(preloaded_computation);
-        this.computationManager.addComputation(preloaded_computation);
-
+        }
 
         this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
     }

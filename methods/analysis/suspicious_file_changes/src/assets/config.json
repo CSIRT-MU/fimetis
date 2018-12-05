@@ -1,0 +1,194 @@
+{
+  "prepared_computations":[
+    {
+      "name":"/usr/ files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":"\\/usr\\/.*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"/etc files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":"\\/etc\\/.*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"SSH settings",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":".*.ssh\\/(id_rsa|authorized_keys*)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"bin | sbin",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":"\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"python files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":".*\\.py"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":".sh files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":".*\\.sh"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"php files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":".*\\.php"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"perl files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":".*\\.pl"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"cron tabs",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":"\\/var\\/spool\\/crontabs.*"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":"dot files",
+      "color":"#886644",
+      "isSelected":true,
+      "filters":[
+        {
+          "name":"filename_regex",
+          "isSelected":"true",
+          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+          "params":[
+            {
+              "name":"FILENAME_REGEX",
+              "type":"REGEX",
+              "value":".*\\/\\..*"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
