@@ -15,6 +15,7 @@ import {GraphManager} from '../../businessLayer/graphManager';
 import {BaseManager} from '../../businessLayer/baseManager';
 import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
+import {NouiFormatter, NouisliderComponent} from 'ng2-nouislider';
 
 @Component({
     selector: 'app-dashboard',
@@ -59,6 +60,21 @@ export class DashboardComponent implements OnInit {
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusteringOverview: ClusteringOverviewModel[] = [];
 
+    dateSliderInit: any = [0, 20];
+    dateSliderBoundary: any = {min: 0, max: 20, tooltip: ['0', '20']};
+    dateSliderConfig: any = {
+        behaviour: 'drag',
+        connect: true,
+        range: {
+            min: 0,
+            max: 20
+        }
+    };
+    dateSliderFormatter = new DateSliderFormatter();
+
+    @ViewChild(NouisliderComponent)
+    dateSliderComponent: NouisliderComponent;
+
     @ViewChild(ListViewComponent)
     listViewComponent: ListViewComponent;
 
@@ -95,6 +111,8 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.dateSliderComponent.min = 0;
+        this.dateSliderComponent.max = 100;
         this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
@@ -365,6 +383,7 @@ export class DashboardComponent implements OnInit {
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.init();
         this.graphComponent.init();
+        this.setDateSliderBoundary();
     }
 
     setStoredClusters($event) {
@@ -623,5 +642,37 @@ export class DashboardComponent implements OnInit {
         this.computationManager.computations = [];
         this.computationManager.addComputation(computation);
         this.manualClusters = this.manualClusters.concat(this.computationManager.getClusters());
+    }
+
+    async setDateSliderBoundary() {
+        const firstAndLast = await this.baseManager.getFirstAndLast(this.selectedCase, this.getClusters(), null);
+        // this.dateSliderComponent.min = (new Date(firstAndLast[0])).getTime();
+        // this.dateSliderComponent.max = (new Date(firstAndLast[1])).getTime();
+        // this.dateSliderConfig.range.min = (new Date(firstAndLast[0])).getTime();
+        // this.dateSliderConfig.range.max = (new Date(firstAndLast[1])).getTime();
+        // this.dateSliderComponent.config = this.dateSliderConfig;
+        // this.dateSliderComponent.range = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
+        this.dateSliderBoundary.min = (new Date(firstAndLast[0])).getTime();
+        this.dateSliderBoundary.max = (new Date(firstAndLast[1])).getTime();
+        // this.dateSliderComponent.slider.updateUptions({range: {min: (new Date(firstAndLast[0])).getTime(), max: (new Date(firstAndLast[1])).getTime()}});
+        this.dateSliderInit = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
+        console.log('first', new Date(firstAndLast[0]).getTime());
+        this.dateSliderComponent.step = 24 * 60 * 60 * 1000;
+    }
+
+
+    dateSliderChanged($event) {
+        console.log($event);
+    }
+}
+
+
+export class DateSliderFormatter implements NouiFormatter {
+    to(value: number): string {
+        return new Date(value).toLocaleDateString();
+    }
+
+    from(value: string): number {
+        return new Date(value).getTime();
     }
 }

@@ -157,7 +157,9 @@
     </div>
 </div>
 <div class="grid-main">
-
+  <div class="date-slider">
+    <nouislider [min]="dateSliderBoundary.min" [max]="dateSliderBoundary.max" [connect]="true"  [tooltips]="[dateSliderFormatter, dateSliderFormatter]" [ngModel]="dateSliderInit" (change)="dateSliderChanged($event)"></nouislider>
+  </div>
 <app-graph class="graph-block" [_case]="selectedCase" [_clusters]="getClusters()" (getDateChange)="changeDateBoundary($event)" [graphPanelOpenState]="histogramPanelOpenState"  (openStateChange)="histogramPanelOpenState = $event; collapse()">
 </app-graph>
 <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)" (makeManualCluster)="makeManualCluster($event)"></app-list-view>

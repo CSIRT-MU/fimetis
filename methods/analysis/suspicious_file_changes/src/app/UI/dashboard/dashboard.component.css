@@ -64,6 +64,7 @@
     grid-area: grid-main;
     display: grid;
     grid-template-areas:
+            "date-slider"
             "graph-block"
             "list-view-block";
 }
@@ -301,4 +302,12 @@ mat-chip{
 
 .panel-header-computations{
     margin-left: 15px;
+}
+
+.date-slider{
+    grid-area: date-slider;
+    position: relative;
+    display: inline-block;
+    padding-left: 45px;
+    padding-right: 45px;
 }

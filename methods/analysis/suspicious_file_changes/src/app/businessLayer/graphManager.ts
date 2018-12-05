@@ -1,13 +1,9 @@
 import {ElasticsearchService} from '../elasticsearch.service';
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/toPromise';
-import {ClusterModel, ClusterSelectMode} from '../models/cluster.model';
-import {ComputationModel} from '../models/computation.model';
-import {FilterModel} from '../models/filter.model';
-import {FilterParamModel} from '../models/filterParam.model';
-import {query} from '@angular/animations';
-import {ElasticsearchBaseQueryManager} from './elasticsearchBaseQueryManager';
+import {ClusterModel} from '../models/cluster.model';
 import {GraphDao} from '../dao/graphDao';
+import {BaseDao} from '../dao/baseDao';
 
 
 @Injectable()
@@ -19,10 +15,11 @@ export class GraphManager {
     private _additionalFilters;
 
     private graphDao;
+    private baseDao;
 
     constructor(private es: ElasticsearchService) {
         this.graphDao = new GraphDao(es);
-
+        this.baseDao = new BaseDao(es);
     }
 
 
@@ -67,18 +64,13 @@ export class GraphManager {
 
     }
 
-    async getFirstOrLast(ascOrDesc) {
-        return this.graphDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, ascOrDesc);
-    }
-
-
     async getFrequency() {
         let first = 0;
         let last = 0;
         const one_day = 1000 * 60 * 60 * 24;
 
-        first = await this.graphDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
-        last = await this.graphDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
+        first = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
+        last = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
 
         let frequency = 'day';
         if (first !== 0 && last !== 0 && first !== undefined && last !== undefined) {

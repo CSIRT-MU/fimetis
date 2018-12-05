@@ -212,24 +212,26 @@ export class ListViewComponent implements OnInit, OnDestroy {
     // loadEvent['start'] = this.visibleDataFirstIndex;
     // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;
     // this.loadVisibleData(loadEvent);
-    let size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
-    if (size === 0) {
-        size = 20;
-    }
-    this.clusterManager.getData(this.visibleDataFirstIndex, size, this.pageSortString, this.pageSortOrder)
+    // let size = this.visibleDataLastIndex - this.visibleDataFirstIndex + 1;
+    // if (size === 0) {
+    //     size = 20;
+    // }
+    const initSize = 200;
+    this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
         .then(resp => {
           console.log('list data loaded async', resp, resp.data, resp.total);
           this.data = resp.data;
           this.total = resp.total;
           this.preloadedData = resp.data;
           this.preloadedBegin = this.visibleDataFirstIndex;
-          this.preloadedEnd = size;
+          this.preloadedEnd = this.visibleDataFirstIndex + initSize;
           this.virtualArray.length = this.total;
           this.loadingData = false;
           this.visibleData = this.data;
         });
     this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
     this.oldClusters = lodash.cloneDeep(this.clusters);
+    this.virtualScroller.refresh();
   }
 
   // showNextPage() {
@@ -418,18 +420,20 @@ export class ListViewComponent implements OnInit, OnDestroy {
   // TODO z toho se budou brat data pro zobrazeni pokud budou v rozsahu. Pokud se budu blizit k hranici, tak nahraju novou strukturu preload
   // Method called by virtual scroll to get visible data.
   loadVisibleData($event) {
-    // console.log($event);
+    console.log($event);
     const start = $event['start'];
     const end = $event['end'];
     // console.log('visible start index:', this.visibleDataFirstIndex);
-    this.visibleDataFirstIndex = start;
-    this.visibleDataLastIndex = end;
+    this.visibleDataFirstIndex = start < 0 ? 0 : start;
+    this.visibleDataLastIndex = end < 0 ? 0 : end;
     if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
         if (end <= this.preloadedEnd && start >= this.preloadedBegin) {
           this.visibleData = this.preloadedData.slice(
             (start - this.preloadedBegin),
             (end - (this.preloadedBegin) + 1)
           );
+          console.log((start - this.preloadedBegin),
+              (end - (this.preloadedBegin) + 1));
           console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
           if ((start - this.preloadedBegin < this.preloadBufferBorder) && (start > this.preloadBufferBorder)) {
             // console.log('start border triggered', 'start:', start, 'preload begin:', this.preloadedBegin, 'buffer border:', this.preloadBufferBorder);
