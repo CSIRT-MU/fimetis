@@ -150,7 +150,7 @@ export class DashboardComponent implements OnInit {
         this.clusterManager.case = this.selectedCase;
         this.computationManager.case = this.selectedCase;
         this.initPreLoadedClusters();
-        this.loadStoredClusters();
+        // this.loadStoredClusters();
         this.clusteringOverview = this.computationManager.getPreloadedClusterings();
         this.listViewComponent.init();
     }
@@ -179,6 +179,7 @@ export class DashboardComponent implements OnInit {
             tmpComputation.name = preparedComputationsFromJson[i]['name'];
             tmpComputation.color = preparedComputationsFromJson[i]['color'];
             tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
+            tmpComputation.description = preparedComputationsFromJson[i]['description'];
             tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
             this.computationManager.addComputation(tmpComputation);
 
