@@ -58,7 +58,7 @@
 
             <div class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
             <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
-            <div class="cluster-name-field">{{cluster.name}}</div>
+            <div class="cluster-name-field" matTooltip="{{cluster.description}}" [matTooltipPosition]="'right'">{{cluster.name}}</div>
             <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
         </div>
       </div>

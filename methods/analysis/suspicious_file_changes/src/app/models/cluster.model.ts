@@ -9,6 +9,7 @@ export class ClusterModel {
     tag: string;
     selectMode: ClusterSelectMode = ClusterSelectMode.notSelected;
     subClusters: ClusterModel[] = [];
+    description = '';
 }
 
 export enum ClusterSelectMode {

@@ -5,4 +5,5 @@ export class ComputationModel {
   color: string;
   filters: Set<FilterModel> = new Set<FilterModel>();
   isSelected = true;
+  description = '';
 }

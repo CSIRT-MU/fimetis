@@ -54,7 +54,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
   tableSelection = new SelectionModel<any>(true, []);
   availableTableColumns = ['select', 'doctype', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'inode', 'name', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
-  displayedTableColumns = ['select', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'inode', 'name'];
+  displayedTableColumns = ['select', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
   data: any[];
   public highlightedTextBox: SelectionRectangle | null;
   highlightedText: string;

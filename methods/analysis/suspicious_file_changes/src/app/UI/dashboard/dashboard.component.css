@@ -54,10 +54,12 @@
 
 .grid-filter{
     grid-area: grid-filter;
+    display: none;
 }
 
 .grid-computation{
     grid-area: grid-computation;
+    display: none;
 }
 
 .grid-main{
