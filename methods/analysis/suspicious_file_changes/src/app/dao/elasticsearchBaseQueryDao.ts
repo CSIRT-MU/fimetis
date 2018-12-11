@@ -2,6 +2,7 @@ import {ClusterSelectMode} from '../models/cluster.model';
 import {ComputationModel} from '../models/computation.model';
 import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
+import {stringDistance} from 'codelyzer/util/utils';
 
 export class ElasticsearchBaseQueryDao {
     getBaseQueryString(case_name, clusters, additional_filters, graph_filter) {
@@ -354,5 +355,28 @@ export class ElasticsearchBaseQueryDao {
             '}';
         return filter;
     }
+
+    buildAdditionalMactimeTypeFilter(mactimes: string[]) {
+
+        let filter = '{"bool": {' +
+            '"should": [';
+        for (let index = 0; index < mactimes.length; index++) {
+            filter += '{';
+            filter += '"query": {"match_phrase":';
+            filter += '{';
+            filter += '"type":"' + mactimes[index] + '"';
+            filter += '}';
+            filter += '}';
+            filter += '}';
+
+            if (index < (mactimes.length - 1)) {
+                filter += ',';
+            }
+        }
+        filter += ']}}';
+
+        return filter;
+    }
+
 
 }

@@ -67,6 +67,11 @@ export class ElasticsearchBaseQueryManager {
         return this.elasticsearchBaseQueryManagerDao.buildAdditionRangeFilter(from, to);
     }
 
+    buildAdditionalMactimeTypeFilter(mactimes: string[]) {
+
+        return this.elasticsearchBaseQueryManagerDao.buildAdditionalMactimeTypeFilter(mactimes);
+    }
+
 
 }
 
