@@ -239,6 +239,20 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "all files",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "All files",
+            "filters": [
+                {
+                    "name": "all_files",
+                    "isSelected": "true",
+                    "json": "{ \"match_all\": {} }",
+                    "params": []
+                }
+            ]
         }
     ]
 }
