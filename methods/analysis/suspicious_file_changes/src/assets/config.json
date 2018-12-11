@@ -1,244 +1,244 @@
 {
-  "prepared_computations":[
-    {
-      "name":"files in /usr",
-      "color":"#886644",
-      "isSelected":true,
-      "description": "",
-      "filters":[
+    "prepared_computations": [
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":"\\/usr\\/.*"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"files in /etc",
-      "color":"#886644",
-      "isSelected":true,
-      "description": "",
-      "filters":[
+            "name": "files in /usr",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files in /usr",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/usr\\/.*"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":"\\/etc\\/.*"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"user SSH files",
-      "color":"#886644",
-      "isSelected":true,
-      "description": "files according to regex .*.ssh\/(id_rsa|authorized_keys*).",
-      "filters":[
+            "name": "files in /etc",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files in /etc",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/etc\\/.*"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*.ssh\\/(id_rsa|authorized_keys*)."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"standard executable files",
-      "color":"#886644",
-      "isSelected":true,
-      "description": "files in /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin",
-      "filters":[
+            "name": "user SSH files",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files according to regex .*.ssh\/(id_rsa|authorized_keys*).",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*.ssh\\/(id_rsa|authorized_keys*)."
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":"\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*|\\/usr\\/local\\/bin.*|\\/usr\\/local\\/sbin.*"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"python scripts",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files with .py extension",
-      "filters":[
+            "name": "standard executable files",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files in /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*|\\/usr\\/local\\/bin.*|\\/usr\\/local\\/sbin.*"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\.py"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"shell scripts",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files with .sh extension",
-      "filters":[
+            "name": "python scripts",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files with .py extension",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.py"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\.sh"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"php scripts",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files with .php extension",
-      "filters":[
+            "name": "shell scripts",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files with .sh extension",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.sh"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\.php"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"perl scripts",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files with .pl extension",
-      "filters":[
+            "name": "php scripts",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files with .php extension",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.php"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\.pl"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"cron definition",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"",
-      "filters":[
+            "name": "perl scripts",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files with .pl extension",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.pl"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":"\\/var\\/spool\\/crontabs.*"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"dot files",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files that starts with a dot",
-      "filters":[
+            "name": "cron definition",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "cron definition",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/var\\/spool\\/crontabs.*"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\/\\..*"
-            }
-          ]
-        }
-      ]
-    },
-  {
-      "name":"three dots",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files that starts with a three dot",
-      "filters":[
+            "name": "starts with .",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files that starts with a .",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\/\\..*"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\/\\.\\.\\..*"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name":"suspicious files",
-      "color":"#886644",
-      "isSelected":true,
-      "description":"files that match regex .*\\/\\.\\..*|.*\\/[\\s.]*",
-      "filters":[
+            "name": "contains ...",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files or folders that starts with ...",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\/\\.\\.\\..*"
+                        }
+                    ]
+                }
+            ]
+        },
         {
-          "name":"filename_regex",
-          "isSelected":"true",
-          "json":"{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-          "params":[
-            {
-              "name":"FILENAME_REGEX",
-              "type":"REGEX",
-              "value":".*\\/\\.\\..*|.*\\/[\\s.]*"
-            }
-          ]
+            "name": "suspicious files",
+            "color": "#886644",
+            "isSelected": true,
+            "description": "files that match regex .*\\/\\.\\..*|.*\\/[\\s.]* (consists of dots and white spaces)",
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\/\\.\\..*|.*\\/[\\s.]*"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

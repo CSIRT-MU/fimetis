@@ -1,4 +1,4 @@
-.app-bar{
+.app-bar {
     text-align: center;
     vertical-align: middle;
     padding: 0.5em;
@@ -7,13 +7,13 @@
     height: 5vh;
 }
 
-.app-bar .main-title{
+.app-bar .main-title {
     color: #fefefe;
     font-size: x-large;
     margin-right: 0.5em;
 }
 
-.app-bar .sub-title{
+.app-bar .sub-title {
     color: #aaaaaa;
     font-size: x-large;
 }
@@ -26,60 +26,51 @@
     font-size: x-large;
 }
 
-.container-all-opened{
+.container-all-opened {
     display: grid;
     min-height: 95vh;
     max-height: 95vh;
     grid-template-columns: 300px auto;
-    grid-template-areas:
-        "grid-cluster grid-filter grid-filter grid-filter"
-        "grid-cluster grid-computation grid-computation grid-computation"
-        "grid-cluster grid-main grid-main grid-main"
+    grid-template-areas: "grid-cluster grid-filter grid-filter grid-filter" "grid-cluster grid-computation grid-computation grid-computation" "grid-cluster grid-main grid-main grid-main"
 }
 
-.container-all-closed{
+.container-all-closed {
     display: grid;
     min-height: 95vh;
     max-height: 95vh;
     grid-template-columns: 300px auto;
-    grid-template-areas:
-            "grid-cluster grid-filter grid-filter grid-filter"
-            "grid-computation grid-computation grid-computation grid-computation"
-            "grid-main grid-main grid-main grid-main"
+    grid-template-areas: "grid-cluster grid-filter grid-filter grid-filter" "grid-computation grid-computation grid-computation grid-computation" "grid-main grid-main grid-main grid-main"
 }
 
-.grid-cluster{
+.grid-cluster {
     grid-area: grid-cluster;
 }
 
-.grid-filter{
+.grid-filter {
     grid-area: grid-filter;
     display: none;
 }
 
-.grid-computation{
+.grid-computation {
     grid-area: grid-computation;
     display: none;
 }
 
-.grid-main{
+.grid-main {
     grid-area: grid-main;
     display: grid;
-    grid-template-areas:
-            "date-slider"
-            "graph-block"
-            "list-view-block";
+    grid-template-areas: "date-slider" "graph-block" "list-view-block";
 }
 
-.graph-block{
+.graph-block {
     grid-area: graph-block;
 }
 
-.list-view-block{
+.list-view-block {
     grid-area: list-view-block;
 }
 
-.setup-window{
+.setup-window {
     position: fixed;
     height: 95vh;
     top: 5vh;
@@ -89,7 +80,7 @@
     z-index: 10;
 }
 
-.setup-tab{
+.setup-tab {
     background-color: #fefefe;
     position: relative;
     top: 30%;
@@ -108,7 +99,7 @@
     margin: 0px 2px 2px 2px;
 }
 
-.panel-header{
+.panel-header {
     /*border: 2px solid #a9a9a9;*/
     padding: 0.75em;
     margin-top: 2px;
@@ -116,42 +107,42 @@
     color: #666666;
 }
 
-.panel-controls{
+.panel-controls {
     text-align: right;
 }
 
-.panel-controls button{
+.panel-controls button {
     margin-right: 25px;
 }
 
-.panel-controls .glyphicon{
+.panel-controls .glyphicon {
     margin-right: 15px;
     cursor: pointer;
 }
 
-.panel-content{
+.panel-content {
     /*margin-bottom: 1em;*/
     /*padding-bottom: 1em;*/
 }
 
-.text-right{
+.text-right {
     text-align: right;
     padding-right: 1.5em;
 }
 
-.button-right{
+.button-right {
     text-align: right;
 }
 
-.panel-hidden{
+.panel-hidden {
     display: none;
 }
 
-.panel-visible{
+.panel-visible {
     display: inline-block;
 }
 
-.chip-list .mat-radio-group{
+.chip-list .mat-radio-group {
     padding-left: 0.8em;
     padding-top: 0.1em;
     padding-right: 0;
@@ -159,17 +150,17 @@
     max-height: 24px;
 }
 
-mat-chip{
+mat-chip {
     max-height: 30px;
     padding-right: 0;
 }
 
-.cluster-button{
+.cluster-button {
     width: 100%;
     margin-top: 10px;
 }
 
-.computation-colored-circle{
+.computation-colored-circle {
     display: inline-block;
     height: 14px;
     width: 14px;
@@ -180,29 +171,29 @@ mat-chip{
     cursor: pointer;
 }
 
-.computation-name{
+.computation-name {
     margin-bottom: 3px;
     cursor: pointer;
     margin-right: 16px;
     /*font-size: larger;*/
 }
 
-.computation-row{
+.computation-row {
     border-radius: 15px;
     padding: 3px 6px 4px 6px;
     margin-top: 3px;
     background-color: #e4e4e4;
 }
 
-.computation-row:hover{
+.computation-row:hover {
     background-color: #fefefe;
 }
 
-.computation-row-panel{
+.computation-row-panel {
     display: inline-block;
 }
 
-.computation-add-filter{
+.computation-add-filter {
     border-radius: 50%;
     border: 2px solid #666666;
     padding: 2px 2px 3px 3px;
@@ -211,7 +202,7 @@ mat-chip{
     cursor: pointer;
 }
 
-.computation-filter{
+.computation-filter {
     position: relative;
     display: inline-block;
     background-color: #fefefe;
@@ -223,7 +214,7 @@ mat-chip{
     cursor: pointer;
 }
 
-.computation-filter .text{
+.computation-filter .text {
     display: inline-block;
     margin-right: 5px;
     min-width: 65px;
@@ -233,7 +224,7 @@ mat-chip{
     background-color: #333333;
 }
 
-.computation-filter:hover > .text{
+.computation-filter:hover > .text {
     opacity: 0.6;
 }
 
@@ -244,36 +235,36 @@ mat-chip{
     color: #e4e4e4;
 }
 
-.computation-filter:hover .filter-circle{
+.computation-filter:hover .filter-circle {
     border-color: #e4e4e4;
 }
 
-.computation-filter:hover .filter-circle-full:before{
+.computation-filter:hover .filter-circle-full:before {
     background-color: #e4e4e4;
 }
 
 .computation-filter .icon1,
 .computation-filter .icon2,
-.computation-filter .icon3{
+.computation-filter .icon3 {
     display: none;
     position: absolute;
     margin-top: 3px;
     z-index: 500;
 }
 
-.computation-filter .icon1{
+.computation-filter .icon1 {
     left: 10%;
 }
 
-.computation-filter .icon2{
+.computation-filter .icon2 {
     left: 35%;
 }
 
-.computation-filter .icon3{
+.computation-filter .icon3 {
     left: 60%;
 }
 
-.filter-circle{
+.filter-circle {
     display: inline-block;
     border-radius: 50%;
     height: 16px;
@@ -283,7 +274,7 @@ mat-chip{
     z-index: 500;
 }
 
-.filter-circle-full:before{
+.filter-circle-full:before {
     visibility: visible;
     position: absolute;
     display: inline-block;
@@ -297,16 +288,16 @@ mat-chip{
     content: "";
 }
 
-.panel-header-button{
+.panel-header-button {
     margin-left: 15px;
     cursor: pointer;
 }
 
-.panel-header-computations{
+.panel-header-computations {
     margin-left: 15px;
 }
 
-.date-slider{
+.date-slider {
     grid-area: date-slider;
     position: relative;
     display: inline-block;

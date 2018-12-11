@@ -1,91 +1,100 @@
-.d3-chart {	  width: 100%;	  height: 600px;	}
-.d3-chart .axis path,	.d3-chart .axis line {	  stroke: #999;	}
-.d3-chart .axis text { fill: #999;	}
-
-.title h4{
-  display: inline-block;
-  margin-right: 8px;
-  font-weight: bold;
+.d3-chart {
+    width: 100%;
+    height: 600px;
 }
 
-.panel-header-button{
-  cursor: pointer;
+.d3-chart .axis path, .d3-chart .axis line {
+    stroke: #999;
 }
 
-.panel-hidden{
-  display: none;
+.d3-chart .axis text {
+    fill: #999;
 }
 
-.panel-visible{
-  display: inline-block;
+.title h4 {
+    display: inline-block;
+    margin-right: 8px;
+    font-weight: bold;
 }
 
-.graph-container{
-  position: relative;
+.panel-header-button {
+    cursor: pointer;
 }
 
-.chart-loader{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 9;
-  margin-left: -40px;
-  margin-top: -40px;
+.panel-hidden {
+    display: none;
+}
+
+.panel-visible {
+    display: inline-block;
+}
+
+.graph-container {
+    position: relative;
+}
+
+.chart-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 9;
+    margin-left: -40px;
+    margin-top: -40px;
 }
 
 .loader-stat {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: inline-block;
-  vertical-align: middle;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .loader-7 .line {
-  width: 14px; /*3px*/
-  position: absolute;
-  border-radius: 2px;
-  bottom: 0;
-  background: -webkit-gradient(linear, left top, left bottom, from(transparent), to(#333333));
-  background: -webkit-linear-gradient(top, transparent, #333333);
-  background: -o-linear-gradient(top, transparent, #333333);
-  background: linear-gradient(to bottom, transparent, #333333);
+    width: 14px; /*3px*/
+    position: absolute;
+    border-radius: 2px;
+    bottom: 0;
+    background: -webkit-gradient(linear, left top, left bottom, from(transparent), to(#333333));
+    background: -webkit-linear-gradient(top, transparent, #333333);
+    background: -o-linear-gradient(top, transparent, #333333);
+    background: linear-gradient(to bottom, transparent, #333333);
 
 }
 
 .loader-7 .line1 {
-  left: 0;
-  -webkit-animation: line-grow 0.5s ease alternate infinite;
-  animation: line-grow 0.5s ease alternate infinite;
+    left: 0;
+    -webkit-animation: line-grow 0.5s ease alternate infinite;
+    animation: line-grow 0.5s ease alternate infinite;
 }
 
 .loader-7 .line2 {
-  left: 18px; /*7px*/
-  -webkit-animation: line-grow 0.5s 0.2s ease alternate infinite;
-  animation: line-grow 0.5s 0.2s ease alternate infinite;
+    left: 18px; /*7px*/
+    -webkit-animation: line-grow 0.5s 0.2s ease alternate infinite;
+    animation: line-grow 0.5s 0.2s ease alternate infinite;
 }
 
 .loader-7 .line3 {
-  left: 36px;
-  -webkit-animation: line-grow 0.5s 0.4s ease alternate infinite;
-  animation: line-grow 0.5s 0.4s ease alternate infinite;
+    left: 36px;
+    -webkit-animation: line-grow 0.5s 0.4s ease alternate infinite;
+    animation: line-grow 0.5s 0.4s ease alternate infinite;
 }
 
 @-webkit-keyframes line-grow {
-  0% {
-    height: 0;
-  }
-  100% {
-    height: 75%;
-  }
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 75%;
+    }
 }
 
 @keyframes line-grow {
-  0% {
-    height: 0;
-  }
-  100% {
-    height: 75%;
-  }
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 75%;
+    }
 }

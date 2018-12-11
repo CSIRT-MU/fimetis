@@ -1,74 +1,78 @@
 <div class="col-md-12">
-  <!--<div class="cluster-list">-->
+    <!--<div class="cluster-list">-->
     <!--<div class="list-header">-->
-      <!--<div class="cluster-list-content">-->
-        <!--<div class="cluster-icon cluster-not-selected"></div>-->
-        <!--<div class="cluster-name-field">clustering</div>-->
-        <!--<div class="cluster-items-field">clusters #</div>-->
-      <!--</div>-->
+    <!--<div class="cluster-list-content">-->
+    <!--<div class="cluster-icon cluster-not-selected"></div>-->
+    <!--<div class="cluster-name-field">clustering</div>-->
+    <!--<div class="cluster-items-field">clusters #</div>-->
+    <!--</div>-->
     <!--</div>-->
     <!--<div class="cluster-list-content">-->
-      <!--&lt;!&ndash;<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">&ndash;&gt;-->
-      <!--<div #container>-->
-        <!--&lt;!&ndash;<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">&ndash;&gt;-->
+    <!--&lt;!&ndash;<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">&ndash;&gt;-->
+    <!--<div #container>-->
+    <!--&lt;!&ndash;<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">&ndash;&gt;-->
 
-        <!--<div class="cluster-item" *ngFor="let clustering of clusteringOverview" (click)="clustering.isSelected = !clustering.isSelected">-->
-          <!--<div class="clustering-colored-circle" [ngStyle]="{'background-color': clustering.isSelected ? clustering.color : '', 'border-color': clustering.color}"></div>-->
-          <!--<div class="cluster-name-field">{{clustering.name}}</div>-->
-          <!--<div class="cluster-items-field">{{clustering.clusters.length}}</div>-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--&lt;!&ndash;</virtual-scroller>&ndash;&gt;-->
-      <!--&lt;!&ndash;</perfect-scrollbar>&ndash;&gt;-->
-      <!--<div *ngIf="clusteringOverview?.length == 0">-->
-        <!--There are no clustering yet-->
-      <!--</div>-->
+    <!--<div class="cluster-item" *ngFor="let clustering of clusteringOverview" (click)="clustering.isSelected = !clustering.isSelected">-->
+    <!--<div class="clustering-colored-circle" [ngStyle]="{'background-color': clustering.isSelected ? clustering.color : '', 'border-color': clustering.color}"></div>-->
+    <!--<div class="cluster-name-field">{{clustering.name}}</div>-->
+    <!--<div class="cluster-items-field">{{clustering.clusters.length}}</div>-->
     <!--</div>-->
-  <!--</div>-->
+    <!--</div>-->
+    <!--&lt;!&ndash;</virtual-scroller>&ndash;&gt;-->
+    <!--&lt;!&ndash;</perfect-scrollbar>&ndash;&gt;-->
+    <!--<div *ngIf="clusteringOverview?.length == 0">-->
+    <!--There are no clustering yet-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
-  <div class="cluster-list">
-    <!--<perfect-scrollbar class="computed-cluster-list">-->
-      <!--<div>-->
+    <div class="cluster-list">
+        <!--<perfect-scrollbar class="computed-cluster-list">-->
+        <!--<div>-->
         <!--<mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">-->
-          <!--<mat-list-option *ngFor="let compCluster of clusters" [selected]="selectAll" checkboxPosition="before" >-->
-            <!--{{compCluster?.key ? compCluster.key : compCluster}}-->
-          <!--</mat-list-option>-->
+        <!--<mat-list-option *ngFor="let compCluster of clusters" [selected]="selectAll" checkboxPosition="before" >-->
+        <!--{{compCluster?.key ? compCluster.key : compCluster}}-->
+        <!--</mat-list-option>-->
         <!--</mat-selection-list>-->
         <!--<mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">-->
-          <!--<mat-list-option *ngFor="let cluster of clusters" checkboxPosition="before" (click)="nextVal(cluster)">-->
-            <!--{{cluster.name}}-->
-            <!--{{cluster.selectMode}}-->
-          <!--</mat-list-option>-->
+        <!--<mat-list-option *ngFor="let cluster of clusters" checkboxPosition="before" (click)="nextVal(cluster)">-->
+        <!--{{cluster.name}}-->
+        <!--{{cluster.selectMode}}-->
+        <!--</mat-list-option>-->
         <!--</mat-selection-list>-->
 
-      <!--</div>-->
-      <div class="list-header">
+        <!--</div>-->
+        <div class="list-header">
+            <div class="cluster-list-content">
+                <div class="cluster-icon cluster-not-selected"></div>
+                <div class="cluster-name-field">cluster name</div>
+                <div class="cluster-items-field text-align-right">items #</div>
+            </div>
+        </div>
         <div class="cluster-list-content">
-          <div class="cluster-icon cluster-not-selected"></div>
-          <div class="cluster-name-field">cluster name</div>
-          <div class="cluster-items-field text-align-right">items #</div>
+            <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
+            <div #container>
+                <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
+                <mat-radio-group>
+                    <div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">
+                        <mat-radio-button *ngIf="mode === 0" [checked]="clusterChecked(cluster)"
+                                          [value]="cluster"></mat-radio-button>
+                        <div *ngIf="mode !== 0" class="cluster-icon"
+                             [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
+                        <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
+                        <div class="cluster-name-field" matTooltip="{{cluster.description}}"
+                             [matTooltipPosition]="'right'">{{cluster.name}}
+                        </div>
+                        <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
+                    </div>
+                </mat-radio-group>
+            </div>
+            <!--</virtual-scroller>-->
+            <!--</perfect-scrollbar>-->
+            <div *ngIf="clusters?.length == 0">
+                There are no clusters yet
+            </div>
         </div>
-      </div>
-    <div class="cluster-list-content">
-    <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
-      <div #container>
-      <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
-      <mat-radio-group>
-        <div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">
-            <mat-radio-button *ngIf="mode === 0" [checked]="clusterChecked(cluster)" [value]="cluster"></mat-radio-button>
-            <div *ngIf="mode !== 0" class="cluster-icon" [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-added': cluster.selectMode == 1, 'cluster-deducted': cluster.selectMode == 2}"></div>
-            <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
-            <div class="cluster-name-field" matTooltip="{{cluster.description}}" [matTooltipPosition]="'right'">{{cluster.name}}</div>
-            <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
-        </div>
-      </mat-radio-group>
-      </div>
-      <!--</virtual-scroller>-->
-    <!--</perfect-scrollbar>-->
-      <div *ngIf="clusters?.length == 0">
-        There are no clusters yet
-      </div>
-    </div>
 
-  </div>
+    </div>
 </div>

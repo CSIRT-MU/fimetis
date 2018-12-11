@@ -69,14 +69,14 @@ export class ClusterDao {
                 sort,
                 sort_order)
             ).then(
-                    response => {
-                        const count = response.hits.total;
-                        resolve(count);
-                        console.log(count);
-                    }, error => {
-                        console.error(error);
-                        reject();
-                    }
+                response => {
+                    const count = response.hits.total;
+                    resolve(count);
+                    console.log(count);
+                }, error => {
+                    console.error(error);
+                    reject();
+                }
             );
         });
     }

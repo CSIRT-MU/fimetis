@@ -1,172 +1,175 @@
 <!--<div class="col-md-12">-->
-  <!--<div class="col-md-4">-->
-    <!--<h3 class="text-gray">Histogram</h3>-->
-  <!--</div>-->
-  <!--<div class="col-md-8">-->
-  <!--</div>-->
-  <!--<div class="col-md-12">-->
-    <!--<app-show-graph [_index]="index" [_type]="type" [_case]="case" [_filter]="filter" [_clusters]="displayedClusters" [_frequency]="graphFrequency" (getDateChange)="changeDatePickers($event)">-->
-    <!--</app-show-graph>-->
-  <!--</div>-->
+<!--<div class="col-md-4">-->
+<!--<h3 class="text-gray">Histogram</h3>-->
+<!--</div>-->
+<!--<div class="col-md-8">-->
+<!--</div>-->
+<!--<div class="col-md-12">-->
+<!--<app-show-graph [_index]="index" [_type]="type" [_case]="case" [_filter]="filter" [_clusters]="displayedClusters" [_frequency]="graphFrequency" (getDateChange)="changeDatePickers($event)">-->
+<!--</app-show-graph>-->
+<!--</div>-->
 <!--</div>-->
 <div class="col-md-12">
     <div class="col-md-5">
-        <span class="text-gray title"><h4>Interactive List View</h4></span><span class="glyphicon panel-header-button" [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}" (click)="tablePanelOpenState = !tablePanelOpenState"></span>
-      <span class="text-gray" style="margin-left: 15px">Total: {{total}}</span>
+        <span class="text-gray title"><h4>Interactive List View</h4></span><span class="glyphicon panel-header-button"
+                                                                                 [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}"
+                                                                                 (click)="tablePanelOpenState = !tablePanelOpenState"></span>
+        <span class="text-gray" style="margin-left: 15px">Total: {{total}}</span>
     </div>
     <div class="col-md-7 table-controls">
-      <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
-        <input type="text" name="searchString" [(ngModel)]="searchString" class="search-field">
-      </form>
-      <span class="glyphicon glyphicon-option-vertical settings-menu-button" [matMenuTriggerFor]="settingsMenu"></span>
-      <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">
-        <button mat-menu-item (click)="editTableColumns()">
-          <span>Edit table columns</span>
-        </button>
-      </mat-menu>
+        <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
+            <input type="text" name="searchString" [(ngModel)]="searchString" class="search-field">
+        </form>
+        <span class="glyphicon glyphicon-option-vertical settings-menu-button"
+              [matMenuTriggerFor]="settingsMenu"></span>
+        <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">
+            <button mat-menu-item (click)="editTableColumns()">
+                <span>Edit table columns</span>
+            </button>
+        </mat-menu>
     </div>
 </div>
 <!--<div class="col-md-12">-->
 
-  <!--<div class="col-md-8 table-controls">-->
+<!--<div class="col-md-8 table-controls">-->
 
-    <!--<div class="table-radio-type">-->
-      <!--<input type="radio" class="timesix-radio" name="table-type" id="clusters-radio" [checked]="tableDisplayType == 'clusters'" (click)="tableDisplayType = 'clusters'" />-->
-      <!--<label for="clusters-radio">group by clusters</label>-->
-    <!--</div>-->
-    <!--<div class="table-radio-type">-->
-      <!--<input type="radio" class="timesix-radio" name="table-type" id="filesystem-radio" [checked]="tableDisplayType == 'filesystem'" (click)="tableDisplayType = 'filesystem'" />-->
-      <!--<label for="filesystem-radio">reflect filesystem hierarchy</label>-->
-    <!--</div>-->
-    <!--<div class="table-radio-type">-->
-      <!--<input type="radio" class="timesix-radio" name="table-type" id="timestamps-radio" [checked]="tableDisplayType == 'timestamps'" (click)="tableDisplayType = 'timestamps'"/>-->
-      <!--<label for="timestamps-radio">compact display of timestamps</label>-->
-    <!--</div>-->
-  <!--</div>-->
-  <!--<div class="col-md-12">-->
-    <!--<div class="table-container">-->
-      <!--<div class="table-loading-spinner">-->
-        <!--<div class="spinning-loader" *ngIf="loadingData" ></div>-->
-      <!--</div>-->
-      <!--<perfect-scrollbar class="interactive-table" id="interactive-table-scroll">-->
-      <!--&lt;!&ndash;<perfect-scrollbar class="interactive-table" (psYReachEnd)="tableScrolledDown()" (psYReachStart)="tableScrolledUp()" (psScrollY)="showScroll($event)" id="interactive-table-scroll">&ndash;&gt;-->
-        <!--<table mat-table [dataSource]="data" matSort [matSortActive]="pageSortString" matSortDisableClear [matSortDirection]="pageSortOrder" (matSortChange)="tableSort($event)">-->
+<!--<div class="table-radio-type">-->
+<!--<input type="radio" class="timesix-radio" name="table-type" id="clusters-radio" [checked]="tableDisplayType == 'clusters'" (click)="tableDisplayType = 'clusters'" />-->
+<!--<label for="clusters-radio">group by clusters</label>-->
+<!--</div>-->
+<!--<div class="table-radio-type">-->
+<!--<input type="radio" class="timesix-radio" name="table-type" id="filesystem-radio" [checked]="tableDisplayType == 'filesystem'" (click)="tableDisplayType = 'filesystem'" />-->
+<!--<label for="filesystem-radio">reflect filesystem hierarchy</label>-->
+<!--</div>-->
+<!--<div class="table-radio-type">-->
+<!--<input type="radio" class="timesix-radio" name="table-type" id="timestamps-radio" [checked]="tableDisplayType == 'timestamps'" (click)="tableDisplayType = 'timestamps'"/>-->
+<!--<label for="timestamps-radio">compact display of timestamps</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-md-12">-->
+<!--<div class="table-container">-->
+<!--<div class="table-loading-spinner">-->
+<!--<div class="spinning-loader" *ngIf="loadingData" ></div>-->
+<!--</div>-->
+<!--<perfect-scrollbar class="interactive-table" id="interactive-table-scroll">-->
+<!--&lt;!&ndash;<perfect-scrollbar class="interactive-table" (psYReachEnd)="tableScrolledDown()" (psYReachStart)="tableScrolledUp()" (psScrollY)="showScroll($event)" id="interactive-table-scroll">&ndash;&gt;-->
+<!--<table mat-table [dataSource]="data" matSort [matSortActive]="pageSortString" matSortDisableClear [matSortDirection]="pageSortOrder" (matSortChange)="tableSort($event)">-->
 
-          <!--&lt;!&ndash; Checkbox Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="select">-->
-            <!--<th mat-header-cell *matHeaderCellDef>-->
-              <!--<input type="checkbox" class="timesix-checkbox" (change)="$event ? masterToggle() : null"-->
-                            <!--[checked]="tableSelection.hasValue() && isAllSelected()"-->
-                            <!--[indeterminate]="tableSelection.hasValue() && !isAllSelected()">-->
-            <!--</th>-->
-            <!--<td mat-cell *matCellDef="let row">-->
-              <!--<input type="checkbox" class="timesix-checkbox" (click)="$event.stopPropagation();"-->
-                            <!--(change)="$event ? tableSelection.toggle(row) : null"-->
-                            <!--[checked]="tableSelection.isSelected(row)">-->
-            <!--</td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; Checkbox Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="select">-->
+<!--<th mat-header-cell *matHeaderCellDef>-->
+<!--<input type="checkbox" class="timesix-checkbox" (change)="$event ? masterToggle() : null"-->
+<!--[checked]="tableSelection.hasValue() && isAllSelected()"-->
+<!--[indeterminate]="tableSelection.hasValue() && !isAllSelected()">-->
+<!--</th>-->
+<!--<td mat-cell *matCellDef="let row">-->
+<!--<input type="checkbox" class="timesix-checkbox" (click)="$event.stopPropagation();"-->
+<!--(change)="$event ? tableSelection.toggle(row) : null"-->
+<!--[checked]="tableSelection.isSelected(row)">-->
+<!--</td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; Document type Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="doctype">-->
-            <!--<th mat-header-cell *matHeaderCellDef>  </th>-->
-            <!--<td mat-cell *matCellDef="let element">-->
-              <!--<span *ngIf="element._source['Mode'] != null">-->
-                <!--<span [ngSwitch]="element._source['Mode'][2]">-->
-                  <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
-                  <!--<span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>-->
-                  <!--<span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>-->
-                  <!--<span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>-->
-                <!--</span>-->
-              <!--</span>-->
-            <!--</td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; Document type Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="doctype">-->
+<!--<th mat-header-cell *matHeaderCellDef>  </th>-->
+<!--<td mat-cell *matCellDef="let element">-->
+<!--<span *ngIf="element._source['Mode'] != null">-->
+<!--<span [ngSwitch]="element._source['Mode'][2]">-->
+<!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
+<!--<span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>-->
+<!--<span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>-->
+<!--<span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>-->
+<!--</span>-->
+<!--</span>-->
+<!--</td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; Mode Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="mode">-->
-            <!--<th mat-header-cell *matHeaderCellDef> Mode </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source['Mode']}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; Mode Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="mode">-->
+<!--<th mat-header-cell *matHeaderCellDef> Mode </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source['Mode']}} </td>-->
+<!--</ng-container>-->
 
 
-          <!--&lt;!&ndash; Timestamp Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="timestamp">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > Timestamp </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source['@timestamp']}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; Timestamp Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="timestamp">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > Timestamp </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source['@timestamp']}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; M time Timestamp Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="M-Time">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > M Time </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('m') ? element._source['@timestamp'] : ""}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; M time Timestamp Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="M-Time">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > M Time </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('m') ? element._source['@timestamp'] : ""}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; A time Timestamp Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="A-Time">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > A Time </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('a') ? element._source['@timestamp'] : ""}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; A time Timestamp Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="A-Time">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > A Time </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('a') ? element._source['@timestamp'] : ""}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; C time Timestamp Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="C-Time">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > C Time </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('c') ? element._source['@timestamp'] : ""}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; C time Timestamp Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="C-Time">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > C Time </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('c') ? element._source['@timestamp'] : ""}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; B time Timestamp Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="B-Time">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > B Time </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('b') ? element._source['@timestamp'] : ""}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; B time Timestamp Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="B-Time">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > B Time </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source.Type.includes('b') ? element._source['@timestamp'] : ""}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; File Name Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="name">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > Name </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source['File Name']}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; File Name Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="name">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > Name </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source['File Name']}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; Type Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="type">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header > Type </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source.Type}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; Type Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="type">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header > Type </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source.Type}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; Size Column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="size">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header> Size </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._source.Size}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; Size Column &ndash;&gt;-->
+<!--<ng-container matColumnDef="size">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header> Size </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._source.Size}} </td>-->
+<!--</ng-container>-->
 
-          <!--&lt;!&ndash; ID column &ndash;&gt;-->
-          <!--<ng-container matColumnDef="id">-->
-            <!--<th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>-->
-            <!--<td mat-cell *matCellDef="let element"> {{element._id}} </td>-->
-          <!--</ng-container>-->
+<!--&lt;!&ndash; ID column &ndash;&gt;-->
+<!--<ng-container matColumnDef="id">-->
+<!--<th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>-->
+<!--<td mat-cell *matCellDef="let element"> {{element._id}} </td>-->
+<!--</ng-container>-->
 
-          <!--<tr mat-header-row *matHeaderRowDef="displayedTableColumns; sticky: true"></tr>-->
-          <!--<tr mat-row *matRowDef="let row; columns: displayedTableColumns;" (click)="tableSelection.toggle(row)"></tr>-->
-        <!--</table>-->
-      <!--</perfect-scrollbar>-->
-      <!--<mat-paginator #tablePaginator-->
-                     <!--[pageIndex]="pageEvent.pageIndex"-->
-                     <!--[length]='total'-->
-                     <!--[pageSize]='pageEvent.pageSize'-->
-                     <!--[pageSizeOptions]='pageSizeOptions'-->
-                     <!--[showFirstLastButtons]="true"-->
-                     <!--(page)='loadPage($event)'>-->
-      <!--</mat-paginator>-->
-    <!--</div>-->
-  <!--</div>-->
+<!--<tr mat-header-row *matHeaderRowDef="displayedTableColumns; sticky: true"></tr>-->
+<!--<tr mat-row *matRowDef="let row; columns: displayedTableColumns;" (click)="tableSelection.toggle(row)"></tr>-->
+<!--</table>-->
+<!--</perfect-scrollbar>-->
+<!--<mat-paginator #tablePaginator-->
+<!--[pageIndex]="pageEvent.pageIndex"-->
+<!--[length]='total'-->
+<!--[pageSize]='pageEvent.pageSize'-->
+<!--[pageSizeOptions]='pageSizeOptions'-->
+<!--[showFirstLastButtons]="true"-->
+<!--(page)='loadPage($event)'>-->
+<!--</mat-paginator>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 
 <div class="col-md-12" [ngClass]="{'panel-hidden': !tablePanelOpenState, 'panel-visible': tablePanelOpenState}">
-  <div>
-    <div class="table-loading-spinner" *ngIf="loadingData">
-      <div class="spinning-loader"></div>
-    </div>
     <div>
+        <div class="table-loading-spinner" *ngIf="loadingData">
+            <div class="spinning-loader"></div>
+        </div>
+        <div>
         <span *ngFor="let tableItem of displayedTableColumns">
           <div class="table-select" *ngIf="tableItem == 'select'"></div>
-          <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
+            <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
           <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'">Timestamp</div>
           <div class="table-block medium-table-block" *ngIf="tableItem == 'size'">Size</div>
           <div class="table-block medium-small-table-block" *ngIf="tableItem == 'type'">Type</div>
@@ -175,45 +178,48 @@
           <div class="table-block medium-small-table-block" *ngIf="tableItem == 'gid'">GID</div>
           <div class="table-block medium-table-block" *ngIf="tableItem == 'inode'">I-node</div>
           <div class="table-block large-table-block" *ngIf="tableItem == 'name'">File Name</div>
-          <!---->
+            <!---->
           <div class="table-block medium-table-block" *ngIf="tableItem == 'M-Time'">M-Time</div>
           <div class="table-block medium-table-block" *ngIf="tableItem == 'A-Time'">A-Time</div>
           <div class="table-block medium-table-block" *ngIf="tableItem == 'C-Time'">C-Time</div>
           <div class="table-block medium-table-block" *ngIf="tableItem == 'B-Time'">B-Time</div>
           <div class="table-block large-table-block" *ngIf="tableItem == 'id'">ID</div>
         </span>
-        <!--<div class="table-select"></div>-->
-        <!--&lt;!&ndash;<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>&ndash;&gt;-->
-        <!--<div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">Timestamp</div>-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">Size</div>-->
-        <!--<div class="table-block medium-small-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">Type</div>-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">Mode</div>-->
-        <!--<div class="table-block medium-small-table-block" *ngIf="displayedTableColumns.indexOf('uid') !== -1">UID</div>-->
-        <!--<div class="table-block medium-small-table-block" *ngIf="displayedTableColumns.indexOf('gid') !== -1">GID</div>-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('inode') !== -1">I-node</div>-->
-        <!--<div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">File Name</div>-->
-      <!--&lt;!&ndash;&ndash;&gt;-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('M-Time') !== -1">M-Time</div>-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('A-Time') !== -1">A-Time</div>-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">C-Time</div>-->
-        <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">B-Time</div>-->
-        <!--<div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('id') !== -1">ID</div>-->
-    </div>
-    <virtual-scroller [style.height.vh]="listViewScrollHeight" class="scroll-block" [items]="virtualArray"  (change)="loadVisibleData($event)">
-      <div #container>
-        <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData; index as i">
+            <!--<div class="table-select"></div>-->
+            <!--&lt;!&ndash;<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>&ndash;&gt;-->
+            <!--<div class="table-block larger-table-block" *ngIf="displayedTableColumns.indexOf('timestamp') !== -1">Timestamp</div>-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('size') !== -1">Size</div>-->
+            <!--<div class="table-block medium-small-table-block" *ngIf="displayedTableColumns.indexOf('type') !== -1">Type</div>-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('mode') !== -1">Mode</div>-->
+            <!--<div class="table-block medium-small-table-block" *ngIf="displayedTableColumns.indexOf('uid') !== -1">UID</div>-->
+            <!--<div class="table-block medium-small-table-block" *ngIf="displayedTableColumns.indexOf('gid') !== -1">GID</div>-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('inode') !== -1">I-node</div>-->
+            <!--<div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('name') !== -1">File Name</div>-->
+            <!--&lt;!&ndash;&ndash;&gt;-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('M-Time') !== -1">M-Time</div>-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('A-Time') !== -1">A-Time</div>-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('C-Time') !== -1">C-Time</div>-->
+            <!--<div class="table-block medium-table-block" *ngIf="displayedTableColumns.indexOf('B-Time') !== -1">B-Time</div>-->
+            <!--<div class="table-block large-table-block" *ngIf="displayedTableColumns.indexOf('id') !== -1">ID</div>-->
+        </div>
+        <virtual-scroller [style.height.vh]="listViewScrollHeight" class="scroll-block" [items]="virtualArray"
+                          (change)="loadVisibleData($event)">
+            <div #container>
+                <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData; index as i">
           <span *ngFor="let tableItem of displayedTableColumns">
-            <div class="table-select" *ngIf="tableItem == 'select'" [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}" (click)="tableSelect(element._id)"></div>
+            <div class="table-select" *ngIf="tableItem == 'select'"
+                 [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}"
+                 (click)="tableSelect(element._id)"></div>
               <!--<div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">-->
-                  <!--<span [ngSwitch]="element._source['Mode'][2]">-->
-                    <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
-                    <!--<span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>-->
-                    <!--<span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>-->
-                    <!--<span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>-->
-                  <!--</span>-->
+              <!--<span [ngSwitch]="element._source['Mode'][2]">-->
+              <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
+              <!--<span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>-->
+              <!--<span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>-->
+              <!--<span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>-->
+              <!--</span>-->
               <!--</div>-->
-            <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
-              <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'" >
+              <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
+              <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'">
                 {{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}
               </div>
               <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
@@ -222,60 +228,64 @@
               <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'uid'">{{element._source.UID}}</div>
               <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'gid'">{{element._source.GID}}</div>
               <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'inode'">{{element._source.Meta}}</div>
-              <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'" (textSelect)="openHighlightedTextMenu( $event, i )">
+              <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'"
+                   (textSelect)="openHighlightedTextMenu( $event, i )">
                 <!--{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}-->
                 {{element['_source']['File Name']}}
-                <!--<div class="timesix-tooltip-wrapper">-->
-                <!--<div class="timesix-tooltip">-->
-                <!--{{element['_source']['File Name']}}-->
-                <!--</div>-->
-                <!--</div>-->
+                  <!--<div class="timesix-tooltip-wrapper">-->
+                  <!--<div class="timesix-tooltip">-->
+                  <!--{{element['_source']['File Name']}}-->
+                  <!--</div>-->
+                  <!--</div>-->
 
               </div>
-            <!---->
+              <!---->
               <div class="table-block medium-table-block" *ngIf="tableItem == 'M-Time'">{{element._source.Type.includes('m') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
               <div class="table-block medium-table-block" *ngIf="tableItem == 'A-Time'">{{element._source.Type.includes('a') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
               <div class="table-block medium-table-block" *ngIf="tableItem == 'C-Time'">{{element._source.Type.includes('c') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
               <div class="table-block medium-table-block" *ngIf="tableItem == 'B-Time'">{{element._source.Type.includes('b') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
               <div class="table-block large-table-block" *ngIf="tableItem == 'id'">{{element._id}}</div>
           </span>
-        </div>
-      </div>
+                </div>
+            </div>
 
-      <!--<div-->
-              <!--*ngIf="highlightedTextBox"-->
-              <!--class="indicator"-->
-              <!--[style.left.px]="highlightedTextBox.left"-->
-              <!--[style.top.px]="highlightedTextBox.top"-->
-              <!--[style.width.px]="highlightedTextBox.width"-->
-              <!--[style.height.px]="0">-->
+            <!--<div-->
+            <!--*ngIf="highlightedTextBox"-->
+            <!--class="indicator"-->
+            <!--[style.left.px]="highlightedTextBox.left"-->
+            <!--[style.top.px]="highlightedTextBox.top"-->
+            <!--[style.width.px]="highlightedTextBox.width"-->
+            <!--[style.height.px]="0">-->
 
-        <!--<div class="indicator__cta">-->
-          <!--&lt;!&ndash;-->
-              <!--NOTE: Because we DON'T WANT the selected text to get deselected-->
-              <!--when we click on the call-to-action, we have to PREVENT THE-->
-              <!--DEFAULT BEHAVIOR and STOP PROPAGATION on some of the events. The-->
-              <!--byproduct of this is that the (click) event won't fire. As such,-->
-              <!--we then have to consume the click-intent by way of the (mouseup)-->
-              <!--event.-->
-          <!--&ndash;&gt;-->
-          <!--<a-->
-                  <!--(mousedown)="$event.preventDefault()"-->
-                  <!--(mouseup)="$event.stopPropagation(); makeClusterByHighlight()"-->
-                  <!--class="indicator__cta-link">-->
+            <!--<div class="indicator__cta">-->
+            <!--&lt;!&ndash;-->
+            <!--NOTE: Because we DON'T WANT the selected text to get deselected-->
+            <!--when we click on the call-to-action, we have to PREVENT THE-->
+            <!--DEFAULT BEHAVIOR and STOP PROPAGATION on some of the events. The-->
+            <!--byproduct of this is that the (click) event won't fire. As such,-->
+            <!--we then have to consume the click-intent by way of the (mouseup)-->
+            <!--event.-->
+            <!--&ndash;&gt;-->
+            <!--<a-->
+            <!--(mousedown)="$event.preventDefault()"-->
+            <!--(mouseup)="$event.stopPropagation(); makeClusterByHighlight()"-->
+            <!--class="indicator__cta-link">-->
             <!--Make cluster by: {{highlightedText}}-->
-          <!--</a>-->
-        <!--</div>-->
+            <!--</a>-->
+            <!--</div>-->
 
-      <!--</div>-->
+            <!--</div>-->
 
-    </virtual-scroller>
-  </div>
+        </virtual-scroller>
+    </div>
 </div>
 
 <div #highlightedBox id="highlightedBox" class="highlightedBox">
-  {{highlightedText}}
-  <span class="glyphicon glyphicon-indent-right clickable highlighted-icon" matTooltip="Make cluster by path" [matTooltipPosition]="'above'" (click)="makeClusterByHighlight()"></span>
-  <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(true)"></span>
-  <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block" [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(false)"></span>
+    {{highlightedText}}
+    <span class="glyphicon glyphicon-indent-right clickable highlighted-icon" matTooltip="Make cluster by path"
+          [matTooltipPosition]="'above'" (click)="makeClusterByHighlight()"></span>
+    <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block"
+          [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(true)"></span>
+    <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block"
+          [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(false)"></span>
 </div>

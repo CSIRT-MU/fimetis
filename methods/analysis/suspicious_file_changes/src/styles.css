@@ -3,147 +3,147 @@
 /*@import "~bootstrap/dist/css/bootstrap.min.css";*/
 @import "~nouislider/distribute/nouislider.min.css";
 
-.mat-pseudo-checkbox-checked{
-  background-color: #ffffff !important;
-  border-color: #666666 !important;
+.mat-pseudo-checkbox-checked {
+    background-color: #ffffff !important;
+    border-color: #666666 !important;
 }
 
-.mat-pseudo-checkbox{
-  border-radius: 50% !important;
+.mat-pseudo-checkbox {
+    border-radius: 50% !important;
 }
 
-.mat-pseudo-checkbox-checked::after{
-  border: none !important;
-  transform: none !important;
-  border-radius: 50% !important;
-  width: 60% !important;
-  height: 60% !important;
-  background-color: #666666;
-  top: 20% !important;
-  left: 20% !important;
+.mat-pseudo-checkbox-checked::after {
+    border: none !important;
+    transform: none !important;
+    border-radius: 50% !important;
+    width: 60% !important;
+    height: 60% !important;
+    background-color: #666666;
+    top: 20% !important;
+    left: 20% !important;
 }
 
-.mat-checkbox-frame{
-  border-radius: 50% !important;
+.mat-checkbox-frame {
+    border-radius: 50% !important;
 }
 
-.mat-checkbox-background{
-  border-radius: 50% !important;
+.mat-checkbox-background {
+    border-radius: 50% !important;
 }
 
 .mat-checkbox-checked .mat-checkbox-background,
-.mat-checkbox-indeterminate .mat-checkbox-background{
-  background-color: #666666 !important;
+.mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: #666666 !important;
 }
 
-.ps__rail-y{
-  z-index: 999;
+.ps__rail-y {
+    z-index: 999;
 }
 
-.timesix-checkbox{
-  visibility: hidden;
-  position: relative;
-  margin-top: 0 !important;
-  width: 20px;
-  height: 20px;
+.timesix-checkbox {
+    visibility: hidden;
+    position: relative;
+    margin-top: 0 !important;
+    width: 20px;
+    height: 20px;
 }
 
-.timesix-radio{
-  visibility: hidden;
-  position: relative;
-  width: 15px;
-  height: 15px;
+.timesix-radio {
+    visibility: hidden;
+    position: relative;
+    width: 15px;
+    height: 15px;
 }
 
 .timesix-checkbox::before,
-.timesix-radio::before{
-  position: absolute;
-  top: 0;
-  visibility: visible;
-  float: left;
-  content: '';
-  width: 100%;
-  height: 100%;
-  display: inline-block;
-  border: solid #666666 2px;
-  border-radius: 50%;
+.timesix-radio::before {
+    position: absolute;
+    top: 0;
+    visibility: visible;
+    float: left;
+    content: '';
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    border: solid #666666 2px;
+    border-radius: 50%;
 }
 
 .timesix-checkbox:checked::after,
-.timesix-radio:checked::after{
-  position: absolute;
-  top: 25%;
-  left: 25%;
-  visibility: visible;
-  display: inline-block;
-  content: '';
-  width: 50%;
-  height: 50%;
-  border-radius: 50%;
-  background-color: #666666;
+.timesix-radio:checked::after {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    visibility: visible;
+    display: inline-block;
+    content: '';
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    background-color: #666666;
 }
 
-.timesix-checkbox:indeterminate::after{
-  position: absolute;
-  top: 35%;
-  left: 20%;
-  visibility: visible;
-  display: inline-block;
-  content: '';
-  width: 60%;
-  height: 30%;
-  border-radius: 50%;
-  background-color: #666666;
+.timesix-checkbox:indeterminate::after {
+    position: absolute;
+    top: 35%;
+    left: 20%;
+    visibility: visible;
+    display: inline-block;
+    content: '';
+    width: 60%;
+    height: 30%;
+    border-radius: 50%;
+    background-color: #666666;
 }
 
-.clickable{
-  cursor: pointer;
+.clickable {
+    cursor: pointer;
 }
 
-.text-gray{
-  color: #666666;
+.text-gray {
+    color: #666666;
 }
 
-.text-light-gray{
-  color: #888888;
+.text-light-gray {
+    color: #888888;
 }
 
-.timesix-button{
-  font-size: x-small;
-  font-weight: bold;
-  border-color: #cccccc !important;
+.timesix-button {
+    font-size: x-small;
+    font-weight: bold;
+    border-color: #cccccc !important;
 }
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar {
-  width: 6px;
-  background-color: transparent;
+    width: 6px;
+    background-color: transparent;
 }
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar-track {
-  border-radius: 10px;
-  background: transparent;
-  border: none;
+    border-radius: 10px;
+    background: transparent;
+    border: none;
 }
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar:hover {
-  border-radius: 10px;
-  background: #e4e4e4;
-  border: none;
-  width: 11px;
+    border-radius: 10px;
+    background: #e4e4e4;
+    border: none;
+    width: 11px;
 }
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  /*background: linear-gradient(left, #fff, #e4e4e4);*/
-  /*border: 1px solid #aaa;*/
-  border: none;
-  background: #888888;
+    border-radius: 10px;
+    /*background: linear-gradient(left, #fff, #e4e4e4);*/
+    /*border: 1px solid #aaa;*/
+    border: none;
+    background: #888888;
 }
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
-  background: #333333;
+    background: #333333;
 }
 
 /*.ps__thumb-y{*/
-  /*min-height: 15px !important;*/
+/*min-height: 15px !important;*/
 /*}*/

@@ -11,7 +11,7 @@ export class BaseDao {
     }
 
     // asc for first entry, desc for last entry
-    getFirstOrLast(case_name, clusters, additional_filters, ascOrDesc): Promise<any>  {
+    getFirstOrLast(case_name, clusters, additional_filters, ascOrDesc): Promise<any> {
         const promise = new Promise((resolve, reject) => {
             let entry;
             this.es.runQuery(this.buildFirstOrLastQuery(case_name, clusters, additional_filters, ascOrDesc, null))
@@ -81,7 +81,7 @@ export class BaseDao {
                     }
                 );
 
-        } );
+        });
 
         return promise;
 
@@ -110,7 +110,7 @@ export class BaseDao {
                     }
                 );
 
-        } );
+        });
 
         return promise;
     }

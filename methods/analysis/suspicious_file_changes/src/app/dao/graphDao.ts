@@ -10,7 +10,7 @@ export class GraphDao {
     }
 
 
-    async getData(case_name, clusters, additional_filters,  mactime_type, frequency): Promise<any> {
+    async getData(case_name, clusters, additional_filters, mactime_type, frequency): Promise<any> {
         const queryString = this.buildQuery(case_name, clusters, additional_filters, mactime_type, frequency);
         const promise = new Promise((resolve, reject) => {
             this.es.runQuery(queryString)
@@ -25,7 +25,7 @@ export class GraphDao {
                         reject();
                     }
                 );
-        } );
+        });
         return promise;
     }
 

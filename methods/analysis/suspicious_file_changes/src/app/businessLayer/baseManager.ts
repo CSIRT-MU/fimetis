@@ -8,6 +8,7 @@ import {BaseDao} from '../dao/baseDao';
 export class BaseManager {
 
     private baseManagerDao;
+
     constructor(private es: ElasticsearchService) {
         this.baseManagerDao = new BaseDao(es);
     }

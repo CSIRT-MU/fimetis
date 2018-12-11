@@ -1,19 +1,19 @@
 export class VirtualArrayModel {
-  private _length: number;
+    private _length: number;
 
-  get length(): number {
-    return this._length;
-  }
+    get length(): number {
+        return this._length;
+    }
 
-  set length(value: number) {
-    this._length = value;
-  }
+    set length(value: number) {
+        this._length = value;
+    }
 
-  constructor() {
-    this._length = 0;
-  }
+    constructor() {
+        this._length = 0;
+    }
 
-  slice() {
-    return [];
-  }
+    slice() {
+        return [];
+    }
 }

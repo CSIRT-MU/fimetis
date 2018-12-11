@@ -8,6 +8,7 @@ import {ElasticsearchBaseQueryDao} from './elasticsearchBaseQueryDao';
 export class ComputationDao {
 
     private elasticsearchBaseQueryDao;
+
     constructor(private es: ElasticsearchService) {
         this.elasticsearchBaseQueryDao = new ElasticsearchBaseQueryDao();
     }

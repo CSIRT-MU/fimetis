@@ -1,5 +1,5 @@
 export class FilterParamModel {
-  name: string;
-  type: string;
-  value: string;
+    name: string;
+    type: string;
+    value: string;
 }

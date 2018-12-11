@@ -4,7 +4,7 @@ import {ListViewComponent} from '../listView/listView.component';
 import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
 import {FilterParamModel} from '../../models/filterParam.model';
 import {FilterModel} from '../../models/filter.model';
-import { NameDialogComponent } from '../dialog/name-dialog/name-dialog.component';
+import {NameDialogComponent} from '../dialog/name-dialog/name-dialog.component';
 import {ComputationModel} from '../../models/computation.model';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 import {ClusterModel} from '../../models/cluster.model';
@@ -154,7 +154,6 @@ export class DashboardComponent implements OnInit {
         this.clusteringOverview = this.computationManager.getPreloadedClusterings();
         this.listViewComponent.init();
     }
-
 
 
     loadStoredClusters() {
@@ -312,7 +311,7 @@ export class DashboardComponent implements OnInit {
 
     setStoredClusters($event) {
         this.selectedStoredClusters = $event;
-        this.listViewComponent.displayedClusters =  this.selectedStoredClusters;
+        this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.listViewComponent.init();
     }
 
@@ -368,9 +367,11 @@ export class DashboardComponent implements OnInit {
         const namePrefix = 'custom-';
         const dialogRef = this.dialog.open(NameDialogComponent, {
             width: '350px',
-            data: {title: 'Create new cluster',
+            data: {
+                title: 'Create new cluster',
                 itemsNumber: this.listViewComponent.tableSelection.selected.length,
-                placeholder: 'Type new cluster\'s name'}
+                placeholder: 'Type new cluster\'s name'
+            }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -408,9 +409,11 @@ export class DashboardComponent implements OnInit {
     createFilterFromSelection() {
         const dialogRef = this.dialog.open(NameDialogComponent, {
             width: '350px',
-            data: {title: 'Create new filter',
+            data: {
+                title: 'Create new filter',
                 itemsNumber: this.listViewComponent.tableSelection.selected.length,
-                placeholder: 'Type new filter\'s name'}
+                placeholder: 'Type new filter\'s name'
+            }
         });
         dialogRef.afterClosed().subscribe(result => {
             console.log('dialog closed', result);
@@ -418,7 +421,7 @@ export class DashboardComponent implements OnInit {
                 const params = [];
                 const values = [];
                 const filterParams = [];
-                for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index ++) {
+                for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
                     params.push('_id');
                     values.push(this.listViewComponent.tableSelection.selected[index]._id);
                     const filParam = new FilterParamModel();
@@ -459,7 +462,8 @@ export class DashboardComponent implements OnInit {
     addComputation() {
         const dialogRef = this.dialog.open(ComputationDialogComponent, {
             width: '350px',
-            data: {title: 'Create new clustering',
+            data: {
+                title: 'Create new clustering',
                 namePlaceholder: 'Type new clustering\'s name',
                 colorPlaceHolder: 'Select clustering color'
             }

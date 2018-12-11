@@ -187,7 +187,7 @@ export class ElasticsearchBaseQueryDao {
 
 
     getGraphFilterFromMactimeType(mactime_type: string) {
-        if (mactime_type ==  null) {
+        if (mactime_type == null) {
             return null;
         }
         let query = '';

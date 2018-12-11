@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {ListViewComponent} from './UI/listView/listView.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    { path: 'metadata/:type/:case', component: ListViewComponent }
+    {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+    {path: 'metadata/:type/:case', component: ListViewComponent}
 ];
 
 @NgModule({
@@ -12,4 +12,5 @@ const routes: Routes = [
     exports: [RouterModule]
 })
 
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
