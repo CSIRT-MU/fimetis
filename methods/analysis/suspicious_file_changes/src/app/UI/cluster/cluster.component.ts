@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MatSelectionList} from '@angular/material';
+import {MatRadioGroup, MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 
@@ -17,9 +17,13 @@ export class ClusterComponent implements OnInit {
   clusteringOverview: ClusteringOverviewModel[] = [];
   @Input('clusters')
   clusters: ClusterModel[] = [];
+  @Input('mode')
+  mode = 0;
   @Output('selectionChanged')
   selectionChanged: EventEmitter<any> = new EventEmitter<any>();
 
+  @ViewChild(MatRadioGroup)
+  radioGroup: MatRadioGroup;
   constructor() { }
 
   ngOnInit() {
@@ -35,13 +39,33 @@ export class ClusterComponent implements OnInit {
   // }
 
   nextVal(cluster) {
-      cluster.selectMode = ClusterSelectMode.next(cluster.selectMode);
-      if (cluster.subClusters.length > 0) {
-        for (const clust of cluster.subClusters) {
-          clust.selectMode = cluster.selectMode;
+      if (this.mode === 0) {
+          for (const clust of this.clusters) {
+              clust.selectMode = ClusterSelectMode.notSelected;
+          }
+          cluster.selectMode = ClusterSelectMode.added;
+          this.selectionChanged.emit(null);
+      } else {
+        cluster.selectMode = ClusterSelectMode.next(cluster.selectMode);
+        if (cluster.subClusters.length > 0) {
+          for (const clust of cluster.subClusters) {
+            clust.selectMode = cluster.selectMode;
+          }
         }
+        this.selectionChanged.emit(null);
       }
-      this.selectionChanged.emit(null);
   }
+
+  // radioChanged() {
+  //     for (const clust of this.clusters) {
+  //         clust.selectMode = ClusterSelectMode.notSelected;
+  //     }
+  //     this.radioGroup.selected.value.selectMode = ClusterSelectMode.added;
+  //     this.selectionChanged.emit(null);
+  // }
+
+    clusterChecked(cluster) {
+        return (cluster.selectMode === ClusterSelectMode.added);
+    }
 
 }
