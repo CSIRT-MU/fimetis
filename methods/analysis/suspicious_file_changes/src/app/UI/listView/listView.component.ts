@@ -398,6 +398,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
     }
 
+    typeFilter(types) {
+        console.log('type filter:', types);
+        if (types != null) {
+            if (types !== undefined) {
+                this.additionalFilters.set('typeFilter', this.elasticsearchBaseQueryManager.buildAdditionMactimeTypeFilter(Array.from(types)));
+                this.init();
+            }
+        }
+    }
+
     editTableColumns() {
         const dialogRef = this.dialog.open(SelectDialogComponent, {
             width: '350px',

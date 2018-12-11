@@ -61,6 +61,9 @@ export class DashboardComponent implements OnInit {
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusteringOverview: ClusteringOverviewModel[] = [];
 
+    supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
+    selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
+
     dateSliderInit: any = [0, 20];
     dateSliderBoundary: any = {min: 0, max: 20, tooltip: ['0', '20']};
     dateSliderConfig: any = {
@@ -586,6 +589,16 @@ export class DashboardComponent implements OnInit {
         console.log($event);
         console.log(new Date($event[0]).toISOString());
         this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
+    }
+
+    typeCheckboxChanged(type) {
+        if (this.selectedTypes.has(type)) {
+            this.selectedTypes.delete(type);
+        } else {
+            this.selectedTypes.add(type);
+        }
+        console.log(type, this.selectedTypes);
+        this.listViewComponent.typeFilter(this.selectedTypes);
     }
 }
 

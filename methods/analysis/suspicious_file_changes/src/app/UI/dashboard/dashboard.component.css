@@ -59,7 +59,7 @@
 .grid-main {
     grid-area: grid-main;
     display: grid;
-    grid-template-areas: "date-slider" "graph-block" "list-view-block";
+    grid-template-areas: "date-slider" "type-checker" "graph-block" "list-view-block";
 }
 
 .graph-block {
@@ -303,4 +303,16 @@ mat-chip {
     display: inline-block;
     padding-left: 45px;
     padding-right: 45px;
+}
+
+.type-checker{
+    grid-area: type-checker;
+    display: inline-block;
+    padding-left: 45px;
+    padding-right: 45px;
+    text-align: center;
+}
+
+.type-checker mat-checkbox{
+    margin-left: 20px;
 }
