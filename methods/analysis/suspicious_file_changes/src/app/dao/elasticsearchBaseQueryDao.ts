@@ -361,13 +361,11 @@ export class ElasticsearchBaseQueryDao {
         let filter = '{"bool": {' +
             '"should": [';
         for (let index = 0; index < mactimes.length; index++) {
-            // filter += '{';
-            filter += '{"match":';
+            filter += '{"wildcard":';
             filter += '{';
-            filter += '"Type.keyword":"' + mactimes[index] + '"';
+            filter += '"Type.keyword":"*' + mactimes[index] + '*"';
             filter += '}';
             filter += '}';
-            // filter += '}';
 
             if (index < (mactimes.length - 1)) {
                 filter += ',';
