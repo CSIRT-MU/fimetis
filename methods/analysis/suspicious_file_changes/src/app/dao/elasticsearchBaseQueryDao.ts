@@ -364,7 +364,7 @@ export class ElasticsearchBaseQueryDao {
             // filter += '{';
             filter += '{"match":';
             filter += '{';
-            filter += '"Type":"' + mactimes[index] + '"';
+            filter += '"Type.keyword":"' + mactimes[index] + '"';
             filter += '}';
             filter += '}';
             // filter += '}';
