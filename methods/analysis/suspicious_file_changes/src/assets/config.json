@@ -61,7 +61,7 @@
             ]
         },
         {
-            "name": "standard executable files",
+            "name": "standard executables",
             "color": "#886644",
             "isSelected": true,
             "description": "files in /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin",
@@ -181,7 +181,7 @@
             ]
         },
         {
-            "name": "starts with .",
+            "name": "starts with \".\"",
             "color": "#886644",
             "isSelected": true,
             "description": "files that starts with a .",
@@ -201,7 +201,7 @@
             ]
         },
         {
-            "name": "contains ...",
+            "name": "contains \"...\"",
             "color": "#886644",
             "isSelected": true,
             "description": "files or folders that starts with ...",

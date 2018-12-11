@@ -24,6 +24,8 @@
     width: 20px;
     background-color: transparent;
     position: relative;
+    vertical-align: middle;
+    margin-top: -6px;
 }
 
 .cluster-not-selected::before {
@@ -32,6 +34,16 @@
     margin-left: 6px;
     margin-bottom: 4px;
     color: #666666;
+    font-weight: bold;
+    max-height: 20px;
+}
+
+.cluster-selected::before {
+    content: "\2713";
+    font-size: 19px;
+    margin-left: 4px;
+    margin-bottom: 4px;
+    color: green;
     font-weight: bold;
     max-height: 20px;
 }
@@ -84,15 +96,16 @@
 
 .cluster-name-field {
     display: inline-block;
-    width: 100px;
+    width: 160px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 .cluster-items-field {
     display: inline-block;
-    width: 70px;
+    width: 50px;
 }
 
 .text-align-right {
