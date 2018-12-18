@@ -195,7 +195,7 @@
             <mat-checkbox *ngFor="let type of supportedTypes" (change)="typeCheckboxChanged(type)" [checked]="selectedTypes.has(type)">{{type}} type</mat-checkbox>
         </div>
         <div class="date-slider">
-            <nouislider [min]="dateSliderBoundary.min" [max]="dateSliderBoundary.max" [connect]="true"
+            <nouislider [min]="minDateSliderBoundary" [max]="maxDateSliderBoundary" [connect]="true"
                         [tooltips]="[dateSliderFormatter, dateSliderFormatter]" [ngModel]="dateSliderInit"
                         (change)="dateSliderChanged($event)"></nouislider>
         </div>

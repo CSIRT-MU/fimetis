@@ -65,7 +65,8 @@ export class DashboardComponent implements OnInit {
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
     dateSliderInit: any = [0, 20];
-    dateSliderBoundary: any = {min: 0, max: 20, tooltip: ['0', '20']};
+    minDateSliderBoundary = 0;
+    maxDateSliderBoundary = 20;
     dateSliderConfig: any = {
         behaviour: 'drag',
         connect: true,
@@ -577,9 +578,9 @@ export class DashboardComponent implements OnInit {
 
     async setDateSliderBoundary() {
         const firstAndLast = await this.baseManager.getFirstAndLast(this.selectedCase, this.getClusters(), null);
-        this.dateSliderBoundary.min = (new Date(firstAndLast[0])).getTime();
-        this.dateSliderBoundary.max = (new Date(firstAndLast[1])).getTime();
-        this.dateSliderInit = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
+        // this.dateSliderInit = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
+        this.minDateSliderBoundary = (new Date(firstAndLast[0])).getTime();
+        this.maxDateSliderBoundary = (new Date(firstAndLast[1])).getTime();
         console.log('first', new Date(firstAndLast[0]).getTime());
         this.dateSliderComponent.step = 24 * 60 * 60 * 1000;
     }
