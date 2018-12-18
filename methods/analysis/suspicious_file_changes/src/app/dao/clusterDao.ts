@@ -208,4 +208,12 @@ export class ClusterDao {
         }
     }
 
+    writeCountOfEntriesToCluster(cluster: ClusterModel, case_name, additionalFilter: string[]) {
+        this.es.runQuery('{' + this.elasticsearchBaseQueryDao.getBaseQueryClusterCountString(case_name, cluster, additionalFilter) + '}').then(
+            response => {
+                cluster.count = response.hits.total;
+            }
+        );
+    }
+
 }

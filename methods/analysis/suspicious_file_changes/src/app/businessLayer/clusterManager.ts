@@ -100,4 +100,10 @@ export class ClusterManager {
 
         return new_number - old_number;
     }
+
+    countEntriesOfClusters(additionalFilters) {
+        for (const clust of this._clusters) {
+            this.clusterDao.writeCountOfEntriesToCluster(clust, this._case, additionalFilters);
+        }
+    }
 }

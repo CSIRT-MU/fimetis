@@ -601,6 +601,14 @@ export class DashboardComponent implements OnInit {
         console.log(type, this.selectedTypes);
         this.listViewComponent.typeFilter(this.selectedTypes);
     }
+
+    additionalFiltersChanged(filters: Map<string, string>) {
+        // filters.delete('searchString');
+        const clustManager = new ClusterManager(this.es);
+        clustManager.clusters = this.getClusters();
+        clustManager.case = this.selectedCase;
+        clustManager.countEntriesOfClusters(Array.from(filters.values()));
+    }
 }
 
 

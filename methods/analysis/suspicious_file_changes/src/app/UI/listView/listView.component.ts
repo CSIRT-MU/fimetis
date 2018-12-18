@@ -46,6 +46,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
     @Output('graphChangedBoundary') graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
     @Output('makeManualCluster') makeManualCluster: EventEmitter<ComputationModel> = new EventEmitter<ComputationModel>();
+    @Output('additionalFiltersChanged') additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
 
     tablePanelOpenState = true;
 
@@ -203,7 +204,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
     async init() {
         this.loadingData = true;
-        console.log('CLUSTERS DIFF', this.clusters, this.oldClusters, this.visibleData[0]);
         this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
         this.clusterManager.case = this.case;
         this.clusterManager.clusters = this.clusters;
@@ -386,6 +386,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
             this.additionalFilters.delete('searchString');
             this.init();
         }
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
 
     timeRangeFilter(from: string, to: string) {
@@ -396,6 +397,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 this.init();
             }
         }
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
 
     typeFilter(types) {
@@ -406,6 +408,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 this.init();
             }
         }
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
 
     editTableColumns() {

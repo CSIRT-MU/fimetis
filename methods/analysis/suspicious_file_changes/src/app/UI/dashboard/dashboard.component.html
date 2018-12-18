@@ -204,6 +204,7 @@
                    (openStateChange)="histogramPanelOpenState = $event; collapse()">
         </app-graph>
         <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"
-                       (makeManualCluster)="makeManualCluster($event)"></app-list-view>
+                       (makeManualCluster)="makeManualCluster($event)"
+                       (additionalFiltersChanged)="additionalFiltersChanged($event)"></app-list-view>
     </div>
 </div>
