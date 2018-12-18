@@ -54,7 +54,7 @@
                         {
                             "name": "FILENAME_REGEX",
                             "type": "REGEX",
-                            "value": ".*.ssh\\/(id_rsa|authorized_keys*)."
+                            "value": "\\/(home|root).*\\.ssh\\/(id_rsa|authorized_keys).*"
                         }
                     ]
                 }
@@ -164,7 +164,7 @@
             "name": "cron definition",
             "color": "#886644",
             "isSelected": true,
-            "description": "cron definition",
+            "description": "cron definition in /var/spool/cron /etc/cron.d/ /etc/cron/ /etc/anacrontab",
             "filters": [
                 {
                     "name": "filename_regex",
@@ -174,7 +174,7 @@
                         {
                             "name": "FILENAME_REGEX",
                             "type": "REGEX",
-                            "value": "\\/var\\/spool\\/crontabs.*"
+                            "value": "(\\/var\\/spool\\/cron\\/.*|\\/etc\\/cron\\.d\\/.*|\\/etc\\/cron\\/.*|\\/etc\\/anacrontab\\/.*)"
                         }
                     ]
                 }
@@ -201,30 +201,10 @@
             ]
         },
         {
-            "name": "contains \"...\"",
-            "color": "#886644",
-            "isSelected": true,
-            "description": "files or folders that starts with ...",
-            "filters": [
-                {
-                    "name": "filename_regex",
-                    "isSelected": "true",
-                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                    "params": [
-                        {
-                            "name": "FILENAME_REGEX",
-                            "type": "REGEX",
-                            "value": ".*\\/\\.\\.\\..*"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "suspicious files",
             "color": "#886644",
             "isSelected": true,
-            "description": "files that match regex .*\\/\\.\\..*|.*\\/[\\s.]* (consists of dots and white spaces)",
+            "description": "files that match regex .*\\/\\.\\.\\..*|.*\\/[\\s.]* (consists of dots and white spaces)",
             "filters": [
                 {
                     "name": "filename_regex",
@@ -234,7 +214,7 @@
                         {
                             "name": "FILENAME_REGEX",
                             "type": "REGEX",
-                            "value": ".*\\/\\.\\..*|.*\\/[\\s.]*"
+                            "value": ".*\\/\\.\\.\\..*|.*\\/\\\\s{2,}.*|.*\\/\\.{3,}.*"
                         }
                     ]
                 }
