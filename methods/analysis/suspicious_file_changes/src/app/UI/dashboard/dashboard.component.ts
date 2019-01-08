@@ -30,6 +30,7 @@ export class DashboardComponent implements OnInit {
     baseManager: BaseManager;
     elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
 
+    /* collapse properties */
     setupWindowOpen = true;
     filterPanelOpenState = false;
     computationPanelOpenState = true;
@@ -64,9 +65,9 @@ export class DashboardComponent implements OnInit {
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
-    dateSliderInit: any = [0, 20];
     minDateSliderBoundary = 0;
     maxDateSliderBoundary = 20;
+    dateSliderInit: any = [this.minDateSliderBoundary, this.maxDateSliderBoundary];
     dateSliderConfig: any = {
         behaviour: 'drag',
         connect: true,
@@ -147,6 +148,9 @@ export class DashboardComponent implements OnInit {
         this.tabGroup.selectedIndex = 0;
     }
 
+    /**
+     * Method triggered by selecting Case
+     */
     selectedCaseChanged() {
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
@@ -159,7 +163,9 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.init();
     }
 
-
+    /**
+     * Loads stored clusters from db
+     */
     loadStoredClusters() {
         this.clusterManager.getStoredClusters().then(
             response => {
@@ -167,6 +173,10 @@ export class DashboardComponent implements OnInit {
             });
     }
 
+    /**
+     * Method to initialize predefined clusters
+     * @returns {Promise<void>} Returns predefined clusters
+     */
     async initPreLoadedClusters() {
         // preloaded clusters
         this.computationManager.computations = [];
@@ -191,10 +201,15 @@ export class DashboardComponent implements OnInit {
         this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
     }
 
+    /**
+     * Method returns all clusters
+     * @returns {ClusterModel[]} Returns all actual clusters
+     */
     getClusters() {
         return this.preloadedClusters.concat(this.manualClusters).concat(Array.from(this.clusters)).concat(Array.from(this.savedClusters));
     }
 
+    /* Loads filter from database */
     loadFilter() {
         this.es.getFilterByName(
             this.selectedFilter
@@ -211,6 +226,11 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    /**
+     * Loads filter by given name
+     * @param name Filter name
+     * @returns {Promise<any>} Filter model
+     */
     async getFilter(name): Promise<any> {
         return new Promise((resolve, reject) => {
             this.es.getFilterByName(
@@ -227,6 +247,9 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    /**
+     * Applies selected filter with inserted parameters
+     */
     useFilter() {
         // if (this.selectedFilter == null) {
         //   this.combineSelectedFilters();
@@ -252,6 +275,10 @@ export class DashboardComponent implements OnInit {
         this.selectedFilter = null;
     }
 
+    /**
+     * De/select given filter in computation
+     * @param filter Filter model
+     */
     selectFilter(filter) {
         if (this.selectedAppliedFilters.has(filter)) {
             this.selectedAppliedFilters.delete(filter);
@@ -304,6 +331,9 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    /**
+     * Triggered by changing mode of clusters (select, deselect, deduct)
+     */
     clusterSelectionChanged($event) {
         console.log(this.clusters);
         this.listViewComponent.clusters = this.getClusters();
@@ -319,6 +349,9 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.init();
     }
 
+    /**
+     * Store selected cluster to persistent db
+     */
     // TODO save more tags - now only one combined filter is used - solved in cluster manager method (need to test it)
     storeSelectedClusters() {
         console.log('store');
@@ -342,6 +375,9 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    /**
+     * Remove selected cluster from persistent db if possible
+     */
     deleteSelectedStoredClusters() {
         this.listViewComponent.displayedClusters = [];
         this.listViewComponent.init();
@@ -367,6 +403,9 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    /**
+     * Creates cluster by selection in list view
+     */
     createClusterFromSelection() {
         const namePrefix = 'custom-';
         const dialogRef = this.dialog.open(NameDialogComponent, {
@@ -410,6 +449,9 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    /**
+     * Creates filter by selection in list view
+     */
     createFilterFromSelection() {
         const dialogRef = this.dialog.open(NameDialogComponent, {
             width: '350px',
@@ -448,6 +490,10 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    /**
+     * If graph boundaries has changed this method tries to fill boundaries into filter params called FROM and TO
+     * @param $event Graph emit event
+     */
     changeDateBoundary($event) {
         if ($event['xaxis.range[0]'] !== undefined || $event['xaxis.range[1]'] !== undefined) {
             for (const param of this.selectedFilterModel.params) {
@@ -463,6 +509,9 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    /**
+     * Adds new computation
+     */
     addComputation() {
         const dialogRef = this.dialog.open(ComputationDialogComponent, {
             width: '350px',
@@ -483,22 +532,41 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    /**
+     * Adds filter to given computation
+     * @param computation Computation to add new filter to
+     */
     addFilter(computation) {
         this.filterPanelOpenState = true;
         this.pickedComputation = computation;
         console.log(this.pickedComputation);
     }
 
+    /**
+     * Method to drag and drop filters between computations
+     * @param $event
+     * @param {FilterModel} filter
+     * @param {ComputationModel} computation
+     */
     dragFilter($event, filter: FilterModel, computation: ComputationModel) {
         $event.dataTransfer.setData('filter', JSON.stringify(filter));
         $event.dataTransfer.dropEffect = 'copy';
         $event.effectAllowed = 'copyMove';
     }
 
+    /**
+     * Method to drag and drop filters between computations
+     * @param $event Drag event
+     */
     dragOver($event) {
         $event.preventDefault();
     }
 
+    /**
+     * Method to drag and drop filters between computations
+     * @param $event Drop event
+     * @param {ComputationModel} computation Target computation
+     */
     dropFilter($event, computation: ComputationModel) {
         console.log('dropped', computation);
         $event.preventDefault();
@@ -511,10 +579,20 @@ export class DashboardComponent implements OnInit {
         console.log($event, 'resized');
     }
 
+    /**
+     * Delete given filter from given computation
+     * @param {FilterModel} filter Filter model
+     * @param {ComputationModel} computation Computation to delete filter from
+     */
     deleteFilter(filter: FilterModel, computation: ComputationModel) {
         computation.filters.delete(filter);
     }
 
+    /**
+     * Edit given filter of given computation
+     * @param {FilterModel} filter
+     * @param {ComputationModel} computation
+     */
     editFilter(filter: FilterModel, computation: ComputationModel) {
         this.selectedFilterModel = filter;
         this.pickedComputation = computation;
@@ -523,6 +601,10 @@ export class DashboardComponent implements OnInit {
         this.collapse();
     }
 
+    /**
+     * Copy given filter
+     * @param {FilterModel} filter
+     */
     copyFilter(filter: FilterModel) {
         this.selectedFilterModel = JSON.parse(JSON.stringify(filter));
         this.selectedFilter = this.selectedFilterModel.name;
@@ -530,6 +612,9 @@ export class DashboardComponent implements OnInit {
         this.collapse();
     }
 
+    /**
+     * Compute clusters from all computations
+     */
     computeComputations() {
         console.log('compute');
         this.computationManager.case = this.selectedCase;
@@ -543,12 +628,19 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    /**
+     * Compute clusters from given computation
+     * @param {ComputationModel} computation
+     */
     // TODO method that computes clustering overview only for selected computation
     computeSelectedComputation(computation: ComputationModel) {
         console.log(computation);
         this.computeComputations();
     }
 
+    /**
+     * Triggered by collapse of any element and computes height of each element
+     */
     collapse() {
         console.log(this.filterPanelOpenState);
         let height = 10;
@@ -592,6 +684,10 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
     }
 
+    /**
+     * Triggered by state change of one of the type checkboxes
+     * @param type Type that changed state (select / deselect)
+     */
     typeCheckboxChanged(type) {
         if (this.selectedTypes.has(type)) {
             this.selectedTypes.delete(type);
@@ -602,6 +698,10 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.typeFilter(this.selectedTypes);
     }
 
+    /**
+     * Trigered by change of additional filters (searching, date slider etc.)
+     * @param {Map<string, string>} filters
+     */
     additionalFiltersChanged(filters: Map<string, string>) {
         // filters.delete('searchString');
         const clustManager = new ClusterManager(this.es);
@@ -611,7 +711,9 @@ export class DashboardComponent implements OnInit {
     }
 }
 
-
+/**
+ * Helper class to format dates for date slider
+ */
 export class DateSliderFormatter implements NouiFormatter {
     to(value: number): string {
         return new Date(value).toLocaleDateString();

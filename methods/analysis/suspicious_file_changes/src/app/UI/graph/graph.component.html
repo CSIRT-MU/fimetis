@@ -18,6 +18,7 @@
                 </div>
             </div>
             <plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout"
+                         [config]="graphPlot.config"
                          (relayout)="pickedZoomFunction($event)"></plotly-plot>
         </div>
     </div>

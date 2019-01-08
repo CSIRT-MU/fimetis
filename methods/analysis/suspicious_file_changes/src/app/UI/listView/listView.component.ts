@@ -122,79 +122,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.highlightedText = '';
     }
 
-    // ngOnInit() {
-    //   this.es.getAllDocuments(ListViewComponent.INDEX, ListViewComponent.TYPE)
-    //     .then(response => {
-    //       this.data = response.hits.hits;
-    //       this.metadataSources = response.hits.hits;
-    //       console.log(response);
-    //     }, error => {
-    //       console.error(error);
-    //     }).then(() => {
-    //       console.log('Show Metadata Completed!');
-    //     });
-    // }
-
-    // ngOnInit() {
-    //   this.es.getAllDocumentsWithScroll(
-    //     ListViewComponent.INDEX,
-    //     ListViewComponent.TYPE,
-    //     ListViewComponent.SIZE).then(
-    //     response => {
-    //       this.data = response.hits.hits;
-    //
-    //       if (response.hits.hits.length < response.hits.total) {
-    //         this.haveNextPage = true;
-    //         this.scrollID = response._scroll_id;
-    //       }
-    //       console.log(response);
-    //     }, error => {
-    //       console.error(error);
-    //     }).then(() => {
-    //     console.log('Show Metadata Completed!');
-    //   });
-    // }
-
     ngOnInit() {
         this.sub = this.route.params.subscribe(params => {
             this.case = params['case'];
-            // if (this.type === 'aggregated-mactimes') {
-            //   this.es.getAggregatedPage(
-            //     this.index,
-            //     this.type,
-            //     this.case,
-            //     this.pageEvent.pageSize,
-            //     this.pageEvent.pageIndex
-            //   ).then(
-            //     response => {
-            //       this.data = response.hits.hits;
-            //       this.total = response.hits.total;
-            //       this.scrollID = response._scroll_id;
-            //       console.log(response);
-            //     }, error => {
-            //       console.error(error);
-            //     }).then(() => {
-            //     console.log('Show Metadata Completed!');
-            //   });
-            // } else {
-            //   this.es.getPage(
-            //     this.index,
-            //     this.type,
-            //     this.case,
-            //     this.pageEvent.pageSize,
-            //     this.pageEvent.pageIndex
-            //   ).then(
-            //     response => {
-            //       this.data = response.hits.hits;
-            //       this.total = response.hits.total;
-            //       this.scrollID = response._scroll_id;
-            //       console.log(response);
-            //     }, error => {
-            //       console.error(error);
-            //     }).then(() => {
-            //     console.log('Show Metadata Completed!');
-            //   });
-            // }
         });
     }
 
@@ -202,6 +132,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.sub.unsubscribe();
     }
 
+    /**
+     * Initializes list asynchronously
+     * @returns {Promise<void>}
+     */
     async init() {
         this.loadingData = true;
         this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
@@ -233,117 +167,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.oldClusters = lodash.cloneDeep(this.clusters);
         this.virtualScroller.refresh();
     }
-
-    // showNextPage() {
-    //   if (this.scrollID == null) {
-    //     this.pageEvent.pageIndex --;
-    //     if (this.type === 'aggregated-mactimes') {
-    //       this.es.getAggregatedPageWithScroll(
-    //         this.index,
-    //         this.type,
-    //         this.case,
-    //         this.pageEvent.pageSize,
-    //         this.pageEvent.pageIndex
-    //       ).then(
-    //         response => {
-    //           this.data = response.hits.hits;
-    //           this.total = response.hits.total;
-    //           this.scrollID = response._scroll_id;
-    //           console.log(response);
-    //         }, error => {
-    //           console.error(error);
-    //         }).then(() => {
-    //         console.log('Show Metadata Completed!');
-    //       });
-    //     } else {
-    //       this.es.getPageWithScroll(
-    //         this.index,
-    //         this.type,
-    //         this.case,
-    //         this.pageEvent.pageSize,
-    //         this.pageEvent.pageIndex
-    //       ).then(
-    //         response => {
-    //           this.data = response.hits.hits;
-    //           this.total = response.hits.total;
-    //           this.scrollID = response._scroll_id;
-    //           console.log(response);
-    //         }, error => {
-    //           console.error(error);
-    //         }).then(() => {
-    //         console.log('Show Metadata Completed!');
-    //       });
-    //     }
-    //   }
-    //   this.es.getNextPage(this.scrollID).then(
-    //     response => {
-    //       if (response.hits.hits) {
-    //         this.data = this.data.concat(response.hits.hits);
-    //         this.pageEvent.pageIndex ++;
-    //       } else {
-    //         this.haveNextPage = false;
-    //         this.notice = 'There are no more metadata!';
-    //       }
-    //       console.log(response);
-    //     }, error => {
-    //       console.error(error);
-    //     }).then(() => {
-    //     console.log('Show next page of Metadata Completed!');
-    //   });
-    // }
-
-    // loadPage($event) {
-    //   this.loadingData = true;
-    //   this.pageEvent = $event;
-    //   // let topPaginator = document.querySelector('#topPaginator');
-    //   // let bottomPaginator = document.querySelector('#bottomPaginator');
-    //   // topPaginator.page = this.pageEvent.pageIndex;
-    //   // bottomPaginator.page = this.pageEvent.pageIndex;
-    //   if (this.type === 'aggregated-mactimes') {
-    //     this.es.getAggregatedPage(
-    //       this.index,
-    //       this.type,
-    //       this.case,
-    //       this.pageEvent.pageSize,
-    //       this.pageEvent.pageIndex
-    //     ).then(
-    //       response => {
-    //         this.data = response.hits.hits;
-    //         this.total = response.hits.total;
-    //         this.scrollID = response._scroll_id;
-    //         // console.log(response);
-    //       }, error => {
-    //         console.error(error);
-    //       }).then(() => {
-    //       console.log('Show Metadata Completed!');
-    //       this.loadingData = false;
-    //     });
-    //   } else {
-    //     this.es.getFilteredPage(
-    //       this.index,
-    //       this.type,
-    //       this.case,
-    //       this.pageEvent.pageSize,
-    //       this.pageEvent.pageIndex,
-    //       this.filter,
-    //       this.displayedClusters,
-    //       this.pageSortString,
-    //       this.pageSortOrder,
-    //       Array.from(this.additionalFilters.values())
-    //     ).then(
-    //       response => {
-    //         this.data = response.hits.hits;
-    //         this.total = response.hits.total;
-    //         this.scrollID = response._scroll_id;
-    //         // console.log(response);
-    //       }, error => {
-    //         console.error(error);
-    //       }).then(() => {
-    //       console.log('Show Metadata Completed!');
-    //       this.loadingData = false;
-    //     });
-    //   }
-    // }
 
     setPageSizeOptions(setPageSizeOptionsInput: string) {
         this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
@@ -377,6 +200,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.init();
     }
 
+    /**
+     * Filters data by search string
+     */
     searchByString() {
         console.log('search', this.searchString);
         if (this.searchString !== '') {
@@ -389,6 +215,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.additionalFiltersChanged.emit(this.additionalFilters);
     }
 
+    /**
+     * Filters data by Date
+     * @param {string} from Date
+     * @param {string} to Date
+     */
     timeRangeFilter(from: string, to: string) {
         console.log('time range filter: from:', from, 'to:', to);
         if (from != null || to != null) {
@@ -400,6 +231,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.additionalFiltersChanged.emit(this.additionalFilters);
     }
 
+    /**
+     * Filters data in view by metadata types
+     * @param types
+     */
     typeFilter(types) {
         console.log('type filter:', types);
         if (types != null) {
@@ -411,6 +246,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.additionalFiltersChanged.emit(this.additionalFilters);
     }
 
+    /**
+     * Opens dialog to edit visible table columns
+     */
     editTableColumns() {
         const dialogRef = this.dialog.open(SelectDialogComponent, {
             width: '350px',
@@ -440,9 +278,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
         // console.log(thumb.clientHeight);
     }
 
-    // TODO struktura s predbezne nahranymy daty - napr preload, kde bude +/- 50 vic dat nez v zobrazenych,
-    // TODO z toho se budou brat data pro zobrazeni pokud budou v rozsahu. Pokud se budu blizit k hranici, tak nahraju novou strukturu preload
-    // Method called by virtual scroll to get visible data.
+    /**
+     * Method called by virtual scroll to get visible data from database or preloaded buffer.
+     * @param $event Virtual scroll event
+     */
     loadVisibleData($event) {
         console.log($event);
         const start = $event['start'];
@@ -481,7 +320,15 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Method called to preload data to buffer for virtual scroll.
+    /**
+     * Method called to preload data to buffer for virtual scroll.
+     * @param begin Offset of loading data
+     * @param size Size of loading data
+     * @param visibleDataStart Start index of displayed data
+     * @param visibleDataEnd end index of displayed data
+     * @param {boolean} loadingState If true then loading bar is visible
+     * @param {boolean} preloadBuffer If true then preloading is triggered
+     */
     preloadData(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean, preloadBuffer: boolean) {
         this.preloadedRequestedBegin = begin;
         console.log('preload data: ', begin, size, loadingState, preloadBuffer);
@@ -499,7 +346,15 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
     }
 
-    // Method called to load data from database into buffer.
+    /**
+     * Method called to load data from database into buffer.
+     * @param begin Offset of loading data
+     * @param size Size of loading data
+     * @param visibleDataStart Start index of displayed data
+     * @param visibleDataEnd end index of displayed data
+     * @param {boolean} loadingState If true then loading bar is visible
+     * @param {boolean} preloadBuffer If true then preloading is triggered
+     */
     dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean, preloadBuffer: boolean) {
         if (loadingState) {
             this.loadingData = true;
@@ -528,6 +383,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
         });
     }
 
+    /**
+     * Add item with given id to selection
+     * @param id Id of item in database
+     */
     tableSelect(id) {
         if (this.selected_rows_id.has(id)) {
             this.selected_rows_id.delete(id);
@@ -540,6 +399,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.listViewScrollHeight = height;
     }
 
+    /**
+     * Opens context menu after highlighting some text (mouse selection)
+     * @param {TextSelectEvent} event
+     * @param index Index of item in list
+     */
     openHighlightedTextMenu(event: TextSelectEvent, index) {
         console.group('Text Select Event');
         console.log('Text:', event.text);
@@ -563,6 +427,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Creates filter by highlighted prefix (mouse selection)
+     */
     makeClusterByHighlight(): void {
         console.log('text', this.highlightedText);
         const computation = new ComputationModel();
@@ -578,6 +445,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.makeManualCluster.emit(computation);
     }
 
+    /**
+     * Skips (scrolls) the block by highlighted prefix (mouse selection)
+     * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
+     */
     skipTheBlockByHighlight(toTheEnd: boolean): void {
         console.log('skip from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = this.highlightedTextId;

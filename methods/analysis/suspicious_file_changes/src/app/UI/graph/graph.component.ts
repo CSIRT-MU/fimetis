@@ -48,16 +48,19 @@ export class GraphComponent implements OnInit {
     public plotDivIdentifier = 'plot_div';
 
     public graphPlot = {
-        // data: {x: [], y: [], type: 'scatter', mode: 'lines+points', marker: {color: 'red'}},
-        // layout: {width: 320, height: 240, title: 'A Fancy Plot'}
         data: [
+            // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'mtime', type: 'bar', marker: {color: '#FF7F0E'}},
+            // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'atime', type: 'bar', marker: {color: '#D62728'}},
+            // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'bar', marker: {color: '#2CA02C'}},
+            // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'bar', marker: {color: '#976CBF'}},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'mtime', type: 'scatter', mode: 'lines+points', marker: {color: '#FF7F0E'}},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'atime', type: 'scatter', mode: 'lines+points', marker: {color: '#D62728'}},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'scatter', mode: 'lines+points', marker: {color: '#2CA02C'}},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'scatter', mode: 'lines+points', marker: {color: '#976CBF'}},
             // { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
         ],
-        layout: {autosize: true, xaxis: {range: []}, dataversion: 0, showlegend: true} // log y axis > yaxis: {type: 'log'}
+        layout: {autosize: true, xaxis: {range: [], rangeslider: {}}, dataversion: 0, showlegend: false, margin: {t: 5, b: 20}, height: 200}, // log y axis > yaxis: {type: 'log'}
+        config: {displayModeBar: false}
     };
 
     constructor(private es: ElasticsearchService) {
@@ -69,6 +72,10 @@ export class GraphComponent implements OnInit {
     ngOnInit() {
     }
 
+
+    /**
+     * Plotly graph initialization
+     */
     init() {
         this.manager.case = this._case;
         // this.manager.filter = this._filter;
@@ -127,6 +134,9 @@ export class GraphComponent implements OnInit {
         console.log(this.graphPlot.data);
     }
 
+    /**
+     * d3.js graph initialization
+     */
     // createChart() {
     //   const element = this.chartElement.nativeElement;
     //   this.width = element.offsetWidth - this.margin.left - this.margin.right;

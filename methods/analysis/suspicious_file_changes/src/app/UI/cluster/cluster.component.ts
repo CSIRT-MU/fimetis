@@ -28,6 +28,10 @@ export class ClusterComponent implements OnInit {
     ngOnInit() {
     }
 
+    /**
+     * Changes mode of given cluster by mode (mode 0: selected, not selected else: selected, not selected, deducted)
+     * @param cluster Cluster model
+     */
     nextVal(cluster) {
         if (this.mode === 0) {
             for (const clust of this.clusters) {

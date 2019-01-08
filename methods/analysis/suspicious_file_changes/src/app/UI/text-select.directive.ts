@@ -7,6 +7,7 @@ import {OnInit} from '@angular/core';
 import {NgZone} from '@angular/core';
 
 // ----------------------------------------------------------------------------------- //
+// Helper service for pop up actions after selecting some text in list view            //
 // ----------------------------------------------------------------------------------- //
 
 export interface TextSelectEvent {
