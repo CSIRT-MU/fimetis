@@ -495,17 +495,19 @@ export class DashboardComponent implements OnInit {
      * @param $event Graph emit event
      */
     changeDateBoundary($event) {
-        if ($event['xaxis.range[0]'] !== undefined || $event['xaxis.range[1]'] !== undefined) {
+        console.log($event, 'dashboard');
+        if ($event[0] !== undefined || $event[1] !== undefined) {
             for (const param of this.selectedFilterModel.params) {
                 if (param.type === 'DATE') {
                     if (param.name === 'FROM') {
-                        param.value = $event['xaxis.range[0]'].split('.')[0].replace(' ', 'T');
+                        param.value = $event[0].split('.')[0].replace(' ', 'T');
                     }
                     if (param.name === 'TO') {
-                        param.value = $event['xaxis.range[1]'].split('.')[0].replace(' ', 'T');
+                        param.value = $event[1].split('.')[0].replace(' ', 'T');
                     }
                 }
             }
+            this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
         }
     }
 
@@ -696,10 +698,11 @@ export class DashboardComponent implements OnInit {
         }
         console.log(type, this.selectedTypes);
         this.listViewComponent.typeFilter(this.selectedTypes);
+        this.graphComponent.showHideTrace(type);
     }
 
     /**
-     * Trigered by change of additional filters (searching, date slider etc.)
+     * Trigered by change of additional filters (searching, date slider etc.) in list view
      * @param {Map<string, string>} filters
      */
     additionalFiltersChanged(filters: Map<string, string>) {

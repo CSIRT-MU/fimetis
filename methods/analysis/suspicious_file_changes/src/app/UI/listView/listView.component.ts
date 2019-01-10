@@ -497,4 +497,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
         const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
         this.openHighlightedTextMenu(hideEvent, 0);
     }
+
+    testClick($event, index) {
+        console.log($event);
+        console.log($event.target.textContent);
+        const elemRef = document.getElementById('file_' + index);
+
+
+    }
 }

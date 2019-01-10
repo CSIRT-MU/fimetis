@@ -229,6 +229,8 @@
               <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'gid'">{{element._source.GID}}</div>
               <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'inode'">{{element._source.Meta}}</div>
               <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'"
+                   id="file_{{i}}"
+                   (click)="testClick($event, i)"
                    (textSelect)="openHighlightedTextMenu( $event, i )">
                 <!--{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}-->
                 {{element['_source']['File Name']}}

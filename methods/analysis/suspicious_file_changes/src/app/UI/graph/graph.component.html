@@ -19,8 +19,16 @@
             </div>
             <plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout"
                          [config]="graphPlot.config"
-                         (relayout)="pickedZoomFunction($event)"></plotly-plot>
+                         (relayout)="pickedZoomFunction($event)"
+                         [useResizeHandler]="true"
+                         (update)="graphUpdated($event)"
+            ></plotly-plot>
         </div>
+        <form (submit)="updateBoundary($event)">
+            <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate">
+            <input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate">
+            <button type="submit" hidden></button>
+        </form>
     </div>
 </div>
 <!--<div #new_plot id="new_plot"></div>-->

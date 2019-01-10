@@ -462,14 +462,15 @@ export class ElasticsearchBaseQueryDao {
         let filter = '{"range": {' +
             '"@timestamp": {';
         if (from != null && from !== undefined) {
-            filter += '"gte": "' + from + '"';
-            if (to != null && to !== undefined) {
-                filter += ',';
-            }
+            filter += '"gte": "' + from + '",';
+            // if (to != null && to !== undefined) {
+            //     filter += ',';
+            // }
         }
         if (to != null && to !== undefined) {
-            filter += '"lte": "' + to + '"';
+            filter += '"lte": "' + to + '",';
         }
+        filter += '"format": "date_time"';
         filter += '}' +
             '}' +
             '}';

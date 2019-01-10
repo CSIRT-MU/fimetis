@@ -4,6 +4,8 @@ import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
 import {GraphManager} from '../../businessLayer/graphManager';
 import {ClusterModel} from '../../models/cluster.model';
+import {Subject} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
     selector: 'app-graph',
@@ -16,7 +18,9 @@ export class GraphComponent implements OnInit {
     @Input() _filter: string;
     @Input() _clusters: ClusterModel[] = [];
     @Input() _frequency: string;
-    @Output() getDateChange = new EventEmitter<boolean>();
+    @Output() getDateChange = new EventEmitter<[string, string]>();
+    // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
+    dateChangeDebouncer: Subject<[string, string]> = new Subject();
     @Output() openStateChange = new EventEmitter<boolean>();
     @Input() fromDate: Date;
 
@@ -25,6 +29,9 @@ export class GraphComponent implements OnInit {
 
     @Input()
     graphPanelOpenState = true;
+
+    pickedFromDate = '1970-01-01T00:00:00';
+    pickedToDate = '1970-01-01T00:00:00';
 
     private data: any;
     private manager;
@@ -53,18 +60,25 @@ export class GraphComponent implements OnInit {
             // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'atime', type: 'bar', marker: {color: '#D62728'}},
             // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'bar', marker: {color: '#2CA02C'}},
             // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'bar', marker: {color: '#976CBF'}},
-            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'mtime', type: 'scatter', mode: 'lines+points', marker: {color: '#FF7F0E'}},
-            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'atime', type: 'scatter', mode: 'lines+points', marker: {color: '#D62728'}},
-            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'scatter', mode: 'lines+points', marker: {color: '#2CA02C'}},
-            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'scatter', mode: 'lines+points', marker: {color: '#976CBF'}},
+            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'm',
+                type: 'scatter', mode: 'lines+points', marker: {color: '#FF7F0E'}, visible: true, connectgaps: true},
+            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'a',
+                type: 'scatter', mode: 'lines+points', marker: {color: '#D62728'}, visible: true, connectgaps: true},
+            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'c',
+                type: 'scatter', mode: 'lines+points', marker: {color: '#2CA02C'}, visible: true, connectgaps: true},
+            {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'b',
+                type: 'scatter', mode: 'lines+points', marker: {color: '#976CBF'}, visible: true, connectgaps: true},
             // { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
         ],
-        layout: {autosize: true, xaxis: {range: [], rangeslider: {}}, dataversion: 0, showlegend: false, margin: {t: 5, b: 20}, height: 200}, // log y axis > yaxis: {type: 'log'}
+        layout: {autosize: true, xaxis: {range: [], rangeslider: {}}, dataversion: 0, showlegend: false,
+            margin: {t: 5, b: 20}, height: 200, yaxis: {type: 'log'}}, // log y axis > yaxis: {type: 'log'}
         config: {displayModeBar: false}
     };
 
     constructor(private es: ElasticsearchService) {
         this.manager = new GraphManager(es);
+        // debouncer setup
+        this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value));
 
     }
 
@@ -124,12 +138,6 @@ export class GraphComponent implements OnInit {
                 this.loadingBTimes = false;
                 console.log('Graph data loaded async! - b', response);
             });
-
-        // make graph responsive
-        const plotDiv = document.getElementById(this.plotDivIdentifier);
-        window.onresize = function () {
-            Plotly.Plots.resize(plotDiv);
-        };
 
         console.log(this.graphPlot.data);
     }
@@ -229,8 +237,41 @@ export class GraphComponent implements OnInit {
     // }
 
     pickedZoomFunction($event) {
-        console.log('zoom', $event['xaxis.range[0]'], $event['xaxis.range[1]']);
-        this.getDateChange.emit($event);
+        console.log('graph zoom', $event);
+        // let from;
+        // let to;
+        // if ($event['xaxis.range'] === undefined && ($event['xaxis.range[0]'] === undefined || $event['xaxis.range[1]'] === undefined)) {
+        //     // zoom out after double click
+        //     // from = this.lastInitUpdateOfPickedFromDate;
+        //     // to = this.lastInitUpdateOfPickedToDate;
+        //     from = this.graphPlot.layout.xaxis.range[0];
+        //     to = this.graphPlot.layout.xaxis.range[1];
+        //     // this.pickedFromDate = from;
+        //     // this.pickedToDate = to;
+        // } else {
+        //     // zoom by selecting area in graph
+        //     from = $event['xaxis.range[0]'];
+        //     if (from === undefined || from == null) {
+        //         from = $event['xaxis.range'][0];
+        //     }
+        //     to = $event['xaxis.range[1]'];
+        //     if (to === undefined || to == null) {
+        //         to = $event['xaxis.range'][1];
+        //     }
+        //     // let isoString = new Date(from).toISOString();
+        //     // this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+        //     // isoString = new Date(to).toISOString();
+        //     // this.pickedToDate = isoString.substring(0, isoString.length - 1);
+        // }
+        let isoString = new Date(this.graphPlot.layout.xaxis.range[0]).toISOString();
+        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+        isoString = new Date(this.graphPlot.layout.xaxis.range[1]).toISOString();
+        this.pickedToDate = isoString.substring(0, isoString.length - 1);
+        console.log('graph zoom', this.graphPlot.layout.xaxis.range[0], this.graphPlot.layout.xaxis.range[1]);
+        // this.getDateChange.emit([from, to]);
+        this.dateChangeDebouncer.next([
+            this.graphPlot.layout.xaxis.range[0],
+            this.graphPlot.layout.xaxis.range[1]]);
     }
 
     setFromBoundary(fromDate) {
@@ -255,8 +296,40 @@ export class GraphComponent implements OnInit {
         console.log('setup xaxis [1]', this.graphPlot.layout.xaxis.range[1]);
     }
 
+    updateBoundary() {
+        const update = {
+            xaxis: {range: [this.pickedFromDate, this.pickedToDate], rangeslider: [this.pickedFromDate, this.pickedToDate]}
+        };
+        Plotly.relayout(document.getElementById(this.plotDivIdentifier), update);
+        // this.graphPlot.layout.xaxis.range = [this.pickedFromDate, this.pickedToDate];
+        // this.graphPlot.layout.xaxis.rangeslider = [this.pickedFromDate, this.pickedToDate];
+        // // this.graphPlot.layout.dataversion += 1;
+        // Plotly.relayout(document.getElementById(this.plotDivIdentifier), this.graphPlot.layout).catch(error => {
+        //    console.log('update graph boundary error', error);
+        // });
+        this.dateChangeDebouncer.next([
+            this.pickedFromDate.replace('T', ' '),
+            this.pickedToDate.replace('T', ' ')]);
+    }
+
     collapseGraphPanel() {
         this.graphPanelOpenState = !this.graphPanelOpenState;
         this.openStateChange.emit(this.graphPanelOpenState);
+    }
+
+    graphUpdated($event) {
+        console.log('graph updated', $event, $event['layout'].xaxis);
+        let isoString = new Date($event['layout'].xaxis.range[0]).toISOString();
+        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+        isoString = new Date($event['layout'].xaxis.range[1]).toISOString();
+        this.pickedToDate = isoString.substring(0, isoString.length - 1);
+    }
+
+    showHideTrace(metadataType) {
+        for (let index = 0; index < this.graphPlot.data.length; index++) {
+            if (this.graphPlot.data[index].name === metadataType) {
+                this.graphPlot.data[index].visible = !this.graphPlot.data[index].visible;
+            }
+        }
     }
 }
