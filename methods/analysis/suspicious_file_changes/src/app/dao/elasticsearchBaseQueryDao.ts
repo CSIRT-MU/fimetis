@@ -312,9 +312,9 @@ export class ElasticsearchBaseQueryDao {
             return null;
         }
         let query = '';
+        query += '{"wildcard":';
         query += '{';
-        query += '"match": {';
-        query += '"Type": "' + mactime_type + '"';
+        query += '"Type.keyword":"*' + mactime_type + '*"';
         query += '}';
         query += '}';
 
