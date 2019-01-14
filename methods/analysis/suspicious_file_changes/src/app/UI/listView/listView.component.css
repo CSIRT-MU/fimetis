@@ -202,7 +202,8 @@ virtual-scroll {
 }
 
 .monospace-text {
-    font-family: "Bitstream Vera Sans Mono";
+    /*font-family: "Bitstream Vera Sans Mono";*/
+    font-family: "Source Code Pro";
 }
 
 .text-align-right {

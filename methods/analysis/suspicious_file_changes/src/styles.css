@@ -3,6 +3,11 @@
 /*@import "~bootstrap/dist/css/bootstrap.min.css";*/
 @import "~nouislider/distribute/nouislider.min.css";
 
+@font-face {
+    font-family: "Source Code Pro";
+    src: url(assets/fonts/SourceCodePro-Regular.ttf);
+}
+
 .mat-pseudo-checkbox-checked {
     background-color: #ffffff !important;
     border-color: #666666 !important;
