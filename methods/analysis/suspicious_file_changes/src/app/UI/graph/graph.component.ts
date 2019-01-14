@@ -22,6 +22,7 @@ export class GraphComponent implements OnInit {
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
     dateChangeDebouncer: Subject<[string, string]> = new Subject();
     @Output() openStateChange = new EventEmitter<boolean>();
+    @Output() typesChanged = new EventEmitter<Set<string>>();
     @Input() fromDate: Date;
 
     @ViewChild('graph') private chartElement: ElementRef;
@@ -32,6 +33,9 @@ export class GraphComponent implements OnInit {
 
     pickedFromDate = '1970-01-01T00:00:00';
     pickedToDate = '1970-01-01T00:00:00';
+
+    supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
+    selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
     private data: any;
     private manager;
@@ -51,6 +55,11 @@ export class GraphComponent implements OnInit {
     loadingCTimes = false;
     loadingBTimes = false;
 
+    mTypeColor = '#FF7F0E';
+    aTypeColor = '#D62728';
+    cTypeColor = '#2CA02C';
+    bTypeColor = '#976CBF';
+
     // Plotly
     public plotDivIdentifier = 'plot_div';
 
@@ -61,18 +70,18 @@ export class GraphComponent implements OnInit {
             // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'ctime', type: 'bar', marker: {color: '#2CA02C'}},
             // {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'btime', type: 'bar', marker: {color: '#976CBF'}},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'm',
-                type: 'scatter', mode: 'lines+points', marker: {color: '#FF7F0E'}, visible: true, connectgaps: true},
+                type: 'scatter', mode: 'lines+points', marker: {color: this.mTypeColor}, visible: true, connectgaps: true},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'a',
-                type: 'scatter', mode: 'lines+points', marker: {color: '#D62728'}, visible: true, connectgaps: true},
+                type: 'scatter', mode: 'lines+points', marker: {color: this.aTypeColor}, visible: true, connectgaps: true},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'c',
-                type: 'scatter', mode: 'lines+points', marker: {color: '#2CA02C'}, visible: true, connectgaps: true},
+                type: 'scatter', mode: 'lines+points', marker: {color: this.cTypeColor}, visible: true, connectgaps: true},
             {x: ['1970-01-01T00:00:00.000Z'], y: [0], name: 'b',
-                type: 'scatter', mode: 'lines+points', marker: {color: '#976CBF'}, visible: true, connectgaps: true},
+                type: 'scatter', mode: 'lines+points', marker: {color: this.bTypeColor}, visible: true, connectgaps: true},
             // { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
         ],
-        layout: {autosize: true, xaxis: {range: [], rangeslider: {}}, dataversion: 0, showlegend: false,
+        layout: {autosize: true, xaxis: {range: [], rangeslider: {}, type: 'date'}, dataversion: 0, showlegend: false,
             margin: {t: 5, b: 20}, height: 200, yaxis: {type: 'log'}}, // log y axis > yaxis: {type: 'log'}
-        config: {displayModeBar: false}
+        config: {displayModeBar: false} // scrollZoom: true
     };
 
     constructor(private es: ElasticsearchService) {
@@ -331,5 +340,30 @@ export class GraphComponent implements OnInit {
                 this.graphPlot.data[index].visible = !this.graphPlot.data[index].visible;
             }
         }
+    }
+
+    typeCheckboxChanged(type) {
+        if (this.selectedTypes.has(type)) {
+            this.selectedTypes.delete(type);
+        } else {
+            this.selectedTypes.add(type);
+        }
+        this.showHideTrace(type);
+        this.typesChanged.emit(this.selectedTypes);
+        console.log('selected metadata types changed', this.selectedTypes);
+    }
+
+    getCheckboxColor(type) {
+        switch (type) {
+            case 'm':
+                return this.mTypeColor;
+            case 'a':
+                return this.aTypeColor;
+            case 'c':
+                return this.cTypeColor;
+            case 'b':
+                return this.bTypeColor;
+        }
+        return '#FF5500';
     }
 }

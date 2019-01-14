@@ -59,7 +59,8 @@
 .grid-main {
     grid-area: grid-main;
     display: grid;
-    grid-template-areas: "date-slider" "type-checker" "graph-block" "list-view-block";
+    /*grid-template-areas: "date-slider" "type-checker" "graph-block" "list-view-block";*/
+    grid-template-areas: "graph-block" "list-view-block";
 }
 
 .graph-block {

@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
     filterPanelOpenState = false;
     computationPanelOpenState = true;
     clusterPanelOpenState = true;
-    histogramPanelOpenState = false;
+    histogramPanelOpenState = true;
 
     cases: any[];
     selectedCase: string;
@@ -117,8 +117,8 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.dateSliderComponent.min = 0;
-        this.dateSliderComponent.max = 100;
+        // this.dateSliderComponent.min = 0;
+        // this.dateSliderComponent.max = 100;
         this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
@@ -645,7 +645,8 @@ export class DashboardComponent implements OnInit {
      */
     collapse() {
         console.log(this.filterPanelOpenState);
-        let height = 10;
+        // let height = 10;
+        let height = 47;
         if (!this.filterPanelOpenState) {
             height += 20;
         }
@@ -658,7 +659,7 @@ export class DashboardComponent implements OnInit {
             }
         }
         if (!this.histogramPanelOpenState) {
-            height += 42;
+            height += 20;
         }
         this.listViewComponent.resizeList(height);
     }
@@ -699,6 +700,11 @@ export class DashboardComponent implements OnInit {
         console.log(type, this.selectedTypes);
         this.listViewComponent.typeFilter(this.selectedTypes);
         this.graphComponent.showHideTrace(type);
+    }
+
+    selectedMetadataTypesChanged(selectedTypes: Set<string>) {
+        this.selectedTypes = selectedTypes;
+        this.listViewComponent.typeFilter(this.selectedTypes);
     }
 
     /**
