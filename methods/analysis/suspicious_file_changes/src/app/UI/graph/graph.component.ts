@@ -298,7 +298,7 @@ export class GraphComponent implements OnInit {
 
     updateBoundary() {
         const update = {
-            xaxis: {range: [this.pickedFromDate, this.pickedToDate], rangeslider: [this.pickedFromDate, this.pickedToDate]}
+            xaxis: {range: [this.pickedFromDate, this.pickedToDate], rangeslider: {}}
         };
         Plotly.relayout(document.getElementById(this.plotDivIdentifier), update);
         // this.graphPlot.layout.xaxis.range = [this.pickedFromDate, this.pickedToDate];
