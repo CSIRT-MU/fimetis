@@ -2,19 +2,35 @@ import {Injectable} from '@angular/core';
 
 import {Client} from 'elasticsearch-browser';
 import {ComputationModel} from './models/computation.model';
+import {ConfigManager} from '../assets/configManager';
 
 @Injectable()
 export class ElasticsearchService {
 
     private client: Client;
-    private metadata_index = 'metadata';
-    private metadata_type = 'mactimes';
 
-    private filter_index = 'filter';
-    private filter_type = '';
+    private host;
+    private httpAuth;
+    private metadata_index;
+    private metadata_type;
+
+    private filter_index;
+    private filter_type;
+
 
 
     constructor() {
+        const configManager = new ConfigManager();
+        const elastic_configuration = configManager.load()['elastic_configuration'];
+
+        this.metadata_index = elastic_configuration['metadata_index'];
+        this.metadata_type = elastic_configuration['metadata_type'];
+        this.filter_index = elastic_configuration['filter_index'];
+        this.filter_type = elastic_configuration['filter_type'];
+        this.host = elastic_configuration['host'];
+        this.httpAuth = elastic_configuration['httpAuth'];
+
+
         if (!this.client) {
             this.connect();
         }
@@ -22,8 +38,8 @@ export class ElasticsearchService {
 
     private connect() {
         this.client = new Client({
-            host: 'http://78.128.250.232:9200',
-            httpAuth: 'elastic:timesix-elk',
+            host: this.host,
+            httpAuth: this.httpAuth
             // log: 'trace'
         });
     }
