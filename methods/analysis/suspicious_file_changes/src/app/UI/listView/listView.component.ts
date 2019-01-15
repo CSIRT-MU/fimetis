@@ -61,6 +61,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
     highlightedText: string;
     highlightedTextId: number;
 
+    public highlightedTextDateBox: SelectionRectangle | null;
+    highlightedTextDate: string;
+    highlightedTextDateId: number;
+
     selected_rows_id: Set<string> = new Set<string>();
 
     haveNextPage = false;
@@ -106,6 +110,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
     @ViewChild(MatTable) interactiveTable: MatTable<any>;
     @ViewChild('highlightedBox') highlightedBox: ElementRef;
+    @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
     @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
     constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog) {
@@ -120,6 +125,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.clusterManager = new ClusterManager(this.es);
         this.highlightedTextBox = null;
         this.highlightedText = '';
+
+        this.highlightedTextDateBox = null;
+        this.highlightedTextDate = '';
     }
 
     ngOnInit() {
@@ -428,6 +436,34 @@ export class ListViewComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Opens context menu after highlighting timestamp (mouse selection)
+     * @param {TextSelectEvent} event
+     * @param index Index of item in list
+     */
+    openHighlightedTextDateMenu(event: TextSelectEvent, index) {
+        console.group('Text Select Date Event');
+        console.log('Text:', event.text);
+        console.log('Viewport Rectangle:', event.viewportRectangle);
+        console.log('Host Rectangle:', event.hostRectangle);
+        console.groupEnd();
+        this.highlightedTextDateId = index + this.visibleDataFirstIndex;
+        if (event.hostRectangle) {
+
+            this.highlightedTextDateBox = event.hostRectangle;
+            this.highlightedTextDate = event.text;
+            this.highlightedDateBox.nativeElement.style.display = 'block';
+            this.highlightedDateBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
+            this.highlightedDateBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
+
+        } else {
+            this.highlightedDateBox.nativeElement.style.display = 'none';
+            this.highlightedTextDateBox = null;
+            this.highlightedTextDate = '';
+
+        }
+    }
+
+    /**
      * Creates filter by highlighted prefix (mouse selection)
      */
     makeClusterByHighlight(): void {
@@ -498,10 +534,57 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.openHighlightedTextMenu(hideEvent, 0);
     }
 
+    /**
+     * Skips (scrolls) the block by highlighted timestamp (mouse selection)
+     * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
+     */
+    skipTheBlockByDate(toTheEnd: boolean): void {
+        console.log('skip from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
+        let skipIndex = this.highlightedTextDateId;
+
+        const datetimeRegex = new RegExp(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2}):(\d{2})/g);
+        const result = datetimeRegex.exec(this.highlightedTextDate);
+        const selectedDate =
+            new Date(result[2] + '.' + result[1] + '.' + result[3] + ' ' + result[4] + ':' + result[5] + ':' + result[6]);
+
+        const index_start = (this.highlightedTextDateId - this.preloadedBegin);
+        const bufferOffset = this.preloadedBegin;
+
+        if (toTheEnd) {
+            for (let index = (index_start + 1); index < this.preloadedBufferSize; index++) {
+                const next_date = new Date(this.preloadedData[index]._source['@timestamp']);
+                if (selectedDate.getTime() < next_date.getTime()) {
+                    skipIndex = index;
+                    break;
+                }
+            }
+        } else {
+            for (let index = (index_start - 1); index >= 0; index--) {
+                const next_date = new Date(this.preloadedData[index]._source['@timestamp']);
+                if (selectedDate.getTime() > next_date.getTime()) {
+                    skipIndex = index;
+                    break;
+                }
+            }
+        }
+        console.log('skip to:', skipIndex + bufferOffset);
+        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
+        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        this.openHighlightedTextDateMenu(hideEvent, 0);
+    }
+
     testClick($event, index) {
         console.log($event);
         console.log($event.target.textContent);
         const elemRef = document.getElementById('file_' + index);
+
+
+    }
+
+    testClickDate($event, index) {
+        console.log($event);
+        console.log($event.target.textContent);
+        const elemRef = document.getElementById('date_' + index);
 
 
     }

@@ -219,7 +219,7 @@
               <!--</span>-->
               <!--</div>-->
               <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
-              <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'">
+              <div class="table-block larger-table-block selectable" *ngIf="tableItem == 'timestamp'" id="date_{{i}}" (textSelect)="openHighlightedTextDateMenu($event, i)" (click)="testClickDate($event, i)">
                 {{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}
               </div>
               <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
@@ -291,3 +291,11 @@
     <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block"
           [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlight(false)"></span>
 </div>
+
+<div #highlightedDateBox id="highlightedDateBox" class="highlightedBox">
+    {{highlightedTextDate}}
+    <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block"
+          [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(true)"></span>
+    <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block"
+          [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(false)"></span>
+    </div>
