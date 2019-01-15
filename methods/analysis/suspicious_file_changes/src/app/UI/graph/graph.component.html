@@ -24,7 +24,7 @@
                          (update)="graphUpdated($event)"
             ></plotly-plot>
         </div>
-        <form (submit)="updateBoundary($event)" class="from-date-form col-md-4">
+        <form (submit)="updateBoundary()" class="from-date-form col-md-4">
             <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input">
             <button type="submit" hidden></button>
         </form>
@@ -35,7 +35,7 @@
                 <label for="check-{{type}}">{{type}} type</label>
             </span>
         </div>
-        <form (submit)="updateBoundary($event)" class="to-date-form col-md-4">
+        <form (submit)="updateBoundary()" class="to-date-form col-md-4">
             <input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate" required class="date-form-input">
             <button type="submit" hidden></button>
         </form>
