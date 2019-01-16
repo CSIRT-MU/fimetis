@@ -171,10 +171,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 this.virtualArray.length = this.total;
                 this.loadingData = false;
                 this.visibleData = this.data;
+                if (this.visibleDataFirstIndex + shift > this.total ) {
+                    this.virtualScroller.scrollToIndex(this.total - 20 < 0 ? 0 : this.total - 20);
+                } else {
+                    this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
+                }
+                // this.virtualScroller.refresh();
             });
-        this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
+        // this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
         this.oldClusters = lodash.cloneDeep(this.clusters);
-        this.virtualScroller.refresh();
+        // this.virtualScroller.refresh();
     }
 
     setPageSizeOptions(setPageSizeOptionsInput: string) {
