@@ -1,6 +1,6 @@
 {
     "elastic_configuration": {
-        "host" : "http://78.128.250.226:9200",
+        "host" : "http://78.128.250.232:9200",
         "httpAuth": "elastic:timesix-elk",
         "metadata_index": "metadata",
         "metadata_type": "mactimes",
