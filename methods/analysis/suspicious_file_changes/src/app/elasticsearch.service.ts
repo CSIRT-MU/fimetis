@@ -21,7 +21,7 @@ export class ElasticsearchService {
 
     constructor() {
         const configManager = new ConfigManager();
-        const elastic_configuration = configManager.load()['elastic_configuration'];
+        const elastic_configuration = configManager.loadElasticConfiguration()['elastic_configuration'];
 
         this.metadata_index = elastic_configuration['metadata_index'];
         this.metadata_type = elastic_configuration['metadata_type'];

@@ -1,13 +1,4 @@
 {
-    "elastic_configuration": {
-        "host" : "http://78.128.250.232:9200",
-        "httpAuth": "elastic:timesix-elk",
-        "metadata_index": "metadata",
-        "metadata_type": "mactimes",
-        "filter_index": "filter",
-        "filter_type": ""
-    },
-
     "prepared_computations": [
         {
             "name": "files in /usr",

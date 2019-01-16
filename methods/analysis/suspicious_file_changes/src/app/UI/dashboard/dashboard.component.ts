@@ -185,7 +185,7 @@ export class DashboardComponent implements OnInit {
 
         const configManager = new ConfigManager();
 
-        const preparedComputationsFromJson = configManager.load()['prepared_computations'];
+        const preparedComputationsFromJson = configManager.loadPreparedComputations()['prepared_computations'];
 
         for (let i = 0; i < preparedComputationsFromJson.length; i++) {
             const tmpComputation = new ComputationModel();
