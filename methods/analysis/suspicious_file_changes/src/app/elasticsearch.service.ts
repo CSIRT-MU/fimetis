@@ -68,21 +68,6 @@ export class ElasticsearchService {
         });
     }
 
-    getFilterByName(_name) {
-        return this.client.search({
-            index: this.filter_index,
-            type: this.filter_type,
-            body: {
-                'query': {
-                    'term': {
-                        'name.keyword': {
-                            'value': _name
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     getTags(_case): any {
         return this.client.search({

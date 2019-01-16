@@ -10,7 +10,16 @@ export class BaseDao {
         this.elasticsearchBaseQueryDao = new ElasticsearchBaseQueryDao();
     }
 
-    // asc for first entry, desc for last entry
+    /**
+     * Returns first or last entry from given clusters
+     * Used for counting the frequency for displaying graph
+     *
+     * @param case_name Name of the case
+     * @param clusters Clusters from those get the first or last entry
+     * @param additional_filters Optional filters
+     * @param ascOrDesc If asc then first entry, if desc then last
+     * @return Promise<any>
+     */
     getFirstOrLast(case_name, clusters, additional_filters, ascOrDesc): Promise<any> {
         const promise = new Promise((resolve, reject) => {
             let entry;
@@ -31,6 +40,16 @@ export class BaseDao {
     }
 
 
+    /**
+     * Build the query for counting first or last entry from given clusters
+     *
+     * @param case_name Name of the case
+     * @param clusters Clusters from those get the first or last entry
+     * @param additional_filters Optional filters
+     * @param first_or_last Asc for first and the desc for the last
+     * @param mactime_type The type of timestamp m | a | c | b
+     * @return string Elasticsearch query
+     */
     buildFirstOrLastQuery(case_name, clusters, additional_filters, first_or_last, mactime_type) {
         let first_or_lastquery = '{'; // start of all query string
         first_or_lastquery += '"from": 0';
@@ -61,6 +80,11 @@ export class BaseDao {
     }
 
 
+    /**
+     * Loads cases from the database
+     *
+     * @return Promise<any> Array of cases
+     */
     async getCases(): Promise<any> {
         const query = {
             'aggs': {
@@ -87,7 +111,10 @@ export class BaseDao {
 
     }
 
-
+    /**
+     * Loads filters from database
+     * @return Promise<any> Array of filters
+     */
     async getFilters(): Promise<any> {
         const query = {
             'aggs': {
@@ -115,4 +142,33 @@ export class BaseDao {
         return promise;
     }
 
+    /**
+     * Loads the filter by given name
+     * @param filter_name Name of the filter in database
+     * @return Promise<any> Founded filter
+     */
+    async getFilterByName(filter_name): Promise<any> {
+        const query = {
+            'query': {
+                'term': {
+                    'name.keyword': {
+                        'value': filter_name
+                    }
+                }
+            }
+        };
+
+        const promise = new Promise((resolve, reject) => {
+            this.es.runFilterQuery(query)
+                .then(response => {
+                    const filter = response.hits.hits[0]._source;
+                    console.log(filter);
+                    resolve(filter);
+                }, error => {
+                    console.error(error);
+                });
+        });
+
+        return promise;
+    }
 }

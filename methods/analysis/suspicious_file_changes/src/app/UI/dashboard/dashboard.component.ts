@@ -210,42 +210,15 @@ export class DashboardComponent implements OnInit {
     }
 
     /* Loads filter from database */
-    loadFilter() {
-        this.es.getFilterByName(
-            this.selectedFilter
-        ).then(
-            response => {
-                const test = response.hits.hits;
-                this.selectedFilterModel = response.hits.hits[0]._source;
-                console.log(test);
-                console.log(this.selectedFilterModel);
-            }, error => {
-                console.error(error);
-            }).then(() => {
-            console.log('Filter loaded');
-        });
+    async loadFilter() {
+        this.baseManager.getFilterByName(this.selectedFilter)
+            .then(
+            result => {
+                this.selectedFilterModel = result;
+            }
+        );
     }
 
-    /**
-     * Loads filter by given name
-     * @param name Filter name
-     * @returns {Promise<any>} Filter model
-     */
-    async getFilter(name): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.es.getFilterByName(
-                name
-            ).then(
-                response => {
-                    resolve(response.hits.hits[0]._source);
-                }, error => {
-                    reject();
-                    console.error(error);
-                }).then(() => {
-                console.log('Filter loaded');
-            });
-        });
-    }
 
     /**
      * Applies selected filter with inserted parameters
