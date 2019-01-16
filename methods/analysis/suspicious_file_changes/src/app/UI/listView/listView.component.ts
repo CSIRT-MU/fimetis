@@ -60,6 +60,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     public highlightedTextBox: SelectionRectangle | null;
     highlightedText: string;
     highlightedTextId: number;
+    timestampColor = {colors: ['#fceada', '#ffffff'], colored_nodes: new Map<string, string>()};
 
     public highlightedTextDateBox: SelectionRectangle | null;
     highlightedTextDate: string;
@@ -585,7 +586,54 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log($event);
         console.log($event.target.textContent);
         const elemRef = document.getElementById('date_' + index);
+    }
 
-
+    /**
+     * Computes background color of timestamp field based on differences of timestamps
+     * @param actual String time of actual item in list
+     * @param prev String time of previous item in list or null if there is no previous item
+     * @param next String time of next item in list or null if there is no next item
+     * @returns {any} Background color of timestamp field
+     */
+    getTableTimestampColor(actual, prev, next) {
+        if (this.timestampColor.colored_nodes.has(actual)) {
+            return this.timestampColor.colored_nodes.get(actual);
+        } else {
+            if (prev != null && this.timestampColor.colored_nodes.has(prev)) {
+                console.log('prev not null');
+                console.log('has prev');
+                if (actual !== prev) {
+                    let color = this.timestampColor.colors[0];
+                    for (let i = 0; i < this.timestampColor.colors.length; i++) {
+                        if (this.timestampColor.colors[i] === this.timestampColor.colored_nodes.get(prev)) {
+                            color = this.timestampColor.colors[(i + 1) % this.timestampColor.colors.length];
+                        }
+                    }
+                    this.timestampColor.colored_nodes.set(actual, color);
+                    return this.timestampColor.colored_nodes.get(actual);
+                } else {
+                    this.timestampColor.colored_nodes.set(actual, this.timestampColor.colored_nodes.get(prev));
+                    return this.timestampColor.colored_nodes.get(actual);
+                }
+            } else if (next != null && this.timestampColor.colored_nodes.has(next)) {
+                if (actual !== next) {
+                    let color = this.timestampColor.colors[0];
+                    for (let i = 0; i < this.timestampColor.colors.length; i++) {
+                        if (this.timestampColor.colors[i] === this.timestampColor.colored_nodes.get(next)) {
+                            color = this.timestampColor.colors[(i + 1) % this.timestampColor.colors.length];
+                        }
+                    }
+                    this.timestampColor.colored_nodes.set(actual, color);
+                    return this.timestampColor.colored_nodes.get(actual);
+                } else {
+                    this.timestampColor.colored_nodes.set(actual, this.timestampColor.colored_nodes.get(next));
+                    return this.timestampColor.colored_nodes.get(actual);
+                }
+            } else {
+                this.timestampColor.colored_nodes = new Map<string, string>();
+                this.timestampColor.colored_nodes.set(actual, this.timestampColor.colors[0]);
+                return this.timestampColor.colored_nodes.get(actual);
+            }
+        }
     }
 }
