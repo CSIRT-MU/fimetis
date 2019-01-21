@@ -26,7 +26,6 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu';
 import {VirtualScrollerModule} from 'ngx-virtual-scroller';
 import {MatTooltipModule} from '@angular/material';
-import {NouisliderModule} from 'ng2-nouislider';
 
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
@@ -81,8 +80,7 @@ import {TextSelectDirective} from './UI/text-select.directive';
         MatDialogModule,
         MatMenuModule,
         VirtualScrollerModule,
-        MatTooltipModule,
-        NouisliderModule
+        MatTooltipModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
     providers: [ElasticsearchService],

@@ -65,22 +65,6 @@ export class DashboardComponent implements OnInit {
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
-    minDateSliderBoundary = 0;
-    maxDateSliderBoundary = 20;
-    dateSliderInit: any = [this.minDateSliderBoundary, this.maxDateSliderBoundary];
-    dateSliderConfig: any = {
-        behaviour: 'drag',
-        connect: true,
-        range: {
-            min: 0,
-            max: 20
-        }
-    };
-    dateSliderFormatter = new DateSliderFormatter();
-
-    @ViewChild(NouisliderComponent)
-    dateSliderComponent: NouisliderComponent;
-
     @ViewChild(ListViewComponent)
     listViewComponent: ListViewComponent;
 
@@ -313,7 +297,7 @@ export class DashboardComponent implements OnInit {
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.init();
         this.graphComponent.init();
-        this.setDateSliderBoundary();
+        // this.setDateSliderBoundary();
     }
 
     setStoredClusters($event) {
@@ -644,22 +628,6 @@ export class DashboardComponent implements OnInit {
         this.manualClusters = this.manualClusters.concat(this.computationManager.getClusters());
     }
 
-    async setDateSliderBoundary() {
-        const firstAndLast = await this.baseManager.getFirstAndLast(this.selectedCase, this.getClusters(), null);
-        // this.dateSliderInit = [(new Date(firstAndLast[0])).getTime(), (new Date(firstAndLast[1])).getTime()];
-        this.minDateSliderBoundary = (new Date(firstAndLast[0])).getTime();
-        this.maxDateSliderBoundary = (new Date(firstAndLast[1])).getTime();
-        console.log('first', new Date(firstAndLast[0]).getTime());
-        this.dateSliderComponent.step = 24 * 60 * 60 * 1000;
-    }
-
-
-    dateSliderChanged($event) {
-        console.log($event);
-        console.log(new Date($event[0]).toISOString());
-        this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
-    }
-
     /**
      * Triggered by state change of one of the type checkboxes
      * @param type Type that changed state (select / deselect)
@@ -690,18 +658,5 @@ export class DashboardComponent implements OnInit {
         clustManager.clusters = this.getClusters();
         clustManager.case = this.selectedCase;
         clustManager.countEntriesOfClusters(Array.from(filters.values()));
-    }
-}
-
-/**
- * Helper class to format dates for date slider
- */
-export class DateSliderFormatter implements NouiFormatter {
-    to(value: number): string {
-        return new Date(value).toLocaleDateString();
-    }
-
-    from(value: string): number {
-        return new Date(value).getTime();
     }
 }
