@@ -222,7 +222,7 @@
               <div class="table-block larger-table-block selectable" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
                    (textSelect)="openHighlightedTextDateMenu($event, i)" (click)="testClickDate($event, i)"
                    [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null ) }" >
-                {{element._source['@timestamp'] | date:'dd.MM.yyyy hh:mm:ss'}}
+                    {{element._source['@timestamp'].replace('T', ' ').replace('.000Z', '')}}
               </div>
               <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
               <div class="table-block medium-small-table-block monospace-text" *ngIf="tableItem == 'type'">{{element._source.Type}}</div>
