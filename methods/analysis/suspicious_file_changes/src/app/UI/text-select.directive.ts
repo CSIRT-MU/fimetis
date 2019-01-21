@@ -78,6 +78,7 @@ export class TextSelectDirective implements OnInit, OnDestroy {
                 // directive is only going to be concerned with selections that were
                 // initiated by MOUSE-based selections within the current element.
                 this.elementRef.nativeElement.addEventListener('mousedown', this.handleMousedown, false);
+                this.elementRef.nativeElement.addEventListener('mouseup', this.handleMouseup, false);
 
                 // While the mouse-even takes care of starting new selections within the
                 // current element, we need to listen for the selectionchange event in
@@ -117,7 +118,6 @@ export class TextSelectDirective implements OnInit, OnDestroy {
         document.addEventListener('mouseup', this.handleMouseup, false);
 
     };
-
 
     // I handle mouseup events anywhere in the document.
     private handleMouseup = (): void => {
@@ -171,6 +171,7 @@ export class TextSelectDirective implements OnInit, OnDestroy {
     private processSelection(): void {
 
         var selection = document.getSelection();
+        console.log('selection process');
 
         // If there is a new selection and an existing selection, let's clear out the
         // existing selection first.
@@ -196,11 +197,14 @@ export class TextSelectDirective implements OnInit, OnDestroy {
 
         // If the new selection is empty (for example, the user just clicked somewhere
         // in the document), then there's no new selection event to emit.
-        if (!selection.rangeCount || !selection.toString()) {
 
-            return;
+        // Commented because of click text selection in list view
 
-        }
+        // if (!selection.rangeCount || !selection.toString()) {
+        //
+        //     return;
+        //
+        // }
 
         var range = selection.getRangeAt(0);
         var rangeContainer = this.getRangeContainer(range);

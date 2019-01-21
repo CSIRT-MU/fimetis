@@ -610,15 +610,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
         range.setStart(node, 0);
         range.setEnd(node, subString.length);
-
-        const textSelectEvent = {
-            text: subString,
-            viewportRectangle: range.getBoundingClientRect(),
-            hostRectangle: range.getBoundingClientRect()
-        };
-
-        this.openHighlightedTextMenu(textSelectEvent, index);
-
     }
 
     testClickDate($event, index) {
