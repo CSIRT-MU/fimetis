@@ -17,7 +17,7 @@ import * as HyperList from 'hyperlist';
 import {ComputationModel} from '../../models/computation.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
-import {TextSelectEvent, SelectionRectangle} from '../text-select.directive';
+import {TextSelectEvent, SelectionRectangle, TextSelectDirective} from '../text-select.directive';
 import {FilterModel} from '../../models/filter.model';
 import * as lodash from 'lodash';
 import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
@@ -420,6 +420,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param index Index of item in list
      */
     openHighlightedTextMenu(event: TextSelectEvent, index) {
+        console.log(index);
+        console.log(window.getSelection());
         console.group('Text Select Event');
         console.log('Text:', event.text);
         console.log('Viewport Rectangle:', event.viewportRectangle);
@@ -580,11 +582,42 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.openHighlightedTextDateMenu(hideEvent, 0);
     }
 
-    testClick($event, index) {
-        console.log($event);
-        console.log($event.target.textContent);
-        const elemRef = document.getElementById('file_' + index);
+    /**
+     * Select the part of path on the left by clicking to the filename
+     *
+     * for example /home/ab(click)cd/eef/
+     * then /home/abcd is selected
+     *
+     * @param index
+     */
+    selectByClick(index) {
+        const selection = window.getSelection();
+        const offset = window.getSelection().anchorOffset;
+        const data = window.getSelection().anchorNode['data'];
 
+        let subString = '';
+        for (let i = window.getSelection().anchorOffset; i < data.length; i++) {
+            if (data[i] === '/' || data[i] === ' ') {
+                // Take it from index one because on index zero is now space
+                subString = data.substring(1, i + 1);
+
+                break;
+            }
+        }
+
+        const range = selection.getRangeAt(0);
+        const node = selection.anchorNode;
+
+        range.setStart(node, 0);
+        range.setEnd(node, subString.length);
+
+        const textSelectEvent = {
+            text: subString,
+            viewportRectangle: range.getBoundingClientRect(),
+            hostRectangle: range.getBoundingClientRect()
+        };
+
+        this.openHighlightedTextMenu(textSelectEvent, index);
 
     }
 
