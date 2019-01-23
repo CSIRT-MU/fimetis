@@ -171,7 +171,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         toolbar: {},
         xAxis: {
-            type: 'datetime'
+            type: 'datetime',
+            minRange: 7 * 24 * 60 * 60 * 1000
         },
         yAxis: {
             type: 'logarithmic',

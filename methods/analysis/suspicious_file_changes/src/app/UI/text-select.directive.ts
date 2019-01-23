@@ -97,7 +97,7 @@ export class TextSelectDirective implements OnInit, OnDestroy {
     // I get the deepest Element node in the DOM tree that contains the entire range.
     private getRangeContainer(range: Range): Node {
 
-        var container = range.commonAncestorContainer;
+        let container = range.commonAncestorContainer;
 
         // If the selected node is a Text node, climb up to an element node - in Internet
         // Explorer, the .contains() method only works with Element nodes.
@@ -118,6 +118,7 @@ export class TextSelectDirective implements OnInit, OnDestroy {
         document.addEventListener('mouseup', this.handleMouseup, false);
 
     };
+
 
     // I handle mouseup events anywhere in the document.
     private handleMouseup = (): void => {
@@ -150,8 +151,8 @@ export class TextSelectDirective implements OnInit, OnDestroy {
     // I determine if the given range is fully contained within the host element.
     private isRangeFullyContained(range: Range): boolean {
 
-        var hostElement = this.elementRef.nativeElement;
-        var selectionContainer = range.commonAncestorContainer;
+        const hostElement = this.elementRef.nativeElement;
+        let selectionContainer = range.commonAncestorContainer;
 
         // If the selected node is a Text node, climb up to an element node - in Internet
         // Explorer, the .contains() method only works with Element nodes.
@@ -170,7 +171,7 @@ export class TextSelectDirective implements OnInit, OnDestroy {
     // emitted as a TextSelectEvent within the current element.
     private processSelection(): void {
 
-        var selection = document.getSelection();
+        const selection = document.getSelection();
         console.log('selection process');
 
         // If there is a new selection and an existing selection, let's clear out the
@@ -206,16 +207,16 @@ export class TextSelectDirective implements OnInit, OnDestroy {
         //
         // }
 
-        var range = selection.getRangeAt(0);
-        var rangeContainer = this.getRangeContainer(range);
+        const range = selection.getRangeAt(0);
+        const rangeContainer = this.getRangeContainer(range);
 
         // We only want to emit events for selections that are fully contained within the
         // host element. If the selection bleeds out-of or in-to the host, then we'll
         // just ignore it since we don't control the outer portions.
         if (this.elementRef.nativeElement.contains(rangeContainer)) {
 
-            var viewportRectangle = range.getBoundingClientRect();
-            var localRectangle = this.viewportToHost(viewportRectangle, rangeContainer);
+            const viewportRectangle = range.getBoundingClientRect();
+            const localRectangle = this.viewportToHost(viewportRectangle, rangeContainer);
 
             // Since emitting event may cause the calling context to change state, we
             // want to run the .emit() inside of the Angular Zone. This way, it can
@@ -257,16 +258,16 @@ export class TextSelectDirective implements OnInit, OnDestroy {
         rangeContainer: Node
     ): SelectionRectangle {
 
-        var host = this.elementRef.nativeElement;
-        var hostRectangle = host.getBoundingClientRect();
+        const host = this.elementRef.nativeElement;
+        const hostRectangle = host.getBoundingClientRect();
 
         // Both the selection rectangle and the host rectangle are calculated relative to
         // the browser viewport. As such, the local position of the selection within the
         // host element should just be the delta of the two rectangles.
-        var localLeft = (viewportRectangle.left - hostRectangle.left);
-        var localTop = (viewportRectangle.top - hostRectangle.top);
+        let localLeft = (viewportRectangle.left - hostRectangle.left);
+        let localTop = (viewportRectangle.top - hostRectangle.top);
 
-        var node = rangeContainer;
+        let node = rangeContainer;
         // Now that we have the local position, we have to account for any scrolling
         // being performed within the host element. Let's walk from the range container
         // up to the host element and add any relevant scroll offsets to the calculated
