@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit} from '@angular/core';
 import {ElasticsearchService} from '../../elasticsearch.service';
 import * as d3 from 'd3';
 import * as Plotly from 'plotly.js';
@@ -6,13 +6,16 @@ import {GraphManager} from '../../businessLayer/graphManager';
 import {ClusterModel} from '../../models/cluster.model';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
+// import {Chart} from 'angular-highcharts';
+import { chart } from 'highcharts';
+import * as Highcharts from 'highcharts';
 
 @Component({
     selector: 'app-graph',
     templateUrl: './graph.component.html',
     styleUrls: ['./graph.component.css']
 })
-export class GraphComponent implements OnInit {
+export class GraphComponent implements OnInit, AfterViewInit {
 
     @Input() _case: string;
     @Input() _filter: string;
@@ -41,7 +44,7 @@ export class GraphComponent implements OnInit {
     private manager;
 
     private margin: any = {top: 20, bottom: 140, left: 50, right: 20};
-    private chart: any;
+    // private chart: any;
     private width: number;
     private height: number;
     private xScale: any;
@@ -84,15 +87,125 @@ export class GraphComponent implements OnInit {
         config: {displayModeBar: false} // scrollZoom: true
     };
 
+    @ViewChild('chartOverviewDiv') chartOverviewDiv: ElementRef;
+    chartOverview: Highcharts.ChartObject;
+    chartOverviewOptions = {
+        chart: {
+            reflow: false,
+            borderWidth: 0,
+            backgroundColor: null,
+            type: 'column',
+            zoomType: 'x',
+            events: {
+                selection: (event) => {
+                    console.log(this.chartOverview.xAxis[0]);
+                    let min = 0, max = 0;
+                    if (event['resetSelection']) {
+                        console.log('reset', event, this);
+                        min = event.target['axes'][0].dataMin;
+                        max = event.target['axes'][0].dataMax;
+                    } else {
+                        console.log(event);
+                        min = event.xAxis[0].min;
+                        max = event.xAxis[0].max;
+                    }
+                    this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
+                    this.chart.xAxis[0].setExtremes(min, max);
+                    this.graphOverviewZoomLabel(min, max);
+                    return false;
+
+                }
+            }
+        },
+        title: {text: null, margin: 0},
+        legend: {
+            enabled: false
+        },
+        toolbar: {},
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            type: 'logarithmic',
+            title: null
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal'
+            }
+        },
+        credits: {enabled: false},
+        series: [
+            {name: 'm', color: this.mTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'a', color: this.aTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'c', color: this.cTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'b', color: this.bTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]}
+        ]
+    };
+
+    @ViewChild('chartDiv') chartDiv: ElementRef;
+    chart: Highcharts.ChartObject;
+    chartOptions = {
+        chart: {
+            type: 'column',
+            zoomType: 'x',
+            events: {
+                selection: (event) => {
+                    let min = 0, max = 0;
+                    if (event['resetSelection']) {
+                        console.log('reset', event, this);
+                        min = event.target['axes'][0].dataMin;
+                        max = event.target['axes'][0].dataMax;
+                    } else {
+                        console.log(event);
+                        min = event.xAxis[0].min;
+                        max = event.xAxis[0].max;
+                    }
+                    this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
+                    this.graphOverviewZoomLabel(min, max);
+                }
+            }
+        },
+        title: {text: null, margin: 0},
+        legend: {
+            enabled: false
+        },
+        toolbar: {},
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            type: 'logarithmic',
+            title: null
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal'
+            }
+        },
+        credits: {enabled: false},
+        series: [
+            {name: 'm', color: this.mTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'a', color: this.aTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'c', color: this.cTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'b', color: this.bTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]}
+        ]
+    };
+
     constructor(private es: ElasticsearchService) {
         this.manager = new GraphManager(es);
         // debouncer setup
         this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value));
-
+        console.log(this.chartDiv);
     }
 
 
     ngOnInit() {
+    }
+
+    ngAfterViewInit() {
+        this.chart = chart(this.chartDiv.nativeElement, this.chartOptions);
+        this.chartOverview = chart(this.chartOverviewDiv.nativeElement, this.chartOverviewOptions);
     }
 
 
@@ -109,14 +222,29 @@ export class GraphComponent implements OnInit {
         this.loadingATimes = true;
         this.loadingCTimes = true;
         this.loadingBTimes = true;
+        // for (let index = 0; index < this.charter.options.series.length; index++) {
+        //     this.charter.removeSerie(index);
+        // }
+
+        // this.chart.series[1].visible = false;
+
+        // for (let index = 0; index < this.chartOptions.series.length; index++) {
+        //     this.charter.removeSerie(index);
+        // }
 
         console.log('compute graph');
         // Loading mactimes - modified
         this.manager.getData('m')
             .then(response => {
-                this.graphPlot.data[0].x = response.x;
-                this.graphPlot.data[0].y = response.y;
+                // this.graphPlot.data[0].x = response.x;
+                // this.graphPlot.data[0].y = response.y;
                 this.loadingMTimes = false;
+                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // this.charter.addSerie({name: 'm', color: this.mTypeColor, data: data});
+                // this.chartOptions.series[0].data = data;
+                // this.highCharts.series[0].data = data;
+                this.chart.series[0].setData(data);
+                this.chartOverview.series[0].setData(data);
                 console.log('Graph data loaded async! - m', response);
 
             });
@@ -124,31 +252,43 @@ export class GraphComponent implements OnInit {
         // Loading mactimes - access
         this.manager.getData('a')
             .then(response => {
-                this.graphPlot.data[1].x = response.x;
-                this.graphPlot.data[1].y = response.y;
+                // this.graphPlot.data[1].x = response.x;
+                // this.graphPlot.data[1].y = response.y;
                 this.loadingATimes = false;
+                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
+                this.chart.series[1].setData(data);
+                this.chartOverview.series[1].setData(data);
                 console.log('Graph data loaded async! - a', response);
             });
 
         // Loading mactimes - changed
         this.manager.getData('c')
             .then(response => {
-                this.graphPlot.data[2].x = response.x;
-                this.graphPlot.data[2].y = response.y;
+                // this.graphPlot.data[2].x = response.x;
+                // this.graphPlot.data[2].y = response.y;
                 this.loadingCTimes = false;
+                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+                this.chart.series[2].setData(data);
+                this.chartOverview.series[2].setData(data);
                 console.log('Graph data loaded async! - c', response);
             });
 
         // Loading mactimes - birth
         this.manager.getData('b')
             .then(response => {
-                this.graphPlot.data[3].x = response.x;
-                this.graphPlot.data[3].y = response.y;
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
                 this.loadingBTimes = false;
+                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                this.chart.series[3].setData(data);
+                this.chartOverview.series[3].setData(data);
                 console.log('Graph data loaded async! - b', response);
             });
 
-        console.log(this.graphPlot.data);
+        // console.log(this.graphPlot.data);
     }
 
     /**
@@ -245,6 +385,32 @@ export class GraphComponent implements OnInit {
     //     .attr('height', d => this.height - this.yScale(d['doc_count']));
     // }
 
+    graphZoom(x1, x2) {
+        console.log('graph zooming', x1, x2);
+        this.dateChangeDebouncer.next([x1, x2]);
+        let isoString = new Date(x1).toISOString();
+        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+        isoString = new Date(x2).toISOString();
+        this.pickedToDate = isoString.substring(0, isoString.length - 1);
+    }
+
+    graphOverviewZoomLabel(from: number, to: number) {
+        this.chartOverview.xAxis[0].removePlotBand('mask-before');
+        this.chartOverview.xAxis[0].addPlotBand({
+            id: 'mask-before',
+            from: this.chartOverview.xAxis[0].dataMin,
+            to: from,
+            color: 'rgba(150, 0, 0, 0.2)'
+        });
+        this.chartOverview.xAxis[0].removePlotBand('mask-after');
+        this.chartOverview.xAxis[0].addPlotBand({
+            id: 'mask-after',
+            from: to,
+            to: this.chartOverview.xAxis[0].dataMax,
+            color: 'rgba(150, 0, 0, 0.2)'
+        });
+    }
+
     pickedZoomFunction($event) {
         console.log('graph zoom', $event);
         // let from;
@@ -306,16 +472,20 @@ export class GraphComponent implements OnInit {
     }
 
     updateBoundary() {
-        const update = {
-            xaxis: {range: [this.pickedFromDate, this.pickedToDate], rangeslider: {}}
-        };
-        Plotly.relayout(document.getElementById(this.plotDivIdentifier), update);
+        // const update = {
+        //     xaxis: {range: [this.pickedFromDate, this.pickedToDate], rangeslider: {}}
+        // };
+        // Plotly.relayout(document.getElementById(this.plotDivIdentifier), update);
+
         // this.graphPlot.layout.xaxis.range = [this.pickedFromDate, this.pickedToDate];
         // this.graphPlot.layout.xaxis.rangeslider = [this.pickedFromDate, this.pickedToDate];
         // // this.graphPlot.layout.dataversion += 1;
         // Plotly.relayout(document.getElementById(this.plotDivIdentifier), this.graphPlot.layout).catch(error => {
         //    console.log('update graph boundary error', error);
         // });
+        this.chart.xAxis[0].setExtremes(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+        this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+        // this.chart.showResetZoom();
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
@@ -338,6 +508,18 @@ export class GraphComponent implements OnInit {
         for (let index = 0; index < this.graphPlot.data.length; index++) {
             if (this.graphPlot.data[index].name === metadataType) {
                 this.graphPlot.data[index].visible = !this.graphPlot.data[index].visible;
+            }
+        }
+        console.log(this.chart.series[0].visible);
+        for (let i = 0; i < this.chart.series.length; i++) {
+            if (this.chart.series[i].name === metadataType) {
+                if (this.chart.series[i].visible) {
+                    this.chart.series[i].hide();
+                    this.chartOverview.series[i].hide();
+                } else {
+                    this.chart.series[i].show();
+                    this.chartOverview.series[i].show();
+                }
             }
         }
     }

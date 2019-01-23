@@ -15,7 +15,6 @@ import {GraphManager} from '../../businessLayer/graphManager';
 import {BaseManager} from '../../businessLayer/baseManager';
 import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
-import {NouiFormatter, NouisliderComponent} from 'ng2-nouislider';
 import {ConfigManager} from '../../../assets/configManager';
 
 @Component({

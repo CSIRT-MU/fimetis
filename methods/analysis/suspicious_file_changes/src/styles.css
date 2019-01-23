@@ -1,7 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 /*@import "~bootstrap/dist/css/bootstrap.min.css";*/
-@import "~nouislider/distribute/nouislider.min.css";
 
 @font-face {
     font-family: "Source Code Pro";

@@ -17,12 +17,14 @@
                     <div class="line line3"></div>
                 </div>
             </div>
-            <plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout"
-                         [config]="graphPlot.config"
-                         (relayout)="pickedZoomFunction($event)"
-                         [useResizeHandler]="true"
-                         (update)="graphUpdated($event)"
-            ></plotly-plot>
+            <div #chartOverviewDiv id="chartOverviewDiv" ></div>
+            <div #chartDiv id="chartDiv" ></div>
+            <!--<plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout"-->
+                         <!--[config]="graphPlot.config"-->
+                         <!--(relayout)="pickedZoomFunction($event)"-->
+                         <!--[useResizeHandler]="true"-->
+                         <!--(update)="graphUpdated($event)"-->
+            <!--&gt;</plotly-plot>-->
         </div>
         <form (submit)="updateBoundary()" class="from-date-form col-md-4">
             <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input">

@@ -630,8 +630,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
             return this.timestampColor.colored_nodes.get(actual);
         } else {
             if (prev != null && this.timestampColor.colored_nodes.has(prev)) {
-                console.log('prev not null');
-                console.log('has prev');
                 if (actual !== prev) {
                     let color = this.timestampColor.colors[0];
                     for (let i = 0; i < this.timestampColor.colors.length; i++) {
