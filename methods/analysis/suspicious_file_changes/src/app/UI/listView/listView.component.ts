@@ -600,7 +600,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
                         break;
                     }
                 }
-                if (dateLevel >= 4) {
+                if (dateLevel >= 5) {
                     if (selectedDate.getSeconds() < next_date.getUTCSeconds()) {
                         skipIndex = index;
                         break;
@@ -641,7 +641,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
                         break;
                     }
                 }
-                if (dateLevel >= 4) {
+                if (dateLevel >= 5) {
                     if (selectedDate.getSeconds() > next_date.getUTCSeconds()) {
                         skipIndex = index;
                         break;
