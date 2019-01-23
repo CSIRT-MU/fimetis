@@ -548,35 +548,108 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
     skipTheBlockByDate(toTheEnd: boolean): void {
-        console.log('skip from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
+        console.log('skipping date', this.highlightedTextDate);
+        console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = this.highlightedTextDateId;
 
-        const datetimeRegex = new RegExp(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2}):(\d{2})/g);
-        const result = datetimeRegex.exec(this.highlightedTextDate);
-        const selectedDate =
-            new Date(result[2] + '.' + result[1] + '.' + result[3] + ' ' + result[4] + ':' + result[5] + ':' + result[6]);
+        let dateLevel = 0;
+        for (let i = 0; i < this.highlightedTextDate.length; i++){
+            if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':'){
+                dateLevel += 1;
+            }
+        }
 
+        let dateString = this.highlightedTextDate;
+        if (dateLevel === 3) {
+            dateString += ':00';
+        }
+        const selectedDate = new Date(dateString);
         const index_start = (this.highlightedTextDateId - this.preloadedBegin);
         const bufferOffset = this.preloadedBegin;
 
         if (toTheEnd) {
             for (let index = (index_start + 1); index < this.preloadedBufferSize; index++) {
                 const next_date = new Date(this.preloadedData[index]._source['@timestamp']);
-                if (selectedDate.getTime() < next_date.getTime()) {
-                    skipIndex = index;
-                    break;
+                if (dateLevel >= 0) {
+                    if (selectedDate.getFullYear() < next_date.getUTCFullYear()) {
+                        skipIndex = index;
+                        break;
+                    }
                 }
+                if (dateLevel >= 1) {
+                    if (selectedDate.getMonth() < next_date.getUTCMonth()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 2) {
+                    if (selectedDate.getDate() < next_date.getUTCDate()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 3) {
+                    if (selectedDate.getHours() < next_date.getUTCHours()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 4) {
+                    if (selectedDate.getMinutes() < next_date.getUTCMinutes()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 4) {
+                    if (selectedDate.getSeconds() < next_date.getUTCSeconds()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+
             }
         } else {
             for (let index = (index_start - 1); index >= 0; index--) {
                 const next_date = new Date(this.preloadedData[index]._source['@timestamp']);
-                if (selectedDate.getTime() > next_date.getTime()) {
-                    skipIndex = index;
-                    break;
+                if (dateLevel >= 0) {
+                    if (selectedDate.getFullYear() > next_date.getUTCFullYear()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 1) {
+                    if (selectedDate.getMonth() > next_date.getUTCMonth()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 2) {
+                    if (selectedDate.getDate() > next_date.getUTCDate()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 3) {
+                    if (selectedDate.getHours() > next_date.getUTCHours()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 4) {
+                    if (selectedDate.getMinutes() > next_date.getUTCMinutes()) {
+                        skipIndex = index;
+                        break;
+                    }
+                }
+                if (dateLevel >= 4) {
+                    if (selectedDate.getSeconds() > next_date.getUTCSeconds()) {
+                        skipIndex = index;
+                        break;
+                    }
                 }
             }
         }
-        console.log('skip to:', skipIndex + bufferOffset);
+        console.log('skip date to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
         const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
         this.openHighlightedTextDateMenu(hideEvent, 0);
@@ -600,7 +673,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
             if (data[i] === '/' || data[i] === ' ') {
                 // Take it from index one because on index zero is now space
                 subString = data.substring(1, i + 1);
-
                 break;
             }
         }
@@ -609,13 +681,28 @@ export class ListViewComponent implements OnInit, OnDestroy {
         const node = selection.anchorNode;
 
         range.setStart(node, 0);
-        range.setEnd(node, subString.length);
+        range.setEnd(node, subString.length + 1);
     }
 
-    testClickDate($event, index) {
-        console.log($event);
-        console.log($event.target.textContent);
-        const elemRef = document.getElementById('date_' + index);
+    selectDateByClick($event, index) {
+        const selection = window.getSelection();
+        const offset = window.getSelection().anchorOffset;
+        const data = window.getSelection().anchorNode['data'];
+
+        let subString = '';
+        for (let i = window.getSelection().anchorOffset; i < data.length; i++) {
+            if (data[i] === '-' || data[i] === ' ' || data[i] === ':') {
+                // Take it from index one because on index zero is now space
+                subString = data.substring(1, i);
+
+                break;
+            }
+        }
+        const range = selection.getRangeAt(0);
+        const node = selection.anchorNode;
+
+        range.setStart(node, 0);
+        range.setEnd(node, subString.length + 1);
     }
 
     /**

@@ -219,8 +219,9 @@
               <!--</span>-->
               <!--</div>-->
               <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
-              <div class="table-block larger-table-block selectable" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
-                   (textSelect)="openHighlightedTextDateMenu($event, i)" (click)="testClickDate($event, i)"
+              <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
+                   (click)="selectDateByClick($event, i)"
+                   (textSelect)="openHighlightedTextDateMenu($event, i)"
                    [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null ) }" >
                     {{element._source['@timestamp'].replace('T', ' ').replace('.000Z', '')}}
               </div>
