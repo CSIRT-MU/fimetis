@@ -17,8 +17,8 @@ export class ClusterComponent implements OnInit {
     clusteringOverview: ClusteringOverviewModel[] = [];
     @Input('clusters')
     clusters: ClusterModel[] = [];
-    @Input('mode')
-    mode = 0;
+    @Input('advancedMode')
+    advancedMode = false;
     @Output('selectionChanged')
     selectionChanged: EventEmitter<any> = new EventEmitter<any>();
 
@@ -33,7 +33,7 @@ export class ClusterComponent implements OnInit {
      * @param cluster Cluster model
      */
     nextVal(cluster) {
-        if (this.mode === 0) {
+        if (!this.advancedMode) {
             for (const clust of this.clusters) {
                 clust.selectMode = ClusterSelectMode.notSelected;
             }

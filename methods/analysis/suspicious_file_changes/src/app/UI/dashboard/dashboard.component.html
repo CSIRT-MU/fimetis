@@ -177,14 +177,18 @@
 
     <div class="grid-cluster panel">
         <div class="panel-header">
-            <span class="text-gray"><b>CLUSTERS</b></span><span class="glyphicon panel-header-button"
-                                                                [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}"
-                                                                (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
+            <span class="text-gray"><b>CLUSTERS</b></span>
+            <span class="glyphicon panel-header-button"
+                  [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}"
+                  (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
         </div>
         <div [ngClass]="{'panel-hidden': !clusterPanelOpenState, 'panel-visible': clusterPanelOpenState}"
              class="panel-content col-md-12">
-            <app-cluster [clusters]="getClusters()" [clusteringOverview]="clusteringOverview"
-                         (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
+            <app-cluster
+                    [clusters]="getClusters()"
+                    [clusteringOverview]="clusteringOverview"
+                    [advancedMode]="advancedMode"
+                    (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
         </div>
     </div>
     <div class="grid-main">

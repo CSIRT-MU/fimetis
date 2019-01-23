@@ -29,6 +29,8 @@ export class DashboardComponent implements OnInit {
     baseManager: BaseManager;
     elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
 
+    advancedMode = false;
+
     /* collapse properties */
     setupWindowOpen = true;
     filterPanelOpenState = false;

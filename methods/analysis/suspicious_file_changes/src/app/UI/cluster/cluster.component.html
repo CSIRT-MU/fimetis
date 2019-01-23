@@ -29,7 +29,7 @@
                 <!--<mat-radio-button *ngIf="mode === 0" [checked]="clusterChecked(cluster)"-->
                                   <!--[value]="cluster"></mat-radio-button>-->
                 <div class="cluster-icon"
-                     [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && mode == 0, 'cluster-added': cluster.selectMode == 1 && mode != 0, 'cluster-deducted': cluster.selectMode == 2}"></div>
+                     [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
                 <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
                 <div class="cluster-name-field" matTooltip="{{cluster.description}}"
                      [matTooltipPosition]="'right'">{{cluster.name}}

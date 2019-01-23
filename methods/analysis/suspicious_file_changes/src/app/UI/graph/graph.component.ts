@@ -6,7 +6,6 @@ import {GraphManager} from '../../businessLayer/graphManager';
 import {ClusterModel} from '../../models/cluster.model';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
-// import {Chart} from 'angular-highcharts';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
 
@@ -222,15 +221,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.loadingATimes = true;
         this.loadingCTimes = true;
         this.loadingBTimes = true;
-        // for (let index = 0; index < this.charter.options.series.length; index++) {
-        //     this.charter.removeSerie(index);
-        // }
-
-        // this.chart.series[1].visible = false;
-
-        // for (let index = 0; index < this.chartOptions.series.length; index++) {
-        //     this.charter.removeSerie(index);
-        // }
 
         console.log('compute graph');
         // Loading mactimes - modified
@@ -246,7 +236,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chart.series[0].setData(data);
                 this.chartOverview.series[0].setData(data);
                 console.log('Graph data loaded async! - m', response);
-
+                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                this.pickedToDate = isoString.substring(0, isoString.length - 1);
             });
 
         // Loading mactimes - access
@@ -260,6 +253,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chart.series[1].setData(data);
                 this.chartOverview.series[1].setData(data);
                 console.log('Graph data loaded async! - a', response);
+                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                this.pickedToDate = isoString.substring(0, isoString.length - 1);
             });
 
         // Loading mactimes - changed
@@ -273,6 +270,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chart.series[2].setData(data);
                 this.chartOverview.series[2].setData(data);
                 console.log('Graph data loaded async! - c', response);
+                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                this.pickedToDate = isoString.substring(0, isoString.length - 1);
             });
 
         // Loading mactimes - birth
@@ -286,6 +287,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chart.series[3].setData(data);
                 this.chartOverview.series[3].setData(data);
                 console.log('Graph data loaded async! - b', response);
+                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                this.pickedToDate = isoString.substring(0, isoString.length - 1);
             });
 
         // console.log(this.graphPlot.data);
