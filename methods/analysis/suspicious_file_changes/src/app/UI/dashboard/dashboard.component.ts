@@ -16,6 +16,7 @@ import {BaseManager} from '../../businessLayer/baseManager';
 import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
+import {ClusterComponent} from '../cluster/cluster.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -71,6 +72,9 @@ export class DashboardComponent implements OnInit {
 
     @ViewChild(GraphComponent)
     graphComponent: GraphComponent;
+
+    @ViewChild(ClusterComponent)
+    clusterComponent: ClusterComponent;
 
     @ViewChild(MatTabGroup)
     tabGroup: MatTabGroup;
@@ -604,7 +608,7 @@ export class DashboardComponent implements OnInit {
     collapse() {
         console.log(this.filterPanelOpenState);
         // let height = 10;
-        let height = 47;
+        let height = 45;
         if (!this.filterPanelOpenState) {
             height += 20;
         }
@@ -617,7 +621,7 @@ export class DashboardComponent implements OnInit {
             }
         }
         if (!this.histogramPanelOpenState) {
-            height += 20;
+            height += 22;
         }
         this.listViewComponent.resizeList(height);
     }
@@ -660,4 +664,26 @@ export class DashboardComponent implements OnInit {
         clustManager.case = this.selectedCase;
         clustManager.countEntriesOfClusters(Array.from(filters.values()));
     }
+
+    /**
+     * Resets selection mode of each cluster
+     */
+    resetClusterStates() {
+        const allClusters = this.getClusters();
+        for (const clust of allClusters) {
+            clust.selectMode = 0;
+        }
+    }
+
+    /**
+     * Switch advanced mode
+     * @param {boolean} advancedMode If true than advanced mode is turn on
+     */
+    advancedModeToggle(advancedMode: boolean) {
+        this.advancedMode = advancedMode;
+        this.resetClusterStates();
+        this.clusterComponent.advancedMode = this.advancedMode;
+        // this.ngOnInit();
+    }
+
 }

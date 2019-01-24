@@ -8,6 +8,9 @@
             <button mat-menu-item (click)="setupWindowOpen = true">
                 <span>SETUP</span>
             </button>
+            <mat-slide-toggle (change)="advancedModeToggle($event)">
+                Advanced mode
+            </mat-slide-toggle>
         </mat-menu>
     </div>
 </div>
