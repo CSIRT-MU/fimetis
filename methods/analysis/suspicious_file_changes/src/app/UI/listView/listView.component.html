@@ -170,20 +170,20 @@
         <span *ngFor="let tableItem of displayedTableColumns">
           <div class="table-select" *ngIf="tableItem == 'select'"></div>
             <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
-          <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'">Timestamp</div>
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'size'">Size</div>
-          <div class="table-block medium-small-table-block" *ngIf="tableItem == 'type'">Type</div>
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'mode'">Mode</div>
-          <div class="table-block medium-small-table-block" *ngIf="tableItem == 'uid'">UID</div>
-          <div class="table-block medium-small-table-block" *ngIf="tableItem == 'gid'">GID</div>
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'inode'">I-node</div>
-          <div class="table-block large-table-block" *ngIf="tableItem == 'name'">File Name</div>
+          <div class="table-block table-header larger-table-block" *ngIf="tableItem == 'timestamp'">Timestamp</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'size'">Size</div>
+          <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'type'">Type</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'mode'">Mode</div>
+          <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'uid'">UID</div>
+          <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'gid'">GID</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'inode'">I-node</div>
+          <div class="table-block table-header large-table-block" *ngIf="tableItem == 'name'">File Name</div>
             <!---->
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'M-Time'">M-Time</div>
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'A-Time'">A-Time</div>
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'C-Time'">C-Time</div>
-          <div class="table-block medium-table-block" *ngIf="tableItem == 'B-Time'">B-Time</div>
-          <div class="table-block large-table-block" *ngIf="tableItem == 'id'">ID</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'M-Time'">M-Time</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'A-Time'">A-Time</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'C-Time'">C-Time</div>
+          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'B-Time'">B-Time</div>
+          <div class="table-block table-header large-table-block" *ngIf="tableItem == 'id'">ID</div>
         </span>
             <!--<div class="table-select"></div>-->
             <!--&lt;!&ndash;<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>&ndash;&gt;-->

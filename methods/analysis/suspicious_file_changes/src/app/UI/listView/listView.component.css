@@ -133,6 +133,10 @@ virtual-scroll {
     /*position: relative;*/
 }
 
+.table-header {
+    text-align: center;
+}
+
 .small-table-block {
     width: 20px;
 }
