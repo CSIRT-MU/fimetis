@@ -95,6 +95,19 @@
     padding-top: 10%;
 }
 
+.filters-setup {
+    position: fixed;
+    top: 15%;
+    width: 80%;
+    left: 20%;
+    /*height: 100px;*/
+    background-color: #ffffff;
+    z-index: 9;
+    border-top: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+    display: none;
+}
+
 .panel {
     background-color: #efefef;
     margin: 0px 2px 2px 2px;

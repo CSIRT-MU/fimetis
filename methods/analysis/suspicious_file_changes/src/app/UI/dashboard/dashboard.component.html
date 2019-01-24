@@ -8,9 +8,10 @@
             <button mat-menu-item (click)="setupWindowOpen = true">
                 <span>SETUP</span>
             </button>
-            <mat-slide-toggle (change)="advancedModeToggle($event)">
-                Advanced mode
-            </mat-slide-toggle>
+            <button mat-menu-item (click)="advancedModeToggle(!advancedMode)">
+                ADVANCED MODE
+                <input type="checkbox" [ngModel]="advancedMode">
+            </button>
         </mat-menu>
     </div>
 </div>
@@ -40,6 +41,139 @@
                 </td>
             </tr>
         </table>
+    </div>
+</div>
+
+<div class="filters-setup">
+    <div class="col-md-12 panel-header">
+        <span><b>FILTERS</b></span><span class="glyphicon panel-header-button"
+                                         [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}"
+                                         (click)="filterPanelOpenState = !filterPanelOpenState; collapse()"></span>
+    </div>
+
+    <div class="col-md-12">
+        <div class="panel-content panel-visible col-md-12">
+            <mat-tab-group [dynamicHeight]="true">
+                <mat-tab label="QUERY / INITIAL SETUP">
+                    <br>
+                    <div class="col-md-4">
+                        <table>
+                            <!--<tr>-->
+                            <!--<td class="text-right">-->
+                            <!--<b>DATASET</b>-->
+                            <!--</td>-->
+                            <!--<td>-->
+                            <!--<mat-form-field>-->
+                            <!--<mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">-->
+                            <!--<mat-option>None</mat-option>-->
+                            <!--<mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>-->
+                            <!--</mat-select>-->
+                            <!--</mat-form-field>-->
+                            <!--</td>-->
+                            <!--</tr>-->
+                            <tr>
+                                <td class="text-right">
+                                    <b>FILTER</b>
+                                </td>
+                                <td>
+                                    <mat-form-field>
+                                        <mat-select [(value)]="selectedFilter" (valueChange)="loadFilter()"
+                                                    placeholder="Click to select filter">
+                                            <mat-option>None</mat-option>
+                                            <mat-option *ngFor="let filter of filters" [value]="filter['key']">
+                                                {{filter['key']}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="button-right">
+                                    <button mat-stroked-button (click)="useFilter()" class="timesix-button"
+                                            [disabled]="paramForm.form.invalid || selectedCase == null || pickedComputation == null || selectedFilter == null">
+                                        APPLY FILTER
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <div class="col-md-8">
+                        <form #paramForm="ngForm">
+                            <mat-form-field *ngFor="let param of selectedFilterModel.params">
+                                <div [ngSwitch]="param.type">
+                                    <input matInput *ngSwitchCase="'DATE'" type="datetime-local"
+                                           name="param-{{param.name}}" placeholder="{{param.name}}"
+                                           [(ngModel)]="param.value" required>
+                                    <input matInput *ngSwitchDefault name="param-{{param.name}}"
+                                           placeholder="{{param.name}}" [(ngModel)]="param.value" required>
+                                </div>
+                            </mat-form-field>
+                        </form>
+                    </div>
+                </mat-tab>
+                <mat-tab label="SIGNALING GRID"> SIGNALING GRID</mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+    <div>
+        <div class="panel-header">
+            <div class="col-md-3">
+                <span><b>RUNTIME CLUSTERING</b></span>
+                <span class="glyphicon glyphicon-plus panel-header-button" matTooltip="add new runtime clustering"
+                      [matTooltipPosition]="'above'" (click)="addComputation()"></span>
+                <span class="glyphicon panel-header-button"
+                      [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}"
+                      (click)="computationPanelOpenState = !computationPanelOpenState; collapse()"></span>
+            </div>
+            <div class="col-md-7">
+        <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
+          <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)"
+               (drop)="dropFilter($event, comp)">
+              <span (click)="comp.isSelected = !comp.isSelected">
+                <div class="computation-colored-circle"
+                     [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
+                <span class="computation-name">{{comp.name}}</span>
+              </span>
+          </div>
+        </span>
+            </div>
+            <div class="col-md-2">
+                <div class="clickable" (click)="computeComputations()">Run all clustering <span
+                        class="glyphicon glyphicon-play"></span></div>
+                <!--<button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>-->
+            </div>
+            <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}"
+                 class="panel-content col-md-12">
+                <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)"
+                     (drop)="dropFilter($event, comp)">
+          <span (click)="comp.isSelected = !comp.isSelected">
+            <div class="computation-colored-circle"
+                 [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
+            <span class="computation-name">{{comp.name}}</span>
+          </span>
+                    <span class="glyphicon glyphicon-play clickable" matTooltip="Run this clustering"
+                          [matTooltipPosition]="'below'" (click)="computeSelectedComputation(comp)"></span>
+                    <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true"
+                         (dragstart)="dragFilter($event, filter, comp)">
+                        <span class="text">{{filter.name}}</span>
+                        <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'"
+                              (click)="editFilter(filter, comp)"></span>
+                        <span class="icon2 glyphicon glyphicon glyphicon-new-window" matTooltip="copy"
+                              [matTooltipPosition]="'below'" (click)="copyFilter(filter)"></span>
+                        <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'"
+                              (click)="deleteFilter(filter, comp)"></span>
+                        <div [ngClass]="{'filter-circle-full': filter.isSelected}"
+                             class="filter-circle filter-circle-full" matTooltip="de/select"
+                             [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
+                    </div>
+                    <span class="computation-add-filter glyphicon glyphicon-plus" matTooltip="add new filter"
+                          [matTooltipPosition]="'below'" (click)="addFilter(comp)"></span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
