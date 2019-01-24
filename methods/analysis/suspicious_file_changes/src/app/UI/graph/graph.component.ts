@@ -8,6 +8,7 @@ import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
+// import 'highcharts/modules/boost.js';
 
 @Component({
     selector: 'app-graph',
@@ -95,6 +96,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
             backgroundColor: null,
             type: 'column',
             zoomType: 'x',
+            animation: false,
             events: {
                 selection: (event) => {
                     console.log(this.chartOverview.xAxis[0]);
@@ -116,6 +118,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 }
             }
         },
+        boost: {
+            enabled: true,
+            // useGPUTranslations: true,
+            seriesThreshold: 1
+        },
         title: {text: null, margin: 0},
         legend: {
             enabled: false
@@ -135,10 +142,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         credits: {enabled: false},
         series: [
-            {name: 'm', color: this.mTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
-            {name: 'a', color: this.aTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
-            {name: 'c', color: this.cTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
-            {name: 'b', color: this.bTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]}
+            {name: 'm', color: this.mTypeColor, visible: true, boostThreshold: 1, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 1, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 1, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 1, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]}
         ]
     };
 
@@ -148,6 +155,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         chart: {
             type: 'column',
             zoomType: 'x',
+            animation: false,
             events: {
                 selection: (event) => {
                     let min = 0, max = 0;
@@ -164,6 +172,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     this.graphOverviewZoomLabel(min, max);
                 }
             }
+        },
+        boost: {
+            enabled: true,
+            // useGPUTranslations: true,
+            seriesThreshold: 1
         },
         title: {text: null, margin: 0},
         legend: {
@@ -185,10 +198,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         credits: {enabled: false},
         series: [
-            {name: 'm', color: this.mTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
-            {name: 'a', color: this.aTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
-            {name: 'c', color: this.cTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
-            {name: 'b', color: this.bTypeColor, visible: true, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]}
+            {name: 'm', color: this.mTypeColor, visible: true, boostThreshold: 10, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 10, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 10, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]},
+            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 10, data: [new Date('1970-01-01T00:00:00.000Z').getTime(), 0]}
         ]
     };
 
@@ -229,18 +242,20 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[0].x = response.x;
                 // this.graphPlot.data[0].y = response.y;
-                this.loadingMTimes = false;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
                 // this.charter.addSerie({name: 'm', color: this.mTypeColor, data: data});
                 // this.chartOptions.series[0].data = data;
                 // this.highCharts.series[0].data = data;
-                this.chart.series[0].setData(data);
-                this.chartOverview.series[0].setData(data);
+                this.chart.series[0].setData(data, false, false,  false);
+                this.chartOverview.series[0].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - m', response);
-                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
-                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
-                this.pickedToDate = isoString.substring(0, isoString.length - 1);
+                // let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                // this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                // isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                // this.pickedToDate = isoString.substring(0, isoString.length - 1);
+
+                this.loadingMTimes = false;
+                this.chartDataLoaded();
             });
 
         // Loading mactimes - access
@@ -248,16 +263,18 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[1].x = response.x;
                 // this.graphPlot.data[1].y = response.y;
-                this.loadingATimes = false;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
                 // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
-                this.chart.series[1].setData(data);
-                this.chartOverview.series[1].setData(data);
+                this.chart.series[1].setData(data, false, false,  false);
+                this.chartOverview.series[1].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - a', response);
-                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
-                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
-                this.pickedToDate = isoString.substring(0, isoString.length - 1);
+                // let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                // this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                // isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                // this.pickedToDate = isoString.substring(0, isoString.length - 1);
+
+                this.loadingATimes = false;
+                this.chartDataLoaded();
             });
 
         // Loading mactimes - changed
@@ -265,16 +282,18 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[2].x = response.x;
                 // this.graphPlot.data[2].y = response.y;
-                this.loadingCTimes = false;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
                 // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
-                this.chart.series[2].setData(data);
-                this.chartOverview.series[2].setData(data);
+                this.chart.series[2].setData(data, false, false,  false);
+                this.chartOverview.series[2].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - c', response);
-                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
-                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
-                this.pickedToDate = isoString.substring(0, isoString.length - 1);
+                // let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                // this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                // isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                // this.pickedToDate = isoString.substring(0, isoString.length - 1);
+
+                this.loadingCTimes = false;
+                this.chartDataLoaded();
             });
 
         // Loading mactimes - birth
@@ -282,19 +301,28 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[3].x = response.x;
                 // this.graphPlot.data[3].y = response.y;
-                this.loadingBTimes = false;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
-                this.chart.series[3].setData(data);
-                this.chartOverview.series[3].setData(data);
+                this.chart.series[3].setData(data, false, false,  false);
+                this.chartOverview.series[3].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - b', response);
-                let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
-                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
-                this.pickedToDate = isoString.substring(0, isoString.length - 1);
+
+                this.loadingBTimes = false;
+                this.chartDataLoaded();
             });
 
         // console.log(this.graphPlot.data);
+    }
+
+    chartDataLoaded() {
+        if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
+            let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+            this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+            isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+            this.pickedToDate = isoString.substring(0, isoString.length - 1);
+            this.chart.redraw();
+            this.chartOverview.redraw(false);
+        }
     }
 
     /**
@@ -406,14 +434,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
             id: 'mask-before',
             from: this.chartOverview.xAxis[0].dataMin,
             to: from,
-            color: 'rgba(150, 0, 0, 0.2)'
+            color: 'rgba(30, 30, 30, 0.4)'
         });
         this.chartOverview.xAxis[0].removePlotBand('mask-after');
         this.chartOverview.xAxis[0].addPlotBand({
             id: 'mask-after',
             from: to,
             to: this.chartOverview.xAxis[0].dataMax,
-            color: 'rgba(150, 0, 0, 0.2)'
+            color: 'rgba(30, 30, 30, 0.4)'
         });
     }
 
