@@ -73,7 +73,7 @@
     height: 20px;
     margin-bottom: -5px;
     display: inline-block;
-    border-left: 4px solid gray;
+    border-left: 4px solid transparent;
     margin-right: 3px;
 }
 
@@ -96,7 +96,7 @@
 
 .cluster-name-field {
     display: inline-block;
-    width: 160px;
+    width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -108,6 +108,16 @@
     width: 50px;
 }
 
+.cluster-edit-field {
+    display: inline-block;
+    width: 10px;
+    margin-left: 3px;
+}
+
 .text-align-right {
     text-align: right;
+}
+
+.clickable{
+    cursor: pointer;
 }

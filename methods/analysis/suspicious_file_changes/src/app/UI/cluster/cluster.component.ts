@@ -21,6 +21,11 @@ export class ClusterComponent implements OnInit {
     advancedMode = false;
     @Output('selectionChanged')
     selectionChanged: EventEmitter<any> = new EventEmitter<any>();
+    @Output('addNewCluster')
+    addNewCluster: EventEmitter<any> = new EventEmitter<any>();
+    @Output('editCluster')
+    editCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
+
 
     constructor() {
     }
@@ -48,6 +53,14 @@ export class ClusterComponent implements OnInit {
             }
             this.selectionChanged.emit(null);
         }
+    }
+
+    edit(cluster) {
+        this.editCluster.emit(cluster);
+    }
+
+    addCluster() {
+        this.addNewCluster.emit(null);
     }
 
 }

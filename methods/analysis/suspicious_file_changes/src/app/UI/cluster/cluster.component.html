@@ -17,8 +17,10 @@
     <div class="list-header">
         <div class="cluster-list-content">
             <div class="cluster-icon cluster-not-selected"></div>
+            <div class="cluster-color"></div>
             <div class="cluster-name-field">cluster name</div>
             <div class="cluster-items-field text-align-right">items #</div>
+            <div *ngIf="advancedMode" class="cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil"></span></div>
         </div>
     </div>
     <div class="cluster-list-content">
@@ -35,12 +37,16 @@
                      [matTooltipPosition]="'right'">{{cluster.name}}
                 </div>
                 <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
+                <div *ngIf="advancedMode" class="clickable cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil" (click)="edit(cluster)"></span></div>
             </div>
         </div>
         <!--</virtual-scroller>-->
         <!--</perfect-scrollbar>-->
         <div *ngIf="clusters?.length == 0">
             There are no clusters yet
+        </div>
+        <div *ngIf="advancedMode" style="text-align: center">
+            <span class="clickable glyphicon glyphicon glyphicon-plus-sign" (click)="addCluster()"></span>
         </div>
     </div>
 
