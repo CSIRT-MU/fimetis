@@ -174,6 +174,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
                     this.graphOverviewZoomLabel(min, max);
                 }
+            },
+            resetZoomButton: {
+                theme: {
+                    display: 'None'
+                }
             }
         },
         boost: {
@@ -187,7 +192,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         toolbar: {},
         xAxis: {
-            type: 'datetime'
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                millisecond: '%H:%M:%S.%L',
+                second: '%H:%M:%S',
+                minute: '%H:%M',
+                hour: '%H:%M',
+                day: '%e. %b %Y',
+                week: '%e. %b %Y',
+                month: '%b %Y',
+                year: '%Y'
+            }
         },
         yAxis: {
             type: 'logarithmic',
