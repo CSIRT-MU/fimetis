@@ -226,6 +226,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 // this.graphPlot.data[0].x = response.x;
                 // this.graphPlot.data[0].y = response.y;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                // const data = response.x.map(function (x, i) {
+                //
+                //     if (parseInt(response.y[i]) === 0) {
+                //         return [new Date(x).getTime(), null, 10];
+                //     } else {
+                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                //     }
+                // });
+
                 // this.charter.addSerie({name: 'm', color: this.mTypeColor, data: data});
                 // this.chartOptions.series[0].data = data;
                 // this.highCharts.series[0].data = data;
@@ -242,6 +253,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 // this.graphPlot.data[1].x = response.x;
                 // this.graphPlot.data[1].y = response.y;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                // const data = response.x.map(function (x, i) {
+                //
+                //     if (parseInt(response.y[i]) === 0) {
+                //         return [new Date(x).getTime(), null, 10];
+                //     } else {
+                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                //     }
+                // });
+
                 // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
                 this.chart.series[1].setData(data, false, false,  false);
                 this.chartOverview.series[1].setData(data, false, false,  false);
@@ -256,6 +278,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 // this.graphPlot.data[2].x = response.x;
                 // this.graphPlot.data[2].y = response.y;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                // const data = response.x.map(function (x, i) {
+                //
+                //     if (parseInt(response.y[i]) === 0) {
+                //         return [new Date(x).getTime(), null, 10];
+                //     } else {
+                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                //     }
+                // });
+
                 // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
                 this.chart.series[2].setData(data, false, false,  false);
                 this.chartOverview.series[2].setData(data, false, false,  false);
@@ -270,6 +303,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 // this.graphPlot.data[3].x = response.x;
                 // this.graphPlot.data[3].y = response.y;
                 const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                // const data = response.x.map(function (x, i) {
+                //
+                //     if (parseInt(response.y[i]) === 0) {
+                //         return [new Date(x).getTime(), null, 10];
+                //     } else {
+                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                //     }
+                // });
+                
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
                 this.chart.series[3].setData(data, false, false,  false);
                 this.chartOverview.series[3].setData(data, false, false,  false);
