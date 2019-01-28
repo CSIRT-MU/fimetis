@@ -129,7 +129,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         toolbar: {},
         xAxis: {
-            type: 'datetime'
+            type: 'datetime',
         },
         yAxis: {
             type: 'logarithmic',
@@ -137,7 +137,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         plotOptions: {
             column: {
-                stacking: 'normal'
+                stacking: 'normal',
+                groupPadding: 0,
+                pointPadding: 0,
+                pointPlacement: 0.5
             }
         },
         credits: {enabled: false},
@@ -184,8 +187,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         toolbar: {},
         xAxis: {
-            type: 'datetime',
-            minRange: 7 * 24 * 60 * 60 * 1000
+            type: 'datetime'
         },
         yAxis: {
             type: 'logarithmic',
@@ -193,7 +195,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         plotOptions: {
             column: {
-                stacking: 'normal'
+                stacking: 'normal',
+                groupPadding: 0,
+                pointPadding: 0,
+                pointPlacement: 0.5
             }
         },
         credits: {enabled: false},
