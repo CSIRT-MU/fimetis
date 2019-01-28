@@ -7,8 +7,6 @@
     <div class="col-md-8">
     </div>
     <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
-        <!--<div>GRAPH AGGREGATED BY MONTH</div>-->
-        <!--<div #graph class="d3-chart"></div>-->
         <div class="graph-container">
             <div class="chart-loader" *ngIf="loadingMTimes || loadingATimes || loadingBTimes || loadingCTimes">
                 <div class="loader-stat loader-7">
@@ -19,12 +17,6 @@
             </div>
             <div #chartOverviewDiv id="chartOverviewDiv" ></div>
             <div #chartDiv id="chartDiv" ></div>
-            <!--<plotly-plot #plot_div [divId]="plotDivIdentifier" [data]="graphPlot.data" [layout]="graphPlot.layout"-->
-                         <!--[config]="graphPlot.config"-->
-                         <!--(relayout)="pickedZoomFunction($event)"-->
-                         <!--[useResizeHandler]="true"-->
-                         <!--(update)="graphUpdated($event)"-->
-            <!--&gt;</plotly-plot>-->
         </div>
         <form (submit)="updateBoundary()" class="from-date-form col-md-4">
             <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input">
@@ -43,4 +35,3 @@
         </form>
     </div>
 </div>
-<!--<div #new_plot id="new_plot"></div>-->

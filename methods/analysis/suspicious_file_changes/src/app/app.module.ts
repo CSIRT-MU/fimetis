@@ -11,7 +11,6 @@ import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatChipsModule} from '@angular/material/chips';
-import {PlotlyModule} from 'angular-plotly.js';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material';
 import {MatIconModule} from '@angular/material/icon';
@@ -66,7 +65,6 @@ import {TextSelectDirective} from './UI/text-select.directive';
         MatButtonModule,
         FlexLayoutModule,
         MatChipsModule,
-        PlotlyModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule,
