@@ -5,7 +5,7 @@
                                                                      (click)="collapseGraphPanel()"></span>
     </div>
     <div class="col-md-8">
-        <span *ngIf="graphPanelOpenState" class="resetZoomButton" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
+        <span *ngIf="graphPanelOpenState && saveGraphZoom" class="resetZoomButton" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
     </div>
     <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
         <div class="graph-container">

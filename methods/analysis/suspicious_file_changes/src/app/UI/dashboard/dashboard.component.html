@@ -44,33 +44,14 @@
     </div>
 </div>
 
-<div class="filters-setup">
-    <div class="col-md-12 panel-header">
-        <span><b>FILTERS</b></span><span class="glyphicon panel-header-button"
-                                         [ngClass]="{'glyphicon-chevron-down': !filterPanelOpenState, 'glyphicon-chevron-up': filterPanelOpenState}"
-                                         (click)="filterPanelOpenState = !filterPanelOpenState; collapse()"></span>
-    </div>
-
+<div class="filters-setup" *ngIf="editingCluster">
     <div class="col-md-12">
-        <div class="panel-content panel-visible col-md-12">
-            <mat-tab-group [dynamicHeight]="true">
-                <mat-tab label="QUERY / INITIAL SETUP">
+        <div class="col-md-12 panel-header"><span><b>Edit cluster</b> "{{editingCluster.name}}"</span></div>
+        <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}"
+             class="panel-content col-md-12">
                     <br>
                     <div class="col-md-4">
                         <table>
-                            <!--<tr>-->
-                            <!--<td class="text-right">-->
-                            <!--<b>DATASET</b>-->
-                            <!--</td>-->
-                            <!--<td>-->
-                            <!--<mat-form-field>-->
-                            <!--<mat-select [(value)]="selectedCase" (valueChange)="selectedCaseChanged()" placeholder="Click to select dataset">-->
-                            <!--<mat-option>None</mat-option>-->
-                            <!--<mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>-->
-                            <!--</mat-select>-->
-                            <!--</mat-form-field>-->
-                            <!--</td>-->
-                            <!--</tr>-->
                             <tr>
                                 <td class="text-right">
                                     <b>FILTER</b>
@@ -113,67 +94,32 @@
                             </mat-form-field>
                         </form>
                     </div>
-                </mat-tab>
-                <mat-tab label="SIGNALING GRID"> SIGNALING GRID</mat-tab>
-            </mat-tab-group>
         </div>
     </div>
     <div>
-        <div class="panel-header">
-            <div class="col-md-3">
-                <span><b>RUNTIME CLUSTERING</b></span>
-                <span class="glyphicon glyphicon-plus panel-header-button" matTooltip="add new runtime clustering"
-                      [matTooltipPosition]="'above'" (click)="addComputation()"></span>
-                <span class="glyphicon panel-header-button"
-                      [ngClass]="{'glyphicon-chevron-down': !computationPanelOpenState, 'glyphicon-chevron-up': computationPanelOpenState}"
-                      (click)="computationPanelOpenState = !computationPanelOpenState; collapse()"></span>
-            </div>
-            <div class="col-md-7">
-        <span *ngIf="!computationPanelOpenState" class="panel-header-computations">
-          <div *ngFor="let comp of computations" class="computation-row-panel" (dragover)="dragOver($event)"
-               (drop)="dropFilter($event, comp)">
-              <span (click)="comp.isSelected = !comp.isSelected">
-                <div class="computation-colored-circle"
-                     [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
-                <span class="computation-name">{{comp.name}}</span>
-              </span>
-          </div>
-        </span>
-            </div>
-            <div class="col-md-2">
-                <div class="clickable" (click)="computeComputations()">Run all clustering <span
-                        class="glyphicon glyphicon-play"></span></div>
-                <!--<button class="timesix-button panel-header-button" mat-stroked-button (click)="computeComputations()">COMPUTE</button>-->
-            </div>
-            <div [ngClass]="{'panel-hidden': !computationPanelOpenState, 'panel-visible': computationPanelOpenState}"
-                 class="panel-content col-md-12">
-                <div *ngFor="let comp of computations" class="computation-row" (dragover)="dragOver($event)"
-                     (drop)="dropFilter($event, comp)">
-          <span (click)="comp.isSelected = !comp.isSelected">
-            <div class="computation-colored-circle"
-                 [ngStyle]="{'background-color': comp.isSelected ? comp.color : '', 'border-color': comp.color}"></div>
-            <span class="computation-name">{{comp.name}}</span>
-          </span>
-                    <span class="glyphicon glyphicon-play clickable" matTooltip="Run this clustering"
-                          [matTooltipPosition]="'below'" (click)="computeSelectedComputation(comp)"></span>
-                    <div *ngFor="let filter of comp.filters" class="computation-filter" draggable="true"
-                         (dragstart)="dragFilter($event, filter, comp)">
-                        <span class="text">{{filter.name}}</span>
-                        <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'"
-                              (click)="editFilter(filter, comp)"></span>
-                        <span class="icon2 glyphicon glyphicon glyphicon-new-window" matTooltip="copy"
-                              [matTooltipPosition]="'below'" (click)="copyFilter(filter)"></span>
-                        <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'"
-                              (click)="deleteFilter(filter, comp)"></span>
-                        <div [ngClass]="{'filter-circle-full': filter.isSelected}"
-                             class="filter-circle filter-circle-full" matTooltip="de/select"
-                             [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
-                    </div>
-                    <span class="computation-add-filter glyphicon glyphicon-plus" matTooltip="add new filter"
-                          [matTooltipPosition]="'below'" (click)="addFilter(comp)"></span>
+        <div class="panel-content col-md-12 panel-visible">
+            <div class="computation-row" (dragover)="dragOver($event)"
+                 (drop)="dropFilter($event, editingCluster.computation)">
+                <div *ngFor="let filter of editingCluster.computation.filters" class="computation-filter" draggable="true"
+                     (dragstart)="dragFilter($event, filter, editingCluster.computation)">
+                    <span class="text">{{filter.name}}</span>
+                    <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'"
+                          (click)="editFilter(filter, editingCluster.computation)"></span>
+                    <span class="icon2 glyphicon glyphicon glyphicon-new-window" matTooltip="copy"
+                          [matTooltipPosition]="'below'" (click)="copyFilter(filter)"></span>
+                    <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'"
+                          (click)="deleteFilter(filter, editingCluster.computation)"></span>
+                    <div [ngClass]="{'filter-circle-full': filter.isSelected}"
+                         class="filter-circle filter-circle-full" matTooltip="de/select"
+                         [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
                 </div>
+                <span class="computation-add-filter glyphicon glyphicon-plus" matTooltip="add new filter"
+                      [matTooltipPosition]="'below'" (click)="addFilter(editingCluster.computation)"></span>
             </div>
         </div>
+    </div>
+    <div class="col-md-12 filters-setup-done">
+        <button mat-stroked-button class="timesix-button" (click)="editCLusterDone()">DONE</button>
     </div>
 </div>
 
@@ -325,7 +271,10 @@
                     [clusters]="getClusters()"
                     [clusteringOverview]="clusteringOverview"
                     [advancedMode]="advancedMode"
-                    (selectionChanged)="clusterSelectionChanged($event)"></app-cluster>
+                    (selectionChanged)="clusterSelectionChanged($event)"
+                    (addNewCluster)="addNewCluster()"
+                    (editCluster)="editCluster($event)">
+            </app-cluster>
         </div>
     </div>
     <div class="grid-main">

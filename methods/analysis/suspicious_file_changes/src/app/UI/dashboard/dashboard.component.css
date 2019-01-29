@@ -103,9 +103,14 @@
     /*height: 100px;*/
     background-color: #ffffff;
     z-index: 9;
-    border-top: 2px solid #333333;
-    border-bottom: 2px solid #333333;
-    display: none;
+    border-top: 4px solid #333333;
+    border-bottom: 4px solid #333333;
+}
+
+.filters-setup-done {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
 }
 
 .panel {

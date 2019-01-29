@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit {
     cases: any[];
     selectedCase: string;
 
+    editingCluster: ClusterModel = null;
     filters: any[];
     selectedFilter: string;
     selectedFilterModel: FilterModel = new FilterModel();
@@ -235,6 +236,7 @@ export class DashboardComponent implements OnInit {
         }
         this.selectedFilterModel = new FilterModel();
         this.selectedFilter = null;
+        this.filterPanelOpenState = false;
     }
 
     /**
@@ -684,6 +686,50 @@ export class DashboardComponent implements OnInit {
         this.resetClusterStates();
         this.clusterComponent.advancedMode = this.advancedMode;
         // this.ngOnInit();
+    }
+
+    /**
+     * Add new cluster
+     */
+    addNewCluster() {
+        const dialogRef = this.dialog.open(ComputationDialogComponent, {
+            width: '350px',
+            data: {
+                title: 'Create new cluster',
+                namePlaceholder: 'Type new cluster\'s name',
+                colorPlaceHolder: 'Select cluster color'
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('cluster dialog closed', result);
+            if (result != null) {
+                const comp = new ComputationModel();
+                comp.name = result[0];
+                comp.color = result[1];
+                const cluster = new ClusterModel();
+                cluster.name = result[0];
+                cluster.color = result[1];
+                cluster.computation = comp;
+                this.clusters.add(cluster);
+                this.editCluster(cluster);
+            }
+        });
+    }
+
+    /**
+     * Edit selected cluster
+     * @param {ClusterModel} cluster Selected cluster from cluster component
+     */
+    editCluster(cluster: ClusterModel) {
+        this.editingCluster = cluster;
+    }
+
+    /**
+     * Hide edit cluster window
+     */
+    editCLusterDone() {
+        this.editingCluster = null;
+        this.filterPanelOpenState = false;
     }
 
 }
