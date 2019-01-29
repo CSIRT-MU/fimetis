@@ -6,6 +6,7 @@ import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
+import {matDatepickerAnimations} from '@angular/material';
 
 @Component({
     selector: 'app-graph',
@@ -33,6 +34,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     pickedFromDate = '1970-01-01T00:00:00';
     pickedToDate = '1970-01-01T00:00:00';
+    saveGraphZoom = false;
 
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
@@ -78,6 +80,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     this.graphOverviewZoomLabel(min, max);
                     return false;
 
+                },
+                redraw: (event) => {
+                    this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
                 }
             }
         },
@@ -139,8 +144,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
                     this.graphOverviewZoomLabel(min, max);
                 },
-                load: () => {
-                    console.log('load');
+                redraw: () => {
+                    if (!this.saveGraphZoom) {
+                        console.log('load', this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
+                        let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
+                        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                        isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                        this.pickedToDate = isoString.substring(0, isoString.length - 1);
+                    }
                 }
             },
             resetZoomButton: {
@@ -175,7 +186,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
         yAxis: {
             type: 'logarithmic',
             title: null,
-            min: 1
+            min: 1,
+            minPointLength: 3
         },
         plotOptions: {
             column: {
@@ -231,17 +243,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[0].x = response.x;
                 // this.graphPlot.data[0].y = response.y;
-                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
 
                 // Making small values visible
-                // const data = response.x.map(function (x, i) {
-                //
-                //     if (parseInt(response.y[i]) === 0) {
-                //         return [new Date(x).getTime(), null, 10];
-                //     } else {
-                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                //     }
-                // });
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null, 10];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
 
                 // this.charter.addSerie({name: 'm', color: this.mTypeColor, data: data});
                 // this.chartOptions.series[0].data = data;
@@ -258,17 +270,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[1].x = response.x;
                 // this.graphPlot.data[1].y = response.y;
-                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
 
                 // Making small values visible
-                // const data = response.x.map(function (x, i) {
-                //
-                //     if (parseInt(response.y[i]) === 0) {
-                //         return [new Date(x).getTime(), null, 10];
-                //     } else {
-                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                //     }
-                // });
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null, 10];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
 
                 // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
                 this.chart.series[1].setData(data, false, false,  false);
@@ -283,17 +295,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[2].x = response.x;
                 // this.graphPlot.data[2].y = response.y;
-                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
 
                 // Making small values visible
-                // const data = response.x.map(function (x, i) {
-                //
-                //     if (parseInt(response.y[i]) === 0) {
-                //         return [new Date(x).getTime(), null, 10];
-                //     } else {
-                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                //     }
-                // });
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null, 10];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
 
                 // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
                 this.chart.series[2].setData(data, false, false,  false);
@@ -308,17 +320,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
             .then(response => {
                 // this.graphPlot.data[3].x = response.x;
                 // this.graphPlot.data[3].y = response.y;
-                const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
 
                 // Making small values visible
-                // const data = response.x.map(function (x, i) {
-                //
-                //     if (parseInt(response.y[i]) === 0) {
-                //         return [new Date(x).getTime(), null, 10];
-                //     } else {
-                //         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                //     }
-                // });
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null, 10];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
                 
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
                 this.chart.series[3].setData(data, false, false,  false);
@@ -334,11 +346,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     chartDataLoaded() {
         if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
-            let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
-            this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-            isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
-            this.pickedToDate = isoString.substring(0, isoString.length - 1);
-            this.chart.redraw();
+            this.chart.redraw(false);
             this.chartOverview.redraw(false);
         }
     }
@@ -350,6 +358,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.pickedFromDate = isoString.substring(0, isoString.length - 1);
         isoString = new Date(x2).toISOString();
         this.pickedToDate = isoString.substring(0, isoString.length - 1);
+        this.saveGraphZoom = true;
     }
 
     graphOverviewZoomLabel(from: number, to: number) {
@@ -376,6 +385,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
+        this.saveGraphZoom = true;
     }
 
     collapseGraphPanel() {
@@ -421,5 +431,15 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 return this.bTypeColor;
         }
         return '#FF5500';
+    }
+
+    resetZoom() {
+        this.saveGraphZoom = false;
+        this.chart.redraw();
+        this.chart.xAxis[0].setExtremes(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+        this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+        this.dateChangeDebouncer.next([
+            this.pickedFromDate.replace('T', ' '),
+            this.pickedToDate.replace('T', ' ')]);
     }
 }
