@@ -92,11 +92,13 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         toolbar: {},
         xAxis: {
-            type: 'datetime',
+            type: 'datetime'
         },
         yAxis: {
             type: 'logarithmic',
-            title: null
+            title: null,
+            min: 1,
+            softmax: 100000
         },
         plotOptions: {
             column: {
@@ -136,6 +138,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     }
                     this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
                     this.graphOverviewZoomLabel(min, max);
+                },
+                load: () => {
+                    console.log('load');
                 }
             },
             resetZoomButton: {
@@ -169,7 +174,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         yAxis: {
             type: 'logarithmic',
-            title: null
+            title: null,
+            min: 1
         },
         plotOptions: {
             column: {
