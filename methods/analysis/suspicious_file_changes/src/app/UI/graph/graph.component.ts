@@ -36,7 +36,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     pickedToDate = '1970-01-01T00:00:00';
     saveGraphZoom = false;
 
-    supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
+    supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b', 'all']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
     private data: any;
@@ -51,6 +51,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     aTypeColor = '#D62728';
     cTypeColor = '#2CA02C';
     bTypeColor = '#976CBF';
+    allTypeColor = '#150abf';
 
     @ViewChild('chartOverviewDiv') chartOverviewDiv: ElementRef;
     chartOverview: Highcharts.ChartObject;
@@ -118,7 +119,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
             {name: 'm', color: this.mTypeColor, visible: true, boostThreshold: 1, data: []},
             {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 1, data: []},
             {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 1, data: []},
-            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 1, data: []}
+            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 1, data: []},
+            {name: 'all', color: this.allTypeColor, visible: true, boostThreshold: 10, data: []}
         ]
     };
 
@@ -202,7 +204,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
             {name: 'm', color: this.mTypeColor, visible: true, boostThreshold: 10, data: []},
             {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 10, data: []},
             {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 10, data: []},
-            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 10, data: []}
+            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 10, data: []},
+            {name: 'all', color: this.allTypeColor, visible: true, boostThreshold: 10, data: []}
         ]
     };
 
@@ -341,7 +344,33 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartDataLoaded();
             });
 
-        // console.log(this.graphPlot.data);
+        // Load counts of all timestamps
+        this.manager.getData()
+            .then(response => {
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null, 10];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                this.chart.series[4].setData(data, false, false,  false);
+                this.chartOverview.series[4].setData(data, false, false,  false);
+                console.log('Graph data loaded async! - all', response);
+
+                this.loadingBTimes = false;
+                this.chartDataLoaded();
+                this.showHideTrace('all');
+            });
+
     }
 
     chartDataLoaded() {
@@ -429,6 +458,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 return this.cTypeColor;
             case 'b':
                 return this.bTypeColor;
+            case 'all':
+                return this.allTypeColor;
         }
         return '#FF5500';
     }
