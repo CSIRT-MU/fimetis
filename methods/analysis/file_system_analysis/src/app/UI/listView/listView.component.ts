@@ -92,6 +92,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
     visibleDataFirstIndex = 0;
     visibleDataLastIndex = 0;
 
+    skipBufferSize = 10000;
+
 
     loadingData = false;
 
@@ -547,13 +549,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * Skips (scrolls) the block by highlighted timestamp (mouse selection)
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
-    skipTheBlockByDate(toTheEnd: boolean): void {
+    async skipTheBlockByDate(toTheEnd: boolean) {
         console.log('skipping date', this.highlightedTextDate);
         console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
-        let skipIndex = this.highlightedTextDateId;
+        let skipIndex = null;
 
         let dateLevel = 0;
-        for (let i = 0; i < this.highlightedTextDate.length; i++){
+        for (let i = 0; i < this.highlightedTextDate.length; i++) {
             if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':'){
                 dateLevel += 1;
             }
@@ -564,15 +566,53 @@ export class ListViewComponent implements OnInit, OnDestroy {
             dateString += ':00';
         }
         const selectedDate = new Date(dateString);
-        const index_start = (this.highlightedTextDateId - this.preloadedBegin);
-        const bufferOffset = this.preloadedBegin;
+        let index_start = (this.highlightedTextDateId - this.preloadedBegin);
 
         if (toTheEnd) {
-            for (let index = (index_start + 1); index < this.preloadedBufferSize; index++) {
-                const next_date = new Date(this.preloadedData[index]._source['@timestamp']);
+            index_start += 1;
+        } else {
+            index_start -= 1;
+        }
+
+        let bufferSize = this.preloadedBufferSize;
+        let bufferOffset = this.preloadedBegin;
+        let buffer = this.preloadedData;
+
+        while (skipIndex == null) {
+            const result = this.skipDate(selectedDate, dateLevel, index_start, buffer, bufferOffset, toTheEnd);
+            skipIndex = result.skipIndex;
+            if (skipIndex == null) {
+                bufferSize = this.skipBufferSize;
+                if (toTheEnd) {
+                    index_start = 0;
+                    bufferOffset = bufferSize + bufferOffset;
+                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    buffer = res.data;
+                } else {
+                    index_start = (bufferSize - 1);
+                    bufferOffset = bufferOffset - bufferSize >= 0 ? bufferOffset - bufferSize : 0;
+                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    buffer = res.data;
+                }
+            }
+        }
+
+        console.log('skip date to:', skipIndex + bufferOffset);
+        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
+        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        this.openHighlightedTextDateMenu(hideEvent, 0);
+    }
+
+    skipDate(selectedDate, dateLevel, startIndex, buffer, bufferOffset, toTheEnd) {
+        let skipIndex = null;
+        let tmp_index = null;
+        if (toTheEnd) {
+            for (let index = startIndex; index < buffer.length; index++) {
+                const next_date = new Date(buffer[index]._source['@timestamp']);
                 if (dateLevel >= 0) {
                     if (selectedDate.getFullYear() < next_date.getUTCFullYear()) {
                         skipIndex = index;
+                        console.log(next_date);
                         break;
                     }
                 }
@@ -606,11 +646,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
                         break;
                     }
                 }
+                tmp_index = index;
 
             }
         } else {
-            for (let index = (index_start - 1); index >= 0; index--) {
-                const next_date = new Date(this.preloadedData[index]._source['@timestamp']);
+            for (let index = startIndex; index >= 0; index--) {
+                const next_date = new Date(buffer[index]._source['@timestamp']);
                 if (dateLevel >= 0) {
                     if (selectedDate.getFullYear() > next_date.getUTCFullYear()) {
                         skipIndex = index;
@@ -649,10 +690,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log('skip date to:', skipIndex + bufferOffset);
-        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
-        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
-        this.openHighlightedTextDateMenu(hideEvent, 0);
+        if (bufferOffset === 0 && skipIndex == null && !toTheEnd) {
+            return {skipIndex: 0};
+        }
+        if (buffer.length < 1) {
+            return {skipIndex: bufferOffset};
+        }
+        return {skipIndex: skipIndex};
     }
 
     /**
