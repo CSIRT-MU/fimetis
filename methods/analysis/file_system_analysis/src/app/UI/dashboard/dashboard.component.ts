@@ -656,10 +656,11 @@ export class DashboardComponent implements OnInit {
     }
 
     /**
-     * Trigered by change of additional filters (searching, date slider etc.) in list view
-     * @param {Map<string, string>} filters
+     * Computes count of items in each cluster.
+     * Trigered by change of additional filters (searching, date filter etc.) in list view
+     * @param {Map<string, string>} filters Additional filters (search filter, date filter etc.)
      */
-    additionalFiltersChanged(filters: Map<string, string>) {
+    computeClustersItemCount(filters: Map<string, string>) {
         // filters.delete('searchString');
         const clustManager = new ClusterManager(this.es);
         clustManager.clusters = this.getClusters();
@@ -686,6 +687,11 @@ export class DashboardComponent implements OnInit {
         this.resetClusterStates();
         this.clusterComponent.advancedMode = this.advancedMode;
         // this.ngOnInit();
+        if (!advancedMode) {
+            this.editClusterDone();
+        }
+        this.listViewComponent.init();
+        this.graphComponent.init();
     }
 
     /**
@@ -710,6 +716,7 @@ export class DashboardComponent implements OnInit {
                 cluster.name = result[0];
                 cluster.color = result[1];
                 cluster.computation = comp;
+                cluster.count = 0;
                 this.clusters.add(cluster);
                 this.editCluster(cluster);
             }
@@ -725,11 +732,14 @@ export class DashboardComponent implements OnInit {
     }
 
     /**
-     * Hide edit cluster window
+     * Hide cluster edit window and count items in clusters
      */
-    editCLusterDone() {
+    editClusterDone() {
         this.editingCluster = null;
         this.filterPanelOpenState = false;
+        this.computeClustersItemCount(this.listViewComponent.additionalFilters);
+        this.listViewComponent.init();
+        this.graphComponent.init();
     }
 
 }

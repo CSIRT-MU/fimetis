@@ -119,7 +119,7 @@
         </div>
     </div>
     <div class="col-md-12 filters-setup-done">
-        <button mat-stroked-button class="timesix-button" (click)="editCLusterDone()">DONE</button>
+        <button mat-stroked-button class="timesix-button" (click)="editClusterDone()">DONE</button>
     </div>
 </div>
 
@@ -285,6 +285,6 @@
         </app-graph>
         <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"
                        (makeManualCluster)="makeManualCluster($event)"
-                       (additionalFiltersChanged)="additionalFiltersChanged($event)"></app-list-view>
+                       (additionalFiltersChanged)="computeClustersItemCount($event)"></app-list-view>
     </div>
 </div>
