@@ -379,13 +379,13 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     updateBoundary() {
+        this.saveGraphZoom = true;
         this.chart.xAxis[0].setExtremes(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
         this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
         // this.chart.showResetZoom();
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
-        this.saveGraphZoom = true;
     }
 
     collapseGraphPanel() {
