@@ -48,6 +48,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
     loadingBTimes = false;
     loadingAllTimes = false;
 
+    min_date_boundary = null;
+    max_date_boundary = null;
+
     mTypeColor = '#FF7F0E';
     aTypeColor = '#D62728';
     cTypeColor = '#2CA02C';
@@ -367,6 +370,22 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartOverview.series[4].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - all', response);
 
+
+
+                // Setting boundary to fix range of dates in graph when changing timestamps types
+                this.min_date_boundary = data[0][0];
+                this.max_date_boundary = data[data.length - 1][0];
+
+                this.chart.xAxis[0].update({
+                    min: this.min_date_boundary,
+                    max: this.max_date_boundary
+                });
+
+                this.chartOverview.xAxis[0].update({
+                    min: this.min_date_boundary,
+                    max: this.max_date_boundary
+                });
+
                 this.loadingAllTimes = false;
                 this.chartDataLoaded();
                 this.showHideTrace('all');
@@ -467,11 +486,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     resetZoom() {
         this.saveGraphZoom = false;
+        this.chart.xAxis[0].setExtremes(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
+        this.chartOverview.xAxis[0].setExtremes(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
         this.chart.redraw();
-        this.chart.xAxis[0].setExtremes(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
         this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
+
+        console.log(this.chart.xAxis[0].dataMin);
     }
 }
