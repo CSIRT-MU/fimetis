@@ -94,4 +94,10 @@ export class GraphManager {
         return frequency;
     }
 
+    async getFirstAndLast() {
+        const first = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
+        const last = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
+        return [first, last];
+    }
+
 }

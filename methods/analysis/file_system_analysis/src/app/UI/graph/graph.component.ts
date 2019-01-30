@@ -105,7 +105,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
             type: 'datetime'
         },
         yAxis: {
-            type: 'logarithmic',
             title: null,
             min: 1,
             softmax: 100000
@@ -115,7 +114,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 stacking: 'normal',
                 groupPadding: 0,
                 pointPadding: 0,
-                pointPlacement: 0.5
+                pointPlacement: 0.5,
+                minPointLength: 3
             }
         },
         credits: {enabled: false},
@@ -149,15 +149,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     }
                     this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
                     this.graphOverviewZoomLabel(min, max);
-                },
-                redraw: () => {
-                    if (!this.saveGraphZoom) {
-                        console.log('load', this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
-                        let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
-                        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                        isoString = new Date(this.max_date_boundary).toISOString();
-                        this.pickedToDate = isoString.substring(0, isoString.length - 1);
-                    }
                 }
             },
             resetZoomButton: {
@@ -190,17 +181,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
             }
         },
         yAxis: {
-            type: 'logarithmic',
             title: null,
-            min: 1,
-            minPointLength: 3
+            // min: 1,
+            // minPointLength: 3
         },
         plotOptions: {
             column: {
                 stacking: 'normal',
                 groupPadding: 0,
                 pointPadding: 0,
-                pointPlacement: 0.5
+                pointPlacement: 0.5,
+                minPointLength: 3
             }
         },
         credits: {enabled: false},
@@ -243,8 +234,41 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.loadingATimes = true;
         this.loadingCTimes = true;
         this.loadingBTimes = true;
+        this.loadingAllTimes = true;
 
         console.log('compute graph');
+        this.manager.getFirstAndLast().then((res) => {
+            console.log(res[0], res[1]);
+            let first = new Date(res[0]);
+            first = new Date(Date.UTC(first.getFullYear(), first.getMonth(), first.getDate()));
+            console.log(first);
+            this.min_date_boundary = first.getTime();
+            let last = new Date(res[1]);
+            console.log(last);
+            last = new Date(Date.UTC(last.getFullYear(), last.getMonth(), last.getDate()));
+            console.log(last);
+            this.max_date_boundary = last.getTime() + (24 * 3600 * 1000);
+            console.log(this.max_date_boundary);
+
+            this.chart.xAxis[0].update({
+                min: this.min_date_boundary,
+                max: this.max_date_boundary
+            });
+
+            this.chartOverview.xAxis[0].update({
+                min: this.min_date_boundary,
+                max: this.max_date_boundary
+            });
+
+            if (!this.saveGraphZoom) {
+                console.log('loaded', this.min_date_boundary, this.max_date_boundary);
+                let isoString = new Date(this.min_date_boundary).toISOString();
+                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                isoString = new Date(this.max_date_boundary).toISOString();
+                this.pickedToDate = isoString.substring(0, isoString.length - 1);
+            }
+        });
+
         // Loading mactimes - modified
         this.manager.getData('m')
             .then(response => {
@@ -370,23 +394,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartOverview.series[4].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - all', response);
 
-
-
-                // Setting boundary to fix range of dates in graph when changing timestamps types
-                this.min_date_boundary = data[0][0];
-                this.max_date_boundary = data[data.length - 1][0] + 24 * 3600*1000;
-
-
-                this.chart.xAxis[0].update({
-                    min: this.min_date_boundary,
-                    max: this.max_date_boundary
-                });
-
-                this.chartOverview.xAxis[0].update({
-                    min: this.min_date_boundary,
-                    max: this.max_date_boundary
-                });
-
                 this.loadingAllTimes = false;
                 this.chartDataLoaded();
                 this.showHideTrace('all');
@@ -487,15 +494,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     resetZoom() {
         this.saveGraphZoom = false;
-        console.log(new Date(this.max_date_boundary).getTime());
-        this.chart.xAxis[0].setExtremes(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
-        this.chartOverview.xAxis[0].setExtremes(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
-        this.chart.redraw();
-        this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.max_date_boundary).getTime());
+        // reset charts zoom
+        this.chart.xAxis[0].setExtremes(null, null);
+        this.chartOverview.xAxis[0].setExtremes(null, null);
+        // reset date Inputs
+        let isoString = new Date(this.min_date_boundary).toISOString();
+        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+        isoString = new Date(this.max_date_boundary).toISOString();
+        this.pickedToDate = isoString.substring(0, isoString.length - 1);
+        this.graphOverviewZoomLabel(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
-
-        console.log(this.chart.xAxis[0].dataMin);
     }
 }
