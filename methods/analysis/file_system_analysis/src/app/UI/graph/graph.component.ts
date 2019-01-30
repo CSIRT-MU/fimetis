@@ -46,6 +46,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     loadingATimes = false;
     loadingCTimes = false;
     loadingBTimes = false;
+    loadingAllTimes = false;
 
     mTypeColor = '#FF7F0E';
     aTypeColor = '#D62728';
@@ -366,7 +367,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartOverview.series[4].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - all', response);
 
-                this.loadingBTimes = false;
+                this.loadingAllTimes = false;
                 this.chartDataLoaded();
                 this.showHideTrace('all');
             });
@@ -374,7 +375,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     chartDataLoaded() {
-        if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
+        if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes && !this.loadingAllTimes) {
             this.chart.redraw(false);
             this.chartOverview.redraw(false);
         }
