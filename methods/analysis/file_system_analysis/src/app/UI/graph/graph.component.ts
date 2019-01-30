@@ -131,10 +131,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         credits: {enabled: false},
         series: [
-            {name: 'm', color: this.mTypeColor, visible: true, boostThreshold: 1, data: []},
-            {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 1, data: []},
-            {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 1, data: []},
-            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 1, data: []},
+            {name: 'm', color: this.mTypeColor, boostThreshold: 10, data: []},
+            {name: 'a', color: this.aTypeColor, boostThreshold: 10, data: []},
+            {name: 'c', color: this.cTypeColor, boostThreshold: 10, data: []},
+            {name: 'b', color: this.bTypeColor, boostThreshold: 10, data: []},
             {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
         ]
     };
@@ -202,15 +202,15 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 groupPadding: 0,
                 pointPadding: 0,
                 pointPlacement: 0.5,
-                // minPointLength: 3
+                minPointLength: 5
             }
         },
         credits: {enabled: false},
         series: [
-            {name: 'm', color: this.mTypeColor, visible: true, boostThreshold: 10, data: []},
-            {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 10, data: []},
-            {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 10, data: []},
-            {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 10, data: []},
+            {name: 'm', color: this.mTypeColor, boostThreshold: 10, data: []},
+            {name: 'a', color: this.aTypeColor, boostThreshold: 10, data: []},
+            {name: 'c', color: this.cTypeColor, boostThreshold: 10, data: []},
+            {name: 'b', color: this.bTypeColor, boostThreshold: 10, data: []},
             {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
         ]
     };
@@ -412,7 +412,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     chartDataLoaded() {
-        if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes && !this.loadingAllTimes) {
+        if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
             this.chart.redraw(false);
             this.chartOverview.redraw(false);
         }
@@ -461,7 +461,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     showHideTrace(metadataType) {
-        console.log(this.chart.series[0].visible);
         for (let i = 0; i < this.chart.series.length; i++) {
             if (this.chart.series[i].name === metadataType) {
                 if (this.chart.series[i].visible) {
@@ -476,14 +475,16 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     typeCheckboxChanged(type) {
-        if (this.selectedTypes.has(type)) {
-            this.selectedTypes.delete(type);
-        } else {
-            this.selectedTypes.add(type);
+        if (this.supportedTypes.has(type)) {
+            if (this.selectedTypes.has(type)) {
+                this.selectedTypes.delete(type);
+            } else {
+                this.selectedTypes.add(type);
+            }
+            this.showHideTrace(type);
+            this.typesChanged.emit(this.selectedTypes);
+            console.log('selected metadata types changed', this.selectedTypes);
         }
-        this.showHideTrace(type);
-        this.typesChanged.emit(this.selectedTypes);
-        console.log('selected metadata types changed', this.selectedTypes);
     }
 
     getCheckboxColor(type) {
