@@ -155,7 +155,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                         console.log('load', this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
                         let isoString = new Date(this.chart.xAxis[0].dataMin).toISOString();
                         this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                        isoString = new Date(this.chart.xAxis[0].dataMax).toISOString();
+                        isoString = new Date(this.max_date_boundary).toISOString();
                         this.pickedToDate = isoString.substring(0, isoString.length - 1);
                     }
                 }
@@ -338,7 +338,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
                     }
                 });
-                
+
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
                 this.chart.series[3].setData(data, false, false,  false);
                 this.chartOverview.series[3].setData(data, false, false,  false);
@@ -374,7 +374,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
                 // Setting boundary to fix range of dates in graph when changing timestamps types
                 this.min_date_boundary = data[0][0];
-                this.max_date_boundary = data[data.length - 1][0];
+                this.max_date_boundary = data[data.length - 1][0] + 24 * 3600*1000;
+
 
                 this.chart.xAxis[0].update({
                     min: this.min_date_boundary,
@@ -486,10 +487,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     resetZoom() {
         this.saveGraphZoom = false;
+        console.log(new Date(this.max_date_boundary).getTime());
         this.chart.xAxis[0].setExtremes(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
         this.chartOverview.xAxis[0].setExtremes(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
         this.chart.redraw();
-        this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+        this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.max_date_boundary).getTime());
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
