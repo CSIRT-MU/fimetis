@@ -34,6 +34,11 @@
     min-height: 100px;
 }
 
+.table-row-definition {
+    height: 15px;
+    width: 100%;
+}
+
 .table-loading-spinner {
     position: absolute;
     height: 20%;
@@ -58,6 +63,55 @@
     }
     100% {
         transform: rotate(360deg);
+    }
+}
+
+.table-skip-loader {
+    position: absolute;
+    height: 100px;
+    width: 400px;
+    left: 35%;
+    top: 30%;
+    z-index: 9;
+    background-color:  rgba(107, 252, 255, 0.8);
+    color: #333333;
+    font-size: large;
+    font-family: "Source Code Pro";
+    padding: 15px 10px 15px 5px;
+    border-radius: 8px;
+}
+
+.table-skip-loader-animation{
+    display: inline-block;
+
+}
+
+.table-skip-loader-text{
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.triangle-skew-spin{
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 50px solid #333333;
+    animation: triangle-skew-spin 3s 0s cubic-bezier(.09,.57,.49,.9) infinite;
+}
+
+@keyframes triangle-skew-spin {
+    25% {
+        transform: perspective(100px) rotateX(180deg) rotateY(0);
+    }
+    50% {
+        transform: perspective(100px) rotateX(180deg) rotateY(180deg);
+    }
+    75% {
+        transform: perspective(100px) rotateX(0) rotateY(180deg);
+    }
+    100% {
+        transform: perspective(100px) rotateX(0) rotateY(0);
     }
 }
 

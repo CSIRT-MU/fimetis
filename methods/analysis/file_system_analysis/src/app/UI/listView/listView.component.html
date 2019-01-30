@@ -166,24 +166,33 @@
         <div class="table-loading-spinner" *ngIf="loadingData">
             <div class="spinning-loader"></div>
         </div>
+        <div class="table-skip-loader" *ngIf="skippingData">
+            <div class="table-skip-loader-animation">
+                <div class="triangle-skew-spin"></div>
+            </div>
+            <div class="table-skip-loader-text">
+                Skipping: <br>
+                {{skippingData}}
+            </div>
+        </div>
         <div>
         <span *ngFor="let tableItem of displayedTableColumns">
-          <div class="table-select" *ngIf="tableItem == 'select'"></div>
+            <div class="table-select" *ngIf="tableItem == 'select'"></div>
             <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
-          <div class="table-block table-header larger-table-block" *ngIf="tableItem == 'timestamp'">Timestamp</div>
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'size'">Size</div>
-          <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'type'">Type</div>
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'mode'">Mode</div>
-          <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'uid'">UID</div>
-          <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'gid'">GID</div>
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'inode'">I-node</div>
-          <div class="table-block table-header large-table-block" *ngIf="tableItem == 'name'">File Name</div>
+            <div class="table-block table-header larger-table-block" *ngIf="tableItem == 'timestamp'">Timestamp</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'size'">Size</div>
+            <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'type'">Type</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'mode'">Mode</div>
+            <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'uid'">UID</div>
+            <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'gid'">GID</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'inode'">I-node</div>
+            <div class="table-block table-header large-table-block" *ngIf="tableItem == 'name'">File Name</div>
             <!---->
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'M-Time'">M-Time</div>
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'A-Time'">A-Time</div>
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'C-Time'">C-Time</div>
-          <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'B-Time'">B-Time</div>
-          <div class="table-block table-header large-table-block" *ngIf="tableItem == 'id'">ID</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'M-Time'">M-Time</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'A-Time'">A-Time</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'C-Time'">C-Time</div>
+            <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'B-Time'">B-Time</div>
+            <div class="table-block table-header large-table-block" *ngIf="tableItem == 'id'">ID</div>
         </span>
             <!--<div class="table-select"></div>-->
             <!--&lt;!&ndash;<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>&ndash;&gt;-->
@@ -205,52 +214,51 @@
         <virtual-scroller [style.height.vh]="listViewScrollHeight" class="scroll-block" [items]="virtualArray"
                           (change)="loadVisibleData($event)">
             <div #container>
-                <div style="height: 15px; width: 100%;" *ngFor="let element of visibleData; index as i">
-          <span *ngFor="let tableItem of displayedTableColumns">
-            <div class="table-select" *ngIf="tableItem == 'select'"
-                 [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}"
-                 (click)="tableSelect(element._id)"></div>
-              <!--<div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">-->
-              <!--<span [ngSwitch]="element._source['Mode'][2]">-->
-              <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
-              <!--<span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>-->
-              <!--<span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>-->
-              <!--<span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>-->
-              <!--</span>-->
-              <!--</div>-->
-              <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
-              <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
-                   (click)="selectDateByClick($event, i)"
-                   (textSelect)="openHighlightedTextDateMenu($event, i)"
-                   [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null ) }" >
-                    {{element._source['@timestamp'].replace('T', ' ').replace('.000Z', '')}}
-              </div>
-              <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
-              <div class="table-block medium-small-table-block monospace-text" *ngIf="tableItem == 'type'">{{element._source.Type}}</div>
-              <div class="table-block medium-table-block" *ngIf="tableItem == 'mode'">{{element._source.Mode}}</div>
-              <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'uid'">{{element._source.UID}}</div>
-              <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'gid'">{{element._source.GID}}</div>
-              <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'inode'">{{element._source.Meta}}</div>
-              <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'"
-                   id="file_{{i}}"
-                   (click)="selectByClick(i)"
-                   (textSelect)="openHighlightedTextMenu( $event, i )">
-                <!--{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}-->
-                {{element['_source']['File Name']}}
-                  <!--<div class="timesix-tooltip-wrapper">-->
-                  <!--<div class="timesix-tooltip">-->
-                  <!--{{element['_source']['File Name']}}-->
-                  <!--</div>-->
-                  <!--</div>-->
-
-              </div>
-              <!---->
-              <div class="table-block medium-table-block" *ngIf="tableItem == 'M-Time'">{{element._source.Type.includes('m') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
-              <div class="table-block medium-table-block" *ngIf="tableItem == 'A-Time'">{{element._source.Type.includes('a') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
-              <div class="table-block medium-table-block" *ngIf="tableItem == 'C-Time'">{{element._source.Type.includes('c') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
-              <div class="table-block medium-table-block" *ngIf="tableItem == 'B-Time'">{{element._source.Type.includes('b') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
-              <div class="table-block large-table-block" *ngIf="tableItem == 'id'">{{element._id}}</div>
-          </span>
+                <div class="table-row-definition" *ngFor="let element of visibleData; index as i"
+                     [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null ) }">
+                    <span *ngFor="let tableItem of displayedTableColumns">
+                        <div class="table-select" *ngIf="tableItem == 'select'"
+                        [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}"
+                        (click)="tableSelect(element._id)"></div>
+                        <!--<div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">-->
+                        <!--<span [ngSwitch]="element._source['Mode'][2]">-->
+                        <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
+                        <!--<span *ngSwitchCase="'d'" class="glyphicon glyphicon-folder-open"></span>-->
+                        <!--<span *ngSwitchCase="'l'" class="glyphicon glyphicon-share-alt"></span>-->
+                        <!--<span *ngSwitchDefault class="glyphicon glyphicon-question-sign"></span>-->
+                        <!--</span>-->
+                        <!--</div>-->
+                        <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
+                        <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
+                            (click)="selectDateByClick($event, i)"
+                            (textSelect)="openHighlightedTextDateMenu($event, i)">
+                            {{element._source['@timestamp'].replace('T', ' ').replace('.000Z', '')}}
+                        </div>
+                        <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
+                        <div class="table-block medium-small-table-block monospace-text" *ngIf="tableItem == 'type'">{{element._source.Type}}</div>
+                        <div class="table-block medium-table-block" *ngIf="tableItem == 'mode'">{{element._source.Mode}}</div>
+                        <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'uid'">{{element._source.UID}}</div>
+                        <div class="table-block medium-small-table-block text-align-right" *ngIf="tableItem == 'gid'">{{element._source.GID}}</div>
+                        <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'inode'">{{element._source.Meta}}</div>
+                        <div class="table-block large-table-block file-name-table-block" *ngIf="tableItem == 'name'"
+                            id="file_{{i}}"
+                            (click)="selectByClick(i)"
+                            (textSelect)="openHighlightedTextMenu( $event, i )">
+                            <!--{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}-->
+                            {{element['_source']['File Name']}}
+                            <!--<div class="timesix-tooltip-wrapper">-->
+                            <!--<div class="timesix-tooltip">-->
+                            <!--{{element['_source']['File Name']}}-->
+                            <!--</div>-->
+                            <!--</div>-->
+                        </div>
+                        <!---->
+                        <div class="table-block medium-table-block" *ngIf="tableItem == 'M-Time'">{{element._source.Type.includes('m') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+                        <div class="table-block medium-table-block" *ngIf="tableItem == 'A-Time'">{{element._source.Type.includes('a') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+                        <div class="table-block medium-table-block" *ngIf="tableItem == 'C-Time'">{{element._source.Type.includes('c') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+                        <div class="table-block medium-table-block" *ngIf="tableItem == 'B-Time'">{{element._source.Type.includes('b') ? (element._source['@timestamp'] | date:'dd.MM.yyyy'): ""}}</div>
+                        <div class="table-block large-table-block" *ngIf="tableItem == 'id'">{{element._id}}</div>
+                  </span>
                 </div>
             </div>
 

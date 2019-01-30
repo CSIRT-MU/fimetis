@@ -96,6 +96,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
 
     loadingData = false;
+    skippingData = null;
 
     tableDisplayType = 'timestamps';
     pageSortString = 'timestamp';
@@ -497,6 +498,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
     async skipTheBlockByHighlightedFileName(toTheEnd: boolean) {
+        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        if (this.skippingData) {
+            console.log('already skipping this block =>', this.skippingData);
+            this.openHighlightedTextMenu(hideEvent, 0);
+            return;
+        }
         console.log('skip File Name from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
         let test = this.highlightedText;
@@ -522,6 +529,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         test += '.*';
         const regex = new RegExp(test);
         console.log('skipping File Name by regex prefix: ', regex);
+        this.skippingData = this.highlightedText;
 
         if (toTheEnd) {
             index_start += 1;
@@ -536,15 +544,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
         while (skipIndex == null) {
             skipIndex = this.skipFileNameBlock(regex, index_start, buffer, bufferOffset, toTheEnd);
             if (skipIndex == null) {
-                bufferSize = this.skipBufferSize;
                 if (toTheEnd) {
                     index_start = 0;
                     bufferOffset = bufferSize + bufferOffset;
+                    bufferSize = this.skipBufferSize;
                     const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
                     buffer = res.data;
                 } else {
                     index_start = (bufferSize - 1);
                     bufferOffset = bufferOffset - bufferSize >= 0 ? bufferOffset - bufferSize : 0;
+                    bufferSize = this.skipBufferSize;
                     const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
                     buffer = res.data;
                 }
@@ -552,7 +561,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
         console.log('skip File Name to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
-        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        this.skippingData = null;
         this.openHighlightedTextMenu(hideEvent, 0);
     }
 
@@ -596,8 +605,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
     async skipTheBlockByDate(toTheEnd: boolean) {
+        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        if (this.skippingData) {
+            console.log('already skipping this block =>', this.skippingData);
+            this.openHighlightedTextDateMenu(hideEvent, 0);
+            return;
+        }
         console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
-        console.log('skipping date', this.highlightedTextDate);
         let skipIndex = null;
 
         let dateLevel = 0;
@@ -611,6 +625,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         if (dateLevel === 3) {
             dateString += ':00';
         }
+        console.log('skipping date', this.highlightedTextDate);
+        this.skippingData = dateString;
         const selectedDate = new Date(dateString);
         let index_start = (this.highlightedTextDateId - this.preloadedBegin);
 
@@ -627,15 +643,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
         while (skipIndex == null) {
             skipIndex = this.skipDateBlock(selectedDate, dateLevel, index_start, buffer, bufferOffset, toTheEnd);
             if (skipIndex == null) {
-                bufferSize = this.skipBufferSize;
                 if (toTheEnd) {
                     index_start = 0;
                     bufferOffset = bufferSize + bufferOffset;
+                    bufferSize = this.skipBufferSize;
                     const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
                     buffer = res.data;
                 } else {
                     index_start = (bufferSize - 1);
                     bufferOffset = bufferOffset - bufferSize >= 0 ? bufferOffset - bufferSize : 0;
+                    bufferSize = this.skipBufferSize;
                     const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
                     buffer = res.data;
                 }
@@ -644,7 +661,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
         console.log('skip date to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
-        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        this.skippingData = null;
         this.openHighlightedTextDateMenu(hideEvent, 0);
     }
 
@@ -666,7 +683,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 if (dateLevel >= 0) {
                     if (selectedDate.getFullYear() < next_date.getUTCFullYear()) {
                         skipIndex = index;
-                        console.log(next_date);
                         break;
                     }
                 }
@@ -800,6 +816,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         range.setStart(node, 0);
         range.setEnd(node, subString.length + 1);
     }
+
+    hide
 
     /**
      * Computes background color of timestamp field based on differences of timestamps
