@@ -102,9 +102,20 @@ export class GraphComponent implements OnInit, AfterViewInit {
         },
         toolbar: {},
         xAxis: {
-            type: 'datetime'
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                millisecond: '%H:%M:%S.%L',
+                second: '%H:%M:%S',
+                minute: '%H:%M',
+                hour: '%H:%M',
+                day: '%e. %b %Y',
+                week: '%e. %b %Y',
+                month: '%b %Y',
+                year: '%Y'
+            }
         },
         yAxis: {
+            type: 'logarithmic',
             title: null,
             min: 1,
             softmax: 100000
@@ -124,7 +135,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
             {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 1, data: []},
             {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 1, data: []},
             {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 1, data: []},
-            {name: 'all', color: this.allTypeColor, visible: true, boostThreshold: 10, data: []}
+            {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
         ]
     };
 
@@ -181,9 +192,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
             }
         },
         yAxis: {
+            type: 'logarithmic',
             title: null,
-            // min: 1,
-            // minPointLength: 3
+            min: 1
         },
         plotOptions: {
             column: {
@@ -191,7 +202,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 groupPadding: 0,
                 pointPadding: 0,
                 pointPlacement: 0.5,
-                minPointLength: 3
+                // minPointLength: 3
             }
         },
         credits: {enabled: false},
@@ -200,7 +211,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
             {name: 'a', color: this.aTypeColor, visible: true, boostThreshold: 10, data: []},
             {name: 'c', color: this.cTypeColor, visible: true, boostThreshold: 10, data: []},
             {name: 'b', color: this.bTypeColor, visible: true, boostThreshold: 10, data: []},
-            {name: 'all', color: this.allTypeColor, visible: true, boostThreshold: 10, data: []}
+            {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
         ]
     };
 
@@ -396,7 +407,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
                 this.loadingAllTimes = false;
                 this.chartDataLoaded();
-                this.showHideTrace('all');
             });
 
     }
