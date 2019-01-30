@@ -92,7 +92,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     visibleDataFirstIndex = 0;
     visibleDataLastIndex = 0;
 
-    skipBufferSize = 10000;
+    skipBufferSize = 50000;
 
 
     loadingData = false;
@@ -493,15 +493,14 @@ export class ListViewComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Skips (scrolls) the block by highlighted prefix (mouse selection)
+     * Skips (scrolls) the block by highlighted prefix (mouse selection) of File Name
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
-    skipTheBlockByHighlight(toTheEnd: boolean): void {
-        console.log('skip from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
-        let skipIndex = this.highlightedTextId;
+    async skipTheBlockByHighlightedFileName(toTheEnd: boolean) {
+        console.log('skip File Name from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
+        let skipIndex = null;
         let test = this.highlightedText;
-        const index_start = (this.highlightedTextId - this.preloadedBegin);
-        const bufferOffset = this.preloadedBegin;
+        let index_start = (this.highlightedTextId - this.preloadedBegin);
         test = test.replace('/', '\\/')
             .replace('.', '\\.')
             .replace('-', '\\-')
@@ -522,27 +521,74 @@ export class ListViewComponent implements OnInit, OnDestroy {
             .replace('|', '\\|');
         test += '.*';
         const regex = new RegExp(test);
-        console.log(test);
-        console.log(regex);
+        console.log('skipping File Name by regex prefix: ', regex);
+
         if (toTheEnd) {
-            for (let index = (index_start + 1); index < this.preloadedBufferSize; index++) {
-                if (regex.test(this.preloadedData[index]._source['File Name']) === false) {
+            index_start += 1;
+        } else {
+            index_start -= 1;
+        }
+
+        let bufferSize = this.preloadedBufferSize;
+        let bufferOffset = this.preloadedBegin;
+        let buffer = this.preloadedData;
+
+        while (skipIndex == null) {
+            skipIndex = this.skipFileNameBlock(regex, index_start, buffer, bufferOffset, toTheEnd);
+            if (skipIndex == null) {
+                bufferSize = this.skipBufferSize;
+                if (toTheEnd) {
+                    index_start = 0;
+                    bufferOffset = bufferSize + bufferOffset;
+                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    buffer = res.data;
+                } else {
+                    index_start = (bufferSize - 1);
+                    bufferOffset = bufferOffset - bufferSize >= 0 ? bufferOffset - bufferSize : 0;
+                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    buffer = res.data;
+                }
+            }
+        }
+        console.log('skip File Name to:', skipIndex + bufferOffset);
+        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
+        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
+        this.openHighlightedTextMenu(hideEvent, 0);
+    }
+
+    /**
+     * Skips File Name in given buffer by given prefix regex
+     * @param prefixRegex Prefix regex of File Name
+     * @param startIndex Index to starts with
+     * @param buffer Data to skip
+     * @param bufferOffset Offset of buffer from the first item
+     * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
+     * @returns {any} null if nothing was found, position to skip to otherwise
+     */
+    skipFileNameBlock (prefixRegex, startIndex, buffer, bufferOffset, toTheEnd: boolean) {
+        let skipIndex = null;
+        if (toTheEnd) {
+            for (let index = startIndex; index < buffer.length; index++) {
+                if (prefixRegex.test(buffer[index]._source['File Name']) === false) {
                     skipIndex = index;
                     break;
                 }
             }
         } else {
-            for (let index = (index_start - 1); index >= 0; index--) {
-                if (regex.test(this.preloadedData[index]._source['File Name']) === false) {
+            for (let index = startIndex; index >= 0; index--) {
+                if (prefixRegex.test(buffer[index]._source['File Name']) === false) {
                     skipIndex = index;
                     break;
                 }
             }
         }
-        console.log('skip to:', skipIndex + bufferOffset);
-        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
-        const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
-        this.openHighlightedTextMenu(hideEvent, 0);
+        if (bufferOffset === 0 && skipIndex == null && !toTheEnd) {
+            return 0;
+        }
+        if (buffer.length < 1) {
+            return bufferOffset;
+        }
+        return skipIndex;
     }
 
     /**
@@ -550,8 +596,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
     async skipTheBlockByDate(toTheEnd: boolean) {
-        console.log('skipping date', this.highlightedTextDate);
         console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
+        console.log('skipping date', this.highlightedTextDate);
         let skipIndex = null;
 
         let dateLevel = 0;
@@ -579,8 +625,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         let buffer = this.preloadedData;
 
         while (skipIndex == null) {
-            const result = this.skipDate(selectedDate, dateLevel, index_start, buffer, bufferOffset, toTheEnd);
-            skipIndex = result.skipIndex;
+            skipIndex = this.skipDateBlock(selectedDate, dateLevel, index_start, buffer, bufferOffset, toTheEnd);
             if (skipIndex == null) {
                 bufferSize = this.skipBufferSize;
                 if (toTheEnd) {
@@ -603,9 +648,18 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.openHighlightedTextDateMenu(hideEvent, 0);
     }
 
-    skipDate(selectedDate, dateLevel, startIndex, buffer, bufferOffset, toTheEnd) {
+    /**
+     * Skips Date in given buffer
+     * @param selectedDate Date to skip
+     * @param dateLevel Depth of datetime. (0-years, 1-months, etc.)
+     * @param startIndex Index to starts with
+     * @param buffer Data to skip
+     * @param bufferOffset Offset of buffer from the first item
+     * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
+     * @returns {any} null if nothing was found, position to skip to otherwise
+     */
+    skipDateBlock(selectedDate, dateLevel, startIndex, buffer, bufferOffset, toTheEnd: boolean) {
         let skipIndex = null;
-        let tmp_index = null;
         if (toTheEnd) {
             for (let index = startIndex; index < buffer.length; index++) {
                 const next_date = new Date(buffer[index]._source['@timestamp']);
@@ -646,8 +700,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
                         break;
                     }
                 }
-                tmp_index = index;
-
             }
         } else {
             for (let index = startIndex; index >= 0; index--) {
@@ -691,12 +743,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
             }
         }
         if (bufferOffset === 0 && skipIndex == null && !toTheEnd) {
-            return {skipIndex: 0};
+            return 0;
         }
         if (buffer.length < 1) {
-            return {skipIndex: bufferOffset};
+            return bufferOffset;
         }
-        return {skipIndex: skipIndex};
+        return skipIndex;
     }
 
     /**
