@@ -568,7 +568,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         let buffer = this.preloadedData;
 
         while (skipIndex == null) {
-            skipIndex = this.skipFileNameBlock(regex, index_start, buffer, bufferOffset, toTheEnd);
+            skipIndex = this.skipFileNameBlock(regex, index_start, buffer, bufferOffset, bufferSize, toTheEnd);
             if (skipIndex == null) {
                 if (toTheEnd) {
                     index_start = 0;
@@ -602,10 +602,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param startIndex Index to starts with
      * @param buffer Data to skip
      * @param bufferOffset Offset of buffer from the first item
+     * @param bufferSize Size of loaded buffer
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      * @returns {any} null if nothing was found, position to skip to otherwise
      */
-    skipFileNameBlock (prefixRegex, startIndex, buffer, bufferOffset, toTheEnd: boolean) {
+    skipFileNameBlock (prefixRegex, startIndex, buffer, bufferOffset, bufferSize, toTheEnd: boolean) {
         let skipIndex = null;
         if (toTheEnd) {
             for (let index = startIndex; index < buffer.length; index++) {
@@ -625,8 +626,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         if (bufferOffset === 0 && skipIndex == null && !toTheEnd) {
             return 0;
         }
-        if (buffer.length < 1) {
-            return bufferOffset;
+        if (buffer.length < bufferSize && skipIndex == null && toTheEnd) {
+            return buffer.length;
         }
         return skipIndex;
     }
@@ -673,7 +674,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         let buffer = this.preloadedData;
 
         while (skipIndex == null) {
-            skipIndex = this.skipDateBlock(selectedDate, dateLevel, index_start, buffer, bufferOffset, toTheEnd);
+            skipIndex = this.skipDateBlock(selectedDate, dateLevel, index_start, buffer, bufferOffset, bufferSize, toTheEnd);
             if (skipIndex == null) {
                 if (toTheEnd) {
                     index_start = 0;
@@ -709,10 +710,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param startIndex Index to starts with
      * @param buffer Data to skip
      * @param bufferOffset Offset of buffer from the first item
+     * @param bufferSize Size of loaded buffer
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      * @returns {any} null if nothing was found, position to skip to otherwise
      */
-    skipDateBlock(selectedDate, dateLevel, startIndex, buffer, bufferOffset, toTheEnd: boolean) {
+    skipDateBlock(selectedDate, dateLevel, startIndex, buffer, bufferOffset, bufferSize, toTheEnd: boolean) {
         let skipIndex = null;
         if (toTheEnd) {
             for (let index = startIndex; index < buffer.length; index++) {
@@ -798,8 +800,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         if (bufferOffset === 0 && skipIndex == null && !toTheEnd) {
             return 0;
         }
-        if (buffer.length < 1) {
-            return bufferOffset;
+        if (buffer.length < bufferSize && skipIndex == null && toTheEnd) {
+            return buffer.length;
         }
         return skipIndex;
     }
