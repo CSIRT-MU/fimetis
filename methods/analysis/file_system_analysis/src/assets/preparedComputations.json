@@ -227,7 +227,7 @@
             "description": "All files",
             "filters": [
                 {
-                    "name": "all_files",
+                    "name": "select_all_filter",
                     "isSelected": "true",
                     "json": "{ \"match_all\": {} }",
                     "params": []

@@ -608,20 +608,20 @@ export class DashboardComponent implements OnInit {
      * Triggered by collapse of any element and computes height of each element
      */
     collapse() {
-        console.log(this.filterPanelOpenState);
         // let height = 10;
         let height = 45;
-        if (!this.filterPanelOpenState) {
-            height += 20;
-        }
-        if (this.computationPanelOpenState) {
-            let index = 0;
-            height -= 2;
-            while (index < this.computations.size) {
-                height -= 2;
-                index++;
-            }
-        }
+        height += 18;
+        // if (!this.filterPanelOpenState) {
+        //     height += 20;
+        // }
+        // if (this.computationPanelOpenState) {
+        //     let index = 0;
+        //     height -= 2;
+        //     while (index < this.computations.size) {
+        //         height -= 2;
+        //         index++;
+        //     }
+        // }
         if (!this.histogramPanelOpenState) {
             height += 22;
         }

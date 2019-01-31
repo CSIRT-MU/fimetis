@@ -42,6 +42,17 @@
     grid-template-areas: "grid-cluster grid-filter grid-filter grid-filter" "grid-computation grid-computation grid-computation grid-computation" "grid-main grid-main grid-main grid-main"
 }
 
+.container-edit-filter {
+    display: grid;
+    position: fixed;
+    min-height: 95vh;
+    max-height: 95vh;
+    width: 100%;
+    z-index: 9;
+    grid-template-columns: 300px auto;
+    grid-template-areas: ". filter-setup filter-setup"
+}
+
 .grid-cluster {
     grid-area: grid-cluster;
 }
@@ -95,14 +106,21 @@
     padding-top: 10%;
 }
 
+.filter-setup-background {
+    grid-area: filter-setup;
+    background-color: rgba(51,51,51,0.82);
+}
+
 .filters-setup {
-    position: fixed;
-    top: 15%;
-    width: 80%;
-    left: 20%;
-    /*height: 100px;*/
+    /*position: fixed;*/
+    /*grid-area: filter-setup;*/
+    display: inline-block;
+    margin-top: 15%;
+    width: 100%;
+    /*left: 20%;*/
+    min-height: 100px;
     background-color: #ffffff;
-    z-index: 9;
+    /*z-index: 9;*/
     border-top: 4px solid #333333;
     border-bottom: 4px solid #333333;
 }
