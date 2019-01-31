@@ -7,7 +7,7 @@ import {FormControl} from '@angular/forms';
 import {GraphComponent} from '../graph/graph.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import 'rxjs/add/observable/of';
 import {fromArray} from 'rxjs/internal/observable/fromArray';
 import PerfectScrollbar from 'perfect-scrollbar';
@@ -23,6 +23,7 @@ import * as lodash from 'lodash';
 import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ToastrService} from 'ngx-toastr';
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
     selector: 'app-list-view',
@@ -45,9 +46,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
     private SIZE = 25;
     private sub: any;
 
-    @Output('graphChangedBoundary') graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
-    @Output('makeManualCluster') makeManualCluster: EventEmitter<ComputationModel> = new EventEmitter<ComputationModel>();
-    @Output('additionalFiltersChanged') additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
+    @Output('graphChangedBoundary')
+    graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
+    @Output('makeManualCluster')
+    makeManualCluster: EventEmitter<ComputationModel> = new EventEmitter<ComputationModel>();
+    @Output('additionalFiltersChanged')
+    additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
 
     tablePanelOpenState = true;
 
@@ -55,7 +59,23 @@ export class ListViewComponent implements OnInit, OnDestroy {
     additionalFilters: Map<string, string> = new Map<string, string>();
 
     tableSelection = new SelectionModel<any>(true, []);
-    availableTableColumns = ['select', 'doctype', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'inode', 'name', 'M-Time', 'A-Time', 'C-Time', 'B-Time', 'id'];
+    availableTableColumns = [
+        'select',
+        'doctype',
+        'timestamp',
+        'size',
+        'type',
+        'mode',
+        'uid',
+        'gid',
+        'inode',
+        'name',
+        'M-Time',
+        'A-Time',
+        'C-Time',
+        'B-Time',
+        'id'
+    ];
     displayedTableColumns = ['select', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
     data: any[];
     public highlightedTextBox: SelectionRectangle | null;
@@ -83,8 +103,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
     visibleData: any[] = [];
     preloadedData: any[] = [];
     preloadedBegin = 0;
-    preloadedRequestedBegin: number;
     preloadedEnd;
+    private dataLoaderDebouncer: Subject<[number, number, number, number, boolean, boolean]> = new Subject();
     // preloadVisibleStart = 0;
     preloadedBufferSize = 4000; // buffer window size - minimum = (2*preloadBufferBorder) + preloadBufferOffset
     preloadBufferOffset = 1200; // shift of buffer window - should be bigger than preloadBufferBorder
@@ -119,6 +139,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
     @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
     constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog, private toaster: ToastrService) {
+        this.dataLoaderDebouncer.pipe(
+            debounceTime(300))
+            .subscribe((value) => this.dataLoader(
+                value[0], value[1], value[2], value[3], value[4], value[5])
+            );
         this.scrollID = '';
         this.notice = '';
         this.haveNextPage = true;
@@ -258,7 +283,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('type filter:', types);
         if (types != null) {
             if (types !== undefined) {
-                this.additionalFilters.set('typeFilter', this.elasticsearchBaseQueryManager.buildAdditionMactimeTypeFilter(Array.from(types)));
+                this.additionalFilters.set('typeFilter',
+                    this.elasticsearchBaseQueryManager.buildAdditionMactimeTypeFilter(Array.from(types)));
                 this.init();
             }
         }
@@ -302,7 +328,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param $event Virtual scroll event
      */
     loadVisibleData($event) {
-        console.log($event);
+        // console.log($event);
         const start = $event['start'];
         const end = $event['end'];
         // console.log('visible start index:', this.visibleDataFirstIndex);
@@ -314,16 +340,19 @@ export class ListViewComponent implements OnInit, OnDestroy {
                     (start - this.preloadedBegin),
                     (end - (this.preloadedBegin) + 1)
                 );
-                console.log((start - this.preloadedBegin),
-                    (end - (this.preloadedBegin) + 1));
-                console.log('arr', this.preloadedData[(start - this.preloadedBegin)]);
                 if ((start - this.preloadedBegin < this.preloadBufferBorder) && (start > this.preloadBufferBorder)) {
-                    // console.log('start border triggered', 'start:', start, 'preload begin:', this.preloadedBegin, 'buffer border:', this.preloadBufferBorder);
+                    // console.log('start border triggered',
+                    //     'start:', start,
+                    //     'preload begin:', this.preloadedBegin,
+                    //     'buffer border:', this.preloadBufferBorder);
                     const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
                     this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
                 }
                 if (this.preloadedEnd - end < this.preloadBufferBorder && this.preloadedEnd < this.total) {
-                    // console.log('end border triggered', 'end:', end, 'preload end:', this.preloadedEnd, 'buffer border:', this.preloadBufferBorder);
+                    // console.log('end border triggered',
+                    //     'end:', end,
+                    //     'preload end:', this.preloadedEnd,
+                    //     'buffer border:', this.preloadBufferBorder);
                     const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
                     this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
                 }
@@ -349,18 +378,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
      * @param {boolean} preloadBuffer If true then preloading is triggered
      */
     preloadData(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean, preloadBuffer: boolean) {
-        this.preloadedRequestedBegin = begin;
-        console.log('preload data: ', begin, size, loadingState, preloadBuffer);
         if (!this.preloadBufferState && preloadBuffer) {
-            console.log('calling preload');
+            console.log('calling data preload');
             this.preloadBufferState = true;
             this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
         } else if (!preloadBuffer) {
-            setTimeout(() => {
-                if (this.preloadedRequestedBegin === begin) {
-                    this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
-                }
-            }, 300);
+            this.dataLoaderDebouncer.next([begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer]);
         }
 
     }
@@ -502,6 +525,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
         if (this.skippingData) {
             console.log('already skipping this block =>', this.skippingData);
+            this.toaster.error('Skipping: ' + this.skippingData, 'You are already skipping');
             this.openHighlightedTextMenu(hideEvent, 0);
             return;
         }
@@ -615,6 +639,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
         if (this.skippingData) {
             console.log('already skipping this block =>', this.skippingData);
+            this.toaster.error('Skipping: ' + this.skippingData, 'You are already skipping');
             this.openHighlightedTextDateMenu(hideEvent, 0);
             return;
         }
@@ -623,7 +648,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         const skipFrom = this.highlightedTextDateId;
         let dateLevel = 0;
         for (let i = 0; i < this.highlightedTextDate.length; i++) {
-            if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':'){
+            if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':') {
                 dateLevel += 1;
             }
         }
