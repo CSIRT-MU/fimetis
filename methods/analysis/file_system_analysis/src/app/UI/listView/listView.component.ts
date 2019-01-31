@@ -564,7 +564,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('skip File Name to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
-        this.toaster.success((skipIndex + bufferOffset - skipFrom).toString(10) + ' items', 'You skipped');
+        let skippedItems = skipIndex + bufferOffset - skipFrom;
+        if (skippedItems < 0) {
+            skippedItems = skippedItems * (-1);
+        }
+        this.toaster.success(skippedItems.toString(10) + (skippedItems > 1 ? ' items' : ' item'), 'You skipped');
         this.openHighlightedTextMenu(hideEvent, 0);
     }
 
@@ -665,7 +669,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('skip date to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
-        this.toaster.success((skipIndex + bufferOffset - skipFrom).toString(10) + ' items', 'You skipped');
+        let skippedItems = skipIndex + bufferOffset - skipFrom;
+        if (skippedItems < 0) {
+            skippedItems = skippedItems * (-1);
+        }
+        this.toaster.success(skippedItems.toString(10) + (skippedItems > 1 ? ' items' : ' item'), 'You skipped');
         this.openHighlightedTextDateMenu(hideEvent, 0);
     }
 
