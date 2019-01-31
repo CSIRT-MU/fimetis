@@ -22,6 +22,7 @@ import {FilterModel} from '../../models/filter.model';
 import * as lodash from 'lodash';
 import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-list-view',
@@ -117,7 +118,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
     @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
-    constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog) {
+    constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog, private toaster: ToastrService) {
         this.scrollID = '';
         this.notice = '';
         this.haveNextPage = true;
@@ -506,6 +507,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
         console.log('skip File Name from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
+        const skipFrom = this.highlightedTextId;
         let test = this.highlightedText;
         let index_start = (this.highlightedTextId - this.preloadedBegin);
         test = test.replace('/', '\\/')
@@ -562,6 +564,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('skip File Name to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
+        this.toaster.success((skipIndex + bufferOffset - skipFrom).toString(10) + ' items', 'You skipped');
         this.openHighlightedTextMenu(hideEvent, 0);
     }
 
@@ -613,7 +616,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
         console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
-
+        const skipFrom = this.highlightedTextDateId;
         let dateLevel = 0;
         for (let i = 0; i < this.highlightedTextDate.length; i++) {
             if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':'){
@@ -662,6 +665,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('skip date to:', skipIndex + bufferOffset);
         this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
+        this.toaster.success((skipIndex + bufferOffset - skipFrom).toString(10) + ' items', 'You skipped');
         this.openHighlightedTextDateMenu(hideEvent, 0);
     }
 
@@ -816,8 +820,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
         range.setStart(node, 0);
         range.setEnd(node, subString.length + 1);
     }
-
-    hide
 
     /**
      * Computes background color of timestamp field based on differences of timestamps
