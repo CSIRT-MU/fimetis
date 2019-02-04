@@ -200,10 +200,11 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 this.virtualArray.length = this.total;
                 this.loadingData = false;
                 this.visibleData = this.data;
+                // this.virtualScroller.scrollToIndex(-1);
                 if (this.visibleDataFirstIndex + shift > this.total ) {
-                    this.virtualScroller.scrollToIndex(this.total - 20 < 0 ? 0 : this.total - 20);
+                    this.virtualScroller.scrollToIndex(this.total - 20 < 0 ? 0 - 1 : this.total - 20 - 1);
                 } else {
-                    this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
+                    this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift - 1);
                 }
                 // this.virtualScroller.refresh();
             });
@@ -586,7 +587,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
             }
         }
         console.log('skip File Name to:', skipIndex + bufferOffset);
-        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
+        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset - 1);
         this.skippingData = null;
         let skippedItems = skipIndex + bufferOffset - skipFrom;
         if (skippedItems < 0) {
@@ -693,7 +694,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
 
         console.log('skip date to:', skipIndex + bufferOffset);
-        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset);
+        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset - 1);
         this.skippingData = null;
         let skippedItems = skipIndex + bufferOffset - skipFrom;
         if (skippedItems < 0) {

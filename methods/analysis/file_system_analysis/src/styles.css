@@ -120,7 +120,12 @@
 }
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    background-color: transparent;
+}
+
+virtual-scroller.selfScroll::-webkit-scrollbar {
+    height: 12px;
     background-color: transparent;
 }
 
@@ -152,3 +157,9 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 /*.ps__thumb-y{*/
 /*min-height: 15px !important;*/
 /*}*/
+
+.scrollable-content {
+    white-space: nowrap;
+    min-width: 100%;
+    width: initial !important;
+}

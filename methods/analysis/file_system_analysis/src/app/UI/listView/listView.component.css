@@ -169,6 +169,7 @@
     /*overflow: scroll;*/
 }
 
+
 virtual-scroll {
     display: block;
     /*width: 100%;*/
@@ -176,8 +177,25 @@ virtual-scroll {
     /*margin-bottom: 20px;*/
 }
 
+.scroll-block th,
+.scroll-block tr,
+.scroll-block td {
+    max-height: 20px;
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+}
+
+.scroll-block thead {
+    background-color: #fefefe;
+}
+
+/*#container {*/
+    /*margin-top: 20px;*/
+/*}*/
+
 .table-block {
-    display: inline-block;
+    display: block;
     overflow: hidden;
     height: 20px;
     text-wrap: none;
@@ -207,7 +225,7 @@ virtual-scroll {
 }
 
 .large-table-block {
-    width: 700px;
+    min-width: 700px;
 }
 
 .file-name-table-block {
@@ -217,25 +235,26 @@ virtual-scroll {
 }
 
 .table-select {
-    display: inline-block;
-    position: relative;
+    display: block;
+    /*position: relative;*/
     width: 14px;
     height: 14px;
     border: 1px solid #666666;
     border-radius: 50%;
     cursor: pointer;
-    margin-bottom: 4px
+    /*margin-bottom: 4px*/
 }
 
 .table-select-selected::before {
     content: " ";
-    position: absolute;
+    /*position: absolute;*/
     border-radius: 50%;
     display: inline-block;
     visibility: visible;
     width: 8px;
     height: 8px;
-    margin-top: 2px;
+    /*margin-top: 2px;*/
+    margin-bottom: 5px;
     margin-left: 2px;
     background-color: #666666;
 }
