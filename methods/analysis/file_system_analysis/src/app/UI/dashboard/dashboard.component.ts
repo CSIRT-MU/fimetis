@@ -17,6 +17,7 @@ import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
 import {ClusterComponent} from '../cluster/cluster.component';
+import {CookieService} from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-dashboard',
@@ -177,16 +178,22 @@ export class DashboardComponent implements OnInit {
 
         const preparedComputationsFromJson = configManager.loadPreparedComputations()['prepared_computations'];
 
-        for (let i = 0; i < preparedComputationsFromJson.length; i++) {
-            const tmpComputation = new ComputationModel();
-            tmpComputation.name = preparedComputationsFromJson[i]['name'];
-            tmpComputation.color = preparedComputationsFromJson[i]['color'];
-            tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
-            tmpComputation.description = preparedComputationsFromJson[i]['description'];
-            tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
-            this.computationManager.addComputation(tmpComputation);
+        const computationList: ComputationModel[] = JSON.parse(JSON.stringify(preparedComputationsFromJson));
 
+        for (const comp of computationList) {
+            this.computationManager.addComputation(comp);
         }
+
+        // for (let i = 0; i < preparedComputationsFromJson.length; i++) {
+            // const tmpComputation = new ComputationModel();
+            // tmpComputation.name = preparedComputationsFromJson[i]['name'];
+            // tmpComputation.color = preparedComputationsFromJson[i]['color'];
+            // tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
+            // tmpComputation.description = preparedComputationsFromJson[i]['description'];
+            // tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
+            // this.computationManager.addComputation(tmpComputation);
+
+        // }
 
         this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
     }
@@ -229,10 +236,14 @@ export class DashboardComponent implements OnInit {
         //   // this.combineSelectedFilters();
         // }
         if (this.pickedComputation != null) {
-            if (!this.pickedComputation.filters.has(this.selectedFilterModel)) {
+            if (this.pickedComputation.filters.indexOf(this.selectedFilterModel) < 0) {
                 this.selectedFilterModel.isSelected = true;
-                this.pickedComputation.filters.add(this.selectedFilterModel);
+                this.pickedComputation.filters.push(this.selectedFilterModel);
             }
+            // if (!this.pickedComputation.filters.has(this.selectedFilterModel)) {
+            //     this.selectedFilterModel.isSelected = true;
+            //     this.pickedComputation.filters.add(this.selectedFilterModel);
+            // }
         }
         this.selectedFilterModel = new FilterModel();
         this.selectedFilter = null;
@@ -300,6 +311,7 @@ export class DashboardComponent implements OnInit {
      */
     clusterSelectionChanged($event) {
         console.log(this.clusters);
+        console.log(this.getClusters());
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.init();
@@ -538,7 +550,8 @@ export class DashboardComponent implements OnInit {
         $event.preventDefault();
         const filter = JSON.parse($event.dataTransfer.getData('filter'));
         console.log('filter', filter);
-        computation.filters.add(filter);
+        // computation.filters.add(filter);
+        computation.filters.push(filter);
     }
 
     elementResized($event) {
@@ -551,7 +564,11 @@ export class DashboardComponent implements OnInit {
      * @param {ComputationModel} computation Computation to delete filter from
      */
     deleteFilter(filter: FilterModel, computation: ComputationModel) {
-        computation.filters.delete(filter);
+        const index = computation.filters.indexOf(filter);
+        if (index !== -1) {
+            computation.filters.splice(index, 1);
+        }
+        // computation.filters.delete(filter);
     }
 
     /**
@@ -609,7 +626,7 @@ export class DashboardComponent implements OnInit {
      */
     collapse() {
         // let height = 10;
-        let height = 45;
+        let height = 48;
         height += 18;
         // if (!this.filterPanelOpenState) {
         //     height += 20;
@@ -740,6 +757,43 @@ export class DashboardComponent implements OnInit {
         this.computeClustersItemCount(this.listViewComponent.additionalFilters);
         this.listViewComponent.init();
         this.graphComponent.init();
+    }
+
+    saveApplicationState() {
+        localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
+        localStorage.setItem('selectedCase', JSON.stringify(this.selectedCase));
+        localStorage.setItem('clusters', JSON.stringify(this.clusters));
+        localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
+        localStorage.setItem('manualClusters', JSON.stringify(this.manualClusters));
+        localStorage.setItem('savedClusters', JSON.stringify(this.savedClusters));
+        localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
+        localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
+        localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
+    }
+
+    restoreApplicationState() {
+        this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
+        this.clusters = JSON.parse(localStorage.getItem('clusters'));
+        this.preloadedClusters = JSON.parse(localStorage.getItem('preloadedClusters'));
+        this.manualClusters = JSON.parse(localStorage.getItem('manualClusters'));
+        this.savedClusters = JSON.parse(localStorage.getItem('savedClusters'));
+        this.setupWindowOpen = false;
+        this.listViewComponent.case = this.selectedCase;
+        this.listViewComponent.displayedClusters = [];
+        this.clusterManager.case = this.selectedCase;
+        this.computationManager.case = this.selectedCase;
+        this.listViewComponent.case = this.selectedCase;
+        this.graphComponent._case = this.selectedCase;
+        this.listViewComponent.clusters = this.getClusters();
+        this.graphComponent._clusters = this.getClusters();
+        this.listViewComponent.init().then(() => {
+            this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
+        });
+        this.graphComponent.init();
+        this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
+        this.graphComponent.pickedFromDate = JSON.parse(localStorage.getItem('fromDate'));
+        this.graphComponent.pickedToDate = JSON.parse(localStorage.getItem('toDate'));
+        this.graphComponent.updateBoundary();
     }
 
 }

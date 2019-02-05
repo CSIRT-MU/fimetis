@@ -159,6 +159,7 @@
     /*display: block;*/
     visibility: visible;
     width: 100%;
+    /*min-width: 100%;*/
     /*overflow-y: scroll;*/
     /*scroll-snap-type: y mandatory;*/
     /*height: auto;*/
@@ -180,7 +181,7 @@ virtual-scroll {
 .scroll-block th,
 .scroll-block tr,
 .scroll-block td {
-    max-height: 20px;
+    max-height: 15px;
     padding: 0;
     margin: 0;
     vertical-align: middle;
@@ -197,11 +198,12 @@ virtual-scroll {
 .table-block {
     display: block;
     overflow: hidden;
-    height: 20px;
+    /*height: 20px;*/
     text-wrap: none;
     margin-left: 2px;
     margin-right: 2px;
     /*position: relative;*/
+    font-size: small;
 }
 
 .table-header {

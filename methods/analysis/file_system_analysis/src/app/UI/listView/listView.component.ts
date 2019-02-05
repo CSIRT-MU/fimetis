@@ -189,25 +189,41 @@ export class ListViewComponent implements OnInit, OnDestroy {
         //     size = 20;
         // }
         const initSize = 200;
-        this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
-            .then(resp => {
-                console.log('list data loaded async', resp, resp.data, resp.total);
-                this.data = resp.data;
-                this.total = resp.total;
-                this.preloadedData = resp.data;
-                this.preloadedBegin = this.visibleDataFirstIndex;
-                this.preloadedEnd = this.visibleDataFirstIndex + initSize;
-                this.virtualArray.length = this.total;
-                this.loadingData = false;
-                this.visibleData = this.data;
-                // this.virtualScroller.scrollToIndex(-1);
-                if (this.visibleDataFirstIndex + shift > this.total ) {
-                    this.virtualScroller.scrollToIndex(this.total - 20 < 0 ? 0 - 1 : this.total - 20 - 1);
-                } else {
-                    this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift - 1);
-                }
-                // this.virtualScroller.refresh();
-            });
+        const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
+        console.log('list data loaded async', resp, resp.data, resp.total);
+        this.data = resp.data;
+        this.total = resp.total;
+        this.preloadedData = resp.data;
+        this.preloadedBegin = this.visibleDataFirstIndex;
+        this.preloadedEnd = this.visibleDataFirstIndex + initSize;
+        this.virtualArray.length = this.total;
+        this.loadingData = false;
+        this.visibleData = this.data;
+        if (this.visibleDataFirstIndex + shift > this.total ) {
+            this.scrollToIndex(this.total - 20 < 0 ? 0 : this.total - 20);
+        } else {
+            this.scrollToIndex(this.visibleDataFirstIndex + shift);
+        }
+        // this.virtualScroller.refresh();
+
+        // this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
+        //     .then(resp => {
+        //         console.log('list data loaded async', resp, resp.data, resp.total);
+        //         this.data = resp.data;
+        //         this.total = resp.total;
+        //         this.preloadedData = resp.data;
+        //         this.preloadedBegin = this.visibleDataFirstIndex;
+        //         this.preloadedEnd = this.visibleDataFirstIndex + initSize;
+        //         this.virtualArray.length = this.total;
+        //         this.loadingData = false;
+        //         this.visibleData = this.data;
+        //         if (this.visibleDataFirstIndex + shift > this.total ) {
+        //             this.scrollToIndex(this.total - 20 < 0 ? 0 : this.total - 20);
+        //         } else {
+        //             this.scrollToIndex(this.visibleDataFirstIndex + shift);
+        //         }
+        //         // this.virtualScroller.refresh();
+        //     });
         // this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
         this.oldClusters = lodash.cloneDeep(this.clusters);
         // this.virtualScroller.refresh();
@@ -514,7 +530,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         filter.isSelected = true;
         filter.name = 'highlighted_text';
         filter.type = 'REGEX';
-        computation.filters.add(filter);
+        computation.filters.push(filter);
+        // computation.filters.add(filter);
         this.makeManualCluster.emit(computation);
     }
 
@@ -587,7 +604,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
             }
         }
         console.log('skip File Name to:', skipIndex + bufferOffset);
-        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset - 1);
+        this.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
         let skippedItems = skipIndex + bufferOffset - skipFrom;
         if (skippedItems < 0) {
@@ -694,7 +711,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
 
         console.log('skip date to:', skipIndex + bufferOffset);
-        this.virtualScroller.scrollToIndex(skipIndex + bufferOffset - 1);
+        this.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
         let skippedItems = skipIndex + bufferOffset - skipFrom;
         if (skippedItems < 0) {
@@ -902,5 +919,14 @@ export class ListViewComponent implements OnInit, OnDestroy {
                 return this.timestampColor.colored_nodes.get(actual);
             }
         }
+    }
+
+    /**
+     * Scrolls virtual scroll to given index
+     * @param {number} index Index of item to scroll to
+     */
+    scrollToIndex(index: number) {
+        console.log('scrolling to:', index);
+        this.virtualScroller.scrollToIndex(index - 1);
     }
 }

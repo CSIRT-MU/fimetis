@@ -12,6 +12,9 @@
                 ADVANCED MODE
                 <input type="checkbox" [ngModel]="advancedMode">
             </button>
+            <button mat-menu-item (click)="saveApplicationState()">
+                SAVE STATE
+            </button>
         </mat-menu>
     </div>
 </div>
@@ -33,7 +36,11 @@
                 </td>
             </tr>
             <tr>
-                <td></td>
+                <td>
+                    <button mat-stroked-button (click)="restoreApplicationState()" class="timesix-button">
+                        RESTORE STATE
+                    </button>
+                </td>
                 <td class="button-right">
                     <button mat-stroked-button (click)="selectedCaseChanged()" class="timesix-button"
                             [disabled]="selectedCase == null">SELECT CASE
