@@ -759,6 +759,9 @@ export class DashboardComponent implements OnInit {
         this.graphComponent.init();
     }
 
+    /**
+     * Save application state to local storage
+     */
     saveApplicationState() {
         localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
         localStorage.setItem('selectedCase', JSON.stringify(this.selectedCase));
@@ -771,6 +774,9 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
     }
 
+    /**
+     * Restore application state from local storage
+     */
     restoreApplicationState() {
         this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
         this.clusters = JSON.parse(localStorage.getItem('clusters'));
@@ -794,6 +800,14 @@ export class DashboardComponent implements OnInit {
         this.graphComponent.pickedFromDate = JSON.parse(localStorage.getItem('fromDate'));
         this.graphComponent.pickedToDate = JSON.parse(localStorage.getItem('toDate'));
         this.graphComponent.updateBoundary();
+    }
+
+    /**
+     * Ability to restore application state
+     * @returns {any} Stored selected case if able to restore application state. Null otherwise
+     */
+    ableToRestoreState() {
+        return JSON.parse(localStorage.getItem('selectedCase'));
     }
 
 }

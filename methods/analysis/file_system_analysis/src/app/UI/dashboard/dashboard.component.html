@@ -5,7 +5,7 @@
     <div class="settings">
         <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
         <mat-menu #settings="matMenu" [overlapTrigger]="false">
-            <button mat-menu-item (click)="setupWindowOpen = true">
+            <button mat-menu-item (click)="setupWindowOpen = !setupWindowOpen">
                 <span>SETUP</span>
             </button>
             <button mat-menu-item (click)="advancedModeToggle(!advancedMode)">
@@ -37,7 +37,8 @@
             </tr>
             <tr>
                 <td>
-                    <button mat-stroked-button (click)="restoreApplicationState()" class="timesix-button">
+                    <button mat-stroked-button (click)="restoreApplicationState()" class="timesix-button"
+                            [disabled]="!ableToRestoreState()">
                         RESTORE STATE
                     </button>
                 </td>
