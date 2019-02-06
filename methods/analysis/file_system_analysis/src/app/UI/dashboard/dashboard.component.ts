@@ -17,7 +17,6 @@ import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
 import {ClusterComponent} from '../cluster/cluster.component';
-import {CookieService} from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-dashboard',
