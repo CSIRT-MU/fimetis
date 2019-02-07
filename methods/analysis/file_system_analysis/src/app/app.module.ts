@@ -9,7 +9,6 @@ import {MatInputModule, MatListModule} from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material';
@@ -64,7 +63,6 @@ import {TextSelectDirective} from './UI/text-select.directive';
         MatListModule,
         MatCardModule,
         MatButtonModule,
-        FlexLayoutModule,
         MatChipsModule,
         MatDatepickerModule,
         MatNativeDateModule,

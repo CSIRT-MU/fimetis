@@ -7,11 +7,11 @@ import {Injectable} from '@angular/core';
 export class ConfigManager {
 
     loadPreparedComputations() {
-        return preparedComputations;
+        return preparedComputations.default;
     }
 
     loadElasticConfiguration() {
-        return elasticConfiguration;
+        return elasticConfiguration.default;
     }
 
 
