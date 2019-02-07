@@ -29,7 +29,6 @@
     "elasticsearch-browser": "^15.1.1",
     "hammerjs": "^2.0.8",
     "highcharts": "^6.2.0",
-    "hyperlist": "^1.0.0-beta",
     "lodash": "^4.17.11",
     "ngx-perfect-scrollbar": "^6.3.0",
     "ngx-toastr": "^9.1.1",

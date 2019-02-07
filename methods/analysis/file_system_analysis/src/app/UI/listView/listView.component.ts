@@ -12,8 +12,6 @@ import 'rxjs/add/observable/of';
 import {fromArray} from 'rxjs/internal/observable/fromArray';
 import PerfectScrollbar from 'perfect-scrollbar';
 import {VirtualArrayModel} from '../../models/virtualArray.model';
-import 'hyperlist/dist/hyperlist.js';
-import * as HyperList from 'hyperlist';
 import {ComputationModel} from '../../models/computation.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
@@ -189,7 +187,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         //     size = 20;
         // }
         const initSize = 200;
-        const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
+        const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
         console.log('list data loaded async', resp, resp.data, resp.total);
         this.data = resp.data;
         this.total = resp.total;
