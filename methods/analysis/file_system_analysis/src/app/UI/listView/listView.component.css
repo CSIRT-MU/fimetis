@@ -210,6 +210,11 @@ virtual-scroll {
     text-align: center;
 }
 
+.table-fixed-header{
+    text-align: left;
+    padding-left: 60px;
+}
+
 .small-table-block {
     width: 20px;
 }
