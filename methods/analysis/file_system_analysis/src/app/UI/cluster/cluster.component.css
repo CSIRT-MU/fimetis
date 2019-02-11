@@ -3,10 +3,6 @@
     min-height: 200px;
 }
 
-.cluster-item {
-    cursor: pointer;
-}
-
 .clustering-colored-circle {
     display: inline-block;
     height: 14px;

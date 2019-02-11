@@ -55,7 +55,10 @@
     <div class="filter-setup-background">
         <div class="filters-setup">
             <div class="col-md-12">
-                <div class="col-md-12 panel-header"><span><b>Edit cluster</b> "{{editingCluster.name}}"</span></div>
+                <div class="col-md-12 panel-header">
+                    <span class="col-md-1"><input matInput [(ngModel)]="editingCluster.color" type="color"></span>
+                    <span><b>Edit cluster</b> "{{editingCluster.name}}"</span>
+                </div>
                 <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}"
                      class="panel-content col-md-12">
                             <br>

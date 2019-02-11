@@ -733,7 +733,7 @@ export class DashboardComponent implements OnInit {
                 cluster.color = result[1];
                 cluster.computation = comp;
                 cluster.count = 0;
-                this.clusters.add(cluster);
+                this.manualClusters.push(cluster);
                 this.editCluster(cluster);
             }
         });
@@ -771,12 +771,14 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
         localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
+        localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
     }
 
     /**
      * Restore application state from local storage
      */
     restoreApplicationState() {
+        this.advancedMode = JSON.parse(localStorage.getItem('advancedMode'));
         this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
         this.clusters = JSON.parse(localStorage.getItem('clusters'));
         this.preloadedClusters = JSON.parse(localStorage.getItem('preloadedClusters'));

@@ -27,13 +27,14 @@
         <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
         <div #container>
             <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
-            <div class="cluster-item" *ngFor="let cluster of clusters" (click)="nextVal(cluster)">
+            <div *ngFor="let cluster of clusters">
                 <!--<mat-radio-button *ngIf="mode === 0" [checked]="clusterChecked(cluster)"-->
                                   <!--[value]="cluster"></mat-radio-button>-->
-                <div class="cluster-icon"
+                <div class="cluster-icon clickable"
+                     (click)="nextVal(cluster)"
                      [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
-                <div class="cluster-color" [ngStyle]="{'border-color': cluster.color}"></div>
-                <div class="cluster-name-field" matTooltip="{{cluster.description}}"
+                <div class="cluster-color clickable" [ngStyle]="{'border-color': cluster.color}" (click)="nextVal(cluster)"></div>
+                <div class="cluster-name-field clickable" (click)="nextVal(cluster)" matTooltip="{{cluster.description}}"
                      [matTooltipPosition]="'right'">{{cluster.name}}
                 </div>
                 <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
