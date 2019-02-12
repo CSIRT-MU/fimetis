@@ -26,11 +26,11 @@
 }
 
 .panel-visible {
-    display: inline-block;
+    display: block;
 }
 
 .graph-container {
-    position: relative;
+    /*position: relative;*/
 }
 
 .chart-loader {
@@ -153,14 +153,34 @@
     padding-top: 4px;
 }
 
+.chartOverviewContainer {
+    position: relative;
+    display: block;
+    content: '';
+    padding-bottom: 80px;
+}
+
 #chartOverviewDiv {
+    position: absolute;
+    display: block;
     height: 80px;
     width: 100%;
+    max-width: 100%;
+}
+
+.chartContainer {
+    position: relative;
+    display: block;
+    content: '';
+    padding-bottom: 140px;
 }
 
 #chartDiv {
+    position: absolute;
+    display: block;
     height: 140px;
     width: 100%;
+    max-width: 100%;
 }
 
 .resetZoomButton {

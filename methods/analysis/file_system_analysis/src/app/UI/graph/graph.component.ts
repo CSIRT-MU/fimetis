@@ -61,7 +61,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
     chartOverview: Highcharts.ChartObject;
     chartOverviewOptions = {
         chart: {
-            reflow: false,
             borderWidth: 0,
             backgroundColor: null,
             type: 'column',

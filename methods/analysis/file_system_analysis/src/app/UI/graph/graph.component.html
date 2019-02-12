@@ -16,8 +16,12 @@
                     <div class="line line3"></div>
                 </div>
             </div>
-            <div #chartOverviewDiv id="chartOverviewDiv" ></div>
-            <div #chartDiv id="chartDiv" ></div>
+        </div>
+        <div class="chartOverviewContainer">
+            <div #chartOverviewDiv id="chartOverviewDiv"></div>
+        </div>
+        <div class="chartContainer">
+            <div #chartDiv id="chartDiv"></div>
         </div>
         <form (submit)="updateBoundary()" class="from-date-form col-md-4">
             <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input">
