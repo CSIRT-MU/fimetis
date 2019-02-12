@@ -58,7 +58,6 @@ export class TextSelectDirective implements OnInit, OnDestroy {
 
         // Unbind all handlers, even ones that may not be bounds at this moment.
         this.elementRef.nativeElement.removeEventListener('mousedown', this.handleMousedown, false);
-        document.removeEventListener('mouseup', this.handleMouseup, false);
         document.removeEventListener('selectionchange', this.handleSelectionchange, false);
 
     }
@@ -78,7 +77,6 @@ export class TextSelectDirective implements OnInit, OnDestroy {
                 // directive is only going to be concerned with selections that were
                 // initiated by MOUSE-based selections within the current element.
                 this.elementRef.nativeElement.addEventListener('mousedown', this.handleMousedown, false);
-                this.elementRef.nativeElement.addEventListener('mouseup', this.handleMouseup, false);
 
                 // While the mouse-even takes care of starting new selections within the
                 // current element, we need to listen for the selectionchange event in

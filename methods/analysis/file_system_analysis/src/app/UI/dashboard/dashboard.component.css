@@ -48,13 +48,14 @@
     min-height: 95vh;
     max-height: 95vh;
     width: 100%;
-    z-index: 9;
+    z-index: 2;
     grid-template-columns: 300px auto;
     grid-template-areas: ". filter-setup filter-setup"
 }
 
 .grid-cluster {
     grid-area: grid-cluster;
+    z-index: 3;
 }
 
 .grid-filter {
