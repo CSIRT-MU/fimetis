@@ -36,6 +36,7 @@ import {NameDialogComponent} from './UI/dialog/name-dialog/name-dialog.component
 import {SelectDialogComponent} from './UI/dialog/select-dialog/select-dialog.component';
 import {ComputationDialogComponent} from './UI/dialog/computation-dialog/computation-dialog.component';
 import {TextSelectDirective} from './UI/text-select.directive';
+import {HighlightPipe} from './UI/highlight.directive';
 
 @NgModule({
     declarations: [
@@ -47,7 +48,8 @@ import {TextSelectDirective} from './UI/text-select.directive';
         NameDialogComponent,
         SelectDialogComponent,
         ComputationDialogComponent,
-        TextSelectDirective
+        TextSelectDirective,
+        HighlightPipe
     ],
     imports: [
         BrowserModule,
