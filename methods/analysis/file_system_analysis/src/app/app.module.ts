@@ -25,6 +25,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {VirtualScrollerModule} from 'ngx-virtual-scroller';
 import {MatTooltipModule} from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
+import { ngfModule } from 'angular-file';
+import { HttpClientModule } from '@angular/common/http';
 
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
@@ -37,6 +39,7 @@ import {SelectDialogComponent} from './UI/dialog/select-dialog/select-dialog.com
 import {ComputationDialogComponent} from './UI/dialog/computation-dialog/computation-dialog.component';
 import {TextSelectDirective} from './UI/text-select.directive';
 import {HighlightPipe} from './UI/highlight.directive';
+import {UploadComponent} from './UI/upload/upload.component';
 
 @NgModule({
     declarations: [
@@ -49,7 +52,8 @@ import {HighlightPipe} from './UI/highlight.directive';
         SelectDialogComponent,
         ComputationDialogComponent,
         TextSelectDirective,
-        HighlightPipe
+        HighlightPipe,
+        UploadComponent
     ],
     imports: [
         BrowserModule,
@@ -83,7 +87,9 @@ import {HighlightPipe} from './UI/highlight.directive';
         ToastrModule.forRoot({
             progressBar: true,
             positionClass: 'toast-bottom-left'
-        })
+        }),
+        ngfModule,
+        HttpClientModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
     providers: [ElasticsearchService],

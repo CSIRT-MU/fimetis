@@ -1,10 +1,13 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {ListViewComponent} from './UI/listView/listView.component';
+import {UploadComponent} from './UI/upload/upload.component';
+import {DashboardComponent} from './UI/dashboard/dashboard.component';
 
 const routes: Routes = [
-    {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
-    {path: 'metadata/:type/:case', component: ListViewComponent}
+    {path: 'upload', component: UploadComponent},
+    {path: 'dashboard', component: DashboardComponent},
+    {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
+    {path: '**', redirectTo: '/dashboard'}
 ];
 
 @NgModule({

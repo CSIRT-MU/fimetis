@@ -1,0 +1,101 @@
+<div class="app-bar">
+    <span class="main-title">
+        <b>FILE SYSTEM ANALYSIS</b>
+    </span>
+    <span class="sub-title">
+        <b>UPLOAD</b>
+    </span>
+    <div class="settings">
+        <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
+        <mat-menu #settings="matMenu" [overlapTrigger]="false">
+            <button mat-menu-item>
+                <span>NOTHING</span>
+            </button>
+        </mat-menu>
+    </div>
+</div>
+<div class="main-container">
+    Case: <input matInput [(ngModel)]="case">
+
+    <ngfFormData
+            [files]      = "files"
+            postName     = "file"
+            [(FormData)] = "sendableFormData"
+    ></ngfFormData>
+
+    <ngfUploadStatus
+            [(percent)] = "progress"
+            [httpEvent] = "httpEvent"
+    ></ngfUploadStatus>
+
+    <div class="inline-block">
+        <div
+                ngfDrop
+                multiple         = "1"
+                selectable       = "1"
+                [(validDrag)]    = "validComboDrag"
+                [(files)]        = "files"
+                accept           = "*"
+                class            = "well my-drop-zone"
+                [(invalidDrag)]="invalidComboDrag"
+                [ngClass]="{'goodDragClass':validComboDrag, 'badDragClass':invalidComboDrag}"
+        >
+            Combo drop/select <strong>image</strong> only zone
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of files;let i=index">
+            <td>
+                <div *ngIf="['image/gif','image/png','image/jpeg'].indexOf(item.type)>=0">
+                    <div class="previewIcon" [ngfBackground]="item"></div>
+                </div>
+                <strong>{{ item.name }}</strong>
+            </td>
+            <td nowrap>
+                {{ item.type }}
+            </td>
+            <td nowrap>
+                {{ item.size/1024/1024 | number:'.2' }} MB
+            </td>
+            <td nowrap>
+                <button type="button"
+                        class="btn btn-danger btn-xs"
+                        (click)="files.splice(i,1)"
+                >
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <button type="button"
+            class="btn btn-success btn-s"
+            (click)="uploadFiles(files)"
+            [disabled]="!files.length"
+    >
+        <span class="glyphicon glyphicon-upload"></span> Upload all
+    </button>
+
+    <div>
+        Queue progress:
+        <div class="progress" style="">
+            <div class="progress-bar"
+                 role="progressbar"
+                 [ngStyle]="{ 'width': progress + '%' }"
+            ></div>
+        </div>
+        <i *ngIf="progress==100" class="glyphicon glyphicon-ok"></i>
+    </div>
+
+</div>
