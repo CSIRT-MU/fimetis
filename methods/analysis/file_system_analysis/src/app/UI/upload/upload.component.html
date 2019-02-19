@@ -38,7 +38,7 @@
                 accept           = "*"
                 class            = "well my-drop-zone"
                 [(invalidDrag)]="invalidComboDrag"
-                [ngClass]="{'goodDragClass':validComboDrag, 'badDragClass':invalidComboDrag}"
+                [ngClass]="{'valid-drag':validComboDrag, 'invalid-drag':invalidComboDrag}"
         >
             Combo drop/select <strong>image</strong> only zone
         </div>
