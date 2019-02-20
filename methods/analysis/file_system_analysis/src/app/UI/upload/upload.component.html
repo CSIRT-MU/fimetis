@@ -8,27 +8,23 @@
     <div class="settings">
         <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
         <mat-menu #settings="matMenu" [overlapTrigger]="false">
-            <button mat-menu-item>
-                <span>NOTHING</span>
+            <button mat-menu-item routerLink="/dashboard" routerLinkActive="active">
+                <span>DASHBOARD</span>
             </button>
         </mat-menu>
     </div>
 </div>
-<div class="main-container">
-    Case: <input matInput [(ngModel)]="case">
-
-    <ngfFormData
-            [files]      = "files"
-            postName     = "file"
-            [(FormData)] = "sendableFormData"
-    ></ngfFormData>
+<div class="main-container col-md-12">
+    <mat-form-field class="col-md-12">
+        Case: <input matInput [(ngModel)]="case" required>
+    </mat-form-field>
 
     <ngfUploadStatus
             [(percent)] = "progress"
             [httpEvent] = "httpEvent"
     ></ngfUploadStatus>
 
-    <div class="inline-block">
+    <div class="inline-block col-md-12">
         <div
                 ngfDrop
                 multiple         = "1"
@@ -36,11 +32,11 @@
                 [(validDrag)]    = "validComboDrag"
                 [(files)]        = "files"
                 accept           = "*"
-                class            = "well my-drop-zone"
+                class            = "well drop-zone"
                 [(invalidDrag)]="invalidComboDrag"
                 [ngClass]="{'valid-drag':validComboDrag, 'invalid-drag':invalidComboDrag}"
         >
-            Combo drop/select <strong>image</strong> only zone
+            <span class="clickable"><strong>drop</strong> or <strong>select</strong> files here</span>
         </div>
     </div>
 
@@ -82,7 +78,7 @@
     <button type="button"
             class="btn btn-success btn-s"
             (click)="uploadFiles(files)"
-            [disabled]="!files.length"
+            [disabled]="!files.length || !case"
     >
         <span class="glyphicon glyphicon-upload"></span> Upload all
     </button>

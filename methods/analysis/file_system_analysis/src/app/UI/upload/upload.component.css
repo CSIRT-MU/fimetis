@@ -27,8 +27,12 @@
 }
 
 
-.my-drop-zone { border: dotted 3px lightgray; }
-/* Default class applied to drop zones on over */
+.drop-zone {
+    border: dotted 3px lightgray;
+    /*height: 30vh;*/
+    text-align: center;
+    vertical-align: middle;
+}
 .invalid-drag { border: dotted 3px red; }
 .valid-drag { border: dotted 3px green; }
 .previewIcon{

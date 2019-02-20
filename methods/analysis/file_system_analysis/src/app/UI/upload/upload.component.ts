@@ -9,19 +9,12 @@ import {Subscription} from 'rxjs';
 })
 export class UploadComponent implements OnInit {
 
-    accept = '*';
     files: File[] = [];
     case = '';
     progress: number;
     url = 'http://127.0.0.1:5000/upload';
-    hasBaseDropZoneOver: boolean = false;
     httpEmitter: Subscription;
     httpEvent: HttpEvent<{}>;
-    lastFileAt: Date;
-    sendableFormData: FormData;
-    config = {
-        url: 'http://127.0.0.1:5000/upload'
-    };
 
     constructor(private httpClient: HttpClient) {}
 
@@ -29,7 +22,12 @@ export class UploadComponent implements OnInit {
     }
 
     uploadFiles(files: File[]): Subscription {
-        const req = new HttpRequest<FormData>('POST', this.url, this.sendableFormData, {
+        const formData = new FormData();
+
+        files.forEach(file => formData.append('file', file, file.name));
+        formData.append('case', this.case);
+
+        const req = new HttpRequest<FormData>('POST', this.url, formData, {
             reportProgress: true
         });
 
@@ -45,10 +43,6 @@ export class UploadComponent implements OnInit {
                 },
                 error => console.log('Error Uploading', error)
             );
-    }
-
-    getDate() {
-        return new Date();
     }
 
 }
