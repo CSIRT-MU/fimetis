@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpEvent, HttpRequest, HttpResponse} from '@angular/common/http';
+import {ngf} from 'angular-file';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -15,6 +16,8 @@ export class UploadComponent implements OnInit {
     url = 'http://127.0.0.1:5000/upload';
     httpEmitter: Subscription;
     httpEvent: HttpEvent<{}>;
+    validComboDrag = false;
+    invalidComboDrag = false;
 
     constructor(private httpClient: HttpClient) {}
 
