@@ -1,0 +1,42 @@
+---
+# Tasks for kibana
+
+  - name: Installing Kibana
+    apt:
+      name: kibana
+      update_cache: yes
+
+  - name: Setting elastic hosts in kibana.yml
+    lineinfile:
+      dest: /etc/kibana/kibana.yml
+      regexp: "^(#)*elasticsearch.hosts.*"
+      line: "elasticsearch.hosts: [\"http{{':'}}//{{ inventory_hostname }}{{':'}}{{ elastic_reverse_proxy_port }}\"]"
+
+  - name: Setting elastic user in kibana.yml
+    lineinfile:
+      dest: /etc/kibana/kibana.yml
+      regexp: "^(#)*elasticsearch.username.*"
+      line: "elasticsearch.username{{':'}} \"{{ elastic_user }}\""
+
+  - name: Setting elastic password in kibana.yml
+    lineinfile:
+      dest: /etc/kibana/kibana.yml
+      regexp: "^(#)*elasticsearch.password.*"
+      line: "elasticsearch.password{{':'}} \"{{ elastic_passwd }}\""
+
+  - name: Setting port of kibana in kibana.yml
+    lineinfile:
+      dest: /etc/kibana/kibana.yml
+      regexp: "^(#)*server{{'.'}}port.*"
+      line: "server.port{{':'}} {{ kibana_localhost_port }}"
+
+  - name: Enabling kibana to start after boot
+    systemd:
+      name: kibana
+      enabled: yes
+
+  - name: Restarting kibana
+    systemd: 
+      name: kibana
+      state: restarted
+

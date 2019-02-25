@@ -1,0 +1,101 @@
+---
+
+# Tasks for nginx settings
+  
+  - name: Installing nginx
+    apt:
+      name: nginx
+      update_cache: true
+
+  - name: Placing template of elastic config
+    template: 
+      src: elastic-reverse-proxy.j2
+      dest: /etc/nginx/sites-available/elastic-reverse-proxy
+
+  - name: Placing template of kibana config
+    template:
+      src: kibana.j2
+      dest: /etc/nginx/sites-available/kibana
+
+  - name: Placing template angular config
+    template:
+      src: angular.j2
+      dest: /etc/nginx/sites-available/angular
+
+  - name: Setting of angular app port
+    lineinfile:
+      dest: /etc/nginx/sites-available/angular
+      regexp: "^.*listen .*;"
+      line: "    listen 80;"
+
+  - name: Setting elasticsearch localhost port
+    lineinfile:
+      dest: /etc/nginx/sites-available/elastic-reverse-proxy 
+      regexp: ".*server localhost.*"
+      line: "    server localhost{{':'}}{{ elastic_localhost_port }};"
+
+  - name: Setting elasticsearch reverse proxy port
+    lineinfile:
+      dest: /etc/nginx/sites-available/elastic-reverse-proxy
+      regexp: "^.*listen .*"
+      line: "    listen {{ elastic_reverse_proxy_port }};"
+
+  - name: Setting kibana local port
+    lineinfile:
+      dest: /etc/nginx/sites-available/kibana
+      regexp: "^.*proxy_pass .*"
+      line: "        proxy_pass http{{':'}}//localhost{{':'}}{{ kibana_localhost_port }};"
+
+  - name: Setting kibana app port
+    lineinfile:
+      dest: /etc/nginx/sites-available/kibana
+      regexp: "^.*listen .*"
+      line: "    listen {{ kibana_app_port }};"
+      
+  - name: Installing prerequisites for htpasswd module
+    apt:
+      name: python-passlib
+      state: present 
+
+  - name: Creating passwd file for elastic
+    htpasswd:
+      path: /etc/nginx/.elastic-user
+      name: "{{ elastic_user }}"
+      password: "{{ elastic_passwd }}"
+
+  - name: Creating passwd file for kibana
+    htpasswd: 
+      path: /etc/nginx/.kibana-user
+      name: "{{ kibana_user }}"
+      password: "{{ kibana_passwd }}"
+
+  - name: Creating passwd file for angular 
+    htpasswd:
+      path: /etc/nginx/.angular-user
+      name: "{{ angular_user }}"
+      password: "{{ angular_passwd }}"
+
+  - name: Removing default config for nginx 
+    shell: rm /etc/nginx/sites-available/default && rm /etc/nginx/sites-enabled/default
+    args:
+      warn: false 
+ 
+  - name: Creating symlinks for nginx configs to sites-enabled
+    shell: ln -s /etc/nginx/sites-available/{{ item }} /etc/nginx/sites-enabled
+    with_items:
+      - elastic-reverse-proxy
+      - kibana
+      - angular
+    args:
+      warn: false
+
+  - name: Setting nginx to run after boot
+    systemd: 
+      name: nginx
+      enabled: yes
+
+  - name: Restarting nginx
+    systemd: 
+      name: nginx
+      state: restarted
+

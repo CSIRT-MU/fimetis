@@ -1,0 +1,47 @@
+.app-bar {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.5em;
+    padding-top: 0.8em;
+    background-color: #666666;
+    height: 5vh;
+}
+
+.app-bar .main-title {
+    color: #fefefe;
+    font-size: x-large;
+    margin-right: 0.5em;
+}
+
+.app-bar .sub-title {
+    color: #aaaaaa;
+    font-size: x-large;
+}
+
+.settings {
+    display: inline-block;
+    float: right;
+    margin-right: 25px;
+    color: #fefefe;
+    font-size: x-large;
+}
+
+
+.drop-zone {
+    border: dotted 3px lightgray;
+    /*height: 30vh;*/
+    text-align: center;
+    vertical-align: middle;
+}
+.invalid-drag { border: dotted 3px red; }
+.valid-drag { border: dotted 3px green; }
+.previewIcon{
+    width:100px;height:100px;
+    background-size:cover;
+    background-repeat:no-repeat;
+}
+
+.inline-block{
+    display:inline-block;
+    margin:.2em;
+}

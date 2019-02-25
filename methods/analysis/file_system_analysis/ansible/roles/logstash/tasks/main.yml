@@ -1,0 +1,37 @@
+---
+# Tasks for logstash
+  
+  - name: Installing logstash
+    apt:
+      name: logstash
+      update_cache: yes
+
+  - name: Enabling running logstash after boot
+    systemd:
+      name: logstash
+      enabled: true
+
+  - name: Starting logstash
+    systemd:
+      name: logstash
+      state: started
+
+  - name: Creating folder for uploading script
+    file:
+      path: /opt/metadata-uploader
+      state: directory
+  
+  - name: Placing logstash configuration for uploading data
+    copy:
+      src: "{{ role_path }}/files/logstash-template.txt"
+      dest: /opt/metadata-uploader/
+
+  - name: Placing uploading script metadata-uploader
+    copy:
+      src: "{{ role_path }}/files/metadata-uploader.sh"
+      dest: /opt/metadata-uploader/
+
+  - name: Setting mode +x for metadata-uploader
+    shell: chmod +x /opt/metadata-uploader/metadata-uploader.sh
+
+

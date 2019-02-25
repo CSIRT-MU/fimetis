@@ -1,0 +1,13 @@
+---
+- hosts: all
+  strategy: free
+  vars_files:
+    - ansible-conf.yml
+  roles:
+  - { role: java }
+  - { role: elasticsearch }
+  - { role: angular }
+  - { role: kibana }
+  - { role: nginx }
+  - { role: logstash }
+  - { role: test-data }

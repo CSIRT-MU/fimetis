@@ -1,0 +1,10 @@
+<div class="col-md-12">
+    <h3>{{data.title}}</h3>
+    <mat-selection-list #options>
+        <mat-list-option *ngFor="let option of data.available" [selected]="data.selected.indexOf(option) !== -1">
+            {{option}}
+        </mat-list-option>
+    </mat-selection-list>
+    <button mat-stroked-button class="leftButton timesix-button" (click)="onCancelClick()">CANCEL</button>
+    <button mat-stroked-button class="rightButton timesix-button" (click)="onOkClick()">SELECT</button>
+</div>

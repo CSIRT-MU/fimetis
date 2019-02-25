@@ -1,0 +1,88 @@
+---
+# Tasks for elasticsearch
+  
+  - name: Downloading and installing the public signing key for elasticsearch
+    apt_key:
+       url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+       state: present
+
+  - name: Installing apt-transport-https as a prerequisite
+    apt: 
+       name: apt-transport-https
+       update_cache: yes
+
+  - name: Saving the repository definition of elasticsearch 6
+    apt_repository: 
+       repo: deb https://artifacts.elastic.co/packages/6.x/apt stable main
+       state: present
+
+  - name: Installing Elasticsearch debian package
+    apt:
+      name: elasticsearch
+      update_cache: yes
+
+  - name: Enabling memory lock for Elasticsearch in elasticsearch.yml
+    lineinfile: 
+      path: /etc/elasticsearch/elasticsearch.yml
+      regexp: "^(#)*bootstrap.memory_lock{{':'}} true"
+      line: "bootstrap.memory_lock{{':'}} true"
+
+  - name: Setting network host in elasticsearch.yml
+    lineinfile: 
+      path: /etc/elasticsearch/elasticsearch.yml
+      regexp: "^(#)*network.host{{':'}} .*"
+      line: "network.host{{':'}} localhost"
+
+  - name: Setting network port in elasticsearch.yml
+    lineinfile:
+      path: /etc/elasticsearch/elasticsearch.yml
+      regexp: "^(#)*http.port{{':'}} .*"
+      line: "http.port{{':'}} 9200"
+
+  - name: Setting MAX_LOCKED_MEMORY to unlimited in /etc/default/elasticsearch
+    lineinfile: 
+      path: /etc/default/elasticsearch
+      regexp: "^(#)*MAX_LOCKED_MEMORY=.*"
+      line: "MAX_LOCKED_MEMORY=unlimited"
+
+  - name: Creating folder elasticsearch.d for setting LimitMEMLOCK to inf in override.conf
+    file: 
+      path: /etc/systemd/system/elasticsearch.d
+      state: directory
+    
+  - name: Setting LimitMEMLOCK to inf in override.conf
+    copy:
+      dest: "/etc/systemd/system/elasticsearch.d/override.conf"
+      content: |
+        [Service]
+        LimitMEMLOCK=infinity
+   
+  - name: Setting max_clause_count to 500000 in elasticsearch.yml
+    lineinfile:
+      path: /etc/elasticsearch/elasticsearch.yml
+      line: indices.query.bool.max_clause_count{{':'}} 500000
+
+  - name: Starting and setting running elastic after boot 
+    systemd:
+      name: elasticsearch
+      daemon_reload: yes
+      enabled: yes
+      state: started
+
+  - name: Waiting for elastic is ready
+    wait_for:
+      host: localhost
+      port: 9200
+      delay: 10
+
+  - name: Setting size of maximal result from elastic with curl
+    command: 'curl -XPUT ''localhost:9200/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
+    args:
+      warn: false 
+
+  - name: Reloading elastic
+    systemd:
+      name: elasticsearch
+      daemon_reload: yes
+      state: restarted
+

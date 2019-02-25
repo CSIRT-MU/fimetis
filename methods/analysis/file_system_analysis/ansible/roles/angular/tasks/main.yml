@@ -1,0 +1,63 @@
+---
+
+# Tasks for build angular app
+  
+  - name: Downloading installation script for nodejs
+    shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    args:
+      warn: false
+
+  - name: Installing nodejs
+    apt: 
+      name: nodejs
+      update_cache: yes
+
+  - name: Installing angular 
+    command: npm install -g @angular/cli
+    become: true
+
+  - name: Downloading repo from gitlab 
+    shell: git clone -b 52-suspicious-file-changes-project-init-continuation-of-timeline-forensix --single-branch https://ouath2:pNDgUXuui5kznGnn2_-p@gitlab.ics.muni.cz/kypo2/kypo2-analytical-node.git
+    args: 
+      chdir: /tmp
+
+  - name: Moving angular app code to /tmp
+    shell: mv /tmp/kypo2-analytical-node/methods/analysis/file_system_analysis /tmp --backup=numbered
+
+  - name: Cleaning nonused source codes from downloaded repo
+    file:
+      path: /tmp/kypo2-analytical-node
+      state: absent
+
+  - name: Setting elastic host in angular app config
+    lineinfile: 
+      path: /tmp/file_system_analysis/src/assets/elasticConfiguration.json
+      regexp: "^.*\"host\".*"
+      line: "\"host\"{{':'}} \"http://{{ inventory_hostname }}{{':'}}{{ elastic_reverse_proxy_port }}\","
+
+  - name: Setting elastic auth in angular app config
+    lineinfile:
+      path: /tmp/file_system_analysis/src/assets/elasticConfiguration.json
+      regexp: "^.*\"httpAuth\".*"
+      line: "\"httpAuth\"{{':'}} \"{{ elastic_user }}{{':'}}{{ elastic_passwd }}\","
+
+  - name: Install npm in angular app
+    shell: npm install
+    args:
+      chdir: /tmp/file_system_analysis
+
+  - name: Building production build of angular app
+    shell: ng build --prod
+    args:
+      chdir: /tmp/file_system_analysis
+
+  - name:  Placing build app to /opt/
+    shell: mv /tmp/file_system_analysis/dist/timesix-angular /opt/
+
+  - name: Cleaning source codes from /tmp
+    file:
+      path: /tmp/file_system_analysis
+      state: absent
+    
+#shell: rm -r /tmp/file_system_analysis*
+
