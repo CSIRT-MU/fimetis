@@ -7,9 +7,11 @@
       dest: /opt/metadata-uploader  
  
   - name: Loading testing data to elastic
-    shell: /opt/metadata-uploader/metadata-uploader.sh -c test -h localhost:9200 -i metadata -t mactimes -u elastic -p timesix-elk -tp /opt/metadata-uploader/logstash-template.txt /opt/metadata-uploader/test.mac
+    shell: python3 /opt/metadata-uploader/metadata-uploader.py --case test --file /opt/metadata-uploader/test.mac
+#    shell: /opt/metadata-uploader/metadata-uploader.sh -c test -h localhost:9200 -i metadata -t mactimes -u elastic -p timesix-elk -tp /opt/metadata-uploader/logstash-template.txt /opt/metadata-uploader/test.mac
+  
 
   - name: Loading testing filter to elastic
-    shell: 'curl -XPOST ''localhost:9200/filter/typename'' -H ''Content-Type: application/json'' -d ''{ "name": "select all", "type": "template", "json": "{\"match_all\": {}}"}'''
+    shell: 'curl -XPOST ''localhost:{{ elastic_localhost_port }}/filter/typename'' -H ''Content-Type: application/json'' -d ''{ "name": "select all", "type": "template", "json": "{\"match_all\": {}}"}'''
 
  

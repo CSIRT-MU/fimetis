@@ -12,7 +12,7 @@ filter {
     add_tag => [ "default" ]
   }
   csv {
-    columns => [ "Date", "Size", "Type", "Mode", "UID", "GID", "Meta", "File Name" ]
+    columns => [ ${HEADER} ]
     separator => ","
     skip_header => "true"
     remove_field => [ "message", "host" ]
@@ -28,14 +28,16 @@ filter {
 output {
   if "_csvparsefailure" not in [tags] and "_dateparsefailure" not in [tags] {
     elasticsearch {
-      hosts => "localhost:9200"
+      hosts => "${EL_HOST}"
       index => "${INDEX}"
       document_type => "${TYPE}"
+      "user" => "${EL_USER}"
+      "password" => "${EL_PASSWORD}"
     }
   }
   else {
     file {
-      path => "/tmp/metadata-uploader_errors.log"
+      path => "/tmp/failed_rows.txt"
     }
   }
 }

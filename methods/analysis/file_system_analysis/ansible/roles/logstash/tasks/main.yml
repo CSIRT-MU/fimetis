@@ -31,6 +31,13 @@
       src: "{{ role_path }}/files/metadata-uploader.sh"
       dest: /opt/metadata-uploader/
 
+  - name: Placing uploading script metadata-uploader
+    copy:
+      src: "{{ role_path }}/files/metadata-uploader.py"
+      dest: /opt/metadata-uploader/
+
+
+
   - name: Setting mode +x for metadata-uploader
     shell: chmod +x /opt/metadata-uploader/metadata-uploader.sh
 

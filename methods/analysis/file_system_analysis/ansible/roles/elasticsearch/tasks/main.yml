@@ -37,7 +37,7 @@
     lineinfile:
       path: /etc/elasticsearch/elasticsearch.yml
       regexp: "^(#)*http.port{{':'}} .*"
-      line: "http.port{{':'}} 9200"
+      line: "http.port{{':'}} {{ elastic_localhost_port }}"
 
   - name: Setting MAX_LOCKED_MEMORY to unlimited in /etc/default/elasticsearch
     lineinfile: 
@@ -72,11 +72,11 @@
   - name: Waiting for elastic is ready
     wait_for:
       host: localhost
-      port: 9200
+      port: "{{ elastic_localhost_port }}"
       delay: 10
 
   - name: Setting size of maximal result from elastic with curl
-    command: 'curl -XPUT ''localhost:9200/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
+    command: 'curl -XPUT ''localhost:{{ elastic_localhost_port }}/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
     args:
       warn: false 
 
