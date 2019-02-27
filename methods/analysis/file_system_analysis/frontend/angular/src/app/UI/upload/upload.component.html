@@ -1,97 +1,99 @@
-<div class="app-bar">
-    <span class="main-title">
-        <b>FILE SYSTEM ANALYSIS</b>
-    </span>
-    <span class="sub-title">
-        <b>UPLOAD</b>
-    </span>
-    <div class="settings">
-        <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
-        <mat-menu #settings="matMenu" [overlapTrigger]="false">
-            <button mat-menu-item routerLink="/dashboard" routerLinkActive="active">
-                <span>DASHBOARD</span>
-            </button>
-        </mat-menu>
-    </div>
-</div>
-<div class="main-container col-md-12">
-    <mat-form-field class="col-md-12">
-        Case: <input matInput [(ngModel)]="case" required>
-    </mat-form-field>
-
-    <ngfUploadStatus
-            [(percent)] = "progress"
-            [httpEvent] = "httpEvent"
-    ></ngfUploadStatus>
-
-    <div class="inline-block col-md-12">
-        <div
-                ngfDrop
-                multiple         = "1"
-                selectable       = "1"
-                [(validDrag)]    = "validComboDrag"
-                [(files)]        = "files"
-                accept           = "*"
-                class            = "well drop-zone"
-                [(invalidDrag)]="invalidComboDrag"
-                [ngClass]="{'valid-drag':validComboDrag, 'invalid-drag':invalidComboDrag}"
-        >
-            <span class="clickable"><strong>drop</strong> or <strong>select</strong> files here</span>
-        </div>
-    </div>
-
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let item of files;let i=index">
-            <td>
-                <div *ngIf="['image/gif','image/png','image/jpeg'].indexOf(item.type)>=0">
-                    <div class="previewIcon" [ngfBackground]="item"></div>
-                </div>
-                <strong>{{ item.name }}</strong>
-            </td>
-            <td nowrap>
-                {{ item.type }}
-            </td>
-            <td nowrap>
-                {{ item.size/1024/1024 | number:'.2' }} MB
-            </td>
-            <td nowrap>
-                <button type="button"
-                        class="btn btn-danger btn-xs"
-                        (click)="files.splice(i,1)"
-                >
-                    <span class="glyphicon glyphicon-trash"></span>
+<div class="app-container">
+    <div class="app-bar">
+        <span class="main-title">
+            <b>FILE SYSTEM ANALYSIS</b>
+        </span>
+        <span class="sub-title">
+            <b>UPLOAD</b>
+        </span>
+        <div class="settings">
+            <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
+            <mat-menu #settings="matMenu" [overlapTrigger]="false">
+                <button mat-menu-item routerLink="/dashboard" routerLinkActive="active">
+                    <span>DASHBOARD</span>
                 </button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <button type="button"
-            class="btn btn-success btn-s"
-            (click)="uploadFiles(files)"
-            [disabled]="!files.length || !case"
-    >
-        <span class="glyphicon glyphicon-upload"></span> Upload all
-    </button>
-
-    <div>
-        Queue progress:
-        <div class="progress" style="">
-            <div class="progress-bar"
-                 role="progressbar"
-                 [ngStyle]="{ 'width': progress + '%' }"
-            ></div>
+            </mat-menu>
         </div>
-        <i *ngIf="progress==100" class="glyphicon glyphicon-ok"></i>
     </div>
+    <div class="main-container col-md-12">
+        <mat-form-field class="col-md-12">
+            Case: <input matInput [(ngModel)]="case" required>
+        </mat-form-field>
 
+        <ngfUploadStatus
+                [(percent)] = "progress"
+                [httpEvent] = "httpEvent"
+        ></ngfUploadStatus>
+
+        <div class="inline-block col-md-12">
+            <div
+                    ngfDrop
+                    multiple         = "1"
+                    selectable       = "1"
+                    [(validDrag)]    = "validComboDrag"
+                    [(files)]        = "files"
+                    accept           = "*"
+                    class            = "well drop-zone"
+                    [(invalidDrag)]="invalidComboDrag"
+                    [ngClass]="{'valid-drag':validComboDrag, 'invalid-drag':invalidComboDrag}"
+            >
+                <span class="clickable"><strong>drop</strong> or <strong>select</strong> files here</span>
+            </div>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of files;let i=index">
+                <td>
+                    <div *ngIf="['image/gif','image/png','image/jpeg'].indexOf(item.type)>=0">
+                        <div class="previewIcon" [ngfBackground]="item"></div>
+                    </div>
+                    <strong>{{ item.name }}</strong>
+                </td>
+                <td nowrap>
+                    {{ item.type }}
+                </td>
+                <td nowrap>
+                    {{ item.size/1024/1024 | number:'.2' }} MB
+                </td>
+                <td nowrap>
+                    <button type="button"
+                            class="btn btn-danger btn-xs"
+                            (click)="files.splice(i,1)"
+                    >
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="button"
+                class="btn btn-success btn-s"
+                (click)="uploadFiles(files)"
+                [disabled]="!files.length || !case"
+        >
+            <span class="glyphicon glyphicon-upload"></span> Upload all
+        </button>
+
+        <div>
+            Queue progress:
+            <div class="progress" style="">
+                <div class="progress-bar"
+                     role="progressbar"
+                     [ngStyle]="{ 'width': progress + '%' }"
+                ></div>
+            </div>
+            <i *ngIf="progress==100" class="glyphicon glyphicon-ok"></i>
+        </div>
+
+    </div>
 </div>

@@ -1,31 +1,3 @@
-.app-bar {
-    text-align: center;
-    vertical-align: middle;
-    padding: 0.5em;
-    padding-top: 0.8em;
-    background-color: #666666;
-    height: 5vh;
-}
-
-.app-bar .main-title {
-    color: #fefefe;
-    font-size: x-large;
-    margin-right: 0.5em;
-}
-
-.app-bar .sub-title {
-    color: #aaaaaa;
-    font-size: x-large;
-}
-
-.settings {
-    display: inline-block;
-    float: right;
-    margin-right: 25px;
-    color: #fefefe;
-    font-size: x-large;
-}
-
 /*.container-all-opened {*/
     /*display: grid;*/
     /*min-height: 95vh;*/
@@ -36,8 +8,8 @@
 
 .container-all-opened {
     display: grid;
-    min-height: 95vh;
-    max-height: 95vh;
+    height: 100%;
+    flex-grow: 1;
     grid-template-columns: 300px auto;
     grid-template-areas: "grid-cluster grid-main grid-main grid-main"
 }
@@ -102,8 +74,8 @@
 
 .setup-window {
     position: fixed;
-    height: 95vh;
-    top: 5vh;
+    height: 100%;
+    top: 60px;
     width: 100%;
     background-color: #666666;
     /*opacity: 0.8;*/
