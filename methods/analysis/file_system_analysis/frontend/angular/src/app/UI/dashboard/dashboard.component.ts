@@ -17,6 +17,7 @@ import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
 import {ClusterComponent} from '../cluster/cluster.component';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-dashboard',
@@ -83,7 +84,7 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatChipList)
     chipList: MatChipList;
 
-    constructor(private es: ElasticsearchService, public dialog: MatDialog) {
+    constructor(private es: ElasticsearchService, public dialog: MatDialog, private toaster: ToastrService) {
         this.clusterManager = new ClusterManager(this.es);
         this.computationManager = new ComputationManager(this.es);
         this.baseManager = new BaseManager(this.es);
@@ -113,15 +114,24 @@ export class DashboardComponent implements OnInit {
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
 
+        this.loadAllCases();
+        this.loadAllFilters();
+        // this.collapse();
+    }
+
+    loadAllCases() {
         this.baseManager.getCases().then(
             response => {
                 this.cases = response;
             }, error => {
                 console.error(error);
+                this.toaster.error('Error:' + error['message'], 'Cannot load datasets');
             }).then(() => {
             console.log('Show Cases completed!');
         });
+    }
 
+    loadAllFilters() {
         this.baseManager.getFilters().then(
             response => {
                 this.filters = response;
@@ -130,7 +140,6 @@ export class DashboardComponent implements OnInit {
             }).then(() => {
             console.log('Show Filters completed!');
         });
-        this.collapse();
     }
 
     addNewFilterButton() {
@@ -553,10 +562,6 @@ export class DashboardComponent implements OnInit {
         computation.filters.push(filter);
     }
 
-    elementResized($event) {
-        console.log($event, 'resized');
-    }
-
     /**
      * Delete given filter from given computation
      * @param {FilterModel} filter Filter model
@@ -624,24 +629,24 @@ export class DashboardComponent implements OnInit {
      * Triggered by collapse of any element and computes height of each element
      */
     collapse() {
-        // let height = 10;
-        let height = 48;
-        height += 18;
-        // if (!this.filterPanelOpenState) {
-        //     height += 20;
+        // // let height = 10;
+        // let height = 48;
+        // height += 18;
+        // // if (!this.filterPanelOpenState) {
+        // //     height += 20;
+        // // }
+        // // if (this.computationPanelOpenState) {
+        // //     let index = 0;
+        // //     height -= 2;
+        // //     while (index < this.computations.size) {
+        // //         height -= 2;
+        // //         index++;
+        // //     }
+        // // }
+        // if (!this.histogramPanelOpenState) {
+        //     height += 22;
         // }
-        // if (this.computationPanelOpenState) {
-        //     let index = 0;
-        //     height -= 2;
-        //     while (index < this.computations.size) {
-        //         height -= 2;
-        //         index++;
-        //     }
-        // }
-        if (!this.histogramPanelOpenState) {
-            height += 22;
-        }
-        this.listViewComponent.resizeList(height);
+        // this.listViewComponent.resizeList(height);
     }
 
     makeManualCluster(computation: ComputationModel) {
@@ -771,6 +776,7 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
         localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
+        localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
         localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
     }
 
@@ -794,6 +800,7 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.init().then(() => {
+            this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
             this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
         });
         this.graphComponent.init();

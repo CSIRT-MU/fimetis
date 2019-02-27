@@ -31,7 +31,7 @@
                 </td>
                 <td>
                     <mat-form-field>
-                        <mat-select [(value)]="selectedCase" placeholder="Click to select dataset">
+                        <mat-select [(value)]="selectedCase" (click)="loadAllCases()" placeholder="Click to select dataset">
                             <mat-option>None</mat-option>
                             <mat-option *ngFor="let case of cases" [value]="case['key']">{{case['key']}}</mat-option>
                         </mat-select>

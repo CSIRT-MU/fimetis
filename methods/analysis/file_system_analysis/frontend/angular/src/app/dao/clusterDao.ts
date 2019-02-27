@@ -30,7 +30,7 @@ export class ClusterDao {
                     resolve(data);
                 }, error => {
                     console.error(error);
-                    reject();
+                    reject(error);
                 }
             );
         });

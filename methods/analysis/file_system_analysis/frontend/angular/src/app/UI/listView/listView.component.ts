@@ -194,7 +194,15 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.preloadedData = resp.data;
         this.preloadedBegin = this.visibleDataFirstIndex;
         this.preloadedEnd = this.visibleDataFirstIndex + initSize;
-        this.virtualArray.length = this.total;
+        if (this.total > this.page_size) {
+            if (this.page_number * this.page_size > this.total) {
+                this.virtualArray.length = this.total - ((this.page_number - 1) * this.page_size);
+            } else {
+                this.virtualArray.length = this.page_size;
+            }
+        } else {
+            this.virtualArray.length = this.total;
+        }
         this.loadingData = false;
         this.visibleData = this.data;
         if (this.visibleDataFirstIndex + shift > this.total ) {
@@ -930,12 +938,14 @@ export class ListViewComponent implements OnInit, OnDestroy {
 
     /**
      * Triggered by page change
-     * @param {PageEvent} event Event emitted by matPaginator
+     * @param {number} page Number of page
      */
-    changePage(event: PageEvent) {
-        console.log(event);
-        this.page_number = event.pageIndex + 1;
-        this.virtualArray.length = event.pageSize;
+    changePage(page: number) {
+        this.page_number = page;
+        this.virtualArray.length =
+            this.page_number * this.page_size > this.total ?
+            this.total - ((this.page_number - 1) * this.page_size) :
+            this.page_size;
         this.virtualScroller.refresh();
     }
 }

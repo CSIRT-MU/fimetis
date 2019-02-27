@@ -32,6 +32,8 @@ export class BaseDao {
                             entry = 0;
                         }
                         resolve(entry);
+                    }, error => {
+                        reject(error);
                     }
                 );
         });
@@ -102,6 +104,8 @@ export class BaseDao {
                 .then(response => {
                         const cases = response.aggregations.cases.buckets;
                         resolve(cases);
+                    }, error => {
+                        reject(error);
                     }
                 );
 
@@ -134,6 +138,8 @@ export class BaseDao {
                         console.log(filters);
 
                         resolve(filters);
+                    }, error => {
+                        reject(error);
                     }
                 );
 
@@ -165,7 +171,7 @@ export class BaseDao {
                     console.log(filter);
                     resolve(filter);
                 }, error => {
-                    console.error(error);
+                    reject(error);
                 });
         });
 
