@@ -21,6 +21,10 @@ filter {
     match => [ "Date", "E MMM dd yyyy HH:mm:ss" ]
     target => "@timestamp"
     remove_field => [ "Date" ]
+  }
+
+  if "(deleted)" in [File Name] or "(deleted-realloc)" in [File Name] {
+    drop { }
   }  
 
 } 
