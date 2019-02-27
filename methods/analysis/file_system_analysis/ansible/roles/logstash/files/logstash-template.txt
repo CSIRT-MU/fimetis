@@ -23,9 +23,7 @@ filter {
     remove_field => [ "Date" ]
   }
 
-  if "(deleted)" in [File Name] or "(deleted-realloc)" in [File Name] {
-    drop { }
-  }  
+${DELETED_SWITCH}
 
 } 
 
