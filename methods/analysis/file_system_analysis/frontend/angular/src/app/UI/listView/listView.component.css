@@ -159,12 +159,17 @@
     /*display: block;*/
     visibility: visible;
     width: 100%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    overflow: auto;
+    height: 150px;
+    /*height: inherit !important;*/
     /*min-width: 100%;*/
     /*overflow-y: scroll;*/
     /*scroll-snap-type: y mandatory;*/
     /*height: auto;*/
     /*max-height: 250px;*/
-    min-height: 5px;
+    /*min-height: 5px;*/
     /*margin-bottom: 20px;*/
     /*overflow: hidden;*/
     /*overflow: scroll;*/
@@ -361,4 +366,19 @@ virtual-scroll {
     border-radius: 3px;
     background-color: #888888;
     border: 1px solid #fefefe;
+}
+
+.list-view-header{
+    flex-grow: 0;
+}
+.list-view-content{
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column;
+}
+
+.list-view-wrapper{
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column;
 }

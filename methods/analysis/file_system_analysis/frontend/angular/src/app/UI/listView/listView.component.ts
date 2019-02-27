@@ -927,4 +927,15 @@ export class ListViewComponent implements OnInit, OnDestroy {
         console.log('scrolling to:', index);
         this.virtualScroller.scrollToIndex(index - 1);
     }
+
+    /**
+     * Triggered by page change
+     * @param {PageEvent} event Event emitted by matPaginator
+     */
+    changePage(event: PageEvent) {
+        console.log(event);
+        this.page_number = event.pageIndex + 1;
+        this.virtualArray.length = event.pageSize;
+        this.virtualScroller.refresh();
+    }
 }

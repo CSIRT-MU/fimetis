@@ -8,6 +8,12 @@
     src: url(assets/fonts/SourceCodePro-Regular.ttf);
 }
 
+html,
+body {
+    height: 100%;
+    margin: 0
+}
+
 .mat-pseudo-checkbox-checked {
     background-color: #ffffff !important;
     border-color: #666666 !important;
