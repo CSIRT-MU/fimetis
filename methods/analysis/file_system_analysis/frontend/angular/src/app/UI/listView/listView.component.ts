@@ -588,7 +588,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
 
         let bufferSize = this.preloadedBufferSize;
-        let bufferOffset = this.preloadedBegin;
+        let bufferOffset = this.preloadedBegin + ((this.page_number - 1) * this.page_size);
         let buffer = this.preloadedData;
 
         while (skipIndex == null) {
@@ -694,7 +694,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         }
 
         let bufferSize = this.preloadedBufferSize;
-        let bufferOffset = this.preloadedBegin;
+        let bufferOffset = this.preloadedBegin + ((this.page_number - 1) * this.page_size);
         let buffer = this.preloadedData;
 
         while (skipIndex == null) {
@@ -933,7 +933,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
      */
     scrollToIndex(index: number) {
         console.log('scrolling to:', index);
-        this.virtualScroller.scrollToIndex(index - 1);
+        const actualIndex = index;
+        const scrollPage = Math.floor(actualIndex / this.page_size) + 1;
+        console.log(scrollPage);
+        const scrollIndex = actualIndex % this.page_size;
+        this.changePage(scrollPage);
+        this.virtualScroller.scrollToIndex(scrollIndex - 1);
     }
 
     /**
