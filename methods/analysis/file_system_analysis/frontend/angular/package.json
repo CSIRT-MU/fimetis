@@ -23,7 +23,7 @@
     "@angular/platform-browser-dynamic": "^6.1.8",
     "@angular/router": "^6.0.3",
     "@types/highcharts": "^5.0.36",
-    "@types/lodash": "^4.14.118",
+    "@types/lodash": "4.14.118",
     "bootstrap": "^3.3.7",
     "core-js": "^2.5.4",
     "elasticsearch-browser": "^15.1.1",
