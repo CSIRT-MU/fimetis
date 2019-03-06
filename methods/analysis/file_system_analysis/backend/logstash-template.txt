@@ -1,0 +1,43 @@
+input {
+   stdin{}   
+} 
+ 
+filter {
+  mutate {
+    gsub => [
+       "File Name", "[\\\<\>]", "",
+       "message", "[\\\<\>]", ""
+    ]
+    add_field => { "case" => "${CASE}" }
+    add_tag => [ "default" ]
+  }
+  csv {
+    columns => [ "Date", "Size", "Type", "Mode", "UID", "GID", "Meta", "File Name" ]
+    separator => ","
+    skip_header => "true"
+    remove_field => [ "message", "host" ]
+  } 
+  date {
+    match => [ "Date", "E MMM dd yyyy HH:mm:ss" ]
+    target => "@timestamp"
+    remove_field => [ "Date" ]
+  }
+
+${DELETED_SWITCH}
+
+} 
+
+output {
+  if "_csvparsefailure" not in [tags] and "_dateparsefailure" not in [tags] {
+    elasticsearch {
+      hosts => "localhost:9200"
+      index => "${INDEX}"
+      document_type => "${TYPE}"
+    }
+  }
+  else {
+    file {
+      path => "/tmp/metadata-uploader_errors.log"
+    }
+  }
+}
