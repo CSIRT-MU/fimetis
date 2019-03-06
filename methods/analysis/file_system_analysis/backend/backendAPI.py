@@ -9,12 +9,17 @@ from functools import wraps
 import jwt
 import json
 import subprocess
+import fsa_lib as fsa
 
 es = Elasticsearch()
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = '/tmp'
 app.config['SECRET_KEY'] = 'thisissecretkey'
+app.config['elastic_metadata_index'] = 'metadata'
+app.config['elastic_metadata_type'] = ''
+app.config['elastic_filter_index'] = 'filter'
+app.config['elastic_filter_type'] = ''
 
 
 def token_required(f):
@@ -116,12 +121,9 @@ def search(current_user):
     return jsonify(res)
 
 
-@app.route('/case/all', methods=['POST'])
+@app.route('/case/all', methods=['GET'])
 @token_required
 def cases(current_user):
-    print(request.form)
-    es_index = request.form['index']
-    es_type = request.form['type']
 
     query = {
         'aggs': {
@@ -134,8 +136,79 @@ def cases(current_user):
         }
     }
 
-    res = es.search(index=es_index, type=es_type, body=query)
+    if not app.config['elastic_metadata_type']:
+        res = es.search(index=app.config['elastic_metadata_index'], body=query)
+    else:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        type=app.config['elastic_metadata_type'],
+                        body=query)
+    return jsonify(cases=res['aggregations']['cases']['buckets'])
+
+
+@app.route('/filter/all', methods=['GET'])
+@token_required
+def filters(current_user):
+    query = {
+            'aggs': {
+                'filters': {
+                    'terms': {
+                        'field': 'name.keyword',
+                        'size': 2147483647
+                    }
+                }
+            }
+    }
+
+    if not app.config['elastic_filter_type']:
+        res = es.search(index=app.config['elastic_filter_index'], body=query)
+    else:
+        res = es.search(index=app.config['elastic_filter_index'], type=app.config['elastic_filter_type'], body=query)
     return jsonify(res)
+
+
+@app.route('/filter/name', methods=['POST'])
+@token_required
+def filter_by_name(current_user):
+    if 'name' not in request.json:
+        return jsonify({'message': 'Bad request'}), 400
+    else:
+        filter_name = request.json.get('name')
+    query = {
+            'query': {
+                'term': {
+                    'name.keyword': {
+                        'value': filter_name
+                    }
+                }
+            }
+    }
+
+    if not app.config['elastic_filter_type']:
+        res = es.search(index=app.config['elastic_filter_index'], body=query)
+    else:
+        res = es.search(index=app.config['elastic_filter_index'], type=app.config['elastic_filter_type'], body=query)
+    return jsonify(res)
+
+
+@app.route('/cluster/data/<string:case>', methods=['POST'])
+@token_required
+def cluster_get_data(current_user, case):
+    clusters = request.json.get('clusters')
+    additional_filters = request.json.get('additional_filters')
+    graph_filter = request.json.get('graph_filter')
+    begin = request.json.get('begin')
+    page_size = request.json.get('page_size')
+    sort = request.json.get('sort')
+    sort_order = request.json.get('sort_order')
+
+    query = fsa.build_data_query(case, obj_clusters, additional_filters, graph_filter, begin, page_size, sort, sort_order)
+    print(query)
+    if not app.config['elastic_metadata_type']:
+        res = es.search(index=app.config['elastic_metadata_index'], body=query)
+    else:
+        res = es.search(index=app.config['elastic_metadata_index'], type=app.config['elastic_metadata_type'], body=query)
+    return jsonify(res)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
