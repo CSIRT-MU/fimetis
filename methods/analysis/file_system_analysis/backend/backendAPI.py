@@ -31,13 +31,13 @@ def token_required(f):
             token = request.headers['x-access-token']
 
         if not token:
-            return jsonify({'message' : 'Token is missing!'}), 401
+            return jsonify({'message': 'Token is missing!'}), 401
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
             current_user = data['username']
         except:
-            return jsonify({'message' : 'Token is invalid!'}), 401
+            return jsonify({'message': 'Token is invalid!'}), 401
 
         return f(current_user, *args, **kwargs)
 
@@ -190,9 +190,9 @@ def filter_by_name(current_user):
     return jsonify(res)
 
 
-@app.route('/cluster/data/<string:case>', methods=['POST'])
+@app.route('/clusters/data/<string:case>', methods=['POST'])
 @token_required
-def cluster_get_data(current_user, case):
+def clusters_get_data(current_user, case):
     clusters = request.json.get('clusters')
     additional_filters = request.json.get('additional_filters')
     graph_filter = request.json.get('graph_filter')
@@ -201,12 +201,103 @@ def cluster_get_data(current_user, case):
     sort = request.json.get('sort')
     sort_order = request.json.get('sort_order')
 
-    query = fsa.build_data_query(case, obj_clusters, additional_filters, graph_filter, begin, page_size, sort, sort_order)
-    print(query)
+    query = fsa.build_data_query(case, clusters, additional_filters, graph_filter, begin, page_size, sort, sort_order)
+    print(json.dumps(query))
     if not app.config['elastic_metadata_type']:
-        res = es.search(index=app.config['elastic_metadata_index'], body=query)
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        body=json.dumps(query))
     else:
-        res = es.search(index=app.config['elastic_metadata_index'], type=app.config['elastic_metadata_type'], body=query)
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        type=app.config['elastic_metadata_type'],
+                        body=json.dumps(query))
+    return jsonify(res)
+
+
+@app.route('/clusters/entries_border/<string:case>', methods=['POST'])
+@token_required
+def clusters_entries_border(current_user, case):
+    clusters = request.json.get('clusters')
+    additional_filters = request.json.get('additional_filters')
+    border = request.json.get('border')
+
+    query = fsa.build_number_of_entries_query(case, clusters, additional_filters, border)
+    print(json.dumps(query))
+    if not app.config['elastic_metadata_type']:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        body=json.dumps(query))
+    else:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        type=app.config['elastic_metadata_type'],
+                        body=json.dumps(query))
+    return jsonify(res)
+
+
+@app.route('/cluster/count/<string:case>', methods=['POST'])
+@token_required
+def cluster_get_count(current_user, case):
+    cluster = request.json.get('cluster')
+    additional_filters = request.json.get('additional_filters')
+
+    query = fsa.build_count_query(case, cluster, additional_filters)
+    print(json.dumps(query))
+    if not app.config['elastic_metadata_type']:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        body=json.dumps(query))
+    else:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        type=app.config['elastic_metadata_type'],
+                        body=json.dumps(query))
+    return jsonify(res)
+
+
+@app.route('/cluster/first_and_last/<string:case>', methods=['POST'])
+@token_required
+def cluster_get_first_and_last_entry(current_user, case):
+    clusters = request.json.get('clusters')
+    additional_filters = request.json.get('additional_filters')
+    mac_type = request.json.get('mac_type')
+
+    first_query = fsa.build_first_or_last_query(case, clusters, additional_filters, mac_type, 'asc')
+    last_query = fsa.build_first_or_last_query(case, clusters, additional_filters, mac_type, 'desc')
+    print(json.dumps(first_query))
+    if not app.config['elastic_metadata_type']:
+        first = es.search(index=app.config['elastic_metadata_index'],
+                          body=json.dumps(first_query))
+        last = es.search(index=app.config['elastic_metadata_index'],
+                         body=json.dumps(last_query))
+    else:
+        first = es.search(index=app.config['elastic_metadata_index'],
+                          type=app.config['elastic_metadata_type'],
+                          body=json.dumps(first_query))
+        last = es.search(index=app.config['elastic_metadata_index'],
+                         type=app.config['elastic_metadata_type'],
+                         body=json.dumps(last_query))
+    res = []
+    if first is not None:
+        print(first)
+        res.append(first['hits']['hits'][0])
+    if last is not None:
+        res.append(last['hits']['hits'][0])
+    return jsonify(res)
+
+
+@app.route('/graph/data/<string:case>', methods=['POST'])
+@token_required
+def graph_get_data(current_user, case):
+    clusters = request.json.get('clusters')
+    additional_filters = request.json.get('additional_filters')
+    mac_type = request.json.get('mac_type')
+    frequency = request.json.get('frequency')
+
+    query = fsa.build_graph_data_query(case, clusters, additional_filters, mac_type, frequency)
+    print(json.dumps(query))
+    if not app.config['elastic_metadata_type']:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        body=json.dumps(query))
+    else:
+        res = es.search(index=app.config['elastic_metadata_index'],
+                        type=app.config['elastic_metadata_type'],
+                        body=json.dumps(query))
     return jsonify(res)
 
 

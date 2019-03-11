@@ -1,16 +1,19 @@
 from enum import Enum
-import re
+import json
 
 
-class ClusterModel:
-    def __init__(self):
-        self.name = ''
-        self.count = 0
-        self.computation = ComputationModel()
-        self.tagged = False
-        self.tag = ''
-        self.selectMode = ClusterSelectMode.notSelected
-        self.subClusters = []
+class Cluster:
+    def __init__(self, dictionary=None):
+        if dictionary is not None and isinstance(dictionary, dict):
+            self.__dict__ = dictionary
+        else:
+            self.name = ''
+            self.count = 0
+            self.computation = Computation()
+            self.tagged = False
+            self.tag = ''
+            self.selectMode = ClusterSelectMode.notSelected
+            self.subClusters = []
 
 
 class ClusterSelectMode(Enum):
@@ -19,28 +22,37 @@ class ClusterSelectMode(Enum):
     deducted = 2
 
 
-class ComputationModel:
-    def __init__(self):
-        self.name = ''
-        self.filters = []
-        self.isSelected = True
+class Computation:
+    def __init__(self, dictionary=None):
+        if dictionary is not None and isinstance(dictionary, dict):
+            self.__dict__ = dictionary
+        else:
+            self.name = ''
+            self.filters = []
+            self.isSelected = True
 
 
-class FilterModel:
-    def __init__(self):
-        self.name = ''
-        self.type = ''
-        self.json = ''
-        self.params = []
-        self.completed = ''
-        self.isSelected = ''
+class Filter:
+    def __init__(self, dictionary=None):
+        if dictionary is not None and isinstance(dictionary, dict):
+            self.__dict__ = dictionary
+        else:
+            self.name = ''
+            self.type = ''
+            self.json = ''
+            self.params = []
+            self.completed = ''
+            self.isSelected = ''
 
 
-class FilterParamModel:
-    def __init__(self):
-        self.name = ''
-        self.type = ''
-        self.value = ''
+class FilterParam:
+    def __init__(self, dictionary=None):
+        if dictionary is not None and isinstance(dictionary, dict):
+            self.__dict__ = dictionary
+        else:
+            self.name = ''
+            self.type = ''
+            self.value = ''
 
 
 def build_data_query(case_name,
@@ -48,42 +60,52 @@ def build_data_query(case_name,
                      additional_filters,
                      graph_filter,
                      from_param,
-                     size=0,
+                     size=1,
                      sort='timestamp',
                      sort_order='asc'):
-        query = '{'  # start of all query string
-        query += '"from": ' + str(from_param)
-        query += ',' # separator between from_param and size
-        query += '"size": ' + str(size)
-        query += ',' # separator between size and query
+    body = {}
+    body['from'] = from_param
+    body['size'] = size
+    body['query'] = build_base_query(case_name, clusters, additional_filters, graph_filter)
 
-        query += build_base_query(
-            case_name,
-            clusters,
-            additional_filters,
-            graph_filter)
+    sort_type = "@timestamp"
+    if sort is 'timestamp':
+        sort_type = "@timestamp"
+    elif sort is 'name':
+        sort_type = "File Name.keyword"
+    elif sort is 'size':
+        sort_type = "Size.keyword"
+    elif sort is 'type':
+        sort_type = "Type.keyword"
 
-        query += ','  # separator between query and sort
-        query += '"sort": ['  # begin of sort field
-        query += '{'  # begin of sort parametr
+    body['sort'] = [{sort_type: {'order': sort_order}}]
+    return body
 
-        if sort is 'timestamp':
-            query += '"@timestamp": '
-        elif sort is 'name':
-            query += '"File Name.keyword": '
-        elif sort is 'size':
-            query += '"Size.keyword": '
-        elif sort is 'type':
-            query += '"Type.keyword": '
-        else:
-            query += '"@timestamp": '
-        query += '{'  # begin of sort order
-        query += '"order": "' + sort_order + '"'  # Adding sorting order
-        query += '}'  # end of sorting order
-        query += '}'  # end of sort parametr
-        query += ']'  # end of sort field
-        query += '}'  # end of all string
-        return query
+
+def build_number_of_entries_query(case_name, clusters, additional_filters, time_border):
+    time_border_filter = {'range': {'@timestamp': {'lt': time_border}}}
+    additional_filters.append(json.dumps(time_border_filter))
+    return build_data_query(case_name, clusters, additional_filters, None, 0, 1, 'timestamp', 'asc')
+
+
+def build_graph_data_query(case_name,
+                     clusters,
+                     additional_filters,
+                     mac_type,
+                     frequency):
+    body = {}
+    body['query'] = build_base_query(case_name, clusters, additional_filters, build_additional_type_filter(mac_type))
+    body['aggs'] = {'dates': {'date_histogram': {'field': '@timestamp', 'interval': frequency}}}
+    return body
+
+
+def build_first_or_last_query(case_name, clusters, additional_filters, mac_type, order):
+    body = {}
+    body['from'] = 0
+    body['size'] = 1
+    body['query'] = build_base_query(case_name, clusters, additional_filters, build_additional_type_filter(mac_type))
+    body['sort'] = [{'@timestamp': {'order': order}}]
+    return body
 
 
 def build_base_query(case_name, clusters, additional_filters, graph_filter):
@@ -95,21 +117,23 @@ def build_base_query(case_name, clusters, additional_filters, graph_filter):
     if clusters is not None:
         sub_clusters = get_base_clusters(clusters)
         for cluster in sub_clusters:
-            if cluster.selectMode is not ClusterSelectMode.notSelected:
-                if cluster.selectMode is ClusterSelectMode.added:
+            if cluster.selectMode != ClusterSelectMode.notSelected.value:
+                if cluster.selectMode == ClusterSelectMode.added.value:
                     if cluster.tagged:
                         must_tags.append(cluster.tag)
                     else:
-                        if cluster.computation.isSelected:
-                            filter_model = get_computation_filter_string(cluster.computation)
+                        computation = Computation(cluster.computation)
+                        if computation.isSelected:
+                            filter_model = get_computation_filter_string(computation)
                             if filter_model is not None:
                                 must_filters.append(filter_model)
-                if cluster.selectMode is ClusterSelectMode.deducted:
+                if cluster.selectMode == ClusterSelectMode.deducted.value:
                     if cluster.tagged:
                         must_not_tags.append(cluster.tag)
                     else:
-                        if cluster.computation.isSelected:
-                            filter_model = get_computation_filter_string(cluster.computation)
+                        computation = Computation(cluster.computation)
+                        if computation.isSelected:
+                            filter_model = get_computation_filter_string(computation)
                             if filter_model is not None:
                                 must_not_filters.append(filter_model)
     must_clusters = []
@@ -124,72 +148,64 @@ def build_base_query(case_name, clusters, additional_filters, graph_filter):
     must_params = []
     must_params.append(get_match_string_from_case(case_name))
     if additional_filters is not None:
-        must_params.extend(additional_filters)
+        for add_filt in additional_filters:
+            must_params.append(json.loads(add_filt))
+        # must_params.extend(additional_filters)
     if graph_filter is not None:
         must_params.append(graph_filter)
 
     # if must clusters are empty, don't display anything
     if len(must_clusters) == 0:
-        must_not_clusters.append('{"match_all": {}}')
+        must_not_clusters.append({'match_all': {}})
 
-    query = ''
-    query += '"query": {'  # start of query
-    query += '"bool": {'   # start of bool in query
-    query += '"must": ['   # start of main must
+    query_must_params = {'bool': {'must': must_params}}
+    query_should_clusters = {'bool': {'should': must_clusters}}
+    query_must_not_clusters = {'bool': {'must_not': must_not_clusters}}
+    query = {'bool': {'must': [query_must_params, query_should_clusters, query_must_not_clusters]}}
 
-    # must params
-    query += '{'  # start of item with case selection
-    query += '"bool": {'  # start bool in case selection
-    query += '"must": ['  # start of must array in case selection
+    return query
 
-    if must_params is not None:
-        if len(must_params) > 0:
-            for i in range(0, len(must_params)):
-                query += str(must_params[i])
-                if i < (len(must_params) - 1):
-                    query += ','  # separator between selected params
 
-    query += ']'  # end of must array in case selection
-    query += '}'  # end of bool in case selection
-    query += '}'  # end of item with case selection
+def build_count_query(case_name, cluster, additional_filters):
+    must_tags = []
+    must_filters = []
+    must_not_tags = []
+    must_not_filters = []
+    if cluster is not None:
+        sub_clusters = get_base_clusters([cluster])
+        for cluster in sub_clusters:
+            if cluster.tagged:
+                must_tags.append(cluster.tag)
+            else:
+                computation = Computation(cluster.computation)
+                filter_model = get_computation_filter_string(computation)
+                if filter_model is not None:
+                    must_filters.append(filter_model)
 
-    query += ','  # separator between case selection and selected clusters
+    must_clusters = []
+    must_clusters.extend(get_match_string_from_tags(must_tags))
+    must_clusters.extend(must_filters)
 
-    query += '{'  # start of selected clusters
-    query += '"bool" : {'  # start of bool in selected clusters
-    query += '"should": ['  # start of should array of selected clusters
+    must_not_clusters = []
+    must_not_clusters.extend(get_match_string_from_tags(must_not_tags))
+    must_not_clusters.extend(must_not_filters)
 
-    if must_clusters is not None:
-        if len(must_clusters) > 0:
-            for i in range(0, len(must_clusters)):
-                query += str(must_clusters[i])
-                if i < (len(must_clusters) - 1):
-                    query += ','  # separator between selected clusters
+    # Must params, case_name, graph_filter( if available), additional_filter( if available)
+    must_params = []
+    must_params.append(get_match_string_from_case(case_name))
+    if additional_filters is not None:
+        for add_filt in additional_filters:
+            must_params.append(json.loads(add_filt))
+        # must_params.extend(additional_filters)
 
-    query += ']'  # end of should array in selected clusters
-    query += '}'  # end of bool in selected clusters
-    query += '}'  # end of selected clusters
+    # if must clusters are empty, don't display anything
+    if len(must_clusters) == 0:
+        must_not_clusters.append({'match_all': {}})
 
-    query += ',' # separator between selected clusters and minus clusters
-
-    query += '{'  # start of substracted clusters
-    query += '"bool": {'  # start of bool in substracted clusters
-    query += '"must_not": ['  # start of must_not array of substracted clusters
-
-    if must_not_clusters is not None:
-        if len(must_not_clusters) > 0:
-            for i in range(0, len(must_not_clusters)):
-                query += str(must_not_clusters[i])
-                if i < (len(must_not_clusters) - 1):
-                    query += ','  # separator between selected clusters
-
-    query += ']'  # end of must_not array of substracted clusters
-    query += '}'  # end of bool in substracted clusters
-    query += '}'  # end of substracted clusters
-
-    query += ']'  # end of first must
-    query += '}'  # end of first bool
-    query += '}'  # end of query
+    query_must_params = {'bool': {'must': must_params}}
+    query_should_clusters = {'bool': {'should': must_clusters}}
+    query_must_not_clusters = {'bool': {'must_not': must_not_clusters}}
+    query = {'query': {'bool': {'must': [query_must_params, query_should_clusters, query_must_not_clusters]}}}
 
     return query
 
@@ -203,8 +219,10 @@ def get_base_clusters(clusters):
         while True:
             found_sub_clusters = False
             for cluster in tmp_clusters:
+                cluster = Cluster(cluster)
                 if len(cluster.subClusters) > 0:
                     for sub in cluster.subClusters:
+                        sub = Cluster(sub)
                         tmp.append(sub)
                         found_sub_clusters = True
                 else:
@@ -219,6 +237,7 @@ def get_base_clusters(clusters):
 def get_computation_filter_string(computation):
     applied_filters = []
     for filter_model in computation.filters:
+        filter_model = Filter(filter_model)
         if filter_model.isSelected:
             applied_filters.append(apply_filter(filter_model.json, filter_model.params))
     return get_additional_filter_combination(applied_filters)
@@ -227,18 +246,17 @@ def get_computation_filter_string(computation):
 def apply_filter(filter_model, params):
     result = filter_model
     for param in params:
+        param = FilterParam(param)
         escaped_param = param.value
-        if param.type is 'REGEX':
-            escaped_param = re.sub(r'/\\/', '\\\\', escaped_param)
+        if param.type == 'REGEX':
+            escaped_param = str(escaped_param).replace('\\', '\\\\')
         result = result.replace('${{' + param.name + '}}$', escaped_param)
-    return result
+    return json.loads(result)
 
 
 def get_additional_filter_combination(filters):
     if len(filters) > 0:
-        result = '{"bool": {"must":['
-        result += filters.join(', ')
-        result += ']}}'
+        result = {'bool': {'must': [filters]}}
         return result
     return None
 
@@ -246,21 +264,61 @@ def get_additional_filter_combination(filters):
 def get_match_string_from_tags(clusters):
     result = []
     for i in range(0, len(clusters)):
-        query = ''
-        query += '{'
-        query += '"match": {'
-        query += '"tags.keyword": "' + clusters[i] + '"'
-        query += '}'
-        query += '}'
+        query = {'match': {'tags.keyword': clusters[i]}}
         result.append(query)
     return result
 
 
 def get_match_string_from_case(case_name):
-    query = ''
-    query += '{'
-    query += '"match": {'
-    query += '"case.keyword": "' + case_name + '"'
-    query += '}'
-    query += '}'
+    query = {'match': {'case.keyword': case_name}}
     return query
+
+
+def build_additional_search_filter(search_string):
+    search = search_string.replace('/', '\\\\/')\
+        .replace('.', '\\\\.')\
+        .replace('-', '\\\\-')\
+        .replace('(', '\\\\(')\
+        .replace(')', '\\\\)')\
+        .replace('[', '\\\\[')\
+        .replace(']', '\\\\]')\
+        .replace('*', '\\\\*')\
+        .replace('+', '\\\\+')\
+        .replace('{', '\\\\{')\
+        .replace('}', '\\\\}')\
+        .replace('^', '\\\\^')\
+        .replace('?', '\\\\?')\
+        .replace('<', '\\\\<')\
+        .replace('>', '\\\\>')\
+        .replace('&', '\\\\&')\
+        .replace('$', '\\\\$')\
+        .replace('|', '\\\\|')
+    search = '.*' + search + '.*'
+    return {'regexp': {'File Name.keyword': search}}
+
+
+def build_additional_range_filter(from_param, to_param):
+    if from_param is not None or to_param is not None:
+        time_range = {}
+        if from_param is not None:
+            time_range['gte'] = from_param
+        if to_param is not None:
+            time_range['lte'] = to_param
+        time_range['format'] = 'date_time'
+        return {'range': {'@timestamp': time_range}}
+    else:
+        return None
+
+
+def build_additional_types_filter(types):
+    filters = []
+    for m_type in types:
+        filters.append(build_additional_type_filter(m_type))
+    return {'bool': {'should': filters}}
+
+
+def build_additional_type_filter(type_param):
+    if type_param is not None:
+        return {'wildcard': {'Type.keyword': '*' + str(type_param) + '*'}}
+    else:
+        return None
