@@ -11,3 +11,4 @@
   - { role: nginx }
   - { role: logstash }
   - { role: test-data }
+  - { role: flask }

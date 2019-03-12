@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to flask backend API
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/backend/
+Environment="PATH=/opt/backend/venv/bin"
+ExecStart=/opt/backend/venv/bin/uwsgi --ini /opt/backend/backendAPI.ini
+
+[Install]
+WantedBy=multi-user.target

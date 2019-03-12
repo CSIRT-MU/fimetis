@@ -1,0 +1,9 @@
+server {
+    listen 5001;
+    server_name 78.128.250.207;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/opt/backend/backendAPI.sock;
+    }
+}

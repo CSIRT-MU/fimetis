@@ -76,7 +76,7 @@
       delay: 10
 
   - name: Setting size of maximal result from elastic with curl
-    command: 'curl -XPUT ''localhost:{{ elastic_localhost_port }}/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
+    shell: 'curl -XPUT ''localhost:{{ elastic_localhost_port }}/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
     args:
       warn: false 
 

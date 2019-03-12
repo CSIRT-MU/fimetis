@@ -1,0 +1,109 @@
+---
+
+# Tasks for flask 
+  - name: install prereqs
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - python3-pip
+      - python3-dev
+      - build-essential
+      - libssl-dev
+      - libffi-dev
+      - python3-setuptools
+
+  - name: Installing python3-venv
+    apt:
+      name: python3-venv
+      update_cache: yes
+
+  - name: Installing python3-pip
+    apt:
+      name: python3-pip
+      update_cache: yes
+   
+  - name: Downloading repo from gitlab 
+    shell: git clone -b 52-suspicious-file-changes-project-init-continuation-of-timeline-forensix --single-branch https://ouath2:pNDgUXuui5kznGnn2_-p@gitlab.ics.muni.cz/kypo2/kypo2-analytical-node.git
+    args: 
+      chdir: /tmp
+
+  - name: Moving angular app code to /tmp
+    shell: mv /tmp/kypo2-analytical-node/methods/analysis/file_system_analysis/backend /opt --backup=numbered
+
+  - name: Cleaning nonused source codes from downloaded repo
+    file:
+      path: /tmp/kypo2-analytical-node
+      state: absent
+
+#  - name: install virtualenv
+#    shell: pip3 install virtualenv
+
+  - name: Create  venv
+    command: virtualenv /opt/backend/venv/ -p python3 creates="/opt/backend/venv"
+
+  - name: Setup tools try
+    shell: source /opt/backend/venv/bin/activate && pip install -U pip
+    args:
+      executable: /bin/bash 
+
+  - name: Install requirement
+    pip:
+      requirements=/opt/backend/py_requirements
+      executable=/opt/backend/venv/bin/pip
+
+#  - name: Access to port 5000 enabled
+#    shell: source /opt/backend/venv/bin/activate && ufw allow 5000
+#    args:
+#      executable: /bin/bash
+
+  - name: Placing backendAPI.ini config
+    copy:
+      src: "{{ role_path }}/files/backendAPI.ini"
+      dest: /opt/backend/
+
+  - name: Placing backendAPI.service
+    copy:
+      src: "{{ role_path }}/files/backendAPI.service"
+      dest: /etc/systemd/system/
+
+  - name: chown backed to www-data
+    shell:  chown www-data:www-data -R /opt/backend
+
+  - name: Starting
+    systemd:
+      name: backendAPI
+      daemon_reload: yes
+      enabled: yes
+      state: started 
+ 
+  - name: Placing template nginxi
+    template:
+      src: backendAPI.j2
+      dest: /etc/nginx/sites-available/backendAPI
+
+  - name: Setting backend flask reverse port
+    lineinfile:
+      dest: /etc/nginx/sites-available/backendAPI
+      regexp: "^.*listen .*"
+      line: "    listen {{ backend_port }};"
+
+  - name: Creating symlinks for nginx configs to sites-enabled
+    shell: ln -s /etc/nginx/sites-available/{{ item }} /etc/nginx/sites-enabled
+    with_items:
+      - backendAPI
+    args:
+      warn: false
+
+#  - name:
+#    lineinfile:
+#      dest: /opt/backend/backendAPI.py
+#      regexp: "^.*port=.*)"
+#      line: 
+
+  - name: Restarting nginx
+    systemd: 
+      name: nginx
+      state: restarted
+
+ 
