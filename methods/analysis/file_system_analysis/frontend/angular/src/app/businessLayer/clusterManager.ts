@@ -94,8 +94,10 @@ export class ClusterManager {
         // how many entries before given mactime_entry left or were added
         // add to both old and new the criterium time  get the number of results and count difference,
 
-        const old_number = await this.clusterDao.getNumberOfEntries(this.case, oldClusters, mactime_entry._source['@timestamp']);
-        const new_number = await this.clusterDao.getNumberOfEntries(this.case, this.clusters, mactime_entry._source['@timestamp']);
+        // const old_number = await this.clusterDao.getNumberOfEntries(this.case, oldClusters, mactime_entry._source['@timestamp']);
+        // const new_number = await this.clusterDao.getNumberOfEntries(this.case, this.clusters, mactime_entry._source['@timestamp']);
+        const old_number = await this.service.numberOfEntries(this.case, oldClusters, [], mactime_entry._source['@timestamp']);
+        const new_number = await this.service.numberOfEntries(this.case, this.clusters, [], mactime_entry._source['@timestamp']);
         console.log(old_number);
         console.log(new_number);
 

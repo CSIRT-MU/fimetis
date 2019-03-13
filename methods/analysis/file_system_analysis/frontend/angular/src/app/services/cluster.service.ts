@@ -52,4 +52,23 @@ export class ClusterService {
             }
         );
     }
+
+    numberOfEntries(_case: string,
+                    _clusters: ClusterModel[],
+                    _additional_filters: string[],
+                    timeBorder: string) {
+        return this.http.post<any>(environment.backendUrl + '/clusters/entries_border/' + _case, {
+            'clusters': _clusters,
+            'additional_filters': _additional_filters,
+            'border': timeBorder
+        }).toPromise().then(
+            response => {
+                console.log('response', response);
+                return response.hits.total;
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
 }

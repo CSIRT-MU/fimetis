@@ -88,17 +88,17 @@ def build_number_of_entries_query(case_name, clusters, additional_filters, time_
 
 
 def build_graph_data_query(case_name,
-                     clusters,
-                     additional_filters,
-                     mac_type,
-                     frequency):
+                           clusters,
+                           additional_filters,
+                           mac_type,
+                           frequency):
     body = {}
     body['query'] = build_base_query(case_name, clusters, additional_filters, build_additional_type_filter(mac_type))
     body['aggs'] = {'dates': {'date_histogram': {'field': '@timestamp', 'interval': frequency}}}
     return body
 
 
-def build_first_or_last_query(case_name, clusters, additional_filters, mac_type, order):
+def build_first_entry_query(case_name, clusters, additional_filters, mac_type, order):
     body = {}
     body['from'] = 0
     body['size'] = 1

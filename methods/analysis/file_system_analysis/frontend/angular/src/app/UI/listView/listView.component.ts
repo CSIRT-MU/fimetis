@@ -178,8 +178,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
         this.clusterManager.case = this.case;
         this.clusterManager.clusters = this.clusters;
-        // const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
-        const shift = 0;
+        const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
+        // const shift = 0;
         // const loadEvent = {};
         // loadEvent['start'] = this.visibleDataFirstIndex;
         // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;

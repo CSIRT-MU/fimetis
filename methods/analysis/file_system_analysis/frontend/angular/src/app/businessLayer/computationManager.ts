@@ -4,7 +4,6 @@ import {ElasticsearchService} from '../elasticsearch.service';
 import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
 import {ComputationDao} from '../dao/computationDao';
-import {ClusteringOverviewModel} from '../models/clusteringOverview.model';
 import {ClusterDao} from '../dao/clusterDao';
 
 export class ComputationManager {
@@ -61,47 +60,47 @@ export class ComputationManager {
         return _clusters;
     }
 
-    getClusterings(): ClusteringOverviewModel[] {
-        let _clusters: ClusterModel[] = [];
-        const clusterings: ClusteringOverviewModel[] = [];
-
-        for (const computation of this.computations) {
-            if (computation.isSelected) {
-                const result = this.computationDao.getClustersForComputation(this.case, computation);
-                _clusters = _clusters.concat(result);
-            }
-            const clustering = new ClusteringOverviewModel();
-            clustering.name = computation.name;
-            clustering.color = computation.color;
-            clustering.clusters = _clusters;
-            clusterings.push(clustering);
-            _clusters = [];
-        }
-
-
-        console.log('Im returning clusterings: ', clusterings);
-        return clusterings;
-    }
-
-    getPreloadedClusterings(): ClusteringOverviewModel[] {
-        const clusterings: ClusteringOverviewModel[] = [];
-
-        const init_clustering = new ClusteringOverviewModel();
-        init_clustering.name = 'Init clustering';
-        init_clustering.color = 'red';
-        init_clustering.clusters = this.clusterDao.getStoredClusters(this.case);
-
-        clusterings.push(init_clustering);
-
-        const aggregations = new ClusteringOverviewModel();
-        aggregations.name = 'Aggregations clustering';
-        aggregations.color = 'blue';
-
-        clusterings.push(aggregations);
-
-
-        return clusterings;
-    }
+    // getClusterings(): ClusteringOverviewModel[] {
+    //     let _clusters: ClusterModel[] = [];
+    //     const clusterings: ClusteringOverviewModel[] = [];
+    //
+    //     for (const computation of this.computations) {
+    //         if (computation.isSelected) {
+    //             const result = this.computationDao.getClustersForComputation(this.case, computation);
+    //             _clusters = _clusters.concat(result);
+    //         }
+    //         const clustering = new ClusteringOverviewModel();
+    //         clustering.name = computation.name;
+    //         clustering.color = computation.color;
+    //         clustering.clusters = _clusters;
+    //         clusterings.push(clustering);
+    //         _clusters = [];
+    //     }
+    //
+    //
+    //     console.log('Im returning clusterings: ', clusterings);
+    //     return clusterings;
+    // }
+    //
+    // getPreloadedClusterings(): ClusteringOverviewModel[] {
+    //     const clusterings: ClusteringOverviewModel[] = [];
+    //
+    //     const init_clustering = new ClusteringOverviewModel();
+    //     init_clustering.name = 'Init clustering';
+    //     init_clustering.color = 'red';
+    //     init_clustering.clusters = this.clusterDao.getStoredClusters(this.case);
+    //
+    //     clusterings.push(init_clustering);
+    //
+    //     const aggregations = new ClusteringOverviewModel();
+    //     aggregations.name = 'Aggregations clustering';
+    //     aggregations.color = 'blue';
+    //
+    //     clusterings.push(aggregations);
+    //
+    //
+    //     return clusterings;
+    // }
 
 
 }

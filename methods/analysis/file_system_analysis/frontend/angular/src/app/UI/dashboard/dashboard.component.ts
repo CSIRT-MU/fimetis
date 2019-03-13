@@ -13,7 +13,6 @@ import {GraphComponent} from '../graph/graph.component';
 import {ComputationManager} from '../../businessLayer/computationManager';
 import {GraphManager} from '../../businessLayer/graphManager';
 import {BaseManager} from '../../businessLayer/baseManager';
-import {ClusteringOverviewModel} from '../../models/clusteringOverview.model';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
 import {ClusterComponent} from '../cluster/cluster.component';
@@ -66,7 +65,6 @@ export class DashboardComponent implements OnInit {
     manualClusters: ClusterModel[] = [];
     savedClusters: Set<ClusterModel> = new Set<ClusterModel>();
     clusters: Set<ClusterModel> = new Set<ClusterModel>();
-    clusteringOverview: ClusteringOverviewModel[] = [];
 
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
@@ -168,7 +166,7 @@ export class DashboardComponent implements OnInit {
         this.computationManager.case = this.selectedCase;
         this.initPreLoadedClusters();
         // this.loadStoredClusters();
-        this.clusteringOverview = this.computationManager.getPreloadedClusterings();
+        // this.clusteringOverview = this.computationManager.getPreloadedClusterings();
         this.listViewComponent.init();
     }
 
@@ -598,7 +596,6 @@ export class DashboardComponent implements OnInit {
         this.pickedComputation = computation;
         this.selectedFilter = filter.name;
         this.filterPanelOpenState = true;
-        this.collapse();
     }
 
     /**
@@ -609,7 +606,6 @@ export class DashboardComponent implements OnInit {
         this.selectedFilterModel = JSON.parse(JSON.stringify(filter));
         this.selectedFilter = this.selectedFilterModel.name;
         this.filterPanelOpenState = true;
-        this.collapse();
     }
 
     /**
@@ -619,7 +615,7 @@ export class DashboardComponent implements OnInit {
         console.log('compute');
         this.computationManager.case = this.selectedCase;
         this.computationManager.computations = Array.from(this.computations);
-        this.clusteringOverview = this.computationManager.getClusterings();
+        // this.clusteringOverview = this.computationManager.getClusterings();
         const clusters = this.computationManager.getClusters();
         this.clusters.clear();
         for (const cluster of clusters) {
@@ -636,30 +632,6 @@ export class DashboardComponent implements OnInit {
     computeSelectedComputation(computation: ComputationModel) {
         console.log(computation);
         this.computeComputations();
-    }
-
-    /**
-     * Triggered by collapse of any element and computes height of each element
-     */
-    collapse() {
-        // // let height = 10;
-        // let height = 48;
-        // height += 18;
-        // // if (!this.filterPanelOpenState) {
-        // //     height += 20;
-        // // }
-        // // if (this.computationPanelOpenState) {
-        // //     let index = 0;
-        // //     height -= 2;
-        // //     while (index < this.computations.size) {
-        // //         height -= 2;
-        // //         index++;
-        // //     }
-        // // }
-        // if (!this.histogramPanelOpenState) {
-        //     height += 22;
-        // }
-        // this.listViewComponent.resizeList(height);
     }
 
     makeManualCluster(computation: ComputationModel) {

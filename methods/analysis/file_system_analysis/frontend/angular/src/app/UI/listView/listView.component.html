@@ -163,7 +163,7 @@
 <!--</div>-->
 <!--</div>-->
 
-<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 list-view-content" [ngClass]="{'panel-hidden': !tablePanelOpenState, 'panel-visible': tablePanelOpenState}">
+<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12" [ngClass]="{'panel-hidden': !tablePanelOpenState, 'list-view-content': tablePanelOpenState}">
     <div class="list-view-wrapper">
         <div class="table-loading-spinner" *ngIf="loadingData">
             <div class="spinning-loader"></div>

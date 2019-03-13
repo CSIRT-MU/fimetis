@@ -221,7 +221,7 @@ def clusters_entries_border(current_user, case):
     border = request.json.get('border')
 
     query = fsa.build_number_of_entries_query(case, clusters, additional_filters, border)
-    print(json.dumps(query))
+    print('border', json.dumps(query))
     if not app.config['elastic_metadata_type']:
         res = es.search(index=app.config['elastic_metadata_index'],
                         body=json.dumps(query))
@@ -257,8 +257,8 @@ def cluster_get_first_and_last_entry(current_user, case):
     additional_filters = request.json.get('additional_filters')
     mac_type = request.json.get('mac_type')
 
-    first_query = fsa.build_first_or_last_query(case, clusters, additional_filters, mac_type, 'asc')
-    last_query = fsa.build_first_or_last_query(case, clusters, additional_filters, mac_type, 'desc')
+    first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
+    last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
     print(json.dumps(first_query))
     if not app.config['elastic_metadata_type']:
         first = es.search(index=app.config['elastic_metadata_index'],
