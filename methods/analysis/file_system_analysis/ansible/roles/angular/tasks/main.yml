@@ -55,6 +55,12 @@
 #      line: " "
 
 
+  - name: Set backend api url
+    lineinfile:
+      path: /tmp/angular/src/environments/environment.prod.ts
+      regexp: "^.*backendUrl.*"
+      line: "    backendUrl{{':'}} 'http{{':'}}//{{ inventory_hostname}}{{':'}}{{ backend_port }}'"
+
   - name: Install npm in angular app
     shell: npm install
     args:

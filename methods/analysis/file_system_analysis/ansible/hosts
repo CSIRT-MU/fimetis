@@ -1,2 +1,5 @@
-78.128.250.225 ansible_user=root
+#78.128.250.225 ansible_user=root
 #78.128.250.207 ansible_user=root
+#78.128.250.232 ansible_user=root
+#78.128.250.226 ansible_user=root
+78.128.250.242 ansible_user=root
