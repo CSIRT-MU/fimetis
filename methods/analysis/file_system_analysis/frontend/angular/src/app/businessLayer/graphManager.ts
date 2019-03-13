@@ -71,8 +71,11 @@ export class GraphManager {
         let last = 0;
         const one_day = 1000 * 60 * 60 * 24;
 
-        first = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
-        last = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
+        // first = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
+        // last = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
+        const firstAndLast = await this.getFirstAndLast();
+        first = firstAndLast[0];
+        last = firstAndLast[1];
 
         let frequency = 'day';
         if (first !== 0 && last !== 0 && first !== undefined && last !== undefined) {
