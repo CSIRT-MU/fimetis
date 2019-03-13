@@ -20,15 +20,6 @@ class ClusterSelectMode(Enum):
     deducted = 2
 
 
-class Computation:
-    def __init__(self, dictionary=None):
-        self.name = ''
-        self.filters = []
-        self.isSelected = True
-        if dictionary is not None and isinstance(dictionary, dict):
-            self.__dict__ = dictionary
-
-
 class Filter:
     def __init__(self, dictionary=None):
         self.name = ''

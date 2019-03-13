@@ -15,7 +15,7 @@ es = Elasticsearch()
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = '/tmp'
-app.config['SECRET_KEY'] = 'thisissecretkey'
+app.config['SECRET_KEY'] = os.urandom(24)
 app.config['elastic_metadata_index'] = 'metadata'
 app.config['elastic_metadata_type'] = ''
 app.config['elastic_filter_index'] = 'filter'
