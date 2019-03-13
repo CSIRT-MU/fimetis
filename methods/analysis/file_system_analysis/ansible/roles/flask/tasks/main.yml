@@ -12,6 +12,7 @@
       - libssl-dev
       - libffi-dev
       - python3-setuptools
+      - python-setuptools
 
   - name: Installing python3-venv
     apt:
@@ -36,11 +37,11 @@
       path: /tmp/kypo2-analytical-node
       state: absent
 
-#  - name: install virtualenv
-#    shell: pip3 install virtualenv
+  - name: install virtualenv
+    shell: pip3 install virtualenv
 
-  - name: Create  venv
-    command: virtualenv /opt/backend/venv/ -p python3 creates="/opt/backend/venv"
+  - name: Create venv
+    shell: virtualenv /opt/backend/venv -p python3 creates="/opt/backend/venv"
 
   - name: Setup tools try
     shell: source /opt/backend/venv/bin/activate && pip install -U pip
