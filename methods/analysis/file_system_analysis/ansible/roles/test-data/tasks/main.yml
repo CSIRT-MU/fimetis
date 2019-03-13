@@ -14,4 +14,9 @@
   - name: Loading testing filter to elastic
     shell: 'curl -XPOST ''localhost:{{ elastic_localhost_port }}/filter/typename'' -H ''Content-Type: application/json'' -d ''{ "name": "select all", "type": "template", "json": "{\"match_all\": {}}"}'''
 
- 
+  - name: Setting size of maximal result from elastic indexes with curl
+    shell: 'curl -XPUT ''localhost:{{ elastic_localhost_port }}/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
+    args:
+      warn: false 
+
+

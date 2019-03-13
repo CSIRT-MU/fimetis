@@ -26,7 +26,7 @@
     lineinfile:
       dest: /etc/nginx/sites-available/angular
       regexp: "^.*listen .*;"
-      line: "    listen 80;"
+      line: "    listen {{ angular_app_port }};"
 
   - name: Setting elasticsearch localhost port
     lineinfile:

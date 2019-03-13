@@ -1,7 +1,7 @@
 ---
 
 # Tasks for flask 
-  - name: install prereqs
+  - name: Installing flask prerequisites
     apt:
       name: "{{ packages }}"
     vars:
@@ -37,74 +37,62 @@
       path: /tmp/kypo2-analytical-node
       state: absent
 
-  - name: install virtualenv
+  - name: Installing virtualenv
     shell: pip3 install virtualenv
 
-  - name: Create venv
+  - name: Creating virtualenv for flask
     shell: virtualenv /opt/backend/venv -p python3 creates="/opt/backend/venv"
 
-  - name: Setup tools try
+  - name: Updating pip in virtualenv for flask
     shell: source /opt/backend/venv/bin/activate && pip install -U pip
     args:
       executable: /bin/bash 
 
-  - name: Install requirement
+  - name: Installing flask requirements into virtualenv
     pip:
       requirements=/opt/backend/py_requirements
       executable=/opt/backend/venv/bin/pip
 
-#  - name: Access to port 5000 enabled
-#    shell: source /opt/backend/venv/bin/activate && ufw allow 5000
-#    args:
-#      executable: /bin/bash
-
-  - name: Placing backendAPI.ini config
+  - name: Placing backendAPI.ini config for running flask as production using wsgi
     copy:
       src: "{{ role_path }}/files/backendAPI.ini"
       dest: /opt/backend/
 
-  - name: Placing backendAPI.service
+  - name: Placing backendAPI.service for running flask as production using wsgi
     copy:
       src: "{{ role_path }}/files/backendAPI.service"
       dest: /etc/systemd/system/
 
-  - name: chown backed to www-data
+  - name: Chowning /opt/backend to user www-data
     shell:  chown www-data:www-data -R /opt/backend
 
-  - name: Starting
+  - name: Starting backendAPI.service
     systemd:
       name: backendAPI
       daemon_reload: yes
       enabled: yes
       state: started 
  
-  - name: Placing template nginxi
+  - name: Placing backendAPI template for nginx to sites-available
     template:
       src: backendAPI.j2
       dest: /etc/nginx/sites-available/backendAPI
 
-  - name: Setting backend flask reverse port
+  - name: Setting backend flask reverse port in sites-available
     lineinfile:
       dest: /etc/nginx/sites-available/backendAPI
       regexp: "^.*listen .*"
       line: "    listen {{ backend_port }};"
 
-  - name: Creating symlinks for nginx configs to sites-enabled
+  - name: Creating symlinks for nginx config to sites-enabled
     shell: ln -s /etc/nginx/sites-available/{{ item }} /etc/nginx/sites-enabled
     with_items:
       - backendAPI
     args:
       warn: false
 
-#  - name:
-#    lineinfile:
-#      dest: /opt/backend/backendAPI.py
-#      regexp: "^.*port=.*)"
-#      line: 
-
   - name: Restarting nginx
     systemd: 
       name: nginx
       state: restarted
 
- 
