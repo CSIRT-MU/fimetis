@@ -5,13 +5,10 @@ import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
 import {FilterParamModel} from '../../models/filterParam.model';
 import {FilterModel} from '../../models/filter.model';
 import {NameDialogComponent} from '../dialog/name-dialog/name-dialog.component';
-// import {ComputationModel} from '../../models/computation.model';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 import {ClusterModel} from '../../models/cluster.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {GraphComponent} from '../graph/graph.component';
-import {ComputationManager} from '../../businessLayer/computationManager';
-import {GraphManager} from '../../businessLayer/graphManager';
 import {BaseManager} from '../../businessLayer/baseManager';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
@@ -28,7 +25,6 @@ import {ClusterService} from '../../services/cluster.service';
 
 export class DashboardComponent implements OnInit {
     clusterManager: ClusterManager;
-    computationManager: ComputationManager;
     baseManager: BaseManager;
     elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
 
@@ -86,37 +82,16 @@ export class DashboardComponent implements OnInit {
 
     constructor(private es: ElasticsearchService, public dialog: MatDialog, private toaster: ToastrService, private baseService: BaseService, private clusterService: ClusterService) {
         this.clusterManager = new ClusterManager(this.es, this.clusterService);
-        this.computationManager = new ComputationManager(this.es);
         this.baseManager = new BaseManager(this.es);
         this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
-
-        // test only
-        //   const comp = new ComputationModel();
-        //   comp.color = '#336699';
-        //   comp.name = 'test';
-        //   const filt = new FilterModel();
-        //   filt.name = 'test_filter';
-        //   filt.isSelected = true;
-        //   comp.filters.add(filt);
-        //   const comp2 = new ComputationModel();
-        //   comp2.color = '#cc0000';
-        //   comp2.name = 'test2';
-        //   comp2.isSelected = false;
-        //   this.computations.add(comp);
-        //   this.computations.add(comp2);
-        //   this.pickedComputation = comp;
     }
 
     ngOnInit() {
-        // this.dateSliderComponent.min = 0;
-        // this.dateSliderComponent.max = 100;
-        // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
 
         this.loadAllCases();
         this.loadAllFilters();
-        // this.collapse();
     }
 
     loadAllCases() {
@@ -161,12 +136,10 @@ export class DashboardComponent implements OnInit {
     selectedCaseChanged() {
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
-        // this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
-        this.computationManager.case = this.selectedCase;
+        // this.computationManager.case = this.selectedCase;
         this.initPreLoadedClusters().then(() => this.clusterSelectionChanged(null));
         // this.loadStoredClusters();
-        // this.clusteringOverview = this.computationManager.getPreloadedClusterings();
         this.listViewComponent.init();
     }
 
@@ -608,32 +581,6 @@ export class DashboardComponent implements OnInit {
         this.filterPanelOpenState = true;
     }
 
-    /**
-     * Compute clusters from all computations
-     */
-    computeComputations() {
-        console.log('compute');
-        this.computationManager.case = this.selectedCase;
-        // this.computationManager.computations = Array.from(this.computations);
-        // this.clusteringOverview = this.computationManager.getClusterings();
-        const clusters = this.computationManager.getClusters();
-        this.clusters.clear();
-        for (const cluster of clusters) {
-            this.clusters.add(cluster);
-            console.log('added/', cluster);
-        }
-    }
-
-    // /**
-    //  * Compute clusters from given computation
-    //  * @param {ComputationModel} computation
-    //  */
-    // // TODO method that computes clustering overview only for selected computation
-    // computeSelectedComputation(computation: ComputationModel) {
-    //     console.log(computation);
-    //     this.computeComputations();
-    // }
-
     makeManualCluster(cluster: ClusterModel) {
         console.log('manual cluster', cluster);
         // this.computationManager.computations = [];
@@ -779,7 +726,6 @@ export class DashboardComponent implements OnInit {
         this.listViewComponent.case = this.selectedCase;
         // this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
-        this.computationManager.case = this.selectedCase;
         this.listViewComponent.case = this.selectedCase;
         this.graphComponent._case = this.selectedCase;
         this.listViewComponent.clusters = this.getClusters();

@@ -12,7 +12,6 @@ import 'rxjs/add/observable/of';
 import {fromArray} from 'rxjs/internal/observable/fromArray';
 import PerfectScrollbar from 'perfect-scrollbar';
 import {VirtualArrayModel} from '../../models/virtualArray.model';
-import {ComputationModel} from '../../models/computation.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import {TextSelectEvent, SelectionRectangle, TextSelectDirective} from '../text-select.directive';
@@ -35,10 +34,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
     case: string;
     @Input('filter')
     filter: string;
-    // @Input('computations')
-    // computations: ComputationModel[];
-    // @Input('displayedClusters')
-    // displayedClusters: string[];
     @Input('clusters')
     clusters: ClusterModel[] = [];
     oldClusters: ClusterModel[] = [];
@@ -529,10 +524,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
      */
     makeClusterByHighlight(): void {
         console.log('text', this.highlightedText);
-        const computation = new ComputationModel();
-        computation.name = this.highlightedText;
-        computation.color = '#3d9fea';
-        computation.isSelected = true;
         const cluster = new ClusterModel();
         cluster.name = this.highlightedText;
         cluster.color = '#3d9fea';
@@ -541,7 +532,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
         filter.isSelected = true;
         filter.name = 'highlighted_text';
         filter.type = 'REGEX';
-        computation.filters.push(filter);
         cluster.filters.push(filter);
         // computation.filters.add(filter);
         this.makeManualCluster.emit(cluster);
