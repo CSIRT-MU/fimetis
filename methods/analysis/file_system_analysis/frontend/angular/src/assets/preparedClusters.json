@@ -294,7 +294,7 @@
             "subClusters": [],
             "tagged": false,
             "tag": "",
-            "selectMode": 0,
+            "selectMode": 1,
             "computation": {
                 "isSelected": true,
                 "filters": [

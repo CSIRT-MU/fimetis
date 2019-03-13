@@ -4,15 +4,14 @@ import json
 
 class Cluster:
     def __init__(self, dictionary=None):
+        self.name = ''
+        self.computation = Computation()
+        self.tagged = False
+        self.tag = ''
+        self.selectMode = ClusterSelectMode.notSelected
+        self.subClusters = []
         if dictionary is not None and isinstance(dictionary, dict):
             self.__dict__ = dictionary
-        else:
-            self.name = ''
-            self.computation = Computation()
-            self.tagged = False
-            self.tag = ''
-            self.selectMode = ClusterSelectMode.notSelected
-            self.subClusters = []
 
 
 class ClusterSelectMode(Enum):
@@ -23,35 +22,32 @@ class ClusterSelectMode(Enum):
 
 class Computation:
     def __init__(self, dictionary=None):
+        self.name = ''
+        self.filters = []
+        self.isSelected = True
         if dictionary is not None and isinstance(dictionary, dict):
             self.__dict__ = dictionary
-        else:
-            self.name = ''
-            self.filters = []
-            self.isSelected = True
 
 
 class Filter:
     def __init__(self, dictionary=None):
+        self.name = ''
+        self.type = ''
+        self.json = ''
+        self.params = []
+        self.completed = ''
+        self.isSelected = ''
         if dictionary is not None and isinstance(dictionary, dict):
             self.__dict__ = dictionary
-        else:
-            self.name = ''
-            self.type = ''
-            self.json = ''
-            self.params = []
-            self.completed = ''
-            self.isSelected = ''
 
 
 class FilterParam:
     def __init__(self, dictionary=None):
+        self.name = ''
+        self.type = ''
+        self.value = ''
         if dictionary is not None and isinstance(dictionary, dict):
             self.__dict__ = dictionary
-        else:
-            self.name = ''
-            self.type = ''
-            self.value = ''
 
 
 def build_data_query(case_name,

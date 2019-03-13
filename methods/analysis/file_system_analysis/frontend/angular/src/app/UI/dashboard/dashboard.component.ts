@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
         // this.dateSliderComponent.min = 0;
         // this.dateSliderComponent.max = 100;
-        this.listViewComponent.displayedClusters = this.selectedStoredClusters;
+        // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
 
@@ -161,10 +161,10 @@ export class DashboardComponent implements OnInit {
     selectedCaseChanged() {
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
-        this.listViewComponent.displayedClusters = [];
+        // this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
         this.computationManager.case = this.selectedCase;
-        this.initPreLoadedClusters();
+        this.initPreLoadedClusters().then(() => this.clusterSelectionChanged(null));
         // this.loadStoredClusters();
         // this.clusteringOverview = this.computationManager.getPreloadedClusterings();
         this.listViewComponent.init();
@@ -186,7 +186,7 @@ export class DashboardComponent implements OnInit {
      */
     async initPreLoadedClusters() {
         // preloaded clusters
-        this.computationManager.computations = [];
+        // this.computationManager.computations = [];
         this.preloadedClusters = [];
 
 
@@ -301,8 +301,8 @@ export class DashboardComponent implements OnInit {
         console.log(resFilter);
         this.listViewComponent.case = this.selectedCase;
         this.listViewComponent.filter = this.combinedFilter;
-        this.listViewComponent.displayedClusters = this.selectedStoredClusters;
-        this.listViewComponent.computations = Array.from(this.computations);
+        // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
+        // this.listViewComponent.computations = Array.from(this.computations);
         this.listViewComponent.init();
 
         // TODO WARNING - only one cluster at a time
@@ -340,7 +340,7 @@ export class DashboardComponent implements OnInit {
 
     setStoredClusters($event) {
         this.selectedStoredClusters = $event;
-        this.listViewComponent.displayedClusters = this.selectedStoredClusters;
+        // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
         this.listViewComponent.init();
     }
 
@@ -374,7 +374,7 @@ export class DashboardComponent implements OnInit {
      * Remove selected cluster from persistent db if possible
      */
     deleteSelectedStoredClusters() {
-        this.listViewComponent.displayedClusters = [];
+        // this.listViewComponent.displayedClusters = [];
         this.listViewComponent.init();
         for (const cluster of this.selectedStoredClusters) {
             this.es.removeTag(
@@ -614,7 +614,7 @@ export class DashboardComponent implements OnInit {
     computeComputations() {
         console.log('compute');
         this.computationManager.case = this.selectedCase;
-        this.computationManager.computations = Array.from(this.computations);
+        // this.computationManager.computations = Array.from(this.computations);
         // this.clusteringOverview = this.computationManager.getClusterings();
         const clusters = this.computationManager.getClusters();
         this.clusters.clear();
@@ -777,7 +777,7 @@ export class DashboardComponent implements OnInit {
         this.savedClusters = JSON.parse(localStorage.getItem('savedClusters'));
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
-        this.listViewComponent.displayedClusters = [];
+        // this.listViewComponent.displayedClusters = [];
         this.clusterManager.case = this.selectedCase;
         this.computationManager.case = this.selectedCase;
         this.listViewComponent.case = this.selectedCase;

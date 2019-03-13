@@ -35,10 +35,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
     case: string;
     @Input('filter')
     filter: string;
-    @Input('computations')
-    computations: ComputationModel[];
-    @Input('displayedClusters')
-    displayedClusters: string[];
+    // @Input('computations')
+    // computations: ComputationModel[];
+    // @Input('displayedClusters')
+    // displayedClusters: string[];
     @Input('clusters')
     clusters: ClusterModel[] = [];
     oldClusters: ClusterModel[] = [];
