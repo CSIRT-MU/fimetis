@@ -2,6 +2,7 @@ import {ElasticsearchService} from '../elasticsearch.service';
 import {ElasticsearchBaseQueryDao} from './elasticsearchBaseQueryDao';
 import {DataModel} from '../models/data.model';
 import {ClusterModel, ClusterSelectMode} from '../models/cluster.model';
+import {environment} from '../../environments/environment';
 
 export class ClusterDao {
     private elasticsearchBaseQueryDao;
@@ -171,7 +172,7 @@ export class ClusterDao {
 
     storeCluster(cluster: ClusterModel, case_name) {
         if (!cluster.tagged) {
-            const filter = this.elasticsearchBaseQueryDao.getComputationFilterString(cluster.computation);
+            const filter = this.elasticsearchBaseQueryDao.getComputationFilterString(cluster);
             this.es.addTag(
                 case_name,
                 filter,

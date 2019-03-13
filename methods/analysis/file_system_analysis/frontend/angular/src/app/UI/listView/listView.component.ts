@@ -48,7 +48,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     @Output('graphChangedBoundary')
     graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
     @Output('makeManualCluster')
-    makeManualCluster: EventEmitter<ComputationModel> = new EventEmitter<ComputationModel>();
+    makeManualCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
     @Output('additionalFiltersChanged')
     additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
 
@@ -533,14 +533,18 @@ export class ListViewComponent implements OnInit, OnDestroy {
         computation.name = this.highlightedText;
         computation.color = '#3d9fea';
         computation.isSelected = true;
+        const cluster = new ClusterModel();
+        cluster.name = this.highlightedText;
+        cluster.color = '#3d9fea';
         const filter = new FilterModel();
         filter.json = this.elasticsearchBaseQueryManager.buildAdditionSearchFilter(this.highlightedText);
         filter.isSelected = true;
         filter.name = 'highlighted_text';
         filter.type = 'REGEX';
         computation.filters.push(filter);
+        cluster.filters.push(filter);
         // computation.filters.add(filter);
-        this.makeManualCluster.emit(computation);
+        this.makeManualCluster.emit(cluster);
     }
 
     /**

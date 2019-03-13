@@ -1,10 +1,12 @@
 import {ComputationModel} from './computation.model';
+import {FilterModel} from './filter.model';
 
 export class ClusterModel {
     name: string;
     color: string;
     count: number;
-    computation: ComputationModel;
+    // computation: ComputationModel;
+    filters: FilterModel[];
     tagged: boolean;
     tag: string;
     selectMode: ClusterSelectMode = ClusterSelectMode.notSelected;

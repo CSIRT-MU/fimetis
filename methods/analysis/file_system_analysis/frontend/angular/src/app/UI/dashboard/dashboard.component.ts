@@ -5,7 +5,7 @@ import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
 import {FilterParamModel} from '../../models/filterParam.model';
 import {FilterModel} from '../../models/filter.model';
 import {NameDialogComponent} from '../dialog/name-dialog/name-dialog.component';
-import {ComputationModel} from '../../models/computation.model';
+// import {ComputationModel} from '../../models/computation.model';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 import {ClusterModel} from '../../models/cluster.model';
 import {ClusterManager} from '../../businessLayer/clusterManager';
@@ -48,8 +48,8 @@ export class DashboardComponent implements OnInit {
     filters: any[];
     selectedFilter: string;
     selectedFilterModel: FilterModel = new FilterModel();
-    computations: Set<ComputationModel> = new Set<ComputationModel>();
-    pickedComputation: ComputationModel;
+    // computations: Set<ComputationModel> = new Set<ComputationModel>();
+    pickedCluster: ClusterModel;
     combinedFilter: string;
 
     appliedFiltersKeys: Set<string> = new Set<string>();
@@ -254,10 +254,10 @@ export class DashboardComponent implements OnInit {
         //   // this.appliedFiltersKeys.add(this.selectedFilterModel.name);
         //   // this.combineSelectedFilters();
         // }
-        if (this.pickedComputation != null) {
-            if (this.pickedComputation.filters.indexOf(this.selectedFilterModel) < 0) {
+        if (this.pickedCluster != null) {
+            if (this.pickedCluster.filters.indexOf(this.selectedFilterModel) < 0) {
                 this.selectedFilterModel.isSelected = true;
-                this.pickedComputation.filters.push(this.selectedFilterModel);
+                this.pickedCluster.filters.push(this.selectedFilterModel);
             }
             // if (!this.pickedComputation.filters.has(this.selectedFilterModel)) {
             //     this.selectedFilterModel.isSelected = true;
@@ -506,53 +506,53 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    /**
-     * Adds new computation
-     */
-    addComputation() {
-        const dialogRef = this.dialog.open(ComputationDialogComponent, {
-            width: '350px',
-            data: {
-                title: 'Create new clustering',
-                namePlaceholder: 'Type new clustering\'s name',
-                colorPlaceHolder: 'Select clustering color'
-            }
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('computation dialog closed', result);
-            if (result != null) {
-                const comp = new ComputationModel();
-                comp.name = result[0];
-                comp.color = result[1];
-                this.computations.add(comp);
-            }
-        });
-    }
+    // /**
+    //  * Adds new computation
+    //  */
+    // addComputation() {
+    //     const dialogRef = this.dialog.open(ComputationDialogComponent, {
+    //         width: '350px',
+    //         data: {
+    //             title: 'Create new clustering',
+    //             namePlaceholder: 'Type new clustering\'s name',
+    //             colorPlaceHolder: 'Select clustering color'
+    //         }
+    //     });
+    //     dialogRef.afterClosed().subscribe(result => {
+    //         console.log('computation dialog closed', result);
+    //         if (result != null) {
+    //             const comp = new ComputationModel();
+    //             comp.name = result[0];
+    //             comp.color = result[1];
+    //             this.computations.add(comp);
+    //         }
+    //     });
+    // }
 
     /**
      * Adds filter to given computation
-     * @param computation Computation to add new filter to
+     * @param cluster Cluster to add new filter to
      */
-    addFilter(computation) {
+    addFilter(cluster: ClusterModel) {
         this.filterPanelOpenState = true;
-        this.pickedComputation = computation;
-        console.log(this.pickedComputation);
+        this.pickedCluster = cluster;
+        console.log('add filter to: ', this.pickedCluster);
     }
 
     /**
-     * Method to drag and drop filters between computations
+     * Method to drag and drop filters between clusters
      * @param $event
      * @param {FilterModel} filter
-     * @param {ComputationModel} computation
+     * @param {ClusterModel} cluster
      */
-    dragFilter($event, filter: FilterModel, computation: ComputationModel) {
+    dragFilter($event, filter: FilterModel, cluster: ClusterModel) {
         $event.dataTransfer.setData('filter', JSON.stringify(filter));
         $event.dataTransfer.dropEffect = 'copy';
         $event.effectAllowed = 'copyMove';
     }
 
     /**
-     * Method to drag and drop filters between computations
+     * Method to drag and drop filters between clusters
      * @param $event Drag event
      */
     dragOver($event) {
@@ -560,40 +560,40 @@ export class DashboardComponent implements OnInit {
     }
 
     /**
-     * Method to drag and drop filters between computations
+     * Method to drag and drop filters between clusters
      * @param $event Drop event
-     * @param {ComputationModel} computation Target computation
+     * @param {ClusterModel} cluster Target computation
      */
-    dropFilter($event, computation: ComputationModel) {
-        console.log('dropped', computation);
+    dropFilter($event, cluster: ClusterModel) {
+        console.log('dropped', cluster);
         $event.preventDefault();
         const filter = JSON.parse($event.dataTransfer.getData('filter'));
         console.log('filter', filter);
         // computation.filters.add(filter);
-        computation.filters.push(filter);
+        cluster.filters.push(filter);
     }
 
     /**
-     * Delete given filter from given computation
+     * Delete given filter from given cluster
      * @param {FilterModel} filter Filter model
-     * @param {ComputationModel} computation Computation to delete filter from
+     * @param {ClusterModel} cluster Cluster to delete filter from
      */
-    deleteFilter(filter: FilterModel, computation: ComputationModel) {
-        const index = computation.filters.indexOf(filter);
+    deleteFilter(filter: FilterModel, cluster: ClusterModel) {
+        const index = cluster.filters.indexOf(filter);
         if (index !== -1) {
-            computation.filters.splice(index, 1);
+            cluster.filters.splice(index, 1);
         }
         // computation.filters.delete(filter);
     }
 
     /**
-     * Edit given filter of given computation
+     * Edit given filter of given cluster
      * @param {FilterModel} filter
-     * @param {ComputationModel} computation
+     * @param {ClusterModel} cluster
      */
-    editFilter(filter: FilterModel, computation: ComputationModel) {
+    editFilter(filter: FilterModel, cluster: ClusterModel) {
         this.selectedFilterModel = filter;
-        this.pickedComputation = computation;
+        this.pickedCluster = cluster;
         this.selectedFilter = filter.name;
         this.filterPanelOpenState = true;
     }
@@ -624,21 +624,21 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    /**
-     * Compute clusters from given computation
-     * @param {ComputationModel} computation
-     */
-    // TODO method that computes clustering overview only for selected computation
-    computeSelectedComputation(computation: ComputationModel) {
-        console.log(computation);
-        this.computeComputations();
-    }
+    // /**
+    //  * Compute clusters from given computation
+    //  * @param {ComputationModel} computation
+    //  */
+    // // TODO method that computes clustering overview only for selected computation
+    // computeSelectedComputation(computation: ComputationModel) {
+    //     console.log(computation);
+    //     this.computeComputations();
+    // }
 
-    makeManualCluster(computation: ComputationModel) {
-        console.log('comp', computation);
-        this.computationManager.computations = [];
-        this.computationManager.addComputation(computation);
-        this.manualClusters = this.manualClusters.concat(this.computationManager.getClusters());
+    makeManualCluster(cluster: ClusterModel) {
+        console.log('manual cluster', cluster);
+        // this.computationManager.computations = [];
+        // this.computationManager.addComputation(computation);
+        this.manualClusters = this.manualClusters.concat(cluster);
     }
 
     /**
@@ -715,13 +715,13 @@ export class DashboardComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             console.log('cluster dialog closed', result);
             if (result != null) {
-                const comp = new ComputationModel();
-                comp.name = result[0];
-                comp.color = result[1];
+                // const comp = new ComputationModel();
+                // comp.name = result[0];
+                // comp.color = result[1];
                 const cluster = new ClusterModel();
                 cluster.name = result[0];
                 cluster.color = result[1];
-                cluster.computation = comp;
+                // cluster.computation = comp;
                 cluster.count = 0;
                 this.manualClusters.push(cluster);
                 this.editCluster(cluster);

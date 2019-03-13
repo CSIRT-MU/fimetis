@@ -5,7 +5,7 @@ import json
 class Cluster:
     def __init__(self, dictionary=None):
         self.name = ''
-        self.computation = Computation()
+        self.filters = []
         self.tagged = False
         self.tag = ''
         self.selectMode = ClusterSelectMode.notSelected
@@ -117,20 +117,16 @@ def build_base_query(case_name, clusters, additional_filters, graph_filter):
                     if cluster.tagged:
                         must_tags.append(cluster.tag)
                     else:
-                        computation = Computation(cluster.computation)
-                        if computation.isSelected:
-                            filter_model = get_computation_filter_string(computation)
-                            if filter_model is not None:
-                                must_filters.append(filter_model)
+                        filter_model = get_filter_string(cluster)
+                        if filter_model is not None:
+                            must_filters.append(filter_model)
                 if cluster.selectMode == ClusterSelectMode.deducted.value:
                     if cluster.tagged:
                         must_not_tags.append(cluster.tag)
                     else:
-                        computation = Computation(cluster.computation)
-                        if computation.isSelected:
-                            filter_model = get_computation_filter_string(computation)
-                            if filter_model is not None:
-                                must_not_filters.append(filter_model)
+                        filter_model = get_filter_string(cluster)
+                        if filter_model is not None:
+                            must_not_filters.append(filter_model)
     must_clusters = []
     must_clusters.extend(get_match_string_from_tags(must_tags))
     must_clusters.extend(must_filters)
@@ -172,8 +168,7 @@ def build_count_query(case_name, cluster, additional_filters):
             if cluster.tagged:
                 must_tags.append(cluster.tag)
             else:
-                computation = Computation(cluster.computation)
-                filter_model = get_computation_filter_string(computation)
+                filter_model = get_filter_string(cluster)
                 if filter_model is not None:
                     must_filters.append(filter_model)
 
@@ -229,7 +224,7 @@ def get_base_clusters(clusters):
     return result
 
 
-def get_computation_filter_string(computation):
+def get_filter_string(computation):
     applied_filters = []
     for filter_model in computation.filters:
         filter_model = Filter(filter_model)

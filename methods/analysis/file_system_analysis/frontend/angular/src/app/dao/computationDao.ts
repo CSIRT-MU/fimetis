@@ -28,7 +28,7 @@ export class ComputationDao {
         cluster.color = computation.color;
         cluster.tagged = false;
         cluster.description = computation.description;
-        cluster.computation = computation;
+        // cluster.computation = computation;
         _clusters.push(cluster);
         console.log('Im returning clusters: ', _clusters);
         return _clusters;

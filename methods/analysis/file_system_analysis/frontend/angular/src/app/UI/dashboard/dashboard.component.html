@@ -115,22 +115,22 @@
                 <div>
                     <div class="panel-content col-md-12 panel-visible">
                         <div class="computation-row" (dragover)="dragOver($event)"
-                             (drop)="dropFilter($event, editingCluster.computation)">
-                            <div *ngFor="let filter of editingCluster.computation.filters" class="computation-filter" draggable="true"
-                                 (dragstart)="dragFilter($event, filter, editingCluster.computation)">
+                             (drop)="dropFilter($event, editingCluster)">
+                            <div *ngFor="let filter of editingCluster.filters" class="computation-filter" draggable="true"
+                                 (dragstart)="dragFilter($event, filter, editingCluster)">
                                 <span class="text">{{filter.name}}</span>
                                 <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'"
-                                      (click)="editFilter(filter, editingCluster.computation)"></span>
+                                      (click)="editFilter(filter, editingCluster)"></span>
                                 <span class="icon2 glyphicon glyphicon glyphicon-new-window" matTooltip="copy"
                                       [matTooltipPosition]="'below'" (click)="copyFilter(filter)"></span>
                                 <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'"
-                                      (click)="deleteFilter(filter, editingCluster.computation)"></span>
+                                      (click)="deleteFilter(filter, editingCluster)"></span>
                                 <div [ngClass]="{'filter-circle-full': filter.isSelected}"
                                      class="filter-circle filter-circle-full" matTooltip="de/select"
                                      [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
                             </div>
                             <span class="computation-add-filter glyphicon glyphicon-plus" matTooltip="add new filter"
-                                  [matTooltipPosition]="'below'" (click)="addFilter(editingCluster.computation)"></span>
+                                  [matTooltipPosition]="'below'" (click)="addFilter(editingCluster)"></span>
                         </div>
                     </div>
                 </div>

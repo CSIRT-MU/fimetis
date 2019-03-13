@@ -8,24 +8,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": "\\/usr\\/.*"
-                            }
-                        ]
-                    }
-                ]
-            }
-
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/usr\\/.*"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "files in /etc",
@@ -35,23 +31,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": "\\/etc\\/.*"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/etc\\/.*"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "user SSH files",
@@ -61,23 +54,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": "\\/(home|root).*\\.ssh\\/(id_rsa|authorized_keys).*"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/(home|root).*\\.ssh\\/(id_rsa|authorized_keys).*"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "standard executables",
@@ -87,23 +77,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": "\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*|\\/usr\\/local\\/bin.*|\\/usr\\/local\\/sbin.*"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*|\\/usr\\/local\\/bin.*|\\/usr\\/local\\/sbin.*"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "python scripts",
@@ -113,23 +100,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": ".*\\.py"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.py"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "shell scripts",
@@ -139,23 +123,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": ".*\\.sh"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.sh"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "php scripts",
@@ -165,23 +146,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": ".*\\.php"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.php"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "perl scripts",
@@ -191,23 +169,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": ".*\\.pl"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\.pl"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "cron definition",
@@ -217,23 +192,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": "(\\/var\\/spool\\/cron\\/.*|\\/etc\\/cron\\.d\\/.*|\\/etc\\/cron\\/.*|\\/etc\\/anacrontab\\/.*)"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": "(\\/var\\/spool\\/cron\\/.*|\\/etc\\/cron\\.d\\/.*|\\/etc\\/cron\\/.*|\\/etc\\/anacrontab\\/.*)"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "starts with \".\"",
@@ -243,23 +215,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": ".*\\/\\..*"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\/\\..*"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "suspicious files",
@@ -269,23 +238,20 @@
             "tagged": false,
             "tag": "",
             "selectMode": 0,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "filename_regex",
-                        "isSelected": "true",
-                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                        "params": [
-                            {
-                                "name": "FILENAME_REGEX",
-                                "type": "REGEX",
-                                "value": ".*\\/\\.\\.\\..*|.*\\/\\\\s{2,}.*|.*\\/\\.{3,}.*"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "filename_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "FILENAME_REGEX",
+                            "type": "REGEX",
+                            "value": ".*\\/\\.\\.\\..*|.*\\/\\\\s{2,}.*|.*\\/\\.{3,}.*"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "all files",
@@ -295,17 +261,14 @@
             "tagged": false,
             "tag": "",
             "selectMode": 1,
-            "computation": {
-                "isSelected": true,
-                "filters": [
-                    {
-                        "name": "select_all_filter",
-                        "isSelected": "true",
-                        "json": "{ \"match_all\": {} }",
-                        "params": []
-                    }
-                ]
-            }
+            "filters": [
+                {
+                    "name": "select_all_filter",
+                    "isSelected": "true",
+                    "json": "{ \"match_all\": {} }",
+                    "params": []
+                }
+            ]
         }
     ]
 }
