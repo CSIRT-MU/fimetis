@@ -1,12 +1,6 @@
-import {FilterModel} from '../models/filter.model';
-import {ComputationModel} from '../models/computation.model';
-import {FilterParamModel} from '../models/filterParam.model';
-import {ClusterModel, ClusterSelectMode} from '../models/cluster.model';
+import {ClusterModel} from '../models/cluster.model';
 import {ElasticsearchService} from '../elasticsearch.service';
-import {MetadataModel} from '../models/metadata.model';
 import 'rxjs/add/operator/toPromise';
-import {DataModel} from '../models/data.model';
-import {ElasticsearchBaseQueryManager} from './elasticsearchBaseQueryManager';
 import {ClusterDao} from '../dao/clusterDao';
 import {ClusterService} from '../services/cluster.service';
 

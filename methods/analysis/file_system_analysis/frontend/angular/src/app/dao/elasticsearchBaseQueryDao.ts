@@ -1,8 +1,6 @@
-import {ClusterSelectMode} from '../models/cluster.model';
-import {ComputationModel} from '../models/computation.model';
+import {ClusterModel, ClusterSelectMode} from '../models/cluster.model';
 import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
-import {stringDistance} from 'codelyzer/util/utils';
 
 export class ElasticsearchBaseQueryDao {
     getBaseQueryString(case_name, clusters, additional_filters, graph_filter) {
@@ -20,11 +18,9 @@ export class ElasticsearchBaseQueryDao {
                             must_tags.push(cluster.tag);
 
                         } else {
-                            if (cluster.computation.isSelected) {
-                                const filter = this.getComputationFilterString(cluster.computation);
-                                if (filter != null && filter !== undefined) {
-                                    must_filters.push(filter);
-                                }
+                            const filter = this.getComputationFilterString(cluster);
+                            if (filter != null && filter !== undefined) {
+                                must_filters.push(filter);
                             }
                         }
                     }
@@ -32,11 +28,9 @@ export class ElasticsearchBaseQueryDao {
                         if (cluster.tagged) {
                             must_not_tags.push(cluster.tag);
                         } else {
-                            if (cluster.computation.isSelected) {
-                                const filter = this.getComputationFilterString(cluster.computation);
-                                if (filter != null && filter !== undefined) {
-                                    must_not_filters.push(filter);
-                                }
+                            const filter = this.getComputationFilterString(cluster);
+                            if (filter != null && filter !== undefined) {
+                                must_not_filters.push(filter);
                             }
                         }
                     }
@@ -160,7 +154,7 @@ export class ElasticsearchBaseQueryDao {
                     must_tags.push(oneCluster.tag);
 
                 } else {
-                    const filter = this.getComputationFilterString(oneCluster.computation);
+                    const filter = this.getComputationFilterString(oneCluster);
                     if (filter != null && filter !== undefined) {
                         must_filters.push(filter);
                     }
@@ -268,10 +262,10 @@ export class ElasticsearchBaseQueryDao {
         return query;
     }
 
-    getComputationFilterString(computation: ComputationModel) {
+    getComputationFilterString(cluster: ClusterModel) {
         const appliedFilters = [];
         let filter: FilterModel;
-        for (filter of Array.from(computation.filters)) {
+        for (filter of Array.from(cluster.filters)) {
             if (filter.isSelected) {
                 appliedFilters.push(this.applyFilter(filter.json, filter.params));
             }

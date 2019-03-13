@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
-
 import {Client} from 'elasticsearch-browser';
-import {ComputationModel} from './models/computation.model';
 import {ConfigManager} from '../assets/configManager';
 
 @Injectable()

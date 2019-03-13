@@ -1,10 +1,7 @@
-import {ComputationModel} from '../models/computation.model';
-import {FilterModel} from '../models/filter.model';
 import {FilterParamModel} from '../models/filterParam.model';
-import {ClusterSelectMode} from '../models/cluster.model';
-import {ElasticsearchService} from '../elasticsearch.service';
 import {Injectable} from '@angular/core';
 import {ElasticsearchBaseQueryDao} from '../dao/elasticsearchBaseQueryDao';
+import {ClusterModel} from '../models/cluster.model';
 
 @Injectable()
 export class ElasticsearchBaseQueryManager {
@@ -19,8 +16,8 @@ export class ElasticsearchBaseQueryManager {
         return this.elasticsearchBaseQueryManagerDao.getBaseQueryString(case_name, clusters, additional_filters, graph_filter);
     }
 
-    getComputationFilterString(computation: ComputationModel) {
-        return this.elasticsearchBaseQueryManagerDao.getComputationFilterString(computation);
+    getComputationFilterString(cluster: ClusterModel) {
+        return this.elasticsearchBaseQueryManagerDao.getComputationFilterString(cluster);
     }
 
     applyFilter(filter: string, params: FilterParamModel[]) {

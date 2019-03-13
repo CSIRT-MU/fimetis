@@ -1,4 +1,3 @@
-import {ComputationModel} from './computation.model';
 import {FilterModel} from './filter.model';
 
 export class ClusterModel {
