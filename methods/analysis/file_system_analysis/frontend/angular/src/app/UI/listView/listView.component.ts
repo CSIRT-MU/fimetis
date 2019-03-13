@@ -22,6 +22,7 @@ import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ToastrService} from 'ngx-toastr';
 import {debounceTime} from 'rxjs/operators';
+import {ClusterService} from '../../services/cluster.service';
 
 @Component({
     selector: 'app-list-view',
@@ -136,7 +137,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
     @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
-    constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog, private toaster: ToastrService) {
+    constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog, private toaster: ToastrService, private clusterService: ClusterService) {
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
@@ -150,7 +151,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.pageEvent.pageIndex = 0;
         this.pageEvent.pageSize = this.SIZE;
         this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
-        this.clusterManager = new ClusterManager(this.es);
+        this.clusterManager = new ClusterManager(this.es, clusterService);
         this.highlightedTextBox = null;
         this.highlightedText = '';
 
@@ -177,7 +178,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
         this.clusterManager.case = this.case;
         this.clusterManager.clusters = this.clusters;
-        const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
+        // const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
+        const shift = 0;
         // const loadEvent = {};
         // loadEvent['start'] = this.visibleDataFirstIndex;
         // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;

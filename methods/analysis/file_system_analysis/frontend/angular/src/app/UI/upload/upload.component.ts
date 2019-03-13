@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpEvent, HttpRequest, HttpResponse} from '@angular/common/http';
 import {ngf} from 'angular-file';
 import {Subscription} from 'rxjs';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-upload',
@@ -13,7 +14,7 @@ export class UploadComponent implements OnInit {
     files: File[] = [];
     case = '';
     progress: number;
-    url = 'http://127.0.0.1:5000/upload';
+    url = environment.backendUrl + '/upload';
     httpEmitter: Subscription;
     httpEvent: HttpEvent<{}>;
     validComboDrag = false;

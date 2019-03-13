@@ -1,0 +1,311 @@
+{
+    "prepared_clusters": [
+        {
+            "name": "files in /usr",
+            "color": "#886644",
+            "description": "files in /usr",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": "\\/usr\\/.*"
+                            }
+                        ]
+                    }
+                ]
+            }
+
+        },
+        {
+            "name": "files in /etc",
+            "color": "#886644",
+            "description": "files in /etc",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": "\\/etc\\/.*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "user SSH files",
+            "color": "#886644",
+            "description": "files according to regex .*.ssh\/(id_rsa|authorized_keys*).",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": "\\/(home|root).*\\.ssh\\/(id_rsa|authorized_keys).*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "standard executables",
+            "color": "#886644",
+            "description": "files in /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": "\\/bin\\/.*|\\/sbin\\/.*|\\/usr\\/bin\\/.*|\\/usr\\/sbin\\/.*|\\/usr\\/local\\/bin.*|\\/usr\\/local\\/sbin.*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "python scripts",
+            "color": "#886644",
+            "description": "files with .py extension",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": ".*\\.py"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "shell scripts",
+            "color": "#886644",
+            "description": "files with .sh extension",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": ".*\\.sh"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "php scripts",
+            "color": "#886644",
+            "description": "files with .php extension",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": ".*\\.php"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "perl scripts",
+            "color": "#886644",
+            "description": "files with .pl extension",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": ".*\\.pl"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "cron definition",
+            "color": "#886644",
+            "description": "cron definition in /var/spool/cron /etc/cron.d/ /etc/cron/ /etc/anacrontab",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": "(\\/var\\/spool\\/cron\\/.*|\\/etc\\/cron\\.d\\/.*|\\/etc\\/cron\\/.*|\\/etc\\/anacrontab\\/.*)"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "starts with \".\"",
+            "color": "#886644",
+            "description": "files that starts with a .",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": ".*\\/\\..*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "suspicious files",
+            "color": "#886644",
+            "description": "files that match regex .*\\/\\.\\.\\..*|.*\\/[\\s.]* (consists of dots and white spaces)",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "filename_regex",
+                        "isSelected": "true",
+                        "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
+                        "params": [
+                            {
+                                "name": "FILENAME_REGEX",
+                                "type": "REGEX",
+                                "value": ".*\\/\\.\\.\\..*|.*\\/\\\\s{2,}.*|.*\\/\\.{3,}.*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "all files",
+            "color": "#886644",
+            "description": "All files",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "computation": {
+                "isSelected": true,
+                "filters": [
+                    {
+                        "name": "select_all_filter",
+                        "isSelected": "true",
+                        "json": "{ \"match_all\": {} }",
+                        "params": []
+                    }
+                ]
+            }
+        }
+    ]
+}

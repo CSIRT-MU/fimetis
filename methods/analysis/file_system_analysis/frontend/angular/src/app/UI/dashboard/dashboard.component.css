@@ -8,7 +8,7 @@
 
 .container-all-opened {
     display: grid;
-    height: 100%;
+    /*height: 100%;*/
     flex-grow: 1;
     grid-template-columns: 300px auto;
     grid-template-areas: "grid-cluster grid-main grid-main grid-main"
@@ -16,10 +16,11 @@
 
 .container-all-closed {
     display: grid;
-    min-height: 95vh;
-    max-height: 95vh;
+    /*height: 100%;*/
+    flex-grow: 1;
     grid-template-columns: 300px auto;
-    grid-template-areas: "grid-cluster grid-filter grid-filter grid-filter" "grid-computation grid-computation grid-computation grid-computation" "grid-main grid-main grid-main grid-main"
+    grid-template-rows: 50px auto;
+    grid-template-areas: "grid-cluster grid-cluster grid-cluster grid-cluster" "grid-main grid-main grid-main grid-main"
 }
 
 .container-edit-filter {

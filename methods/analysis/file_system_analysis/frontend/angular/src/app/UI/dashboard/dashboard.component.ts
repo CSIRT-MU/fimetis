@@ -18,6 +18,8 @@ import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBa
 import {ConfigManager} from '../../../assets/configManager';
 import {ClusterComponent} from '../cluster/cluster.component';
 import {ToastrService} from 'ngx-toastr';
+import {BaseService} from '../../services/base.service';
+import {ClusterService} from '../../services/cluster.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -84,8 +86,8 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatChipList)
     chipList: MatChipList;
 
-    constructor(private es: ElasticsearchService, public dialog: MatDialog, private toaster: ToastrService) {
-        this.clusterManager = new ClusterManager(this.es);
+    constructor(private es: ElasticsearchService, public dialog: MatDialog, private toaster: ToastrService, private baseService: BaseService, private clusterService: ClusterService) {
+        this.clusterManager = new ClusterManager(this.es, this.clusterService);
         this.computationManager = new ComputationManager(this.es);
         this.baseManager = new BaseManager(this.es);
         this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
@@ -120,9 +122,17 @@ export class DashboardComponent implements OnInit {
     }
 
     loadAllCases() {
-        this.baseManager.getCases().then(
+        // this.baseService.getCases().subscribe(
+        //     response => {
+        //         this.cases = response['aggregations'].cases.buckets;
+        //     }, error => {
+        //         console.error(error);
+        //         this.toaster.error('Error:' + error['message'], 'Cannot load datasets');
+        //     }
+        // );
+        this.baseService.getCases().then(
             response => {
-                this.cases = response;
+                this.cases = response.cases;
             }, error => {
                 console.error(error);
                 this.toaster.error('Error:' + error['message'], 'Cannot load datasets');
@@ -132,7 +142,7 @@ export class DashboardComponent implements OnInit {
     }
 
     loadAllFilters() {
-        this.baseManager.getFilters().then(
+        this.baseService.getFilters().then(
             response => {
                 this.filters = response;
             }, error => {
@@ -183,27 +193,30 @@ export class DashboardComponent implements OnInit {
 
 
         const configManager = new ConfigManager();
-
-        const preparedComputationsFromJson = configManager.loadPreparedComputations()['prepared_computations'];
-
-        const computationList: ComputationModel[] = JSON.parse(JSON.stringify(preparedComputationsFromJson));
-
-        for (const comp of computationList) {
-            this.computationManager.addComputation(comp);
-        }
-
-        // for (let i = 0; i < preparedComputationsFromJson.length; i++) {
-            // const tmpComputation = new ComputationModel();
-            // tmpComputation.name = preparedComputationsFromJson[i]['name'];
-            // tmpComputation.color = preparedComputationsFromJson[i]['color'];
-            // tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
-            // tmpComputation.description = preparedComputationsFromJson[i]['description'];
-            // tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
-            // this.computationManager.addComputation(tmpComputation);
-
+        //
+        // const preparedComputationsFromJson = configManager.loadPreparedComputations()['prepared_computations'];
+        //
+        // const computationList: ComputationModel[] = JSON.parse(JSON.stringify(preparedComputationsFromJson));
+        //
+        // for (const comp of computationList) {
+        //     this.computationManager.addComputation(comp);
         // }
+        //
+        // // for (let i = 0; i < preparedComputationsFromJson.length; i++) {
+        //     // const tmpComputation = new ComputationModel();
+        //     // tmpComputation.name = preparedComputationsFromJson[i]['name'];
+        //     // tmpComputation.color = preparedComputationsFromJson[i]['color'];
+        //     // tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
+        //     // tmpComputation.description = preparedComputationsFromJson[i]['description'];
+        //     // tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
+        //     // this.computationManager.addComputation(tmpComputation);
+        //
+        // // }
+        //
+        // this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
 
-        this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
+        this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
+        this.computeClustersItemCount(this.listViewComponent.additionalFilters);
     }
 
     /**
@@ -683,7 +696,7 @@ export class DashboardComponent implements OnInit {
      */
     computeClustersItemCount(filters: Map<string, string>) {
         // filters.delete('searchString');
-        const clustManager = new ClusterManager(this.es);
+        const clustManager = new ClusterManager(this.es, this.clusterService);
         clustManager.clusters = this.getClusters();
         clustManager.case = this.selectedCase;
         clustManager.countEntriesOfClusters(Array.from(filters.values()));

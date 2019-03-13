@@ -26,7 +26,7 @@ import {VirtualScrollerModule} from 'ngx-virtual-scroller';
 import {MatTooltipModule} from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
 import { ngfModule } from 'angular-file';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
 import {ElasticsearchService} from './elasticsearch.service';
@@ -40,6 +40,10 @@ import {ComputationDialogComponent} from './UI/dialog/computation-dialog/computa
 import {TextSelectDirective} from './UI/text-select.directive';
 import {HighlightPipe} from './UI/highlight.directive';
 import {UploadComponent} from './UI/upload/upload.component';
+import {LoginComponent} from './UI/user/login/login.component';
+// auth
+import {JwtInterceptor} from './auth/jwt.interceptor';
+import {ErrorInterceptor} from './auth/error.interceptor';
 
 @NgModule({
     declarations: [
@@ -53,7 +57,8 @@ import {UploadComponent} from './UI/upload/upload.component';
         ComputationDialogComponent,
         TextSelectDirective,
         HighlightPipe,
-        UploadComponent
+        UploadComponent,
+        LoginComponent
     ],
     imports: [
         BrowserModule,
@@ -92,7 +97,9 @@ import {UploadComponent} from './UI/upload/upload.component';
         HttpClientModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
-    providers: [ElasticsearchService],
+    providers: [ElasticsearchService,
+        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],
     bootstrap: [AppComponent]
 })
 

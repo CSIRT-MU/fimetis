@@ -7,6 +7,7 @@ import {debounceTime} from 'rxjs/operators';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
 import {matDatepickerAnimations} from '@angular/material';
+import {GraphService} from '../../services/graph.service';
 
 @Component({
     selector: 'app-graph',
@@ -214,8 +215,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
         ]
     };
 
-    constructor(private es: ElasticsearchService) {
-        this.manager = new GraphManager(es);
+    constructor(private es: ElasticsearchService, private graphService: GraphService) {
+        this.manager = new GraphManager(es, this.graphService);
         // debouncer setup
         this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value));
         console.log(this.chartDiv);

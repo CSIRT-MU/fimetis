@@ -8,6 +8,7 @@ import 'rxjs/add/operator/toPromise';
 import {DataModel} from '../models/data.model';
 import {ElasticsearchBaseQueryManager} from './elasticsearchBaseQueryManager';
 import {ClusterDao} from '../dao/clusterDao';
+import {ClusterService} from '../services/cluster.service';
 
 
 export class ClusterManager {
@@ -19,7 +20,7 @@ export class ClusterManager {
     // private elasticsearchBaseQueryManager;
     private clusterDao;
 
-    constructor(private es: ElasticsearchService) {
+    constructor(private es: ElasticsearchService, private service: ClusterService) {
         // this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
         this.clusterDao = new ClusterDao(es);
     }
@@ -57,9 +58,12 @@ export class ClusterManager {
     }
 
     getData(begin, page_size, sort, sort_order) {
-        return this.clusterDao.getData(
+        return this.service.getData(
             this.case, this.clusters, this.additional_filters, this.graph_filter, begin, page_size, sort, sort_order
         );
+        // return this.clusterDao.getData(
+        //     this.case, this.clusters, this.additional_filters, this.graph_filter, begin, page_size, sort, sort_order
+        // );
     }
 
     getStoredClusters(): Promise<any> {
@@ -103,7 +107,12 @@ export class ClusterManager {
 
     countEntriesOfClusters(additionalFilters) {
         for (const clust of this._clusters) {
-            this.clusterDao.writeCountOfEntriesToCluster(clust, this._case, additionalFilters);
+            // this.clusterDao.writeCountOfEntriesToCluster(clust, this._case, additionalFilters);
+            this.service.countData(this._case, clust, additionalFilters).then(res => {
+                clust.count = res;
+                }, error => {
+                    console.error(error);
+            });
         }
     }
 }

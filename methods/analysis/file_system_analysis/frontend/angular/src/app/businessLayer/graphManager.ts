@@ -4,6 +4,7 @@ import 'rxjs/add/operator/toPromise';
 import {ClusterModel} from '../models/cluster.model';
 import {GraphDao} from '../dao/graphDao';
 import {BaseDao} from '../dao/baseDao';
+import {GraphService} from '../services/graph.service';
 
 
 @Injectable()
@@ -17,7 +18,7 @@ export class GraphManager {
     private graphDao;
     private baseDao;
 
-    constructor(private es: ElasticsearchService) {
+    constructor(private es: ElasticsearchService, private service: GraphService) {
         this.graphDao = new GraphDao(es);
         this.baseDao = new BaseDao(es);
     }
@@ -60,7 +61,8 @@ export class GraphManager {
         const frequency = await this.getFrequency();
 
 
-        return this.graphDao.getData(this.case, this.clusters, this.additionalFilters, mactime_type, frequency);
+        // return this.graphDao.getData(this.case, this.clusters, this.additionalFilters, mactime_type, frequency);
+        return this.service.getData(this.case, this.clusters, this.additionalFilters, mactime_type, frequency);
 
     }
 
@@ -95,9 +97,10 @@ export class GraphManager {
     }
 
     async getFirstAndLast() {
-        const first = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
-        const last = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
-        return [first, last];
+        return await this.service.getFirstAndLastTimestamp(this.case, this.clusters, this.additionalFilters, null);
+        // const first = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'asc');
+        // const last = await this.baseDao.getFirstOrLast(this.case, this.clusters, this.additionalFilters, 'desc');
+        // return [first, last];
     }
 
 }

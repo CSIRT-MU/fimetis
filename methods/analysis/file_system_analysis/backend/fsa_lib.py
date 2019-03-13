@@ -8,7 +8,6 @@ class Cluster:
             self.__dict__ = dictionary
         else:
             self.name = ''
-            self.count = 0
             self.computation = Computation()
             self.tagged = False
             self.tag = ''
