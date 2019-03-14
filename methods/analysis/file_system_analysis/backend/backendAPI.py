@@ -15,11 +15,14 @@ es = Elasticsearch()
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = '/tmp'
-app.config['SECRET_KEY'] = os.urandom(24)
+app.config['SECRET_KEY'] = os.urandom(128)
 app.config['elastic_metadata_index'] = 'metadata'
-app.config['elastic_metadata_type'] = ''
+app.config['elastic_metadata_type'] = None
 app.config['elastic_filter_index'] = 'filter'
-app.config['elastic_filter_type'] = ''
+app.config['elastic_filter_type'] = None
+app.config['elastic_user_index'] = 'user'
+app.config['elastic_user_type'] = None
+app.config['TOKEN_EXPIRATION'] = datetime.timedelta(minutes=30)
 
 
 def token_required(f):
@@ -35,7 +38,7 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = data['username']
+            current_user = data['username'], data['group']
         except:
             return jsonify({'message': 'Token is invalid!'}), 401
 
@@ -46,33 +49,24 @@ def token_required(f):
 
 @app.route('/login', methods=['POST'])
 def login():
-    auth = request.authorization
-    username = 'admin'
-    password = 'timesix'
-
-    # if not auth or not auth.username or not auth.password:
-    #     print('bad', request.get_json(force=True)['username'])
-    #     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
     if not request.get_json() or not request.get_json()['username'] or not request.get_json()['password']:
         return jsonify({'message': 'Wrong username or password'}), 400
-        # return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
-    # user = User.query.filter_by(name=auth.username).first()
-
-    if request.get_json()['username'] != username:
-        print('user unknown')
-        return jsonify({'message': 'Wrong username or password'}), 400
-        # return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
-    if check_password_hash(generate_password_hash(password, method='sha256'), request.get_json()['password']):
-        token = jwt.encode(
-            {'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-            app.config['SECRET_KEY'])
-
-        return jsonify({'token': token.decode('UTF-8')})
+    body = {'query': {'term': {'username': request.get_json()['username']}}}
+    res = es.search(index=app.config['elastic_user_index'], doc_type=app.config['elastic_user_type'], body=body)
+    for user in res['hits']['hits']:
+        username = user['_source']['username']
+        password = user['_source']['password']
+        group = user['_source']['group']
+        if request.get_json()['username'] == username:
+            if check_password_hash(password, request.get_json()['password']):
+                token = jwt.encode(
+                    {'username': username,
+                     'group': group,
+                     'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
+                    app.config['SECRET_KEY'])
+                return jsonify({'token': token.decode('UTF-8')})
     return jsonify({'message': 'Wrong username or password'}), 400
-    # return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
 @app.route('/')
@@ -83,6 +77,8 @@ def es_info():
 @app.route('/upload', methods=['POST'])
 @token_required
 def upload(current_user):
+    if 'admin' not in current_user[1]:
+        return jsonify({'message': 'Not authorized'}), 403
     if 'case' not in request.form:
         return jsonify({'status': 'failed', 'message': 'Case name is missing in form'})
     else:
@@ -114,17 +110,13 @@ def search(current_user):
 
     if not es_index or not query:
         return jsonify({'message': 'Wrong parameters'}), 404
-    if not es_type:
-        res = es.search(index=es_index, body=query)
-    else:
-        res = es.search(index=es_index, type=es_type, body=query)
+    res = es.search(index=es_index, doc_type=es_type, body=query)
     return jsonify(res)
 
 
 @app.route('/case/all', methods=['GET'])
 @token_required
 def cases(current_user):
-
     query = {
         'aggs': {
             'cases': {
@@ -136,12 +128,9 @@ def cases(current_user):
         }
     }
 
-    if not app.config['elastic_metadata_type']:
-        res = es.search(index=app.config['elastic_metadata_index'], body=query)
-    else:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        type=app.config['elastic_metadata_type'],
-                        body=query)
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=query)
     return jsonify(cases=res['aggregations']['cases']['buckets'])
 
 
@@ -159,10 +148,7 @@ def filters(current_user):
             }
     }
 
-    if not app.config['elastic_filter_type']:
-        res = es.search(index=app.config['elastic_filter_index'], body=query)
-    else:
-        res = es.search(index=app.config['elastic_filter_index'], type=app.config['elastic_filter_type'], body=query)
+    res = es.search(index=app.config['elastic_filter_index'], doc_type=app.config['elastic_filter_type'], body=query)
     return jsonify(res)
 
 
@@ -183,10 +169,7 @@ def filter_by_name(current_user):
             }
     }
 
-    if not app.config['elastic_filter_type']:
-        res = es.search(index=app.config['elastic_filter_index'], body=query)
-    else:
-        res = es.search(index=app.config['elastic_filter_index'], type=app.config['elastic_filter_type'], body=query)
+    res = es.search(index=app.config['elastic_filter_index'], doc_type=app.config['elastic_filter_type'], body=query)
     return jsonify(res)
 
 
@@ -203,13 +186,9 @@ def clusters_get_data(current_user, case):
 
     query = fsa.build_data_query(case, clusters, additional_filters, graph_filter, begin, page_size, sort, sort_order)
     print(json.dumps(query))
-    if not app.config['elastic_metadata_type']:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        body=json.dumps(query))
-    else:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        type=app.config['elastic_metadata_type'],
-                        body=json.dumps(query))
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
     return jsonify(res)
 
 
@@ -222,13 +201,9 @@ def clusters_entries_border(current_user, case):
 
     query = fsa.build_number_of_entries_query(case, clusters, additional_filters, border)
     print('border', json.dumps(query))
-    if not app.config['elastic_metadata_type']:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        body=json.dumps(query))
-    else:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        type=app.config['elastic_metadata_type'],
-                        body=json.dumps(query))
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
     return jsonify(res)
 
 
@@ -240,13 +215,9 @@ def cluster_get_count(current_user, case):
 
     query = fsa.build_count_query(case, cluster, additional_filters)
     print(json.dumps(query))
-    if not app.config['elastic_metadata_type']:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        body=json.dumps(query))
-    else:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        type=app.config['elastic_metadata_type'],
-                        body=json.dumps(query))
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
     return jsonify(res)
 
 
@@ -260,18 +231,12 @@ def cluster_get_first_and_last_entry(current_user, case):
     first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
     last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
     print(json.dumps(first_query))
-    if not app.config['elastic_metadata_type']:
-        first = es.search(index=app.config['elastic_metadata_index'],
-                          body=json.dumps(first_query))
-        last = es.search(index=app.config['elastic_metadata_index'],
-                         body=json.dumps(last_query))
-    else:
-        first = es.search(index=app.config['elastic_metadata_index'],
-                          type=app.config['elastic_metadata_type'],
-                          body=json.dumps(first_query))
-        last = es.search(index=app.config['elastic_metadata_index'],
-                         type=app.config['elastic_metadata_type'],
-                         body=json.dumps(last_query))
+    first = es.search(index=app.config['elastic_metadata_index'],
+                      doc_type=app.config['elastic_metadata_type'],
+                      body=json.dumps(first_query))
+    last = es.search(index=app.config['elastic_metadata_index'],
+                     doc_type=app.config['elastic_metadata_type'],
+                     body=json.dumps(last_query))
     res = []
     if first is not None:
         print(first)
@@ -291,13 +256,9 @@ def graph_get_data(current_user, case):
 
     query = fsa.build_graph_data_query(case, clusters, additional_filters, mac_type, frequency)
     print(json.dumps(query))
-    if not app.config['elastic_metadata_type']:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        body=json.dumps(query))
-    else:
-        res = es.search(index=app.config['elastic_metadata_index'],
-                        type=app.config['elastic_metadata_type'],
-                        body=json.dumps(query))
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
     return jsonify(res)
 
 
