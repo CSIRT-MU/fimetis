@@ -28,7 +28,7 @@ import {ClusterService} from '../../services/cluster.service';
     templateUrl: './listView.component.html',
     styleUrls: ['./listView.component.css']
 })
-export class ListViewComponent implements OnInit, OnDestroy {
+export class ListViewComponent {
 
     @Input('case')
     case: string;
@@ -38,7 +38,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
     clusters: ClusterModel[] = [];
     oldClusters: ClusterModel[] = [];
     private SIZE = 25;
-    private sub: any;
 
     @Output('graphChangedBoundary')
     graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
@@ -132,7 +131,10 @@ export class ListViewComponent implements OnInit, OnDestroy {
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
     @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
-    constructor(private es: ElasticsearchService, private route: ActivatedRoute, public dialog: MatDialog, private toaster: ToastrService, private clusterService: ClusterService) {
+    constructor(private es: ElasticsearchService,
+                public dialog: MatDialog,
+                private toaster: ToastrService,
+                private clusterService: ClusterService) {
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
@@ -146,22 +148,12 @@ export class ListViewComponent implements OnInit, OnDestroy {
         this.pageEvent.pageIndex = 0;
         this.pageEvent.pageSize = this.SIZE;
         this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
-        this.clusterManager = new ClusterManager(this.es, clusterService);
+        // this.clusterManager = new ClusterManager(this.es, clusterService);
         this.highlightedTextBox = null;
         this.highlightedText = '';
 
         this.highlightedTextDateBox = null;
         this.highlightedTextDate = '';
-    }
-
-    ngOnInit() {
-        this.sub = this.route.params.subscribe(params => {
-            this.case = params['case'];
-        });
-    }
-
-    ngOnDestroy() {
-        this.sub.unsubscribe();
     }
 
     /**
@@ -170,10 +162,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
      */
     async init() {
         this.loadingData = true;
-        this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
-        this.clusterManager.case = this.case;
-        this.clusterManager.clusters = this.clusters;
-        const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
+        // this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
+        // this.clusterManager.case = this.case;
+        // this.clusterManager.clusters = this.clusters;
+        // const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
+        const shift = await this.clusterService.getDifferenceShift(
+            this.case,
+            this.clusters,
+            this.oldClusters,
+            this.visibleDataFirstIndex,
+            this.visibleData[0]);
         // const shift = 0;
         // const loadEvent = {};
         // loadEvent['start'] = this.visibleDataFirstIndex;
@@ -184,7 +182,15 @@ export class ListViewComponent implements OnInit, OnDestroy {
         //     size = 20;
         // }
         const initSize = 200;
-        const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
+        // const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
+        const resp = await this.clusterService.getData(this.case,
+            this.clusters,
+            Array.from(this.additionalFilters.values()),
+            null,
+            this.visibleDataFirstIndex,
+            initSize,
+            this.pageSortString,
+            this.pageSortOrder);
         console.log('list data loaded async', resp, resp.data, resp.total);
         this.data = resp.data;
         this.total = resp.total;
@@ -422,7 +428,16 @@ export class ListViewComponent implements OnInit, OnDestroy {
             this.loadingData = true;
         }
         const begin_with_page = begin + ((this.page_number - 1) * this.page_size);
-        this.clusterManager.getData(begin_with_page, size, this.pageSortString, this.pageSortOrder)
+        // this.clusterManager.getData(begin_with_page, size, this.pageSortString, this.pageSortOrder)
+        this.clusterService.getData(
+            this.case,
+            this.clusters,
+            Array.from(this.additionalFilters.values()),
+            null,
+            begin_with_page,
+            size,
+            this.pageSortString,
+            this.pageSortOrder)
             .then(resp => {
                 console.log('??? async called virtual scroll', resp, resp.data, resp.total, 'from: ', begin, 'size: ', size);
                 this.preloadedData = resp.data;
@@ -594,13 +609,31 @@ export class ListViewComponent implements OnInit, OnDestroy {
                     index_start = 0;
                     bufferOffset = bufferSize + bufferOffset;
                     bufferSize = this.skipBufferSize;
-                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    // const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    const res = await this.clusterService.getData(
+                        this.case,
+                        this.clusters,
+                        Array.from(this.additionalFilters.values()),
+                        null,
+                        bufferOffset,
+                        bufferSize,
+                        this.pageSortString,
+                        this.pageSortOrder);
                     buffer = res.data;
                 } else {
                     index_start = (bufferSize - 1);
                     bufferOffset = bufferOffset - bufferSize >= 0 ? bufferOffset - bufferSize : 0;
                     bufferSize = this.skipBufferSize;
-                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    // const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    const res = await this.clusterService.getData(
+                        this.case,
+                        this.clusters,
+                        Array.from(this.additionalFilters.values()),
+                        null,
+                        bufferOffset,
+                        bufferSize,
+                        this.pageSortString,
+                        this.pageSortOrder);
                     buffer = res.data;
                 }
             }
@@ -700,13 +733,31 @@ export class ListViewComponent implements OnInit, OnDestroy {
                     index_start = 0;
                     bufferOffset = bufferSize + bufferOffset;
                     bufferSize = this.skipBufferSize;
-                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    // const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    const res = await this.clusterService.getData(
+                        this.case,
+                        this.clusters,
+                        Array.from(this.additionalFilters.values()),
+                        null,
+                        bufferOffset,
+                        bufferSize,
+                        this.pageSortString,
+                        this.pageSortOrder);
                     buffer = res.data;
                 } else {
                     index_start = (bufferSize - 1);
                     bufferOffset = bufferOffset - bufferSize >= 0 ? bufferOffset - bufferSize : 0;
                     bufferSize = this.skipBufferSize;
-                    const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    // const res = await this.clusterManager.getData(bufferOffset, bufferSize,  this.pageSortString, this.pageSortOrder);
+                    const res = await this.clusterService.getData(
+                        this.case,
+                        this.clusters,
+                        Array.from(this.additionalFilters.values()),
+                        null,
+                        bufferOffset,
+                        bufferSize,
+                        this.pageSortString,
+                        this.pageSortOrder);
                     buffer = res.data;
                 }
             }

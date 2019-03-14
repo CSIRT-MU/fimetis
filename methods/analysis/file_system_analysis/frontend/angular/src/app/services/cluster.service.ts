@@ -71,4 +71,17 @@ export class ClusterService {
             }
         );
     }
+
+    async getDifferenceShift(_case, newClusters, oldClusters, firstVisibleIndex, firstEntry) {
+        if (oldClusters == null || oldClusters === undefined || firstEntry === undefined) {
+            return 0;
+        }
+        if (oldClusters.length === 0) {
+            return 0;
+        }
+        const old_number = await this.numberOfEntries(_case, oldClusters, [], firstEntry._source['@timestamp']);
+        const new_number = await this.numberOfEntries(_case, newClusters, [], firstEntry._source['@timestamp']);
+        console.log('difference shift:', new_number - old_number);
+        return new_number - old_number;
+    }
 }
