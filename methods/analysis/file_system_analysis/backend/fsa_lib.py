@@ -44,7 +44,6 @@ class FilterParam:
 def build_data_query(case_name,
                      clusters,
                      additional_filters,
-                     graph_filter,
                      from_param,
                      size=1,
                      sort='timestamp',
@@ -52,7 +51,7 @@ def build_data_query(case_name,
     body = {}
     body['from'] = from_param
     body['size'] = size
-    body['query'] = build_base_query(case_name, clusters, additional_filters, graph_filter)
+    body['query'] = build_base_query(case_name, clusters, additional_filters, None)
 
     sort_type = "@timestamp"
     if sort is 'timestamp':
@@ -71,7 +70,7 @@ def build_data_query(case_name,
 def build_number_of_entries_query(case_name, clusters, additional_filters, time_border):
     time_border_filter = {'range': {'@timestamp': {'lt': time_border}}}
     additional_filters.append(json.dumps(time_border_filter))
-    return build_data_query(case_name, clusters, additional_filters, None, 0, 1, 'timestamp', 'asc')
+    return build_data_query(case_name, clusters, additional_filters, 0, 1, 'timestamp', 'asc')
 
 
 def build_graph_data_query(case_name,

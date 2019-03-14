@@ -53,7 +53,7 @@ export class ClusterManager {
 
     getData(begin, page_size, sort, sort_order) {
         return this.service.getData(
-            this.case, this.clusters, this.additional_filters, this.graph_filter, begin, page_size, sort, sort_order
+            this.case, this.clusters, this.additional_filters, begin, page_size, sort, sort_order
         );
         // return this.clusterDao.getData(
         //     this.case, this.clusters, this.additional_filters, this.graph_filter, begin, page_size, sort, sort_order

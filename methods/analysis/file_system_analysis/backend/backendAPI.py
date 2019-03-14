@@ -178,13 +178,12 @@ def filter_by_name(current_user):
 def clusters_get_data(current_user, case):
     clusters = request.json.get('clusters')
     additional_filters = request.json.get('additional_filters')
-    graph_filter = request.json.get('graph_filter')
     begin = request.json.get('begin')
     page_size = request.json.get('page_size')
     sort = request.json.get('sort')
     sort_order = request.json.get('sort_order')
 
-    query = fsa.build_data_query(case, clusters, additional_filters, graph_filter, begin, page_size, sort, sort_order)
+    query = fsa.build_data_query(case, clusters, additional_filters, begin, page_size, sort, sort_order)
     print(json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
