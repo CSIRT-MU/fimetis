@@ -16,6 +16,7 @@ import {ClusterComponent} from '../cluster/cluster.component';
 import {ToastrService} from 'ngx-toastr';
 import {BaseService} from '../../services/base.service';
 import {ClusterService} from '../../services/cluster.service';
+import {AuthenticationService} from '../../auth/authentication.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -80,7 +81,12 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatChipList)
     chipList: MatChipList;
 
-    constructor(private es: ElasticsearchService, public dialog: MatDialog, private toaster: ToastrService, private baseService: BaseService, private clusterService: ClusterService) {
+    constructor(private es: ElasticsearchService,
+                public dialog: MatDialog,
+                private toaster: ToastrService,
+                private baseService: BaseService,
+                private clusterService: ClusterService,
+                private authService: AuthenticationService) {
         this.clusterManager = new ClusterManager(this.es, this.clusterService);
         this.baseManager = new BaseManager(this.es);
         this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
@@ -242,50 +248,50 @@ export class DashboardComponent implements OnInit {
         this.filterPanelOpenState = false;
     }
 
-    /**
-     * De/select given filter in computation
-     * @param filter Filter model
-     */
-    selectFilter(filter) {
-        if (this.selectedAppliedFilters.has(filter)) {
-            this.selectedAppliedFilters.delete(filter);
-        } else {
-            this.selectedAppliedFilters.add(filter);
-        }
-        this.combineSelectedFilters();
-        console.log(this.selectedAppliedFilters);
-    }
-
-    combineSelectedFilters() {
-        let clusterName = 'cluster';
-        let resFilter = '';
-        this.selectedAppliedFilters.forEach((value) => {
-            console.log(value);
-            resFilter = this.elasticsearchBaseQueryManager.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
-            console.log(this.appliedFilters.get(value));
-            clusterName = clusterName + '-' + value;
-        });
-
-        if (this.selectedAppliedFilters.size > 0) {
-            this.combinedFilter = resFilter;
-        } else {
-            this.combinedFilter = null;
-        }
-        console.log(resFilter);
-        this.listViewComponent.case = this.selectedCase;
-        this.listViewComponent.filter = this.combinedFilter;
-        // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
-        // this.listViewComponent.computations = Array.from(this.computations);
-        this.listViewComponent.init();
-
-        // TODO WARNING - only one cluster at a time
-        this.computedClusters.clear();
-        if (this.selectedAppliedFilters.size > 0) {
-            this.computedClusters.add(clusterName);
-            this.selectedComputedClusters = [];
-            this.selectedComputedClusters.push(clusterName);
-        }
-    }
+    // /**
+    //  * De/select given filter in computation
+    //  * @param filter Filter model
+    //  */
+    // selectFilter(filter) {
+    //     if (this.selectedAppliedFilters.has(filter)) {
+    //         this.selectedAppliedFilters.delete(filter);
+    //     } else {
+    //         this.selectedAppliedFilters.add(filter);
+    //     }
+    //     this.combineSelectedFilters();
+    //     console.log(this.selectedAppliedFilters);
+    // }
+    //
+    // combineSelectedFilters() {
+    //     let clusterName = 'cluster';
+    //     let resFilter = '';
+    //     this.selectedAppliedFilters.forEach((value) => {
+    //         console.log(value);
+    //         resFilter = this.elasticsearchBaseQueryManager.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
+    //         console.log(this.appliedFilters.get(value));
+    //         clusterName = clusterName + '-' + value;
+    //     });
+    //
+    //     if (this.selectedAppliedFilters.size > 0) {
+    //         this.combinedFilter = resFilter;
+    //     } else {
+    //         this.combinedFilter = null;
+    //     }
+    //     console.log(resFilter);
+    //     this.listViewComponent.case = this.selectedCase;
+    //     this.listViewComponent.filter = this.combinedFilter;
+    //     // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
+    //     // this.listViewComponent.computations = Array.from(this.computations);
+    //     this.listViewComponent.init();
+    //
+    //     // TODO WARNING - only one cluster at a time
+    //     this.computedClusters.clear();
+    //     if (this.selectedAppliedFilters.size > 0) {
+    //         this.computedClusters.add(clusterName);
+    //         this.selectedComputedClusters = [];
+    //         this.selectedComputedClusters.push(clusterName);
+    //     }
+    // }
 
     setComputedClusters($event) {
         this.selectedComputedClusters = $event;
@@ -417,46 +423,46 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    /**
-     * Creates filter by selection in list view
-     */
-    createFilterFromSelection() {
-        const dialogRef = this.dialog.open(NameDialogComponent, {
-            width: '350px',
-            data: {
-                title: 'Create new filter',
-                itemsNumber: this.listViewComponent.tableSelection.selected.length,
-                placeholder: 'Type new filter\'s name'
-            }
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('dialog closed', result);
-            if (result != null) {
-                const params = [];
-                const values = [];
-                const filterParams = [];
-                for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
-                    params.push('_id');
-                    values.push(this.listViewComponent.tableSelection.selected[index]._id);
-                    const filParam = new FilterParamModel();
-                    filParam.name = '_id';
-                    filParam.value = this.listViewComponent.tableSelection.selected[index]._id;
-                    filterParams.push(filParam);
-                }
-                const filter = this.elasticsearchBaseQueryManager.buildShouldMatchFilter(params, values);
-                const model = new FilterModel();
-                model.name = result;
-                model.completed = filter;
-                model.params = filterParams;
-                model.json = filter;
-                this.appliedFilters.set(model.name, model);
-                this.selectedAppliedFilters.add(model.name);
-                this.appliedFiltersKeys.add(model.name);
-                this.listViewComponent.tableSelection.clear();
-                this.combineSelectedFilters();
-            }
-        });
-    }
+    // /**
+    //  * Creates filter by selection in list view
+    //  */
+    // createFilterFromSelection() {
+    //     const dialogRef = this.dialog.open(NameDialogComponent, {
+    //         width: '350px',
+    //         data: {
+    //             title: 'Create new filter',
+    //             itemsNumber: this.listViewComponent.tableSelection.selected.length,
+    //             placeholder: 'Type new filter\'s name'
+    //         }
+    //     });
+    //     dialogRef.afterClosed().subscribe(result => {
+    //         console.log('dialog closed', result);
+    //         if (result != null) {
+    //             const params = [];
+    //             const values = [];
+    //             const filterParams = [];
+    //             for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
+    //                 params.push('_id');
+    //                 values.push(this.listViewComponent.tableSelection.selected[index]._id);
+    //                 const filParam = new FilterParamModel();
+    //                 filParam.name = '_id';
+    //                 filParam.value = this.listViewComponent.tableSelection.selected[index]._id;
+    //                 filterParams.push(filParam);
+    //             }
+    //             const filter = this.elasticsearchBaseQueryManager.buildShouldMatchFilter(params, values);
+    //             const model = new FilterModel();
+    //             model.name = result;
+    //             model.completed = filter;
+    //             model.params = filterParams;
+    //             model.json = filter;
+    //             this.appliedFilters.set(model.name, model);
+    //             this.selectedAppliedFilters.add(model.name);
+    //             this.appliedFiltersKeys.add(model.name);
+    //             this.listViewComponent.tableSelection.clear();
+    //             this.combineSelectedFilters();
+    //         }
+    //     });
+    // }
 
     /**
      * If graph boundaries has changed this method tries to fill boundaries into filter params called FROM and TO
@@ -747,6 +753,10 @@ export class DashboardComponent implements OnInit {
      */
     ableToRestoreState() {
         return JSON.parse(localStorage.getItem('selectedCase'));
+    }
+
+    logout() {
+        this.authService.logout();
     }
 
 }
