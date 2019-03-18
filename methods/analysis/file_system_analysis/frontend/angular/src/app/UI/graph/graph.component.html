@@ -4,7 +4,14 @@
                                                                      [ngClass]="{'glyphicon-chevron-down': !graphPanelOpenState, 'glyphicon-chevron-up': graphPanelOpenState}"
                                                                      (click)="collapseGraphPanel()"></span>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-4 header-tools">
+        <span style="">
+            <input type="checkbox" (change)="allTypesTrigger()" [(ngModel)]="showAllTypes" class="timesix-slider" id="allTypesCheckbox">
+            <label for="allTypesCheckbox"></label>
+            <span class="all-types-label">Show all types</span>
+        </span>
+    </div>
+    <div class="col-md-4 header-tools text-align-right">
         <span *ngIf="graphPanelOpenState && saveGraphZoom" class="resetZoomButton" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
     </div>
     <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
@@ -28,11 +35,13 @@
             <button type="submit" hidden></button>
         </form>
         <div class="col-md-4">
-            <span *ngFor="let type of supportedTypes">
-                <input type="checkbox" (change)="typeCheckboxChanged(type)"
-                       [checked]="selectedTypes.has(type)" class="form-checkbox" id="check-{{type}}" [ngStyle]="{ 'border-color': getCheckboxColor(type), 'background-color': selectedTypes.has(type) ? getCheckboxColor(type) : ''}">
-                <label for="check-{{type}}">{{type}} type</label>
-            </span>
+            <div *ngIf="!showAllTypes">
+                <span *ngFor="let type of supportedTypes" class="type-checkbox" matTooltip="{{typeTooltip(type)}}">
+                    <input type="checkbox" (change)="typeCheckboxChanged(type)"
+                           [checked]="selectedTypes.has(type)" class="form-checkbox" id="check-{{type}}" [ngStyle]="{ 'border-color': getCheckboxColor(type), 'background-color': selectedTypes.has(type) ? getCheckboxColor(type) : ''}">
+                    <label for="check-{{type}}">{{type}} type</label>
+                </span>
+            </div>
         </div>
         <form (submit)="updateBoundary()" class="to-date-form col-md-4">
             <input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate" required class="date-form-input">

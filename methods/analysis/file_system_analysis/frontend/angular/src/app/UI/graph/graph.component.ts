@@ -25,7 +25,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
     dateChangeDebouncer: Subject<[string, string]> = new Subject();
     @Output() openStateChange = new EventEmitter<boolean>();
     @Output() typesChanged = new EventEmitter<Set<string>>();
-    @Input() fromDate: Date;
+    typesChangedDebouncer: Subject<Set<string>> = new Subject();
+    // @Input() fromDate: Date;
 
     @ViewChild('graph') private chartElement: ElementRef;
     @ViewChild('plot_div') private plotElement: ElementRef;
@@ -37,7 +38,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
     pickedToDate = '1970-01-01T00:00:00';
     saveGraphZoom = false;
 
-    supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b', 'all']);
+    showAllTypes = false;
+    supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
     private data: any;
@@ -219,7 +221,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.manager = new GraphManager(es, this.graphService);
         // debouncer setup
         this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value));
-        console.log(this.chartDiv);
+        this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value));
     }
 
 
@@ -248,7 +250,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.loadingAllTimes = true;
 
         console.log('compute graph');
-        this.manager.getFirstAndLast().then((res) => {
+        this.graphService.getFirstAndLastTimestamp(this._case, this._clusters, null, null).then((res) => {
             console.log(res[0], res[1]);
             let first = new Date(res[0]);
             first = new Date(Date.UTC(first.getFullYear(), first.getMonth(), first.getDate()));
@@ -281,7 +283,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
         });
 
         // Loading mactimes - modified
-        this.manager.getData('m')
+        // this.manager.getData('m')
+        this.graphService.getData(this._case, this._clusters, null, 'm', null)
             .then(response => {
                 // this.graphPlot.data[0].x = response.x;
                 // this.graphPlot.data[0].y = response.y;
@@ -308,7 +311,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Loading mactimes - access
-        this.manager.getData('a')
+        // this.manager.getData('a')
+        this.graphService.getData(this._case, this._clusters, null, 'a', null)
             .then(response => {
                 // this.graphPlot.data[1].x = response.x;
                 // this.graphPlot.data[1].y = response.y;
@@ -333,7 +337,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Loading mactimes - changed
-        this.manager.getData('c')
+        // this.manager.getData('c')
+        this.graphService.getData(this._case, this._clusters, null, 'c', null)
             .then(response => {
                 // this.graphPlot.data[2].x = response.x;
                 // this.graphPlot.data[2].y = response.y;
@@ -358,7 +363,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Loading mactimes - birth
-        this.manager.getData('b')
+        // this.manager.getData('b')
+        this.graphService.getData(this._case, this._clusters, null, 'b', null)
             .then(response => {
                 // this.graphPlot.data[3].x = response.x;
                 // this.graphPlot.data[3].y = response.y;
@@ -384,7 +390,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Load counts of all timestamps
-        this.manager.getData()
+        // this.manager.getData()
+        this.graphService.getData(this._case, this._clusters, null, null, null)
             .then(response => {
                 // this.graphPlot.data[3].x = response.x;
                 // this.graphPlot.data[3].y = response.y;
@@ -474,6 +481,18 @@ export class GraphComponent implements OnInit, AfterViewInit {
         }
     }
 
+    showSelectedTraces() {
+        for (let i = 0; i < this.chart.series.length; i++) {
+            if (this.selectedTypes.has(this.chart.series[i].name)) {
+                this.chart.series[i].show();
+                this.chartOverview.series[i].show();
+            } else {
+                this.chart.series[i].hide();
+                this.chartOverview.series[i].hide();
+            }
+        }
+    }
+
     typeCheckboxChanged(type) {
         if (this.supportedTypes.has(type)) {
             if (this.selectedTypes.has(type)) {
@@ -482,7 +501,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.selectedTypes.add(type);
             }
             this.showHideTrace(type);
-            this.typesChanged.emit(this.selectedTypes);
+            // this.typesChanged.emit(this.selectedTypes);
+            this.typesChangedDebouncer.next(this.selectedTypes);
             console.log('selected metadata types changed', this.selectedTypes);
         }
     }
@@ -517,5 +537,42 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.dateChangeDebouncer.next([
             this.pickedFromDate.replace('T', ' '),
             this.pickedToDate.replace('T', ' ')]);
+    }
+
+    typeTooltip(type) {
+        switch (type) {
+            case 'm':
+                return 'Modification type of metadata time describes time of last change of file content';
+            case 'a':
+                return 'Access type of metadata time describes time of last access to file';
+            case 'c':
+                return 'Change type of metadata time describes time of last change of file metadata but not its content';
+            case 'b':
+                return 'Birth type of metadata time describes creation time of file';
+            case 'all':
+                return 'All types';
+        }
+        return 'unknown type';
+    }
+
+    allTypesTrigger() {
+        console.log('triggeresd', this.showAllTypes);
+        if (this.showAllTypes) {
+            for (let i = 0; i < this.chart.series.length; i++) {
+                console.log(this.chart.series[i].name);
+                if (this.chart.series[i].name === 'all') {
+                    console.log('triggered');
+                    this.chart.series[i].show();
+                    this.chartOverview.series[i].show();
+                } else {
+                    this.chart.series[i].hide();
+                    this.chartOverview.series[i].hide();
+                }
+            }
+            this.typesChangedDebouncer.next(this.supportedTypes);
+        } else {
+            this.showSelectedTraces();
+            this.typesChangedDebouncer.next(this.selectedTypes);
+        }
     }
 }

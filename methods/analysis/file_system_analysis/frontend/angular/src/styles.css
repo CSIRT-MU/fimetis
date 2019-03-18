@@ -147,6 +147,10 @@ body {
     cursor: pointer;
 }
 
+.text-align-right {
+    text-align: right;
+}
+
 .text-gray {
     color: #666666;
 }
@@ -204,4 +208,50 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
     white-space: nowrap;
     min-width: 100%;
     width: initial !important;
+}
+
+
+/* custom slider */
+.timesix-slider{
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    display: inline-block;
+}
+
+.timesix-slider ~ label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 30px;
+    height: 16px;
+    background: grey;
+    display: inline-block;
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 0;
+}
+
+.timesix-slider ~ label:after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 9px;
+    transition: 0.3s;
+}
+
+.timesix-slider:checked + label {
+    background: #52AE58;
+}
+
+.timesix-slider:checked + label:after {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+}
+
+.timesix-slider ~ label:active:after {
+    width: 12px;
 }

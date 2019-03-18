@@ -11,7 +11,8 @@
                 </button>
                 <button mat-menu-item (click)="advancedModeToggle(!advancedMode)">
                     ADVANCED MODE
-                    <input type="checkbox" [ngModel]="advancedMode">
+                    <input type="checkbox" [ngModel]="advancedMode" class="timesix-slider" id="advancedModeCheckbox">
+                    <label for="advancedModeCheckbox"></label>
                 </button>
                 <button mat-menu-item (click)="saveApplicationState()">
                     SAVE STATE

@@ -50,4 +50,33 @@ export class GraphService {
             }
         );
     }
+
+    async computeMaxFrequency(_case: string, _clusters: ClusterModel[], _additional_filters: string[]) {
+        let first = 0;
+        let last = 0;
+        const one_day = 1000 * 60 * 60 * 24;
+        const firstAndLast = await this.getFirstAndLastTimestamp(_case, _clusters, _additional_filters, null);
+        first = firstAndLast[0];
+        last = firstAndLast[1];
+        let frequency = 'day';
+        if (first !== 0 && last !== 0 && first !== undefined && last !== undefined) {
+            const diff = (new Date(last).getTime() - new Date(first).getTime()) / one_day;
+            if (diff > 365) {
+                frequency = 'day';
+            }
+            if (diff <= 365 && diff > 60) {
+                frequency = 'hour';
+            }
+            if (diff <= 60 && diff > 30) {
+                frequency = 'minute';
+            }
+            if (diff <= 30) {
+                frequency = 'minute';
+            }
+        } else {
+            frequency = 'day';
+        }
+
+        return frequency;
+    }
 }

@@ -252,6 +252,8 @@ def graph_get_data(current_user, case):
     additional_filters = request.json.get('additional_filters')
     mac_type = request.json.get('mac_type')
     frequency = request.json.get('frequency')
+    if frequency is None:
+        frequency = 'day'
 
     query = fsa.build_graph_data_query(case, clusters, additional_filters, mac_type, frequency)
     print(json.dumps(query))
