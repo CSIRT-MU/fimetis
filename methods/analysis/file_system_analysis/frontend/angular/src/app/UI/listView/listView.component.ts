@@ -37,20 +37,16 @@ export class ListViewComponent {
     @Input('clusters')
     clusters: ClusterModel[] = [];
     oldClusters: ClusterModel[] = [];
-    private SIZE = 25;
 
-    @Output('graphChangedBoundary')
-    graphChangedBoundary: EventEmitter<any> = new EventEmitter<any>();
     @Output('makeManualCluster')
     makeManualCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
     @Output('additionalFiltersChanged')
     additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
 
     tablePanelOpenState = true;
-
     searchString = '';
     additionalFilters: Map<string, string> = new Map<string, string>();
-
+    selected_rows_id: Set<string> = new Set<string>();
     tableSelection = new SelectionModel<any>(true, []);
     availableTableColumns = [
         'select',
@@ -70,66 +66,46 @@ export class ListViewComponent {
         'id'
     ];
     displayedTableColumns = ['select', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
+    pageSortString = 'timestamp';
+    pageSortOrder = 'asc';
+    // data
+    total = 0;
     data: any[];
+    timestampColor = {colors: ['#fceada', '#ffffff'], colored_nodes: new Map<string, string>()};
+    // skipping
     public highlightedTextBox: SelectionRectangle | null;
     highlightedText: string;
     highlightedTextId: number;
-    timestampColor = {colors: ['#fceada', '#ffffff'], colored_nodes: new Map<string, string>()};
-
     public highlightedTextDateBox: SelectionRectangle | null;
     highlightedTextDate: string;
     highlightedTextDateId: number;
-
-    selected_rows_id: Set<string> = new Set<string>();
-
-    haveNextPage = false;
-    scrollID = '';
-    notice = '';
-    total = 0;
-
     // pagination
     page_number = 1;
     page_size = 1500000;
     // Virtual scroll
-    listViewScrollHeight = 10;
+    @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
     virtualArray: VirtualArrayModel = new VirtualArrayModel();
+    preloadedBufferSize = 4000; // buffer window size - minimum = (2*preloadBufferBorder) + preloadBufferOffset
+    preloadBufferOffset = 1200; // shift of buffer window - should be bigger than preloadBufferBorder
+    preloadBufferBorder = 1000; // when to trigger buffer shift (to the end of buffer window)
+    skipBufferSize = 50000;
+    private dataLoaderDebouncer: Subject<[number, number, number, number, boolean, boolean]> = new Subject();
+    listViewScrollHeight = 10;
     visibleData: any[] = [];
     preloadedData: any[] = [];
     preloadedBegin = 0;
     preloadedEnd;
-    private dataLoaderDebouncer: Subject<[number, number, number, number, boolean, boolean]> = new Subject();
     // preloadVisibleStart = 0;
-    preloadedBufferSize = 4000; // buffer window size - minimum = (2*preloadBufferBorder) + preloadBufferOffset
-    preloadBufferOffset = 1200; // shift of buffer window - should be bigger than preloadBufferBorder
-    preloadBufferBorder = 1000; // when to trigger buffer shift (to the end of buffer window)
     preloadBufferState = false;
     visibleDataFirstIndex = 0;
     visibleDataLastIndex = 0;
-
-    skipBufferSize = 50000;
-
-
     loadingData = false;
     skippingData = null;
 
-    tableDisplayType = 'timestamps';
-    pageSortString = 'timestamp';
-    pageSortOrder = 'asc';
-    pageSizeOptions: number[] = [5, 10, 25, 100, 500, 1000];
-    pageEvent: PageEvent;
-
-    private clusterManager: ClusterManager;
+    // private clusterManager: ClusterManager;
     private elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
-
-    @ViewChild(MatPaginator) topPaginator: MatPaginator;
-    @ViewChild(MatPaginator) bottomPaginator: MatPaginator;
-
-    @ViewChild(GraphComponent) showGraph: GraphComponent;
-
-    @ViewChild(MatTable) interactiveTable: MatTable<any>;
     @ViewChild('highlightedBox') highlightedBox: ElementRef;
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
-    @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
 
     constructor(private es: ElasticsearchService,
                 public dialog: MatDialog,
@@ -140,18 +116,11 @@ export class ListViewComponent {
             .subscribe((value) => this.dataLoader(
                 value[0], value[1], value[2], value[3], value[4], value[5])
             );
-        this.scrollID = '';
-        this.notice = '';
-        this.haveNextPage = true;
         this.total = 0;
-        this.pageEvent = new PageEvent();
-        this.pageEvent.pageIndex = 0;
-        this.pageEvent.pageSize = this.SIZE;
         this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
         // this.clusterManager = new ClusterManager(this.es, clusterService);
         this.highlightedTextBox = null;
         this.highlightedText = '';
-
         this.highlightedTextDateBox = null;
         this.highlightedTextDate = '';
     }
@@ -235,14 +204,6 @@ export class ListViewComponent {
         // this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
         this.oldClusters = lodash.cloneDeep(this.clusters);
         // this.virtualScroller.refresh();
-    }
-
-    setPageSizeOptions(setPageSizeOptionsInput: string) {
-        this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
-    }
-
-    changeDatePickers($event) {
-        this.graphChangedBoundary.emit($event);
     }
 
     isAllSelected() {
