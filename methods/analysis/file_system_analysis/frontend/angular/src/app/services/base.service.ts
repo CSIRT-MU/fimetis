@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../environments/environment';
+import {FilterModel} from '../models/filter.model';
 
 @Injectable({ providedIn: 'root' })
 export class BaseService {
@@ -16,7 +17,15 @@ export class BaseService {
 
     getFilterByName(name: string) {
         return this.http.post<any>(environment.backendUrl + '/filter/name', {'name': name}).toPromise().then(response => {
-            return response.hits.hits[0]._source;
+            const filter = new FilterModel();
+            filter.name = response.name;
+            filter.json = response.json;
+            filter.type = response.type;
+            filter.params = [];
+            try {
+                filter.params = JSON.parse(response.params);
+            } catch (e) {}
+            return filter;
         });
     }
 

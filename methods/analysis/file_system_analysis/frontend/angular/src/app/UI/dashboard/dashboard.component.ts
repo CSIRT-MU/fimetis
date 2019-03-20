@@ -166,6 +166,9 @@ export class DashboardComponent implements OnInit {
             .then(
             result => {
                 this.selectedFilterModel = result;
+            }, error => {
+                console.log('Loading filter by name - error', error);
+                this.toaster.error(error.message, 'Cannot load filter');
             }
         );
     }

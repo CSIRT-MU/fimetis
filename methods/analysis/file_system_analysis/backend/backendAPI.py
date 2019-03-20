@@ -171,7 +171,7 @@ def filter_by_name(current_user):
     }
 
     res = es.search(index=app.config['elastic_filter_index'], doc_type=app.config['elastic_filter_type'], body=query)
-    return jsonify(res)
+    return jsonify(res['hits']['hits'][0]['_source'])
 
 
 @app.route('/clusters/data/<string:case>', methods=['POST'])

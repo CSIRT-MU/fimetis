@@ -49,7 +49,7 @@
     width: 20%;
     left: 40%;
     top: 40%;
-    z-index: 9;
+    z-index: 7;
 }
 
 .spinning-loader {
@@ -75,7 +75,7 @@
     width: 400px;
     left: 35%;
     top: 30%;
-    z-index: 9;
+    z-index: 7;
     background-color:  rgba(107, 252, 255, 0.8);
     color: #333333;
     font-size: large;
