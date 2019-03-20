@@ -717,7 +717,7 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
         localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
         localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
-        localStorage.setItem('selectedTypes', JSON.stringify(this.graphComponent.selectedTypes));
+        localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
     }
 
     /**
@@ -743,7 +743,10 @@ export class DashboardComponent implements OnInit {
             this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
         });
         this.graphComponent.showAllTypes = JSON.parse(localStorage.getItem('showAllTypes'));
-        this.graphComponent.selectedTypes = JSON.parse(localStorage.getItem('selectedTypes'));
+        this.graphComponent.selectedTypes.clear();
+        for (const item of JSON.parse(localStorage.getItem('selectedTypes'))) {
+            this.graphComponent.selectedTypes.add(item);
+        }
         this.graphComponent.allTypesTrigger();
         this.graphComponent.init();
         this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
