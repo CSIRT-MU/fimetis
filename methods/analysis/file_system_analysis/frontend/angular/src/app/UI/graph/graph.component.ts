@@ -422,7 +422,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.chartOverview.xAxis[0].removePlotBand('mask-before');
         this.chartOverview.xAxis[0].addPlotBand({
             id: 'mask-before',
-            from: this.chartOverview.xAxis[0].dataMin,
+            from: this.min_date_boundary,
             to: from,
             color: 'rgba(30, 30, 30, 0.4)'
         });
@@ -430,7 +430,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.chartOverview.xAxis[0].addPlotBand({
             id: 'mask-after',
             from: to,
-            to: this.chartOverview.xAxis[0].dataMax,
+            to: this.max_date_boundary,
             color: 'rgba(30, 30, 30, 0.4)'
         });
     }
