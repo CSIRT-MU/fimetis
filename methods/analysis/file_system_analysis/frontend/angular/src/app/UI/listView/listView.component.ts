@@ -22,6 +22,7 @@ import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBa
 import {ToastrService} from 'ngx-toastr';
 import {debounceTime} from 'rxjs/operators';
 import {ClusterService} from '../../services/cluster.service';
+import {DataModel} from '../../models/data.model';
 
 @Component({
     selector: 'app-list-view',
@@ -158,7 +159,12 @@ export class ListViewComponent {
             this.visibleDataFirstIndex,
             initSize,
             this.pageSortString,
-            this.pageSortOrder);
+            this.pageSortOrder).catch(
+            () => {
+                this.toaster.error('Cannot load data', 'Loading failed');
+                this.loadingData = false;
+                return new DataModel;
+            });
         console.log('list data loaded async', resp, resp.data, resp.total);
         this.data = resp.data;
         this.total = resp.total;
@@ -177,7 +183,7 @@ export class ListViewComponent {
         this.loadingData = false;
         this.visibleData = this.data;
         if (this.visibleDataFirstIndex + shift > this.total ) {
-            this.scrollToIndex(this.total - 20 < 0 ? 0 : this.total - 20);
+            this.scrollToIndex(this.total);
         } else {
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
         }
@@ -315,8 +321,8 @@ export class ListViewComponent {
      */
     loadVisibleData($event) {
         // console.log($event);
-        const start = $event['start'];
-        const end = $event['end'];
+        const start = $event['startIndex'];
+        const end = $event['endIndex'];
         // console.log('visible start index:', this.visibleDataFirstIndex);
         this.visibleDataFirstIndex = start < 0 ? 0 : start;
         this.visibleDataLastIndex = end < 0 ? 0 : end;
@@ -387,7 +393,10 @@ export class ListViewComponent {
         if (loadingState) {
             this.loadingData = true;
         }
-        const begin_with_page = begin + ((this.page_number - 1) * this.page_size);
+        let begin_with_page = begin + ((this.page_number - 1) * this.page_size);
+        if (begin_with_page < 0) {
+            begin_with_page = 0;
+        }
         // this.clusterManager.getData(begin_with_page, size, this.pageSortString, this.pageSortOrder)
         this.clusterService.getData(
             this.case,
@@ -398,7 +407,8 @@ export class ListViewComponent {
             this.pageSortString,
             this.pageSortOrder)
             .then(resp => {
-                console.log('??? async called virtual scroll', resp, resp.data, resp.total, 'from: ', begin, 'size: ', size);
+                console.log('virtual scroll loaded data', resp, resp.data, resp.total,
+                    'from: ', begin, '(from + page index):', begin_with_page, 'size: ', size);
                 this.preloadedData = resp.data;
                 this.preloadedBegin = begin;
                 this.preloadedEnd = this.preloadedBegin + size;
@@ -408,6 +418,11 @@ export class ListViewComponent {
                         (visibleDataEnd - (this.preloadedBegin) + 1)
                     );
                 }
+                this.virtualScroller.refresh();
+            },
+            () => {
+                this.toaster.error('Cannot load data', 'Loading failed');
+                this.loadingData = false;
             }).then(() => {
             console.log('Preload data - done!');
             if (loadingState) {
@@ -934,13 +949,25 @@ export class ListViewComponent {
      * @param {number} index Index of item to scroll to
      */
     scrollToIndex(index: number) {
-        console.log('scrolling to:', index);
-        const actualIndex = index;
+        console.log('requested scroll index:', index);
+        const actualIndex = index < 0 ? 0 : index;
         const scrollPage = Math.floor(actualIndex / this.page_size) + 1;
-        console.log(scrollPage);
+        console.log('scrolling to index: ', actualIndex, ' on page: ', scrollPage);
         const scrollIndex = actualIndex % this.page_size;
-        this.changePage(scrollPage);
+        this.setPage(scrollPage);
         this.virtualScroller.scrollToIndex(scrollIndex - 1);
+    }
+
+    /**
+     * Set page by page parameter
+     * @param {number} page Number of requested page
+     */
+    setPage(page: number) {
+        this.page_number = page;
+        this.virtualArray.length =
+            this.page_number * this.page_size > this.total ?
+                this.total - ((this.page_number - 1) * this.page_size) :
+                this.page_size;
     }
 
     /**
@@ -948,11 +975,8 @@ export class ListViewComponent {
      * @param {number} page Number of page
      */
     changePage(page: number) {
-        this.page_number = page;
-        this.virtualArray.length =
-            this.page_number * this.page_size > this.total ?
-            this.total - ((this.page_number - 1) * this.page_size) :
-            this.page_size;
-        this.virtualScroller.refresh();
+        const scrollIndex = (page - 1) * this.page_size;
+        this.scrollToIndex(scrollIndex);
+        this.dataLoader(0, this.preloadedBufferSize, null, null, true, false);
     }
 }

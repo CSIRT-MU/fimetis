@@ -716,6 +716,7 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
         localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
         localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
+        localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
     }
 
     /**
@@ -740,6 +741,8 @@ export class DashboardComponent implements OnInit {
             this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
             this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
         });
+        this.graphComponent.showAllTypes = JSON.parse(localStorage.getItem('showAllTypes'));
+        this.graphComponent.allTypesTrigger();
         this.graphComponent.init();
         this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
         this.graphComponent.pickedFromDate = JSON.parse(localStorage.getItem('fromDate'));

@@ -18,9 +18,10 @@
         <span class="text-gray" style="margin-left: 15px">Total: {{total}}</span>
     </div>
     <div class="col-md-7 table-controls">
-        <mat-paginator *ngIf="total > page_size" (page)="changePage($event.pageIndex + 1)" [hidePageSize]="true" [pageIndex]="page_number - 1" [pageSize]="page_size" [length]="total"></mat-paginator>
+        <mat-paginator class="pagination-control" *ngIf="total > page_size" (page)="changePage($event.pageIndex + 1)" [hidePageSize]="true" [pageIndex]="page_number - 1" [pageSize]="page_size" [length]="total"></mat-paginator>
         <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
             <input type="text" name="searchString" [(ngModel)]="searchString" class="search-field">
+            <span class="glyphicon glyphicon-search clickable search-icon" (click)="searchByString()"></span>
         </form>
         <span class="glyphicon glyphicon-option-vertical settings-menu-button"
               [matMenuTriggerFor]="settingsMenu"></span>

@@ -28,9 +28,6 @@ export class ClusterService {
                 data.data = response.hits.hits;
                 data.total = response.hits.total;
                 return data;
-            }, error => {
-                console.error(error);
-                return error;
             }
         );
     }
