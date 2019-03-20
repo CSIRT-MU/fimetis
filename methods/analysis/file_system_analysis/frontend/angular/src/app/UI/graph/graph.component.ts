@@ -556,7 +556,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     allTypesTrigger() {
-        console.log('triggeresd', this.showAllTypes);
         if (this.showAllTypes) {
             for (let i = 0; i < this.chart.series.length; i++) {
                 console.log(this.chart.series[i].name);
