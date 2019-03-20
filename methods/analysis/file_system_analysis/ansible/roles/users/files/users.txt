@@ -1,0 +1,4 @@
+# Username:password:group
+admin:timesix:administrators
+user:userspassword:users
+both:password:administrators,users

@@ -1,0 +1,22 @@
+---
+# - include: "{{ role_path }}/files/users.yml"
+
+ - name: install werkezug
+   shell: pip3 install werkzeug
+
+
+ - name: copy script to machine
+   copy:
+     src: "{{ role_path }}/files/load-users.py"
+     dest: "/opt/backend"
+
+ - name: copy users to machine
+   copy:
+     src: "{{ role_path }}/files/users.txt"
+     dest: "/opt/backend"
+
+ - name: run script
+   shell: "python3 load-users.py --file ./users.txt --host localhost:{{ elastic_localhost_port }} && rm ./users.txt"
+   args:
+     chdir: /opt/backend
+

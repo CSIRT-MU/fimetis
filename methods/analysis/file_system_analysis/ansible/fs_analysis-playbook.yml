@@ -3,6 +3,7 @@
   strategy: free
   vars_files:
     - ansible-conf.yml
+
   roles:
   - { role: java }
   - { role: elasticsearch }
@@ -12,3 +13,4 @@
   - { role: logstash }
   - { role: test-data }
   - { role: flask }
+  - { role: users }
