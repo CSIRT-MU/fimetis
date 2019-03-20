@@ -48,6 +48,16 @@ export class ClusterService {
         );
     }
 
+    countEntriesOfClusters(_case, _clusters, _additionalFilters) {
+        for (const clust of _clusters) {
+            this.countData(_case, clust, _additionalFilters).then(res => {
+                clust.count = res;
+            }, error => {
+                console.error(error);
+            });
+        }
+    }
+
     numberOfEntries(_case: string,
                     _clusters: ClusterModel[],
                     _additional_filters: string[],

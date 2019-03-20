@@ -6,7 +6,6 @@ import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
-import {matDatepickerAnimations} from '@angular/material';
 import {GraphService} from '../../services/graph.service';
 
 @Component({
@@ -41,9 +40,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
     showAllTypes = false;
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
-
-    private data: any;
-    private manager;
 
     loadingMTimes = false;
     loadingATimes = false;
@@ -217,8 +213,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         ]
     };
 
-    constructor(private es: ElasticsearchService, private graphService: GraphService) {
-        this.manager = new GraphManager(es, this.graphService);
+    constructor(private graphService: GraphService) {
         // debouncer setup
         this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value));
         this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value));
@@ -238,11 +233,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
      * Graph initialization
      */
     init() {
-        this.manager.case = this._case;
-        // this.manager.filter = this._filter;
-        this.manager.clusters = this._clusters;
-        this.manager.frequency = this._frequency;
-
         this.loadingMTimes = true;
         this.loadingATimes = true;
         this.loadingCTimes = true;
@@ -283,7 +273,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
         });
 
         // Loading mactimes - modified
-        // this.manager.getData('m')
         this.graphService.getData(this._case, this._clusters, null, 'm', null)
             .then(response => {
                 // this.graphPlot.data[0].x = response.x;
@@ -311,7 +300,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Loading mactimes - access
-        // this.manager.getData('a')
         this.graphService.getData(this._case, this._clusters, null, 'a', null)
             .then(response => {
                 // this.graphPlot.data[1].x = response.x;
@@ -337,7 +325,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Loading mactimes - changed
-        // this.manager.getData('c')
         this.graphService.getData(this._case, this._clusters, null, 'c', null)
             .then(response => {
                 // this.graphPlot.data[2].x = response.x;
@@ -363,7 +350,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Loading mactimes - birth
-        // this.manager.getData('b')
         this.graphService.getData(this._case, this._clusters, null, 'b', null)
             .then(response => {
                 // this.graphPlot.data[3].x = response.x;
@@ -390,7 +376,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
             });
 
         // Load counts of all timestamps
-        // this.manager.getData()
         this.graphService.getData(this._case, this._clusters, null, null, null)
             .then(response => {
                 // this.graphPlot.data[3].x = response.x;

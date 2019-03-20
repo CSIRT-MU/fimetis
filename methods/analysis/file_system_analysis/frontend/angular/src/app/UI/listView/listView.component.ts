@@ -1,28 +1,21 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, AfterViewInit, ElementRef} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, ElementRef} from '@angular/core';
 import {MatDatepickerInputEvent, MatDialog, MatPaginator, MatSort, MatTable, MatTableDataSource, PageEvent} from '@angular/material';
-import {ActivatedRoute} from '@angular/router';
 
-import {ElasticsearchService} from '../../elasticsearch.service';
-import {FormControl} from '@angular/forms';
-import {GraphComponent} from '../graph/graph.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
-import {Observable, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import 'rxjs/add/observable/of';
-import {fromArray} from 'rxjs/internal/observable/fromArray';
-import PerfectScrollbar from 'perfect-scrollbar';
 import {VirtualArrayModel} from '../../models/virtualArray.model';
-import {ClusterManager} from '../../businessLayer/clusterManager';
-import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
-import {TextSelectEvent, SelectionRectangle, TextSelectDirective} from '../text-select.directive';
+import {ClusterModel} from '../../models/cluster.model';
+import {TextSelectEvent, SelectionRectangle} from '../text-select.directive';
 import {FilterModel} from '../../models/filter.model';
 import * as lodash from 'lodash';
 import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
-import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ToastrService} from 'ngx-toastr';
 import {debounceTime} from 'rxjs/operators';
 import {ClusterService} from '../../services/cluster.service';
 import {DataModel} from '../../models/data.model';
+import {BaseService} from '../../services/base.service';
 
 @Component({
     selector: 'app-list-view',
@@ -103,23 +96,19 @@ export class ListViewComponent {
     loadingData = false;
     skippingData = null;
 
-    // private clusterManager: ClusterManager;
-    private elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
     @ViewChild('highlightedBox') highlightedBox: ElementRef;
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
 
-    constructor(private es: ElasticsearchService,
+    constructor(private clusterService: ClusterService,
+                private baseService: BaseService,
                 public dialog: MatDialog,
-                private toaster: ToastrService,
-                private clusterService: ClusterService) {
+                private toaster: ToastrService) {
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
                 value[0], value[1], value[2], value[3], value[4], value[5])
             );
         this.total = 0;
-        this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
-        // this.clusterManager = new ClusterManager(this.es, clusterService);
         this.highlightedTextBox = null;
         this.highlightedText = '';
         this.highlightedTextDateBox = null;
@@ -242,7 +231,7 @@ export class ListViewComponent {
     searchByString() {
         console.log('search', this.searchString);
         if (this.searchString !== '') {
-            this.additionalFilters.set('searchString', this.elasticsearchBaseQueryManager.buildAdditionSearchFilter(this.searchString));
+            this.additionalFilters.set('searchString', this.baseService.buildAdditionSearchFilter(this.searchString));
             this.init();
         } else if (this.additionalFilters.has('searchString')) {
             this.additionalFilters.delete('searchString');
@@ -260,7 +249,7 @@ export class ListViewComponent {
         console.log('time range filter: from:', from, 'to:', to);
         if (from != null || to != null) {
             if (from !== undefined || to !== undefined) {
-                this.additionalFilters.set('timeRange', this.elasticsearchBaseQueryManager.buildAdditionRangeFilter(from, to));
+                this.additionalFilters.set('timeRange', this.baseService.buildAdditionRangeFilter(from, to));
                 this.init();
             }
         }
@@ -276,7 +265,7 @@ export class ListViewComponent {
         if (types != null) {
             if (types !== undefined) {
                 this.additionalFilters.set('typeFilter',
-                    this.elasticsearchBaseQueryManager.buildAdditionMactimeTypeFilter(Array.from(types)));
+                    this.baseService.buildAdditionMactimeTypeFilter(Array.from(types)));
                 this.init();
             }
         }
@@ -517,7 +506,7 @@ export class ListViewComponent {
         cluster.name = this.highlightedText;
         cluster.color = '#3d9fea';
         const filter = new FilterModel();
-        filter.json = this.elasticsearchBaseQueryManager.buildAdditionSearchFilter(this.highlightedText);
+        filter.json = this.baseService.buildAdditionSearchFilter(this.highlightedText);
         filter.isSelected = true;
         filter.name = 'highlighted_text';
         filter.type = 'REGEX';

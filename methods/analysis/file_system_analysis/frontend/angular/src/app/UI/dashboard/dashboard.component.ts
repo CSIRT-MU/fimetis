@@ -25,16 +25,11 @@ import {AuthenticationService} from '../../auth/authentication.service';
 })
 
 export class DashboardComponent implements OnInit {
-    clusterManager: ClusterManager;
-    baseManager: BaseManager;
-    elasticsearchBaseQueryManager: ElasticsearchBaseQueryManager;
-
     advancedMode = false;
 
     /* collapse properties */
     setupWindowOpen = true;
     filterPanelOpenState = false;
-    computationPanelOpenState = true;
     clusterPanelOpenState = true;
     histogramPanelOpenState = true;
 
@@ -48,15 +43,6 @@ export class DashboardComponent implements OnInit {
     // computations: Set<ComputationModel> = new Set<ComputationModel>();
     pickedCluster: ClusterModel;
     combinedFilter: string;
-
-    appliedFiltersKeys: Set<string> = new Set<string>();
-    appliedFilters: Map<string, FilterModel> = new Map<string, FilterModel>();
-    selectedAppliedFilters: Set<string> = new Set<string>();
-
-    computedClusters: Set<string> = new Set<string>();
-    selectedComputedClusters: string[] = [];
-    storedClusters: Set<string> = new Set<string>();
-    selectedStoredClusters: string[] = [];
 
     preloadedClusters: ClusterModel[] = [];
     manualClusters: ClusterModel[] = [];
@@ -81,15 +67,11 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatChipList)
     chipList: MatChipList;
 
-    constructor(private es: ElasticsearchService,
-                public dialog: MatDialog,
-                private toaster: ToastrService,
-                private baseService: BaseService,
+    constructor(private baseService: BaseService,
                 private clusterService: ClusterService,
-                private authService: AuthenticationService) {
-        this.clusterManager = new ClusterManager(this.es, this.clusterService);
-        this.baseManager = new BaseManager(this.es);
-        this.elasticsearchBaseQueryManager = new ElasticsearchBaseQueryManager();
+                private authService: AuthenticationService,
+                private toaster: ToastrService,
+                public dialog: MatDialog) {
     }
 
     ngOnInit() {
@@ -101,14 +83,6 @@ export class DashboardComponent implements OnInit {
     }
 
     loadAllCases() {
-        // this.baseService.getCases().subscribe(
-        //     response => {
-        //         this.cases = response['aggregations'].cases.buckets;
-        //     }, error => {
-        //         console.error(error);
-        //         this.toaster.error('Error:' + error['message'], 'Cannot load datasets');
-        //     }
-        // );
         this.baseService.getCases().then(
             response => {
                 this.cases = response.cases;
@@ -142,21 +116,9 @@ export class DashboardComponent implements OnInit {
     selectedCaseChanged() {
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
-        this.clusterManager.case = this.selectedCase;
-        // this.computationManager.case = this.selectedCase;
         this.initPreLoadedClusters().then(() => this.clusterSelectionChanged(null));
         // this.loadStoredClusters();
         this.listViewComponent.init();
-    }
-
-    /**
-     * Loads stored clusters from db
-     */
-    loadStoredClusters() {
-        this.clusterManager.getStoredClusters().then(
-            response => {
-                this.savedClusters = response;
-            });
     }
 
     /**
@@ -206,7 +168,7 @@ export class DashboardComponent implements OnInit {
 
     /* Loads filter from database */
     async loadFilter() {
-        this.baseManager.getFilterByName(this.selectedFilter)
+        this.baseService.getFilterByName(this.selectedFilter)
             .then(
             result => {
                 this.selectedFilterModel = result;
@@ -293,16 +255,16 @@ export class DashboardComponent implements OnInit {
     //     }
     // }
 
-    setComputedClusters($event) {
-        this.selectedComputedClusters = $event;
-        if (this.selectedComputedClusters.length > 0) {
-            this.listViewComponent.filter = this.combinedFilter;
-            this.listViewComponent.init();
-        } else {
-            this.listViewComponent.filter = null;
-            this.listViewComponent.init();
-        }
-    }
+    // setComputedClusters($event) {
+    //     this.selectedComputedClusters = $event;
+    //     if (this.selectedComputedClusters.length > 0) {
+    //         this.listViewComponent.filter = this.combinedFilter;
+    //         this.listViewComponent.init();
+    //     } else {
+    //         this.listViewComponent.filter = null;
+    //         this.listViewComponent.init();
+    //     }
+    // }
 
     /**
      * Triggered by changing mode of clusters (select, deselect, deduct)
@@ -317,111 +279,105 @@ export class DashboardComponent implements OnInit {
         // this.setDateSliderBoundary();
     }
 
-    setStoredClusters($event) {
-        this.selectedStoredClusters = $event;
-        // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
-        this.listViewComponent.init();
-    }
+    // /**
+    //  * Store selected cluster to persistent db
+    //  */
+    // // TODO save more tags - now only one combined filter is used - solved in cluster manager method (need to test it)
+    // storeSelectedClusters() {
+    //     console.log('store');
+    //     for (const cluster of this.selectedComputedClusters) {
+    //         this.es.addTag(
+    //             this.selectedCase,
+    //             this.combinedFilter,
+    //             cluster
+    //         ).then(
+    //             response => {
+    //                 if (response.failures.length < 1) {
+    //                     console.log('No failures', response.failures);
+    //                 }
+    //             }, error => {
+    //                 console.error(error);
+    //             }).then(() => {
+    //             console.log('Tag saved');
+    //         });
+    //         console.log(this.storedClusters);
+    //         this.storedClusters.add(cluster.toString());
+    //     }
+    // }
 
-    /**
-     * Store selected cluster to persistent db
-     */
-    // TODO save more tags - now only one combined filter is used - solved in cluster manager method (need to test it)
-    storeSelectedClusters() {
-        console.log('store');
-        for (const cluster of this.selectedComputedClusters) {
-            this.es.addTag(
-                this.selectedCase,
-                this.combinedFilter,
-                cluster
-            ).then(
-                response => {
-                    if (response.failures.length < 1) {
-                        console.log('No failures', response.failures);
-                    }
-                }, error => {
-                    console.error(error);
-                }).then(() => {
-                console.log('Tag saved');
-            });
-            console.log(this.storedClusters);
-            this.storedClusters.add(cluster.toString());
-        }
-    }
+    // /**
+    //  * Remove selected cluster from persistent db if possible
+    //  */
+    // deleteSelectedStoredClusters() {
+    //     // this.listViewComponent.displayedClusters = [];
+    //     this.listViewComponent.init();
+    //     for (const cluster of this.selectedStoredClusters) {
+    //         this.es.removeTag(
+    //             this.selectedCase,
+    //             this.combinedFilter,
+    //             this.selectedStoredClusters,
+    //             cluster
+    //         ).then(
+    //             response => {
+    //                 this.storedClusters.delete(cluster);
+    //                 if (response.failures.length < 1) {
+    //                     console.log('No failures', response.failures);
+    //                 } else {
+    //                     console.log(response);
+    //                 }
+    //             }, error => {
+    //                 console.error(error);
+    //             }).then(() => {
+    //             console.log('Tag removed');
+    //         });
+    //     }
+    // }
 
-    /**
-     * Remove selected cluster from persistent db if possible
-     */
-    deleteSelectedStoredClusters() {
-        // this.listViewComponent.displayedClusters = [];
-        this.listViewComponent.init();
-        for (const cluster of this.selectedStoredClusters) {
-            this.es.removeTag(
-                this.selectedCase,
-                this.combinedFilter,
-                this.selectedStoredClusters,
-                cluster
-            ).then(
-                response => {
-                    this.storedClusters.delete(cluster);
-                    if (response.failures.length < 1) {
-                        console.log('No failures', response.failures);
-                    } else {
-                        console.log(response);
-                    }
-                }, error => {
-                    console.error(error);
-                }).then(() => {
-                console.log('Tag removed');
-            });
-        }
-    }
-
-    /**
-     * Creates cluster by selection in list view
-     */
-    createClusterFromSelection() {
-        const namePrefix = 'custom-';
-        const dialogRef = this.dialog.open(NameDialogComponent, {
-            width: '350px',
-            data: {
-                title: 'Create new cluster',
-                itemsNumber: this.listViewComponent.tableSelection.selected.length,
-                placeholder: 'Type new cluster\'s name'
-            }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('dialog closed', result);
-            if (result != null) {
-                const params = [];
-                const values = [];
-                for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
-                    params.push('_id');
-                    values.push(this.listViewComponent.tableSelection.selected[index]._id);
-                }
-                let filter = this.elasticsearchBaseQueryManager.buildShouldMatchFilter(params, values);
-                console.log(filter);
-                filter = ',' + filter;
-                this.es.addTag(
-                    this.selectedCase,
-                    filter,
-                    (namePrefix + result)
-                ).then(
-                    response => {
-                        if (response.failures.length < 1) {
-                            console.log('No failures', response.failures);
-                        }
-                    }, error => {
-                        console.error(error);
-                    }).then(() => {
-                    console.log('Tag saved');
-                });
-                this.storedClusters.add((namePrefix + result));
-                this.listViewComponent.tableSelection.clear();
-            }
-        });
-    }
+    // /**
+    //  * Creates cluster by selection in list view
+    //  */
+    // createClusterFromSelection() {
+    //     const namePrefix = 'custom-';
+    //     const dialogRef = this.dialog.open(NameDialogComponent, {
+    //         width: '350px',
+    //         data: {
+    //             title: 'Create new cluster',
+    //             itemsNumber: this.listViewComponent.tableSelection.selected.length,
+    //             placeholder: 'Type new cluster\'s name'
+    //         }
+    //     });
+    //
+    //     dialogRef.afterClosed().subscribe(result => {
+    //         console.log('dialog closed', result);
+    //         if (result != null) {
+    //             const params = [];
+    //             const values = [];
+    //             for (let index = 0; index < this.listViewComponent.tableSelection.selected.length; index++) {
+    //                 params.push('_id');
+    //                 values.push(this.listViewComponent.tableSelection.selected[index]._id);
+    //             }
+    //             let filter = this.elasticsearchBaseQueryManager.buildShouldMatchFilter(params, values);
+    //             console.log(filter);
+    //             filter = ',' + filter;
+    //             this.es.addTag(
+    //                 this.selectedCase,
+    //                 filter,
+    //                 (namePrefix + result)
+    //             ).then(
+    //                 response => {
+    //                     if (response.failures.length < 1) {
+    //                         console.log('No failures', response.failures);
+    //                     }
+    //                 }, error => {
+    //                     console.error(error);
+    //                 }).then(() => {
+    //                 console.log('Tag saved');
+    //             });
+    //             this.storedClusters.add((namePrefix + result));
+    //             this.listViewComponent.tableSelection.clear();
+    //         }
+    //     });
+    // }
 
     // /**
     //  * Creates filter by selection in list view
@@ -509,7 +465,7 @@ export class DashboardComponent implements OnInit {
     // }
 
     /**
-     * Adds filter to given computation
+     * Adds filter to given cluster
      * @param cluster Cluster to add new filter to
      */
     addFilter(cluster: ClusterModel) {
@@ -620,11 +576,12 @@ export class DashboardComponent implements OnInit {
      * @param {Map<string, string>} filters Additional filters (search filter, date filter etc.)
      */
     computeClustersItemCount(filters: Map<string, string>) {
-        // filters.delete('searchString');
-        const clustManager = new ClusterManager(this.es, this.clusterService);
-        clustManager.clusters = this.getClusters();
-        clustManager.case = this.selectedCase;
-        clustManager.countEntriesOfClusters(Array.from(filters.values()));
+        // // filters.delete('searchString');
+        // const clustManager = new ClusterManager(this.es, this.clusterService);
+        // clustManager.clusters = this.getClusters();
+        // clustManager.case = this.selectedCase;
+        // clustManager.countEntriesOfClusters(Array.from(filters.values()));
+        this.clusterService.countEntriesOfClusters(this.selectedCase, this.getClusters(), Array.from(filters.values()));
     }
 
     /**
@@ -733,8 +690,6 @@ export class DashboardComponent implements OnInit {
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
         // this.listViewComponent.displayedClusters = [];
-        this.clusterManager.case = this.selectedCase;
-        this.listViewComponent.case = this.selectedCase;
         this.graphComponent._case = this.selectedCase;
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
