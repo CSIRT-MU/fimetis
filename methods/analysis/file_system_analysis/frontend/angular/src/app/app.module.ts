@@ -29,7 +29,6 @@ import { ngfModule } from 'angular-file';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
-import {ElasticsearchService} from './elasticsearch.service';
 import {ListViewComponent} from './UI/listView/listView.component';
 import {GraphComponent} from './UI/graph/graph.component';
 import {DashboardComponent} from './UI/dashboard/dashboard.component';
@@ -97,7 +96,7 @@ import {ErrorInterceptor} from './auth/error.interceptor';
         HttpClientModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
-    providers: [ElasticsearchService,
+    providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],
     bootstrap: [AppComponent]

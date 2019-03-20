@@ -1,6 +1,4 @@
 import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit} from '@angular/core';
-import {ElasticsearchService} from '../../elasticsearch.service';
-import {GraphManager} from '../../businessLayer/graphManager';
 import {ClusterModel} from '../../models/cluster.model';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';

@@ -1,16 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ElasticsearchService} from '../../elasticsearch.service';
 import {ListViewComponent} from '../listView/listView.component';
 import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
-import {FilterParamModel} from '../../models/filterParam.model';
 import {FilterModel} from '../../models/filter.model';
-import {NameDialogComponent} from '../dialog/name-dialog/name-dialog.component';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 import {ClusterModel} from '../../models/cluster.model';
-import {ClusterManager} from '../../businessLayer/clusterManager';
 import {GraphComponent} from '../graph/graph.component';
-import {BaseManager} from '../../businessLayer/baseManager';
-import {ElasticsearchBaseQueryManager} from '../../businessLayer/elasticsearchBaseQueryManager';
 import {ConfigManager} from '../../../assets/configManager';
 import {ClusterComponent} from '../cluster/cluster.component';
 import {ToastrService} from 'ngx-toastr';
