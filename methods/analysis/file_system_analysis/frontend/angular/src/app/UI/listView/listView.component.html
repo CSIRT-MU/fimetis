@@ -216,7 +216,7 @@
         <!--</div>-->
         <virtual-scroller #scroll class="scroll-block" [items]="virtualArray"
                           (change)="loadVisibleData($event)">
-            <table>
+            <table class="scroll-table">
                 <thead #header>
                     <th *ngFor="let tableItem of displayedTableColumns">
                         <div class="table-select" *ngIf="tableItem == 'select'"></div>

@@ -29,6 +29,10 @@
     overflow: initial;
 }
 
+.scroll-table{
+    width: 100%;
+}
+
 .table-container {
     position: relative;
     min-height: 100px;
