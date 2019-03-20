@@ -29,32 +29,6 @@
       path: /tmp/kypo2-analytical-node
       state: absent
 
-  - name: Setting elastic host in angular app config
-    lineinfile: 
-      path: /tmp/angular/src/assets/elasticConfiguration.json
-      regexp: "^.*\"host\".*"
-      line: "\"host\"{{':'}} \"http://{{ inventory_hostname }}{{':'}}{{ elastic_reverse_proxy_port }}\","
-
-  - name: Setting elastic auth in angular app config
-    lineinfile:
-      path: /tmp/angular/src/assets/elasticConfiguration.json
-      regexp: "^.*\"httpAuth\".*"
-      line: "\"httpAuth\"{{':'}} \"{{ elastic_user }}{{':'}}{{ elastic_passwd }}\","
-
-# Without httpAuth
-#  - name: Without password temp trying
-#    lineinfile: 
-#      path: /tmp/angular/src/app/elasticsearch.service.ts
-#      regexp: "^.*host{{':'}} this.host,.*"
-#      line: " host{{':'}} this.host"
-#
-#  - name: Without password temp trying
-#    lineinfile: 
-#      path: /tmp/angular/src/app/elasticsearch.service.ts
-#      regexp: "^.*httpAuth{{':'}} this.httpAuth.*"
-#      line: " "
-
-
   - name: Set backend api url
     lineinfile:
       path: /tmp/angular/src/environments/environment.prod.ts
@@ -79,5 +53,3 @@
       path: /tmp/angular
       state: absent
     
-#shell: rm -r /tmp/file_system_analysis*
-
