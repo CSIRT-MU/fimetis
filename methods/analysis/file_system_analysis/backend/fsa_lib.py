@@ -26,7 +26,6 @@ class Filter:
         self.type = ''
         self.json = ''
         self.params = []
-        self.completed = ''
         self.isSelected = ''
         if dictionary is not None and isinstance(dictionary, dict):
             self.__dict__ = dictionary
