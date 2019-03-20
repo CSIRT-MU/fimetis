@@ -38,7 +38,7 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = data['username'], data['group']
+            current_user = data['username'], data['groups']
         except:
             return jsonify({'message': 'Token is invalid!'}), 401
 
@@ -51,18 +51,17 @@ def token_required(f):
 def login():
     if not request.get_json() or not request.get_json()['username'] or not request.get_json()['password']:
         return jsonify({'message': 'Wrong username or password'}), 400
-
     body = {'query': {'term': {'username': request.get_json()['username']}}}
     res = es.search(index=app.config['elastic_user_index'], doc_type=app.config['elastic_user_type'], body=body)
     for user in res['hits']['hits']:
         username = user['_source']['username']
         password = user['_source']['password']
-        group = user['_source']['group']
+        groups = user['_source']['groups']
         if request.get_json()['username'] == username:
             if check_password_hash(password, request.get_json()['password']):
                 token = jwt.encode(
                     {'username': username,
-                     'group': group,
+                     'groups': groups,
                      'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
                     app.config['SECRET_KEY'])
                 return jsonify({'token': token.decode('UTF-8')})
