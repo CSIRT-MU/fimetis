@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit {
     loadAllFilters() {
         this.baseService.getFilters().then(
             response => {
-                this.filters = response;
+                this.filters = response.filters;
             }, error => {
                 console.error(error);
             }).then(() => {

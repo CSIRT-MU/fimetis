@@ -150,7 +150,7 @@ def filters(current_user):
     }
 
     res = es.search(index=app.config['elastic_filter_index'], doc_type=app.config['elastic_filter_type'], body=query)
-    return jsonify(res)
+    return jsonify(filters=res['aggregations']['filters']['buckets'])
 
 
 @app.route('/filter/name', methods=['POST'])
