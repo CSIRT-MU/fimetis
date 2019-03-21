@@ -278,6 +278,7 @@ export class ListViewComponent {
     editTableColumns() {
         const dialogRef = this.dialog.open(SelectDialogComponent, {
             width: '350px',
+            height: '90%',
             data: {
                 title: 'Select table columns',
                 available: this.availableTableColumns,

@@ -12,7 +12,6 @@ import {MatButtonModule} from '@angular/material';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material';
-import {MatIconModule} from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatSelectModule} from '@angular/material/select';
 import {MatRadioModule} from '@angular/material/radio';
@@ -76,7 +75,6 @@ import {ErrorInterceptor} from './auth/error.interceptor';
         MatChipsModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatIconModule,
         MatTabsModule,
         MatSelectModule,
         MatRadioModule,
