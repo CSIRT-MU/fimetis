@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MatRadioGroup, MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
+import {debounceTime} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 @Component({
     selector: 'app-cluster',
@@ -18,6 +20,8 @@ export class ClusterComponent implements OnInit {
     advancedMode = false;
     @Output('selectionChanged')
     selectionChanged: EventEmitter<any> = new EventEmitter<any>();
+    // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
+    clusterSelectionDebouncer: Subject<any> = new Subject();
     @Output('addNewCluster')
     addNewCluster: EventEmitter<any> = new EventEmitter<any>();
     @Output('editCluster')
@@ -25,6 +29,7 @@ export class ClusterComponent implements OnInit {
 
 
     constructor() {
+        this.clusterSelectionDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionChanged.emit(value));
     }
 
     ngOnInit() {
@@ -40,7 +45,7 @@ export class ClusterComponent implements OnInit {
                 clust.selectMode = ClusterSelectMode.notSelected;
             }
             cluster.selectMode = ClusterSelectMode.added;
-            this.selectionChanged.emit(null);
+            this.clusterSelectionDebouncer.next(null);
         } else {
             cluster.selectMode = ClusterSelectMode.next(cluster.selectMode);
             if (cluster.subClusters.length > 0) {
@@ -48,7 +53,7 @@ export class ClusterComponent implements OnInit {
                     clust.selectMode = cluster.selectMode;
                 }
             }
-            this.selectionChanged.emit(null);
+            this.clusterSelectionDebouncer.next(null);
         }
     }
 
