@@ -5,7 +5,7 @@ export class ClusterModel {
     color: string;
     count: number;
     // computation: ComputationModel;
-    filters: FilterModel[];
+    filters: FilterModel[] = [];
     tagged: boolean;
     tag: string;
     selectMode: ClusterSelectMode = ClusterSelectMode.notSelected;
