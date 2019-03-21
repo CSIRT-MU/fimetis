@@ -672,6 +672,7 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
         localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
         localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
+        localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
     }
 
     /**
@@ -690,6 +691,7 @@ export class DashboardComponent implements OnInit {
         this.graphComponent._case = this.selectedCase;
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
+        this.listViewComponent.displayedTableColumns = JSON.parse(localStorage.getItem('selectedTableColumns'));
         this.listViewComponent.init().then(() => {
             this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
             this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));

@@ -43,6 +43,10 @@
     width: 100%;
 }
 
+.table-row-definition td:last-child {
+    width: 100%;
+}
+
 .table-loading-spinner {
     position: absolute;
     height: 20%;
