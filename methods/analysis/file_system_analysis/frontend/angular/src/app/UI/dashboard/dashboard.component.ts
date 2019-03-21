@@ -25,7 +25,6 @@ export class DashboardComponent implements OnInit {
     setupWindowOpen = true;
     filterPanelOpenState = false;
     clusterPanelOpenState = true;
-    histogramPanelOpenState = true;
 
     cases: any[];
     selectedCase: string;

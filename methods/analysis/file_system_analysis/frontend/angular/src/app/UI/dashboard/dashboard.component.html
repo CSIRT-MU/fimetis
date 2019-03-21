@@ -300,7 +300,7 @@
         </div>
         <div class="grid-main">
             <app-graph class="graph-block" [_case]="selectedCase" [_clusters]="getClusters()"
-                       (getDateChange)="changeDateBoundary($event)" [graphPanelOpenState]="histogramPanelOpenState"
+                       (getDateChange)="changeDateBoundary($event)"
                        (typesChanged)="selectedMetadataTypesChanged($event)"
                        (openStateChange)="histogramPanelOpenState = $event">
             </app-graph>

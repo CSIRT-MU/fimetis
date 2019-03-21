@@ -20,7 +20,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
     @Output() getDateChange = new EventEmitter<[string, string]>();
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
     dateChangeDebouncer: Subject<[string, string]> = new Subject();
-    @Output() openStateChange = new EventEmitter<boolean>();
     @Output() typesChanged = new EventEmitter<Set<string>>();
     typesChangedDebouncer: Subject<Set<string>> = new Subject();
     // @Input() fromDate: Date;
@@ -456,7 +455,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     collapseGraphPanel() {
         this.graphPanelOpenState = !this.graphPanelOpenState;
-        this.openStateChange.emit(this.graphPanelOpenState);
     }
 
     showHideTrace(metadataType) {
