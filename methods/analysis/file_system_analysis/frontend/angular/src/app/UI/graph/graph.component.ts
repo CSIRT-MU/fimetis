@@ -267,6 +267,15 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.pickedFromDate = isoString.substring(0, isoString.length - 1);
                 isoString = new Date(this.max_date_boundary).toISOString();
                 this.pickedToDate = isoString.substring(0, isoString.length - 1);
+            } else {
+                const fromDate = new Date(this.pickedFromDate);
+                const fromUTCDate = new Date(fromDate.getTime() - (fromDate.getTimezoneOffset() * 60000));
+                const toDate = new Date(this.pickedToDate);
+                const toUTCDate = new Date(toDate.getTime() - (fromDate.getTimezoneOffset() * 60000));
+                if (new Date(fromUTCDate).getTime() === new Date(this.min_date_boundary).getTime() &&
+                    new Date(toUTCDate).getTime() === new Date(this.max_date_boundary).getTime()) {
+                    this.saveGraphZoom = false;
+                }
             }
         });
 
