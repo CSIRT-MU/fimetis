@@ -8,15 +8,22 @@
 
 .container-all-opened {
     display: grid;
-    /*height: 100%;*/
     flex-grow: 1;
     grid-template-columns: 300px auto;
     grid-template-areas: "grid-cluster grid-main grid-main grid-main"
 }
 
+@media (max-width: 640px) {
+    .container-all-opened {
+        display: grid;
+        flex-grow: 1;
+        grid-template-columns: 300px auto;
+        grid-template-areas: "grid-cluster grid-cluster grid-cluster grid-cluster" "grid-main grid-main grid-main grid-main"
+    }
+}
+
 .container-all-closed {
     display: grid;
-    /*height: 100%;*/
     flex-grow: 1;
     grid-template-columns: 300px auto;
     grid-template-rows: 50px auto;
@@ -85,16 +92,17 @@
 
 .setup-tab {
     background-color: #fefefe;
-    position: relative;
-    top: 30%;
-    height: 40%;
-    width: 60%;
-    left: 20%;
-    padding: 20px;
     border-radius: 18px;
-    /*for now*/
-    padding-left: 20%;
-    padding-top: 10%;
+    margin-top: 20%;
+    padding: 50px 30px 50px 30px;
+}
+
+.setup-tab-text{
+    margin-top: 10px;
+}
+
+.setup-tab-button{
+    margin-top: 10px;
 }
 
 .filter-setup-background {
