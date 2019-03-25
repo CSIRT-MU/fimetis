@@ -727,4 +727,15 @@ export class DashboardComponent implements OnInit {
         this.authService.logout();
     }
 
+    /**
+     *
+     * @param {any} start
+     * @param {any} end
+     * @param {any} startDate
+     * @param {any} endDate
+     */
+    drawActualScrollPosition([start, end, startDate, endDate]) {
+        this.graphComponent.drawGraphSliderWindow(new Date(startDate).getTime(), new Date(endDate).getTime());
+    }
+
 }

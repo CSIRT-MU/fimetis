@@ -36,6 +36,8 @@ export class ListViewComponent {
     makeManualCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
     @Output('additionalFiltersChanged')
     additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
+    @Output('actualScrollPosition')
+    actualScrollPosition: EventEmitter<[number, number, string, string]> = new EventEmitter<[number, number, string, string]>();
 
     tablePanelOpenState = true;
     searchString = '';
@@ -322,6 +324,10 @@ export class ListViewComponent {
                     (start - this.preloadedBegin),
                     (end - (this.preloadedBegin) + 1)
                 );
+                this.actualScrollPosition.emit(
+                    [
+                        start, end, this.visibleData[0]['_source']['@timestamp'], this.visibleData[end - start]['_source']['@timestamp']
+                    ]);
                 if ((start - this.preloadedBegin < this.preloadBufferBorder) && (start > this.preloadBufferBorder)) {
                     // console.log('start border triggered',
                     //     'start:', start,

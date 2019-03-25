@@ -276,6 +276,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     this.saveGraphZoom = false;
                 }
             }
+            this.drawGraphSliderWindow(Date.UTC(2010, 1, 1), Date.UTC(2012, 1, 1));
         });
 
         // Loading mactimes - modified
@@ -441,6 +442,55 @@ export class GraphComponent implements OnInit, AfterViewInit {
             to: this.max_date_boundary,
             color: 'rgba(30, 30, 30, 0.4)'
         });
+        this.chartOverview.xAxis[0].removePlotLine('start');
+        this.chartOverview.xAxis[0].addPlotLine({
+            id: 'start',
+            value: from,
+            color: 'rgba(250, 250, 250, 0.4)',
+            width: 1,
+            zIndex: 8
+        });
+        this.chartOverview.xAxis[0].removePlotLine('end');
+        this.chartOverview.xAxis[0].addPlotLine({
+            id: 'end',
+            value: to,
+            color: 'rgba(250, 250, 250, 0.4)',
+            width: 1,
+            zIndex: 8
+        });
+    }
+
+    drawGraphSliderWindow(from: number, to: number) {
+        this.chart.xAxis[0].removePlotBand('range');
+        this.chart.xAxis[0].addPlotBand({
+            id: 'range',
+            from: from,
+            to: to,
+            color: 'rgba(173, 216, 230, 0.4)',
+            borderColor: 'rgba(30, 30, 30, 0.8)',
+            borderWidth: 1,
+            // label: {
+            //     text: 'actual position'
+            // }
+        });
+        // this.chart.xAxis[0].removePlotLine('box-start');
+        // this.chart.xAxis[0].addPlotLine({
+        //     id: 'box-start',
+        //     value: from,
+        //     color: 'rgba(30, 30, 30, 0.4)',
+        //     dashStyle: 'LongDash',
+        //     width: 1,
+        //     zIndex: 8
+        // });
+        // this.chart.xAxis[0].removePlotLine('end');
+        // this.chart.xAxis[0].addPlotLine({
+        //     id: 'box-end',
+        //     value: to,
+        //     color: 'rgba(30, 30, 30, 0.4)',
+        //     dashStyle: 'LongDash',
+        //     width: 1,
+        //     zIndex: 8
+        // });
     }
 
     updateBoundary() {

@@ -299,7 +299,9 @@
             </app-graph>
             <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"
                            (makeManualCluster)="makeManualCluster($event)"
-                           (additionalFiltersChanged)="computeClustersItemCount($event)"></app-list-view>
+                           (additionalFiltersChanged)="computeClustersItemCount($event)"
+                           (actualScrollPosition)="drawActualScrollPosition($event)"
+            ></app-list-view>
         </div>
     </div>
 </div>

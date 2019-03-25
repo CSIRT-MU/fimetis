@@ -21,7 +21,7 @@ app.config['elastic_filter_index'] = 'filter'
 app.config['elastic_filter_type'] = None
 app.config['elastic_user_index'] = 'user'
 app.config['elastic_user_type'] = None
-app.config['TOKEN_EXPIRATION'] = datetime.timedelta(minutes=30)
+app.config['TOKEN_EXPIRATION'] = datetime.timedelta(days=1)
 app.config['elastic_host'] = 'localhost'
 app.config['elastic_port'] = 9200
 es = Elasticsearch([{'host': app.config['elastic_host'], 'port': app.config['elastic_port']}])
