@@ -35,9 +35,6 @@ export class GraphService {
             _additional_filters: string[],
             mac_type: string) {
         return this.http.post<any>(environment.backendUrl + '/graph/first_and_last/' + _case, {
-            'clusters': _clusters,
-            'additional_filters': _additional_filters,
-            'mac_type': mac_type
         }).toPromise().then(
             response => {
                 const timestamps = [];
