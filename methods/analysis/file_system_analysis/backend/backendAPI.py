@@ -228,11 +228,9 @@ def cluster_get_first_and_last_entry(current_user, case):
     additional_filters = request.json.get('additional_filters')
     mac_type = request.json.get('mac_type')
 
-    # first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
-    # last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
-    first_query = fsa.build_whole_case_first_entry_query(case, 'asc')
-    last_query = fsa.build_whole_case_first_entry_query(case, 'desc')
-    print(json.dumps(first_query))
+    first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
+    last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
+
     first = es.search(index=app.config['elastic_metadata_index'],
                       doc_type=app.config['elastic_metadata_type'],
                       body=json.dumps(first_query))
@@ -241,7 +239,26 @@ def cluster_get_first_and_last_entry(current_user, case):
                      body=json.dumps(last_query))
     res = []
     if first is not None:
-        print(first)
+        res.append(first['hits']['hits'][0])
+    if last is not None:
+        res.append(last['hits']['hits'][0])
+    return jsonify(res)
+
+
+@app.route('/graph/first_and_last/<string:case>', methods=['POST'])
+@token_required
+def graph_get_first_and_last_entry(current_user, case):
+    first_query = fsa.build_whole_case_first_entry_query(case, 'asc')
+    last_query = fsa.build_whole_case_first_entry_query(case, 'desc')
+
+    first = es.search(index=app.config['elastic_metadata_index'],
+                      doc_type=app.config['elastic_metadata_type'],
+                      body=json.dumps(first_query))
+    last = es.search(index=app.config['elastic_metadata_index'],
+                     doc_type=app.config['elastic_metadata_type'],
+                     body=json.dumps(last_query))
+    res = []
+    if first is not None:
         res.append(first['hits']['hits'][0])
     if last is not None:
         res.append(last['hits']['hits'][0])

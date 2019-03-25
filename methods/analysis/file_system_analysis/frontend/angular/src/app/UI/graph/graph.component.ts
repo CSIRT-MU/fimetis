@@ -276,7 +276,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
                     this.saveGraphZoom = false;
                 }
             }
-            this.drawGraphSliderWindow(Date.UTC(2010, 1, 1), Date.UTC(2012, 1, 1));
         });
 
         // Loading mactimes - modified

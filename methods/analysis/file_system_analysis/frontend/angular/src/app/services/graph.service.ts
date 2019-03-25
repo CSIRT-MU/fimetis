@@ -34,7 +34,7 @@ export class GraphService {
             _clusters: ClusterModel[],
             _additional_filters: string[],
             mac_type: string) {
-        return this.http.post<any>(environment.backendUrl + '/cluster/first_and_last/' + _case, {
+        return this.http.post<any>(environment.backendUrl + '/graph/first_and_last/' + _case, {
             'clusters': _clusters,
             'additional_filters': _additional_filters,
             'mac_type': mac_type
