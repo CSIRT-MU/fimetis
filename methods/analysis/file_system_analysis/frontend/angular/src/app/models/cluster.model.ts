@@ -6,7 +6,7 @@ export class ClusterModel {
     count: number;
     // computation: ComputationModel;
     filters: FilterModel[] = [];
-    tagged: boolean;
+    tagged = false;
     tag: string;
     selectMode: ClusterSelectMode = ClusterSelectMode.notSelected;
     subClusters: ClusterModel[] = [];

@@ -544,6 +544,10 @@ export class DashboardComponent implements OnInit {
         // this.computationManager.computations = [];
         // this.computationManager.addComputation(computation);
         this.manualClusters = this.manualClusters.concat(cluster);
+        this.clusterService.countData(this.selectedCase, cluster, Array.from(this.listViewComponent.additionalFilters.values())).then(
+          response => {
+              cluster.count = response;
+          });
     }
 
     /**
