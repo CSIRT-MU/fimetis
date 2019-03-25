@@ -228,8 +228,10 @@ def cluster_get_first_and_last_entry(current_user, case):
     additional_filters = request.json.get('additional_filters')
     mac_type = request.json.get('mac_type')
 
-    first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
-    last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
+    # first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
+    # last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
+    first_query = fsa.build_whole_case_first_entry_query(case, 'asc')
+    last_query = fsa.build_whole_case_first_entry_query(case, 'desc')
     print(json.dumps(first_query))
     first = es.search(index=app.config['elastic_metadata_index'],
                       doc_type=app.config['elastic_metadata_type'],

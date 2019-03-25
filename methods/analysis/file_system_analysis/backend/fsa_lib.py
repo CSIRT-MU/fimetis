@@ -92,6 +92,15 @@ def build_first_entry_query(case_name, clusters, additional_filters, mac_type, o
     return body
 
 
+def build_whole_case_first_entry_query(case_name, order):
+    body = {}
+    body['from'] = 0
+    body['size'] = 1
+    body['query'] = {'bool': {'must': [get_match_string_from_case(case_name)]}}
+    body['sort'] = [{'@timestamp': {'order': order}}]
+    return body
+
+
 def build_base_query(case_name, clusters, additional_filters, graph_filter):
     must_tags = []
     must_filters = []
