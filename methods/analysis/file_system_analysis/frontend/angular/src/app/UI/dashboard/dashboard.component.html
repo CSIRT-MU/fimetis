@@ -29,10 +29,10 @@
 
     <div *ngIf="setupWindowOpen" class="setup-window">
         <div class="setup-tab col-sm-6 col-sm-offset-3">
-            <div class="col-sm-3 setup-tab-text">
+            <div class="col-sm-2 col-sm-offset-2 setup-tab-text">
                 <b>DATASET</b>
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-6">
                 <mat-form-field>
                     <mat-select [(value)]="selectedCase" (click)="loadAllCases()" placeholder="Click to select dataset">
                         <mat-option>None</mat-option>
