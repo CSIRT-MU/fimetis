@@ -32,13 +32,14 @@
 
 .container-edit-filter {
     display: grid;
-    position: fixed;
-    min-height: 95vh;
-    max-height: 95vh;
+    position: absolute;
+    height: 100%;
+    flex-grow: 1;
     width: 100%;
     z-index: 8;
     grid-template-columns: 300px auto;
-    grid-template-areas: ". filter-setup filter-setup"
+    grid-template-areas: ". filter-setup filter-setup";
+    overflow-y: auto;
 }
 
 .grid-cluster {
@@ -110,26 +111,6 @@
     background-color: rgba(51,51,51,0.82);
 }
 
-.filters-setup {
-    /*position: fixed;*/
-    /*grid-area: filter-setup;*/
-    display: inline-block;
-    margin-top: 15%;
-    width: 100%;
-    /*left: 20%;*/
-    min-height: 100px;
-    background-color: #ffffff;
-    /*z-index: 9;*/
-    border-top: 4px solid #333333;
-    border-bottom: 4px solid #333333;
-}
-
-.filters-setup-done {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    text-align: center;
-}
-
 .panel {
     background-color: #efefef;
     margin: 0px 2px 2px 2px;
@@ -194,134 +175,6 @@ mat-chip {
 .cluster-button {
     width: 100%;
     margin-top: 10px;
-}
-
-.computation-colored-circle {
-    display: inline-block;
-    height: 14px;
-    width: 14px;
-    border: 3px solid;
-    border-radius: 50%;
-    margin-right: 6px;
-    margin-bottom: -1px;
-    cursor: pointer;
-}
-
-.computation-name {
-    margin-bottom: 3px;
-    cursor: pointer;
-    margin-right: 16px;
-    /*font-size: larger;*/
-}
-
-.computation-row {
-    border-radius: 15px;
-    padding: 3px 6px 4px 6px;
-    margin-top: 3px;
-    background-color: #e4e4e4;
-}
-
-.computation-row:hover {
-    background-color: #fefefe;
-}
-
-.computation-row-panel {
-    display: inline-block;
-}
-
-.computation-add-filter {
-    border-radius: 50%;
-    border: 2px solid #666666;
-    padding: 2px 2px 3px 3px;
-    margin-left: 8px;
-    margin-bottom: -2px;
-    cursor: pointer;
-}
-
-.computation-filter {
-    position: relative;
-    display: inline-block;
-    background-color: #fefefe;
-    border-radius: 25px;
-    border: 1px solid #333333;
-    padding: 1px 8px 2px 8px;
-    margin-right: 3px;
-    margin-left: 3px;
-    cursor: pointer;
-}
-
-.computation-filter .text {
-    display: inline-block;
-    margin-right: 5px;
-    min-width: 65px;
-}
-
-.computation-filter:hover {
-    background-color: #333333;
-}
-
-.computation-filter:hover > .text {
-    opacity: 0.6;
-}
-
-.computation-filter:hover > .icon1,
-.computation-filter:hover > .icon2,
-.computation-filter:hover > .icon3 {
-    display: inline-block;
-    color: #e4e4e4;
-}
-
-.computation-filter:hover .filter-circle {
-    border-color: #e4e4e4;
-}
-
-.computation-filter:hover .filter-circle-full:before {
-    background-color: #e4e4e4;
-}
-
-.computation-filter .icon1,
-.computation-filter .icon2,
-.computation-filter .icon3 {
-    display: none;
-    position: absolute;
-    margin-top: 3px;
-    z-index: 500;
-}
-
-.computation-filter .icon1 {
-    left: 10%;
-}
-
-.computation-filter .icon2 {
-    left: 35%;
-}
-
-.computation-filter .icon3 {
-    left: 60%;
-}
-
-.filter-circle {
-    display: inline-block;
-    border-radius: 50%;
-    height: 16px;
-    width: 16px;
-    margin-bottom: -4px;
-    border: 2px solid #666666;
-    z-index: 500;
-}
-
-.filter-circle-full:before {
-    visibility: visible;
-    position: absolute;
-    display: inline-block;
-    margin-left: 2px;
-    margin-top: 2px;
-    height: 8px;
-    width: 8px;
-    border-radius: 50%;
-    background-color: #666666;
-    z-index: 150;
-    content: "";
 }
 
 .panel-header-button {

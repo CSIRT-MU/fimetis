@@ -1,0 +1,82 @@
+<div class="filters-setup">
+  <div class="col-md-12">
+    <div class="col-md-12 panel-header">
+      <span class="col-md-1"><input matInput [(ngModel)]="inputCluster.color" type="color"></span>
+      <span><b>Edit cluster</b> "{{inputCluster.name}}"</span>
+    </div>
+    <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}"
+         class="panel-content col-md-12">
+      <br>
+      <div class="col-md-4">
+        <table>
+          <tr>
+            <td class="text-right">
+              <b>FILTER</b>
+            </td>
+            <td>
+              <mat-form-field>
+                <mat-select [(value)]="selectedFilter" (valueChange)="loadFilter()"
+                            placeholder="Click to select filter"
+                            (click)="loadAllFilters()">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let filter of filters" [value]="filter['key']">
+                    {{filter['key']}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="button-right">
+              <button mat-stroked-button (click)="useFilter()" class="timesix-button"
+                      [disabled]="paramForm.form.invalid || inputCluster == null || selectedFilter == null">
+                APPLY FILTER
+              </button>
+            </td>
+          </tr>
+        </table>
+
+      </div>
+
+      <div class="col-md-8">
+        <form #paramForm="ngForm">
+          <mat-form-field *ngFor="let param of selectedFilterModel.params">
+            <div [ngSwitch]="param.type">
+              <input matInput *ngSwitchCase="'DATE'" type="datetime-local"
+                     name="param-{{param.name}}" placeholder="{{param.name}}"
+                     [(ngModel)]="param.value" required>
+              <input matInput *ngSwitchDefault name="param-{{param.name}}"
+                     placeholder="{{param.name}}" [(ngModel)]="param.value" required>
+            </div>
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="panel-content col-md-12 panel-visible">
+      <div class="computation-row" (dragover)="dragOver($event)"
+           (drop)="dropFilter($event, inputCluster)">
+        <div *ngFor="let filter of inputCluster.filters" class="computation-filter" draggable="true"
+             (dragstart)="dragFilter($event, filter, inputCluster)">
+          <span class="text">{{filter.name}}</span>
+          <span class="icon1 glyphicon glyphicon-pencil" matTooltip="edit" [matTooltipPosition]="'below'"
+                (click)="editFilter(filter, inputCluster)"></span>
+          <span class="icon2 glyphicon glyphicon glyphicon-new-window" matTooltip="copy"
+                [matTooltipPosition]="'below'" (click)="copyFilter(filter)"></span>
+          <span class="icon3 glyphicon glyphicon-trash" matTooltip="delete" [matTooltipPosition]="'below'"
+                (click)="deleteFilter(filter, inputCluster)"></span>
+          <div [ngClass]="{'filter-circle-full': filter.isSelected}"
+               class="filter-circle filter-circle-full" matTooltip="de/select"
+               [matTooltipPosition]="'below'" (click)="filter.isSelected = !filter.isSelected"></div>
+        </div>
+        <span class="computation-add-filter glyphicon glyphicon-plus" matTooltip="add new filter"
+              [matTooltipPosition]="'below'" (click)="addFilter(inputCluster)"></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 filters-setup-done">
+    <button mat-stroked-button class="timesix-button" (click)="editClusterDone()">DONE</button>
+  </div>
+</div>

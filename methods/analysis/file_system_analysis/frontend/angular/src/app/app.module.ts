@@ -42,6 +42,7 @@ import {LoginComponent} from './UI/user/login/login.component';
 // auth
 import {JwtInterceptor} from './auth/jwt.interceptor';
 import {ErrorInterceptor} from './auth/error.interceptor';
+import { FilterComponent } from './UI/filter/filter.component';
 
 @NgModule({
     declarations: [
@@ -56,7 +57,8 @@ import {ErrorInterceptor} from './auth/error.interceptor';
         TextSelectDirective,
         HighlightPipe,
         UploadComponent,
-        LoginComponent
+        LoginComponent,
+        FilterComponent
     ],
     imports: [
         BrowserModule,

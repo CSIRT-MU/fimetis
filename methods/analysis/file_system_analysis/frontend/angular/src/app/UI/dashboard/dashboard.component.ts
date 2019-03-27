@@ -29,13 +29,11 @@ export class DashboardComponent implements OnInit {
     cases: any[];
     selectedCase: string;
 
-    editingCluster: ClusterModel = null;
+    editedClusters: Set<ClusterModel> = new Set<ClusterModel>();
     filters: any[];
     selectedFilter: string;
     selectedFilterModel: FilterModel = new FilterModel();
     // computations: Set<ComputationModel> = new Set<ComputationModel>();
-    pickedCluster: ClusterModel;
-    combinedFilter: string;
 
     preloadedClusters: ClusterModel[] = [];
     manualClusters: ClusterModel[] = [];
@@ -170,40 +168,6 @@ export class DashboardComponent implements OnInit {
                 this.toaster.error(error.message, 'Cannot load filter');
             }
         );
-    }
-
-
-    /**
-     * Applies selected filter with inserted parameters
-     */
-    useFilter() {
-        // if (this.selectedFilter == null) {
-        //   this.combineSelectedFilters();
-        // } else {
-        //   this.selectedFilterModel.completed = this.fs.applyFilter(this.selectedFilterModel.json, this.selectedFilterModel.params);
-        //   for (const oneParam of this.selectedFilterModel.params) {
-        //     this.selectedFilterModel.name = this.selectedFilterModel.name + '-' + oneParam.name + ':' + oneParam.value;
-        //   }
-        //   // // copy object without reference
-        //   // const copy = JSON.parse(JSON.stringify(this.selectedFilterModel));
-        //   // this.appliedFilters.set(this.selectedFilterModel.name, copy);
-        //   // this.selectedAppliedFilters.add(this.selectedFilterModel.name);
-        //   // this.appliedFiltersKeys.add(this.selectedFilterModel.name);
-        //   // this.combineSelectedFilters();
-        // }
-        if (this.pickedCluster != null) {
-            if (this.pickedCluster.filters.indexOf(this.selectedFilterModel) < 0) {
-                this.selectedFilterModel.isSelected = true;
-                this.pickedCluster.filters.push(this.selectedFilterModel);
-            }
-            // if (!this.pickedComputation.filters.has(this.selectedFilterModel)) {
-            //     this.selectedFilterModel.isSelected = true;
-            //     this.pickedComputation.filters.add(this.selectedFilterModel);
-            // }
-        }
-        this.selectedFilterModel = new FilterModel();
-        this.selectedFilter = null;
-        this.filterPanelOpenState = false;
     }
 
     // /**
@@ -460,85 +424,6 @@ export class DashboardComponent implements OnInit {
     //     });
     // }
 
-    /**
-     * Adds filter to given cluster
-     * @param cluster Cluster to add new filter to
-     */
-    addFilter(cluster: ClusterModel) {
-        this.filterPanelOpenState = true;
-        this.pickedCluster = cluster;
-        console.log('add filter to: ', this.pickedCluster);
-    }
-
-    /**
-     * Method to drag and drop filters between clusters
-     * @param $event
-     * @param {FilterModel} filter
-     * @param {ClusterModel} cluster
-     */
-    dragFilter($event, filter: FilterModel, cluster: ClusterModel) {
-        $event.dataTransfer.setData('filter', JSON.stringify(filter));
-        $event.dataTransfer.dropEffect = 'copy';
-        $event.effectAllowed = 'copyMove';
-    }
-
-    /**
-     * Method to drag and drop filters between clusters
-     * @param $event Drag event
-     */
-    dragOver($event) {
-        $event.preventDefault();
-    }
-
-    /**
-     * Method to drag and drop filters between clusters
-     * @param $event Drop event
-     * @param {ClusterModel} cluster Target computation
-     */
-    dropFilter($event, cluster: ClusterModel) {
-        console.log('dropped', cluster);
-        $event.preventDefault();
-        const filter = JSON.parse($event.dataTransfer.getData('filter'));
-        console.log('filter', filter);
-        // computation.filters.add(filter);
-        cluster.filters.push(filter);
-    }
-
-    /**
-     * Delete given filter from given cluster
-     * @param {FilterModel} filter Filter model
-     * @param {ClusterModel} cluster Cluster to delete filter from
-     */
-    deleteFilter(filter: FilterModel, cluster: ClusterModel) {
-        const index = cluster.filters.indexOf(filter);
-        if (index !== -1) {
-            cluster.filters.splice(index, 1);
-        }
-        // computation.filters.delete(filter);
-    }
-
-    /**
-     * Edit given filter of given cluster
-     * @param {FilterModel} filter
-     * @param {ClusterModel} cluster
-     */
-    editFilter(filter: FilterModel, cluster: ClusterModel) {
-        this.selectedFilterModel = filter;
-        this.pickedCluster = cluster;
-        this.selectedFilter = filter.name;
-        this.filterPanelOpenState = true;
-    }
-
-    /**
-     * Copy given filter
-     * @param {FilterModel} filter
-     */
-    copyFilter(filter: FilterModel) {
-        this.selectedFilterModel = JSON.parse(JSON.stringify(filter));
-        this.selectedFilter = this.selectedFilterModel.name;
-        this.filterPanelOpenState = true;
-    }
-
     makeManualCluster(cluster: ClusterModel) {
         console.log('manual cluster', cluster);
         // this.computationManager.computations = [];
@@ -602,10 +487,6 @@ export class DashboardComponent implements OnInit {
         this.advancedMode = advancedMode;
         this.resetClusterStates();
         this.clusterComponent.advancedMode = this.advancedMode;
-        // this.ngOnInit();
-        if (!advancedMode) {
-            this.editClusterDone();
-        }
         this.listViewComponent.init();
         this.graphComponent.init();
     }
@@ -644,14 +525,26 @@ export class DashboardComponent implements OnInit {
      * @param {ClusterModel} cluster Selected cluster from cluster component
      */
     editCluster(cluster: ClusterModel) {
-        this.editingCluster = cluster;
+        // this.editingCluster = cluster;
+        this.editedClusters.add(cluster);
+    }
+
+    /**
+     * End editing cluster
+     */
+    editDone(cluster: ClusterModel) {
+        // this.editingCluster = null;
+        this.editedClusters.delete(cluster);
+        // this.filterPanelOpenState = false;
+        this.computeClustersItemCount(this.listViewComponent.additionalFilters);
+        this.listViewComponent.init();
+        this.graphComponent.init();
     }
 
     /**
      * Hide cluster edit window and count items in clusters
      */
     editClusterDone() {
-        this.editingCluster = null;
         this.filterPanelOpenState = false;
         this.computeClustersItemCount(this.listViewComponent.additionalFilters);
         this.listViewComponent.init();
@@ -670,6 +563,7 @@ export class DashboardComponent implements OnInit {
         localStorage.setItem('savedClusters', JSON.stringify(this.savedClusters));
         localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
         localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
+        // localStorage.setItem('additionalFilters', JSON.stringify([...this.listViewComponent.additionalFilters]));
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
         localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
         localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
@@ -694,6 +588,7 @@ export class DashboardComponent implements OnInit {
         this.graphComponent._case = this.selectedCase;
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
+        // this.listViewComponent.additionalFilters = new Map(JSON.parse(localStorage.getItem('additionalFilters')));
         this.listViewComponent.displayedTableColumns = JSON.parse(localStorage.getItem('selectedTableColumns'));
         this.listViewComponent.init().then(() => {
             this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
@@ -735,7 +630,12 @@ export class DashboardComponent implements OnInit {
      * @param {any} endDate
      */
     drawActualScrollPosition([start, end, startDate, endDate]) {
-        this.graphComponent.drawGraphSliderWindow(new Date(startDate).getTime(), new Date(endDate).getTime());
+        const fromDate = new Date(startDate);
+        const fromUTC = new Date(fromDate.getTime() + (fromDate.getTimezoneOffset() * 60000));
+        const toDate = new Date(endDate);
+        const toUTC = new Date(toDate.getTime() + (toDate.getTimezoneOffset() * 60000));
+        console.error(startDate, '\n', fromDate, '\n', fromDate.getTimezoneOffset(), '\n', fromUTC, '\n', toUTC);
+        this.graphComponent.drawGraphSliderWindow(fromUTC.getTime(), toUTC.getTime());
     }
 
 }
