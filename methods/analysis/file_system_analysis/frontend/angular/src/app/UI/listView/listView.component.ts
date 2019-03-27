@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output, ViewChild, ElementRef} from '@angular/core';
-import {MatDatepickerInputEvent, MatDialog, MatPaginator, MatSort, MatTable, MatTableDataSource, PageEvent} from '@angular/material';
+import {MatDialog} from '@angular/material';
 
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
@@ -440,10 +440,6 @@ export class ListViewComponent {
         } else {
             this.selected_rows_id.add(id);
         }
-    }
-
-    resizeList(height) {
-        this.listViewScrollHeight = height;
     }
 
     /**

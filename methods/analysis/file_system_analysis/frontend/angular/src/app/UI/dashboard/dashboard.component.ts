@@ -117,34 +117,8 @@ export class DashboardComponent implements OnInit {
      * @returns {Promise<void>} Returns predefined clusters
      */
     async initPreLoadedClusters() {
-        // preloaded clusters
-        // this.computationManager.computations = [];
         this.preloadedClusters = [];
-
-
         const configManager = new ConfigManager();
-        //
-        // const preparedComputationsFromJson = configManager.loadPreparedComputations()['prepared_computations'];
-        //
-        // const computationList: ComputationModel[] = JSON.parse(JSON.stringify(preparedComputationsFromJson));
-        //
-        // for (const comp of computationList) {
-        //     this.computationManager.addComputation(comp);
-        // }
-        //
-        // // for (let i = 0; i < preparedComputationsFromJson.length; i++) {
-        //     // const tmpComputation = new ComputationModel();
-        //     // tmpComputation.name = preparedComputationsFromJson[i]['name'];
-        //     // tmpComputation.color = preparedComputationsFromJson[i]['color'];
-        //     // tmpComputation.isSelected = preparedComputationsFromJson[i]['isSelected'];
-        //     // tmpComputation.description = preparedComputationsFromJson[i]['description'];
-        //     // tmpComputation.filters = new Set(preparedComputationsFromJson[i]['filters']);
-        //     // this.computationManager.addComputation(tmpComputation);
-        //
-        // // }
-        //
-        // this.preloadedClusters = this.preloadedClusters.concat(this.computationManager.getClusters());
-
         this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
         this.computeClustersItemCount(this.listViewComponent.additionalFilters);
     }
@@ -169,62 +143,6 @@ export class DashboardComponent implements OnInit {
             }
         );
     }
-
-    // /**
-    //  * De/select given filter in computation
-    //  * @param filter Filter model
-    //  */
-    // selectFilter(filter) {
-    //     if (this.selectedAppliedFilters.has(filter)) {
-    //         this.selectedAppliedFilters.delete(filter);
-    //     } else {
-    //         this.selectedAppliedFilters.add(filter);
-    //     }
-    //     this.combineSelectedFilters();
-    //     console.log(this.selectedAppliedFilters);
-    // }
-    //
-    // combineSelectedFilters() {
-    //     let clusterName = 'cluster';
-    //     let resFilter = '';
-    //     this.selectedAppliedFilters.forEach((value) => {
-    //         console.log(value);
-    //         resFilter = this.elasticsearchBaseQueryManager.getFilterCombination([resFilter, this.appliedFilters.get(value).completed]);
-    //         console.log(this.appliedFilters.get(value));
-    //         clusterName = clusterName + '-' + value;
-    //     });
-    //
-    //     if (this.selectedAppliedFilters.size > 0) {
-    //         this.combinedFilter = resFilter;
-    //     } else {
-    //         this.combinedFilter = null;
-    //     }
-    //     console.log(resFilter);
-    //     this.listViewComponent.case = this.selectedCase;
-    //     this.listViewComponent.filter = this.combinedFilter;
-    //     // this.listViewComponent.displayedClusters = this.selectedStoredClusters;
-    //     // this.listViewComponent.computations = Array.from(this.computations);
-    //     this.listViewComponent.init();
-    //
-    //     // TODO WARNING - only one cluster at a time
-    //     this.computedClusters.clear();
-    //     if (this.selectedAppliedFilters.size > 0) {
-    //         this.computedClusters.add(clusterName);
-    //         this.selectedComputedClusters = [];
-    //         this.selectedComputedClusters.push(clusterName);
-    //     }
-    // }
-
-    // setComputedClusters($event) {
-    //     this.selectedComputedClusters = $event;
-    //     if (this.selectedComputedClusters.length > 0) {
-    //         this.listViewComponent.filter = this.combinedFilter;
-    //         this.listViewComponent.init();
-    //     } else {
-    //         this.listViewComponent.filter = null;
-    //         this.listViewComponent.init();
-    //     }
-    // }
 
     /**
      * Triggered by changing mode of clusters (select, deselect, deduct)
@@ -401,29 +319,6 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    // /**
-    //  * Adds new computation
-    //  */
-    // addComputation() {
-    //     const dialogRef = this.dialog.open(ComputationDialogComponent, {
-    //         width: '350px',
-    //         data: {
-    //             title: 'Create new clustering',
-    //             namePlaceholder: 'Type new clustering\'s name',
-    //             colorPlaceHolder: 'Select clustering color'
-    //         }
-    //     });
-    //     dialogRef.afterClosed().subscribe(result => {
-    //         console.log('computation dialog closed', result);
-    //         if (result != null) {
-    //             const comp = new ComputationModel();
-    //             comp.name = result[0];
-    //             comp.color = result[1];
-    //             this.computations.add(comp);
-    //         }
-    //     });
-    // }
-
     makeManualCluster(cluster: ClusterModel) {
         console.log('manual cluster', cluster);
         // this.computationManager.computations = [];
@@ -461,11 +356,6 @@ export class DashboardComponent implements OnInit {
      * @param {Map<string, string>} filters Additional filters (search filter, date filter etc.)
      */
     computeClustersItemCount(filters: Map<string, string>) {
-        // // filters.delete('searchString');
-        // const clustManager = new ClusterManager(this.es, this.clusterService);
-        // clustManager.clusters = this.getClusters();
-        // clustManager.case = this.selectedCase;
-        // clustManager.countEntriesOfClusters(Array.from(filters.values()));
         this.clusterService.countEntriesOfClusters(this.selectedCase, this.getClusters(), Array.from(filters.values()));
     }
 
@@ -536,16 +426,6 @@ export class DashboardComponent implements OnInit {
         // this.editingCluster = null;
         this.editedClusters.delete(cluster);
         // this.filterPanelOpenState = false;
-        this.computeClustersItemCount(this.listViewComponent.additionalFilters);
-        this.listViewComponent.init();
-        this.graphComponent.init();
-    }
-
-    /**
-     * Hide cluster edit window and count items in clusters
-     */
-    editClusterDone() {
-        this.filterPanelOpenState = false;
         this.computeClustersItemCount(this.listViewComponent.additionalFilters);
         this.listViewComponent.init();
         this.graphComponent.init();
@@ -623,11 +503,11 @@ export class DashboardComponent implements OnInit {
     }
 
     /**
-     *
-     * @param {any} start
-     * @param {any} end
-     * @param {any} startDate
-     * @param {any} endDate
+     *  Draw sliding window representing current scroll position in graph
+     * @param {any} start Index of first item in current scroll position
+     * @param {any} end Index of last item in current scroll position
+     * @param {any} startDate String representing date of first item in current scroll position
+     * @param {any} endDate String representing date of last item in current scroll position
      */
     drawActualScrollPosition([start, end, startDate, endDate]) {
         const fromDate = new Date(startDate);
