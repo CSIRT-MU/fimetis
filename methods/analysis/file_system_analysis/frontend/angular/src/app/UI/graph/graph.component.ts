@@ -468,9 +468,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
             color: 'rgba(173, 216, 230, 0.4)',
             borderColor: 'rgba(30, 30, 30, 0.8)',
             borderWidth: 1,
-            // label: {
-            //     text: 'actual position'
-            // }
+            label: {
+                text: '<span style="position: relative; top: -16px;">actual position</span>',
+                useHTML: true
+            }
         });
         // this.chart.xAxis[0].removePlotLine('box-start');
         // this.chart.xAxis[0].addPlotLine({
