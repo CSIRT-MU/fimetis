@@ -460,11 +460,15 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     drawGraphSliderWindow(from: number, to: number) {
+        let from_edit = new Date(from);
+        from_edit = new Date(Date.UTC(from_edit.getFullYear(), from_edit.getMonth(), from_edit.getDate()));
+        let to_edit = new Date(to);
+        to_edit = new Date(Date.UTC(to_edit.getFullYear(), to_edit.getMonth(), to_edit.getDate()));
         this.chart.xAxis[0].removePlotBand('range');
         this.chart.xAxis[0].addPlotBand({
             id: 'range',
-            from: from,
-            to: to,
+            from: from_edit.getTime(),
+            to: to_edit.getTime() + (24 * 3600 * 1000),
             color: 'rgba(173, 216, 230, 0.4)',
             borderColor: 'rgba(30, 30, 30, 0.8)',
             borderWidth: 1,
