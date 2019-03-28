@@ -1,6 +1,8 @@
 .main-container{
-    flex-grow: 1;
-    height: 100%;
+    border-radius: 8px;
+    margin-top: 2em;
+    padding: 2em;
+    background-color: #fefefe;
 }
 
 .drop-zone {
