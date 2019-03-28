@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {HttpClient, HttpEvent, HttpRequest, HttpResponse} from '@angular/common/http';
 import {ngf} from 'angular-file';
 import {Subscription} from 'rxjs';
@@ -12,7 +12,8 @@ import {environment} from '../../../environments/environment';
 export class UploadComponent implements OnInit {
 
     files: File[] = [];
-    case = '';
+    @Input('_case')
+    _case = '';
     progress: number;
     url = environment.backendUrl + '/upload';
     httpEmitter: Subscription;
@@ -29,7 +30,7 @@ export class UploadComponent implements OnInit {
         const formData = new FormData();
 
         files.forEach(file => formData.append('file', file, file.name));
-        formData.append('case', this.case);
+        formData.append('case', this._case);
 
         const req = new HttpRequest<FormData>('POST', this.url, formData, {
             reportProgress: true

@@ -1,33 +1,11 @@
-<div class="app-container">
-    <div class="app-bar">
-        <span class="main-title">
-        <b>FILE SYSTEM ANALYSIS</b>
-        </span>
-        <div class="settings">
-            <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
-            <mat-menu #settings="matMenu" [overlapTrigger]="false">
-                <button mat-menu-item (click)="setupWindowOpen = !setupWindowOpen">
-                    <span>SETUP</span>
-                </button>
-                <button mat-menu-item (click)="advancedModeToggle(!advancedMode)">
-                    ADVANCED MODE
-                    <input type="checkbox" [ngModel]="advancedMode" class="timesix-slider" id="advancedModeCheckbox">
-                    <label for="advancedModeCheckbox"></label>
-                </button>
-                <button mat-menu-item (click)="saveApplicationState()">
-                    SAVE STATE
-                </button>
-                <button mat-menu-item routerLink="/upload" routerLinkActive="active">
-                    <span>UPLOAD NEW FILE</span>
-                </button>
-                <button mat-menu-item (click)="logout()" >
-                    <span>LOG OUT</span>
-                </button>
-            </mat-menu>
-        </div>
-    </div>
-
+<div class="dashboard-container">
+    <!--dataset setup window-->
     <div *ngIf="setupWindowOpen" class="setup-window">
+        <!--<div class="col-md-12 setup-close">-->
+            <!--<span class="glyphicon glyphicon-remove setup-close-button clickable"-->
+                  <!--(click)="setupWindowOpen = false"-->
+                  <!--matTooltip="Close"></span>-->
+        <!--</div>-->
         <div class="setup-tab col-sm-6 col-sm-offset-3">
             <div class="col-sm-2 col-sm-offset-2 setup-tab-text">
                 <b>DATASET</b>
@@ -53,6 +31,17 @@
             </div>
         </div>
     </div>
+
+    <div *ngIf="uploadWindowOpen" class="setup-window">
+        <div class="col-md-12 setup-close">
+            <span class="glyphicon glyphicon-remove setup-close-button clickable"
+                  (click)="uploadWindowOpen = false"
+                  matTooltip="Close"></span>
+        </div>
+        <app-upload [_case]="selectedCase"></app-upload>
+    </div>
+
+    <!--edit filter window-->
     <div class="container-edit-filter" *ngIf="editedClusters.size > 0 && advancedMode">
         <div class="filter-setup-background">
             <div *ngFor="let cluster of editedClusters">
@@ -62,7 +51,21 @@
     </div>
 
     <div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
-        <div class="grid-cluster panel">
+        <div class="grid-sidebar panel">
+            <div class="panel-header" *ngIf="clusterPanelOpenState">
+                <button mat-stroked-button class="timesix-button settings-button"
+                        (click)="setupWindowOpen = !setupWindowOpen">
+                    <span class="glyphicon glyphicon-refresh"></span> CHANGE DATASET</button>
+                <button mat-stroked-button class="timesix-button settings-button"
+                        (click)="uploadWindowOpen = !uploadWindowOpen">
+                    <span class="glyphicon glyphicon-upload"></span> UPLOAD FILE TO DATASET</button>
+                <button mat-stroked-button class="timesix-button settings-button"
+                        (click)="saveApplicationState()">
+                    <span class="glyphicon glyphicon-save"></span> SAVE APP STATE</button>
+                <button mat-stroked-button class="timesix-button settings-button"
+                        (click)="restoreApplicationState()" [disabled]="!ableToRestoreState()">
+                    <span class="glyphicon glyphicon-open"></span> RESTORE APP STATE</button>
+            </div>
             <div class="panel-header">
                 <span class="text-gray"><b>CLUSTERS</b></span>
                 <span class="glyphicon panel-header-button"

@@ -26,7 +26,10 @@ import {MatTooltipModule} from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
 import { ngfModule } from 'angular-file';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-
+// auth
+import {JwtInterceptor} from './auth/jwt.interceptor';
+import {ErrorInterceptor} from './auth/error.interceptor';
+// app
 import {AppComponent} from './app.component';
 import {ListViewComponent} from './UI/listView/listView.component';
 import {GraphComponent} from './UI/graph/graph.component';
@@ -39,9 +42,6 @@ import {TextSelectDirective} from './UI/text-select.directive';
 import {HighlightPipe} from './UI/highlight.directive';
 import {UploadComponent} from './UI/upload/upload.component';
 import {LoginComponent} from './UI/user/login/login.component';
-// auth
-import {JwtInterceptor} from './auth/jwt.interceptor';
-import {ErrorInterceptor} from './auth/error.interceptor';
 import { FilterComponent } from './UI/filter/filter.component';
 
 @NgModule({

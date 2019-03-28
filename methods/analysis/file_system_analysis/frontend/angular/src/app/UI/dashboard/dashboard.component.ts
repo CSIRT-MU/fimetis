@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, Input, AfterViewInit} from '@angular/core';
 import {ListViewComponent} from '../listView/listView.component';
 import {MatChipList, MatDialog, MatTabGroup} from '@angular/material';
 import {FilterModel} from '../../models/filter.model';
@@ -11,6 +11,7 @@ import {ToastrService} from 'ngx-toastr';
 import {BaseService} from '../../services/base.service';
 import {ClusterService} from '../../services/cluster.service';
 import {AuthenticationService} from '../../auth/authentication.service';
+import {UserSettingsService} from '../../services/userSettings.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -18,11 +19,12 @@ import {AuthenticationService} from '../../auth/authentication.service';
     styleUrls: ['./dashboard.component.css']
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
     advancedMode = false;
 
     /* collapse properties */
     setupWindowOpen = true;
+    uploadWindowOpen = false;
     filterPanelOpenState = false;
     clusterPanelOpenState = true;
 
@@ -62,7 +64,9 @@ export class DashboardComponent implements OnInit {
                 private clusterService: ClusterService,
                 private authService: AuthenticationService,
                 private toaster: ToastrService,
-                public dialog: MatDialog) {
+                public dialog: MatDialog,
+                private userSettingsService: UserSettingsService) {
+        this.advancedMode = userSettingsService.advancedMode.getValue();
     }
 
     ngOnInit() {
@@ -71,6 +75,12 @@ export class DashboardComponent implements OnInit {
 
         this.loadAllCases();
         this.loadAllFilters();
+    }
+
+    ngAfterViewInit() {
+        this.userSettingsService.advancedMode.subscribe(mode => {
+            this.advancedModeToggle(mode);
+        });
     }
 
     loadAllCases() {
@@ -321,8 +331,6 @@ export class DashboardComponent implements OnInit {
 
     makeManualCluster(cluster: ClusterModel) {
         console.log('manual cluster', cluster);
-        // this.computationManager.computations = [];
-        // this.computationManager.addComputation(computation);
         this.manualClusters = this.manualClusters.concat(cluster);
         this.clusterService.countData(this.selectedCase, cluster, Array.from(this.listViewComponent.additionalFilters.values())).then(
           response => {
@@ -396,13 +404,9 @@ export class DashboardComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             console.log('cluster dialog closed', result);
             if (result != null) {
-                // const comp = new ComputationModel();
-                // comp.name = result[0];
-                // comp.color = result[1];
                 const cluster = new ClusterModel();
                 cluster.name = result[0];
                 cluster.color = result[1];
-                // cluster.computation = comp;
                 cluster.count = 0;
                 this.manualClusters.push(cluster);
                 this.editCluster(cluster);
@@ -415,7 +419,6 @@ export class DashboardComponent implements OnInit {
      * @param {ClusterModel} cluster Selected cluster from cluster component
      */
     editCluster(cluster: ClusterModel) {
-        // this.editingCluster = cluster;
         this.editedClusters.add(cluster);
     }
 
@@ -446,7 +449,7 @@ export class DashboardComponent implements OnInit {
         // localStorage.setItem('additionalFilters', JSON.stringify([...this.listViewComponent.additionalFilters]));
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
         localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
-        localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
+        // localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
         localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
         localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
         localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
@@ -456,7 +459,7 @@ export class DashboardComponent implements OnInit {
      * Restore application state from local storage
      */
     restoreApplicationState() {
-        this.advancedMode = JSON.parse(localStorage.getItem('advancedMode'));
+        // this.advancedMode = JSON.parse(localStorage.getItem('advancedMode'));
         this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
         this.clusters = JSON.parse(localStorage.getItem('clusters'));
         this.preloadedClusters = JSON.parse(localStorage.getItem('preloadedClusters'));
@@ -496,13 +499,6 @@ export class DashboardComponent implements OnInit {
     }
 
     /**
-     * Logout current user
-     */
-    logout() {
-        this.authService.logout();
-    }
-
-    /**
      *  Draw sliding window representing current scroll position in graph
      * @param {any} start Index of first item in current scroll position
      * @param {any} end Index of last item in current scroll position
@@ -514,7 +510,6 @@ export class DashboardComponent implements OnInit {
         const fromUTC = new Date(fromDate.getTime() + (fromDate.getTimezoneOffset() * 60000));
         const toDate = new Date(endDate);
         const toUTC = new Date(toDate.getTime() + (toDate.getTimezoneOffset() * 60000));
-        console.error(startDate, '\n', fromDate, '\n', fromDate.getTimezoneOffset(), '\n', fromUTC, '\n', toUTC);
         this.graphComponent.drawGraphSliderWindow(fromUTC.getTime(), toUTC.getTime());
     }
 

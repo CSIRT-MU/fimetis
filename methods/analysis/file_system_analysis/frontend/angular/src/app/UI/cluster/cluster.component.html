@@ -24,10 +24,11 @@
         </div>
     </div>
     <div class="cluster-list-content">
+        <perfect-scrollbar class="scrollable-block">
         <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
-        <div #container>
+        <!--<div #container>-->
             <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
-            <div *ngFor="let cluster of clusters">
+            <div *ngFor="let cluster of clusters" class="cluster-item">
                 <!--<mat-radio-button *ngIf="mode === 0" [checked]="clusterChecked(cluster)"-->
                                   <!--[value]="cluster"></mat-radio-button>-->
                 <div class="cluster-icon clickable"
@@ -40,12 +41,13 @@
                 <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
                 <div *ngIf="advancedMode" class="clickable cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil" (click)="edit(cluster)"></span></div>
             </div>
-        </div>
+        <!--</div>-->
         <!--</virtual-scroller>-->
         <!--</perfect-scrollbar>-->
         <div *ngIf="clusters?.length == 0">
             There are no clusters yet
         </div>
+        </perfect-scrollbar>
         <div *ngIf="advancedMode" style="text-align: center">
             <span class="clickable glyphicon glyphicon glyphicon-plus-sign" (click)="addCluster()"></span>
         </div>

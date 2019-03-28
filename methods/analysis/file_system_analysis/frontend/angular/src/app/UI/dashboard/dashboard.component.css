@@ -1,3 +1,12 @@
+.dashboard-container{
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    height: 100%;
+    width: 100%;
+}
+
 /*.container-all-opened {*/
     /*display: grid;*/
     /*min-height: 95vh;*/
@@ -9,25 +18,28 @@
 .container-all-opened {
     display: grid;
     flex-grow: 1;
+    width: 100%;
     grid-template-columns: 300px auto;
-    grid-template-areas: "grid-cluster grid-main grid-main grid-main"
+    grid-template-areas: "grid-sidebar grid-main grid-main grid-main";
 }
 
 @media (max-width: 640px) {
     .container-all-opened {
         display: grid;
         flex-grow: 1;
+        width: 100%;
         grid-template-columns: 300px auto;
-        grid-template-areas: "grid-cluster grid-cluster grid-cluster grid-cluster" "grid-main grid-main grid-main grid-main"
+        grid-template-areas: "grid-sidebar grid-sidebar grid-sidebar grid-sidebar" "grid-main grid-main grid-main grid-main"
     }
 }
 
 .container-all-closed {
     display: grid;
     flex-grow: 1;
+    width: 100%;
     grid-template-columns: 300px auto;
     grid-template-rows: 50px auto;
-    grid-template-areas: "grid-cluster grid-cluster grid-cluster grid-cluster" "grid-main grid-main grid-main grid-main"
+    grid-template-areas: "grid-sidebar grid-sidebar grid-sidebar grid-sidebar" "grid-main grid-main grid-main grid-main"
 }
 
 .container-edit-filter {
@@ -42,8 +54,8 @@
     overflow-y: auto;
 }
 
-.grid-cluster {
-    grid-area: grid-cluster;
+.grid-sidebar {
+    grid-area: grid-sidebar;
     z-index: 9;
 }
 
@@ -62,6 +74,7 @@
     display: flex;
     flex-flow: column;
     height: 100%;
+    width: 100%;
     /*display: grid;*/
     /*!*grid-template-areas: "date-slider" "type-checker" "graph-block" "list-view-block";*!*/
     /*grid-template-areas: "graph-block" "list-view-block";*/
@@ -82,12 +95,10 @@
 }
 
 .setup-window {
-    position: fixed;
+    position: absolute;
     height: 100%;
-    top: 60px;
     width: 100%;
     background-color: #666666;
-    /*opacity: 0.8;*/
     z-index: 10;
 }
 
@@ -205,3 +216,18 @@ mat-chip {
 .type-checker mat-checkbox{
     margin-left: 20px;
 }
+
+.settings-button{
+    background-color: #fefefe;
+}
+
+.setup-close{
+    text-align: right;
+}
+
+.setup-close-button{
+    margin-right: 0.5em;
+    font-size: xx-large;
+    color: #fefefe;
+}
+
