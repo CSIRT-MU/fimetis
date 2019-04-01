@@ -498,13 +498,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
 
     updateBoundary() {
+        const fromUTCDateTime = new Date(this.pickedFromDate).getTime() - new Date(this.pickedFromDate).getTimezoneOffset() * 60000;
+        const toUTCDateTime = new Date(this.pickedToDate).getTime() - new Date(this.pickedToDate).getTimezoneOffset() * 60000;
         this.saveGraphZoom = true;
-        this.chart.xAxis[0].setExtremes(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
-        this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+        this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
+        this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
         // this.chart.showResetZoom();
+        console.log(this.pickedFromDate);
         this.dateChangeDebouncer.next([
-            this.pickedFromDate.replace('T', ' '),
-            this.pickedToDate.replace('T', ' ')]);
+            new Date(fromUTCDateTime).toISOString(),
+            new Date(toUTCDateTime).toISOString()
+        ]);
     }
 
     collapseGraphPanel() {
@@ -633,7 +637,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
      * @param {string} dateModel Target date model (pickedFromDate x pickedToDate)
      */
     dropFilter($event, dateModel: string) {
-        console.log('dropped', dateModel);
+        console.log('dropped', $event, $event.dataTransfer.getData('timestamp'));
         $event.preventDefault();
         const timestamp = JSON.parse($event.dataTransfer.getData('timestamp'));
         return new Date(timestamp).toISOString().slice(0, -1);
