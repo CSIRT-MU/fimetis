@@ -138,7 +138,7 @@
         </virtual-scroller>
     </div>
 </div>
-<div #highlightedBox id="highlightedBox" class="highlightedBox">
+<div #highlightedBox id="highlightedBox" class="highlightedBox" *ngIf="selectionExists()">
     {{highlightedText}}
     <span class="glyphicon glyphicon-indent-right clickable highlighted-icon" matTooltip="Make cluster by path"
           [matTooltipPosition]="'above'" (click)="makeClusterByHighlight()"></span>
@@ -148,10 +148,10 @@
           [matTooltipPosition]="'above'" (click)="skipTheBlockByHighlightedFileName(false)"></span>
 </div>
 
-<div #highlightedDateBox id="highlightedDateBox" class="highlightedBox">
+<div #highlightedDateBox id="highlightedDateBox" class="highlightedBox" *ngIf="selectionExists()">
     {{highlightedTextDate}}
     <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block"
           [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(true)"></span>
     <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block"
           [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(false)"></span>
-    </div>
+</div>

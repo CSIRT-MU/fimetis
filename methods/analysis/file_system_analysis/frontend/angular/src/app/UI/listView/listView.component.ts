@@ -442,6 +442,10 @@ export class ListViewComponent {
         }
     }
 
+    selectionExists() {
+        return window.getSelection().toString();
+    }
+
     /**
      * Opens context menu after highlighting some text (mouse selection)
      * @param {TextSelectEvent} event
