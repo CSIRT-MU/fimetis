@@ -10,7 +10,7 @@ import {ToastrService} from 'ngx-toastr';
   styleUrls: ['./filter.component.css']
 })
 export class FilterComponent implements OnInit {
-    
+
     @Input('inputCluster')
     inputCluster: ClusterModel;
     filters: any[];
@@ -19,10 +19,10 @@ export class FilterComponent implements OnInit {
     selectedFilterModel: FilterModel = new FilterModel();
     @Output('editDone')
     editDone: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
-    
+
     constructor(private baseService: BaseService,
                 private toaster: ToastrService) { }
-    
+
     ngOnInit() {
     }
 
@@ -65,7 +65,7 @@ export class FilterComponent implements OnInit {
         this.selectedFilter = null;
         this.filterPanelOpenState = false;
     }
-    
+
     /**
      * Adds filter to given cluster
      * @param cluster Cluster to add new filter to
@@ -75,19 +75,19 @@ export class FilterComponent implements OnInit {
         this.inputCluster = cluster;
         console.log('add filter to: ', this.inputCluster);
     }
-    
+
     /**
      * Method to drag and drop filters between clusters
      * @param $event
-     * @param {FilterModel} filter
-     * @param {ClusterModel} cluster
+     * @param {FilterModel} filter Filter source
+     * @param {ClusterModel} cluster Cluster source
      */
     dragFilter($event, filter: FilterModel, cluster: ClusterModel) {
         $event.dataTransfer.setData('filter', JSON.stringify(filter));
         $event.dataTransfer.dropEffect = 'copy';
         $event.effectAllowed = 'copyMove';
     }
-    
+
     /**
      * Method to drag and drop filters between clusters
      * @param $event Drag event
@@ -95,11 +95,11 @@ export class FilterComponent implements OnInit {
     dragOver($event) {
         $event.preventDefault();
     }
-    
+
     /**
      * Method to drag and drop filters between clusters
      * @param $event Drop event
-     * @param {ClusterModel} cluster Target computation
+     * @param {ClusterModel} cluster Target cluster
      */
     dropFilter($event, cluster: ClusterModel) {
         console.log('dropped', cluster);
@@ -109,7 +109,7 @@ export class FilterComponent implements OnInit {
         // computation.filters.add(filter);
         cluster.filters.push(filter);
     }
-    
+
     /**
      * Delete given filter from given cluster
      * @param {FilterModel} filter Filter model
@@ -122,7 +122,7 @@ export class FilterComponent implements OnInit {
         }
         // computation.filters.delete(filter);
     }
-    
+
     /**
      * Edit given filter of given cluster
      * @param {FilterModel} filter
@@ -134,7 +134,7 @@ export class FilterComponent implements OnInit {
         this.selectedFilter = filter.name;
         this.filterPanelOpenState = true;
     }
-    
+
     /**
      * Copy given filter
      * @param {FilterModel} filter
@@ -145,7 +145,7 @@ export class FilterComponent implements OnInit {
         this.filterPanelOpenState = true;
     }
 
-    editClusterDone(){
+    editClusterDone() {
         this.editDone.emit(this.inputCluster);
     }
 }

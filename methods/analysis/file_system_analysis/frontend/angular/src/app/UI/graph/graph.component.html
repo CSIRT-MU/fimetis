@@ -31,7 +31,9 @@
             <div #chartDiv id="chartDiv"></div>
         </div>
         <form (submit)="updateBoundary()" class="from-date-form col-md-4">
-            <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input">
+            <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input"
+                   (dragover)="dragOver($event)"
+                   (drop)="pickedFromDate = dropFilter($event, pickedFromDate)">
             <button type="submit" hidden></button>
         </form>
         <div class="col-md-4">
@@ -44,7 +46,9 @@
             </div>
         </div>
         <form (submit)="updateBoundary()" class="to-date-form col-md-4">
-            <input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate" required class="date-form-input">
+            <input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate" required class="date-form-input"
+                   (dragover)="dragOver($event)"
+                   (drop)="pickedToDate = dropFilter($event, pickedToDate)">
             <button type="submit" hidden></button>
         </form>
     </div>

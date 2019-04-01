@@ -971,4 +971,15 @@ export class ListViewComponent {
         this.scrollToIndex(scrollIndex);
         this.dataLoader(0, this.preloadedBufferSize, null, null, true, false);
     }
+
+    /**
+     * Method to drag timestamp
+     * @param $event
+     * @param {string} timestamp
+     */
+    dragTimestamp($event, timestamp: string) {
+        $event.dataTransfer.setData('timestamp', JSON.stringify(timestamp));
+        $event.dataTransfer.dropEffect = 'copy';
+        $event.effectAllowed = 'copyMove';
+    }
 }

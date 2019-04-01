@@ -75,7 +75,8 @@
                             <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
                             <div class="table-block larger-table-block" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
                                 (click)="selectDateByClick($event, i)"
-                                (textSelect)="openHighlightedTextDateMenu($event, i)">
+                                (textSelect)="openHighlightedTextDateMenu($event, i)"
+                                 (dragstart)="dragTimestamp($event, element._source['@timestamp'])">
                                 {{element._source['@timestamp'].replace('T', ' ').replace('.000Z', '')}}
                             </div>
                             <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>

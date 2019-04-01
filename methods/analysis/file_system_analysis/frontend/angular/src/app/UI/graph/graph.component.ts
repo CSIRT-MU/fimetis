@@ -618,4 +618,24 @@ export class GraphComponent implements OnInit, AfterViewInit {
             this.typesChangedDebouncer.next(this.selectedTypes);
         }
     }
+
+    /**
+     * Method to support drag and drop timestamps
+     * @param $event Drag event
+     */
+    dragOver($event) {
+        $event.preventDefault();
+    }
+
+    /**
+     * Method to support drag and drop timestamps
+     * @param $event
+     * @param {string} dateModel Target date model (pickedFromDate x pickedToDate)
+     */
+    dropFilter($event, dateModel: string) {
+        console.log('dropped', dateModel);
+        $event.preventDefault();
+        const timestamp = JSON.parse($event.dataTransfer.getData('timestamp'));
+        return new Date(timestamp).toISOString().slice(0, -1);
+    }
 }
