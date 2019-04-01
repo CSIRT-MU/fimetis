@@ -254,6 +254,52 @@
             ]
         },
         {
+            "name": "executables with sbit",
+            "color": "#886644",
+            "description": "executable files with the S-bit (uid/gid) being set",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "filters": [
+                {
+                    "name": "mode_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"Mode.keyword\": \"${{MODE_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "MODE_REGEX",
+                            "type": "REGEX",
+                            "value": ".*s.*"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "weak permissions",
+            "color": "#886644",
+            "description": "files writable for users",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "filters": [
+                {
+                    "name": "mode_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"Mode.keyword\": \"${{MODE_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "MODE_REGEX",
+                            "type": "REGEX",
+                            "value": "(.)*w(x|-)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "all files",
             "color": "#886644",
             "description": "All files",
