@@ -21,7 +21,7 @@
     text-align: center;
     vertical-align: middle;
     padding: 0.8em 0.5em 0.5em;
-    background-color: #666666;
+    background-color: var(--primaryColor);
     /*height: 180px;*/
     width: 100%;
     flex-grow: 0;
@@ -43,7 +43,7 @@
     display: inline-block;
     float: right;
     margin-right: 25px;
-    color: #fefefe;
+    color: var(--secondaryColor);
     font-size: x-large;
 }
 

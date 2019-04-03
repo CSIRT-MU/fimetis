@@ -44,7 +44,7 @@
 
 .container-edit-filter {
     display: grid;
-    position: absolute;
+    position: fixed;
     height: 100%;
     flex-grow: 1;
     width: 100%;
@@ -95,10 +95,10 @@
 }
 
 .setup-window {
-    position: absolute;
+    position: fixed;
     height: 100%;
     width: 100%;
-    background-color: #666666;
+    background-color: var(--primaryColor);
     z-index: 10;
 }
 
