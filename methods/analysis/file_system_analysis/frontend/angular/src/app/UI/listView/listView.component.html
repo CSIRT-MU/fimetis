@@ -77,7 +77,7 @@
                                 (click)="selectDateByClick($event, i)"
                                 (textSelect)="openHighlightedTextDateMenu($event, i)"
                                  (dragstart)="dragTimestamp($event, element._source['@timestamp'])">
-                                {{element._source['@timestamp'].replace('T', ' ').replace('.000Z', '')}}
+                                {{element._source['@timestamp'] | date:'yyyy-MM-dd HH:mm:ss':'+0000'}}
                             </div>
                             <div class="table-block medium-table-block text-align-right" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
                             <div class="table-block medium-small-table-block monospace-text" *ngIf="tableItem == 'type'">{{element._source.Type}}</div>
