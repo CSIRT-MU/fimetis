@@ -12,6 +12,7 @@ import {BaseService} from '../../services/base.service';
 import {ClusterService} from '../../services/cluster.service';
 import {AuthenticationService} from '../../auth/authentication.service';
 import {UserSettingsService} from '../../services/userSettings.service';
+import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -62,7 +63,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     constructor(private baseService: BaseService,
                 private clusterService: ClusterService,
-                private authService: AuthenticationService,
+                public authService: AuthenticationService,
                 private toaster: ToastrService,
                 public dialog: MatDialog,
                 private userSettingsService: UserSettingsService) {
@@ -511,6 +512,36 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const toDate = new Date(endDate);
         const toUTC = new Date(toDate.getTime() + (toDate.getTimezoneOffset() * 60000));
         this.graphComponent.drawGraphSliderWindow(fromUTC.getTime(), toUTC.getTime());
+    }
+
+    /**
+     * Removes selected case from database
+     */
+    removeSelectedCase() {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            width: '350px',
+            data: {
+                title: 'Are you sure ?',
+                message: 'You want to delete whole dataset',
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('confirmation dialog closed', result);
+            if (result) {
+                this.baseService.deleteCase(this.selectedCase).then(
+                    response => {
+                        console.log('Dataset deleted', response);
+                        this.toaster.success('This dataset is going to be removed. It can take some time.', 'Delete successful');
+                    }, error => {
+                        console.error(error);
+                        this.toaster.error('Error:' + error['message'], 'Cannot delete this dataset');
+                    }).then(() => {
+                    console.log('Delete completed!');
+                });
+                this.selectedCase = null;
+                this.setupWindowOpen = true;
+            }
+        });
     }
 
 }

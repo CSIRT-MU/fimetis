@@ -39,6 +39,10 @@ export class AuthenticationService {
         location.reload();
     }
 
+    isAdmin() {
+        return this.currentUserValue.groups.indexOf('admin') !== -1;
+    }
+
     reset() {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');

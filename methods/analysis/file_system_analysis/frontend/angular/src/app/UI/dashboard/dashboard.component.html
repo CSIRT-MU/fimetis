@@ -57,6 +57,11 @@
                         (click)="setupWindowOpen = !setupWindowOpen">
                     <span class="glyphicon glyphicon-refresh"></span> CHANGE DATASET</button>
                 <button mat-stroked-button class="timesix-button settings-button"
+                        *ngIf="authService.isAdmin()"
+                        (click)="removeSelectedCase()">
+                    <span class="glyphicon glyphicon-remove"></span> DELETE DATASET</button>
+                <button mat-stroked-button class="timesix-button settings-button"
+                        *ngIf="authService.isAdmin()"
                         (click)="uploadWindowOpen = !uploadWindowOpen">
                     <span class="glyphicon glyphicon-upload"></span> UPLOAD FILE TO DATASET</button>
                 <button mat-stroked-button class="timesix-button settings-button"
