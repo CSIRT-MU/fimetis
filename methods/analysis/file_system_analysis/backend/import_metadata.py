@@ -8,7 +8,7 @@ from dateutil import parser
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import TransportError
 from elasticsearch.helpers import streaming_bulk
-import chardet
+# import chardet
 import logging
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
