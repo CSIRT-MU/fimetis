@@ -123,6 +123,14 @@ body {
     text-align: right;
 }
 
+.text-align-left {
+    text-align: left;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
 .text-gray {
     color: #666666;
 }

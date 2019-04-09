@@ -4,3 +4,5 @@ elasticsearch
 pyjwt
 wheel
 uwsgi
+python-dateutil
+chardet

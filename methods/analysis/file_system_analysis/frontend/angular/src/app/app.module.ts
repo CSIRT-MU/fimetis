@@ -43,6 +43,7 @@ import {HighlightPipe} from './UI/highlight.directive';
 import {UploadComponent} from './UI/upload/upload.component';
 import {LoginComponent} from './UI/user/login/login.component';
 import { FilterComponent } from './UI/filter/filter.component';
+import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
     declarations: [
@@ -54,6 +55,7 @@ import { FilterComponent } from './UI/filter/filter.component';
         NameDialogComponent,
         SelectDialogComponent,
         ComputationDialogComponent,
+        ConfirmationDialogComponent,
         TextSelectDirective,
         HighlightPipe,
         UploadComponent,
@@ -95,7 +97,7 @@ import { FilterComponent } from './UI/filter/filter.component';
         ngfModule,
         HttpClientModule
     ],
-    entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent],
+    entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],

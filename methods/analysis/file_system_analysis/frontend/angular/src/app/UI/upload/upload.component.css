@@ -10,6 +10,7 @@
     /*height: 30vh;*/
     text-align: center;
     vertical-align: middle;
+    padding: 50px;
 }
 .invalid-drag { border: dotted 3px red; }
 .valid-drag { border: dotted 3px green; }
@@ -22,4 +23,50 @@
 .inline-block{
     display:inline-block;
     margin:.2em;
+}
+
+.removeCheckbox{
+    vertical-align: text-bottom;
+}
+
+.circle-rotate-scale-up {
+    background-color: #52AE58;
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 60px;
+    -webkit-animation: rotate-scale-up 0.9s ease-out both;
+    animation: rotate-scale-up 0.9s ease-out both;
+}
+
+@-webkit-keyframes rotate-scale-up {
+    0% {
+        -webkit-transform: scale(1) rotateZ(0);
+        transform: scale(1) rotateZ(0);
+    }
+    50% {
+        -webkit-transform: scale(2) rotateZ(180deg);
+        transform: scale(2) rotateZ(180deg);
+    }
+    100% {
+        -webkit-transform: scale(1) rotateZ(360deg);
+        transform: scale(1) rotateZ(360deg);
+    }
+}
+@keyframes rotate-scale-up {
+    0% {
+        -webkit-transform: scale(1) rotateZ(0);
+        transform: scale(1) rotateZ(0);
+    }
+    50% {
+        -webkit-transform: scale(2) rotateZ(180deg);
+        transform: scale(2) rotateZ(180deg);
+    }
+    100% {
+        -webkit-transform: scale(1) rotateZ(360deg);
+        transform: scale(1) rotateZ(360deg);
+    }
 }

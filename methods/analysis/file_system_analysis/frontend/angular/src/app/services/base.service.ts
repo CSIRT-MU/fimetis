@@ -29,6 +29,10 @@ export class BaseService {
         });
     }
 
+    deleteCase(_case: string) {
+        return this.http.delete(environment.backendUrl + '/case/delete/' + _case).toPromise();
+    }
+
     buildAdditionSearchFilter(searchString: string) {
         let search = searchString
             .replace('/', '\\\\/')

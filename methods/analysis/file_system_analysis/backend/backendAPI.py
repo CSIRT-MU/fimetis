@@ -10,13 +10,15 @@ import jwt
 import json
 import subprocess
 import fsa_lib as fsa
+import import_metadata
+import tempfile
 
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = '/tmp'
 app.config['SECRET_KEY'] = os.urandom(128)
 app.config['elastic_metadata_index'] = 'metadata'
-app.config['elastic_metadata_type'] = None
+app.config['elastic_metadata_type'] = 'mactimes'
 app.config['elastic_filter_index'] = 'filter'
 app.config['elastic_filter_type'] = None
 app.config['elastic_user_index'] = 'user'
@@ -40,13 +42,52 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = data['username'], data['groups']
+            current_user = {'username': data['username'],
+                            'groups': data['groups']}
         except:
             return jsonify({'message': 'Token is invalid!'}), 401
-
         return f(current_user, *args, **kwargs)
 
     return decorated
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        try:
+            current_user = args[0]
+        except:
+            return jsonify({'message': 'This user is not authorized'}), 403
+        authorized = False
+        for group in current_user['groups']:
+            if group == 'admin':
+                authorized = True
+                break
+        if not authorized:
+            return jsonify({'message': 'This user is not authorized'}), 403
+        return f(*args, **kwargs)
+    return decorated
+
+
+# def authorization_required(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         roles = ['admin']
+#         for arg in args:
+#             print(arg)
+#         for kwarg in kwargs:
+#             print(kwarg)
+#         current_user = {'groups': ['admin']}
+#         if roles is not None:
+#             authorized = False
+#             for group in current_user['groups']:
+#                 if group in roles:
+#                     authorized = True
+#                     break
+#             if not authorized:
+#                 return jsonify({'message': 'This user is not authorized'}), 401
+#         return f(*args, *kwargs)
+#     return decorated
 
 
 @app.route('/login', methods=['POST'])
@@ -66,25 +107,38 @@ def login():
                      'groups': groups,
                      'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
                     app.config['SECRET_KEY'])
-                return jsonify({'token': token.decode('UTF-8')})
+                return jsonify({'username': username, 'groups': groups, 'token': token.decode('UTF-8')})
     return jsonify({'message': 'Wrong username or password'}), 400
 
 
+@app.route('/authenticated', methods=['GET', 'POST'])
+@token_required
+def authenticated():
+    return jsonify({'authenticated': 'OK'}), 200
+
+
 @app.route('/')
+@token_required
 def es_info():
     return jsonify(es.info())
 
 
 @app.route('/upload', methods=['POST'])
 @token_required
+@admin_required
 def upload(current_user):
-    if 'admin' not in current_user[1]:
-        return jsonify({'message': 'Not authorized'}), 403
     if 'case' not in request.form:
         return jsonify({'status': 'failed', 'message': 'Case name is missing in form'})
     else:
-        case = request.form['case']
-    print(case)
+        case_name = request.form['case']
+    if 'removeDeleted' not in request.form:
+        remove_deleted = True
+    else:
+        remove_deleted = request.form['removeDeleted'] in ('true', '1')
+    if 'removeDeletedRealloc' not in request.form:
+        remove_deleted_realloc = True
+    else:
+        remove_deleted_realloc = request.form['removeDeletedRealloc'] in ('true', '1')
     if 'file' not in request.files:
         return jsonify({'status': 'failed', 'message': 'No file to upload'})
     for file in request.files.getlist('file'):
@@ -92,26 +146,35 @@ def upload(current_user):
         if file.filename == '':
             return jsonify({'status': 'failed', 'message': 'Invalid file name'})
         if file:
-            filename = secure_filename(file.filename)
-            sys_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(sys_path)
-            subprocess.Popen(['python3', './metadata-uploader.py', '-c', case, '-f', sys_path, '-ds', 'true'])
+            tf = tempfile.NamedTemporaryFile(suffix='-' + secure_filename(file.filename),
+                                             dir=app.config['UPLOAD_FOLDER'],
+                                             delete=False)
+            file.save(tf.name)
+            import_metadata.import_csv(tf.name,
+                                       es,
+                                       app.config['elastic_metadata_index'],
+                                       app.config['elastic_metadata_type'],
+                                       case_name,
+                                       remove_deleted=remove_deleted,
+                                       remove_deleted_realloc=remove_deleted_realloc)
+            # subprocess.Popen(['python3', './metadata-uploader.py', '-c', case, '-f', sys_path, '-ds', 'true'])
     return jsonify({'status': 'OK', 'message': 'uploading files'})
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/case/delete/<string:case>', methods=['DELETE'])
 @token_required
-def search(current_user):
-    print(request.form)
-    print(request.get_json())
-    es_index = request.form['index']
-    es_type = request.form['type']
-    query = json.loads(request.form['query'])
-    print(query, es_index, es_type)
-
-    if not es_index or not query:
-        return jsonify({'message': 'Wrong parameters'}), 404
-    res = es.search(index=es_index, doc_type=es_type, body=query)
+@admin_required
+def delete_case(current_user, case):
+    body = {
+      'query': {
+        'match_phrase': {
+          'case': case
+        }
+      }
+    }
+    res = es.delete_by_query(index=app.config['elastic_metadata_index'],
+                             doc_type=app.config['elastic_metadata_type'],
+                             body=body)
     return jsonify(res)
 
 
@@ -284,4 +347,4 @@ def graph_get_data(current_user, case):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=True, host='127.0.0.1', port=5000, threaded=True)

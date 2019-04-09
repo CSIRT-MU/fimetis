@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {HttpClient, HttpEvent, HttpRequest, HttpResponse} from '@angular/common/http';
+import { HttpEvent, HttpResponse} from '@angular/common/http';
 import {ngf} from 'angular-file';
 import {Subscription} from 'rxjs';
-import {environment} from '../../../environments/environment';
+import {UploadService} from '../../services/upload.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-upload',
@@ -15,38 +16,42 @@ export class UploadComponent implements OnInit {
     @Input('_case')
     _case = '';
     progress: number;
-    url = environment.backendUrl + '/upload';
     httpEmitter: Subscription;
     httpEvent: HttpEvent<{}>;
     validComboDrag = false;
     invalidComboDrag = false;
+    removeDeleted = true;
+    removeDeletedRealloc = true;
 
-    constructor(private httpClient: HttpClient) {}
+    constructor(private uploadService: UploadService, private toaster: ToastrService) {}
 
     ngOnInit() {
     }
 
     uploadFiles(files: File[]): Subscription {
+        console.log(this.removeDeleted, this.removeDeletedRealloc);
         const formData = new FormData();
 
         files.forEach(file => formData.append('file', file, file.name));
         formData.append('case', this._case);
+        formData.append('removeDeleted', this.removeDeleted.toString());
+        formData.append('removeDeletedRealloc', this.removeDeletedRealloc.toString());
 
-        const req = new HttpRequest<FormData>('POST', this.url, formData, {
-            reportProgress: true
-        });
-
-        return this.httpEmitter = this.httpClient.request(req)
+        return this.httpEmitter = this.uploadService.upload(formData)
             .subscribe(
                 event => {
                     this.httpEvent = event;
-
                     if (event instanceof HttpResponse) {
                         delete this.httpEmitter;
                         console.log('request done', event);
+                        this.toaster.success('Server is importing data from files to database', 'Upload successful');
+                        this.files = [];
                     }
                 },
-                error => console.log('Error Uploading', error)
+                error => {
+                    console.log('Uploading Error', error);
+                    this.toaster.error('Error: ' + error['message'], 'Upload failed');
+                }
             );
     }
 

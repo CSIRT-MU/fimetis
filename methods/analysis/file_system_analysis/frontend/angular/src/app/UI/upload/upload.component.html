@@ -60,15 +60,30 @@
             </tbody>
         </table>
 
-        <button type="button"
-                class="btn btn-success btn-s"
-                (click)="uploadFiles(files)"
-                [disabled]="!files.length || !_case"
-        >
-            <span class="glyphicon glyphicon-upload"></span> Upload all
-        </button>
+        <div class="col-md-4 text-align-left">
+                <button type="button"
+                        class="btn btn-success btn-s"
+                        (click)="uploadFiles(files)"
+                        [disabled]="!files.length || !_case"
+                >
+                    <span class="glyphicon glyphicon-upload"></span> Upload all
+                </button>
+        </div>
+        <div class="col-md-8 text-align-left">
+                <span matTooltip="Removes lines that contains (deleted) from uploaded files" [matTooltipPosition]="'above'">
+                    <input type="checkbox" [(ngModel)]="removeDeleted" class="timesix-slider" id="removeDeletedCheckbox">
+                    <label for="removeDeletedCheckbox" class="removeCheckbox"></label>
+                    Remove deleted lines from files
+                </span>
+                <br>
+                <span matTooltip="Removes lines that contains (deleted-realloc) from uploaded files" [matTooltipPosition]="'above'">
+                    <input type="checkbox" [(ngModel)]="removeDeletedRealloc" class="timesix-slider" id="removeDeletedReallocCheckbox">
+                    <label for="removeDeletedReallocCheckbox" class="removeCheckbox"></label>
+                    Remove deleted realloc lines from files
+                </span>
+        </div>
 
-        <div>
+        <div class="text-align-left">
             Queue progress:
             <div class="progress" style="">
                 <div class="progress-bar"
@@ -76,7 +91,12 @@
                      [ngStyle]="{ 'width': progress + '%' }"
                 ></div>
             </div>
-            <i *ngIf="progress==100" class="glyphicon glyphicon-ok"></i>
+            <div class="text-align-center">
+                <div *ngIf="progress==100" class="circle-rotate-scale-up">
+                    <i class="glyphicon glyphicon-ok"></i>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
