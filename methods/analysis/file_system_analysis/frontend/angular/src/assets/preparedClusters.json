@@ -270,7 +270,7 @@
                         {
                             "name": "MODE_REGEX",
                             "type": "REGEX",
-                            "value": ".*s.*"
+                            "value": "r.*s.*"
                         }
                     ]
                 }
@@ -293,7 +293,7 @@
                         {
                             "name": "MODE_REGEX",
                             "type": "REGEX",
-                            "value": "(.)*w(x|-)"
+                            "value": "(d|r)(.)*w(x|-)"
                         }
                     ]
                 }
