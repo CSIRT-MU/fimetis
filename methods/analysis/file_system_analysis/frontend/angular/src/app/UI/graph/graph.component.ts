@@ -470,10 +470,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
             from: from_edit.getTime(),
             to: to_edit.getTime() + (24 * 3600 * 1000),
             color: 'rgba(173, 216, 230, 0.4)',
-            borderColor: 'rgba(30, 30, 30, 0.8)',
-            borderWidth: 1,
+            // borderColor: 'rgba(30, 30, 30, 0.8)',
+            // borderWidth: 1,
             label: {
-                text: '<span style="position: relative; top: -16px;">actual position</span>',
+                text: '<span style="position: relative; top: -16px;">view position</span>',
                 useHTML: true
             }
         });
@@ -504,7 +504,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
         this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
         // this.chart.showResetZoom();
-        console.log(this.pickedFromDate);
+        // console.log(this.pickedFromDate);
         this.dateChangeDebouncer.next([
             new Date(fromUTCDateTime).toISOString(),
             new Date(toUTCDateTime).toISOString()
@@ -641,5 +641,23 @@ export class GraphComponent implements OnInit, AfterViewInit {
         $event.preventDefault();
         const timestamp = JSON.parse($event.dataTransfer.getData('timestamp'));
         return new Date(timestamp).toISOString().slice(0, -1);
+    }
+
+    /**
+     * Sets given date as "From" boundary
+     * @param {Date} date Date
+     */
+    setFromBoundary(date: Date) {
+        this.pickedFromDate = date.toISOString().split('.')[0];
+        this.updateBoundary();
+    }
+
+    /**
+     * Sets given date as "To" boundary
+     * @param {Date} date Date
+     */
+    setToBoundary(date: Date) {
+        this.pickedToDate = date.toISOString().split('.')[0];
+        this.updateBoundary();
     }
 }
