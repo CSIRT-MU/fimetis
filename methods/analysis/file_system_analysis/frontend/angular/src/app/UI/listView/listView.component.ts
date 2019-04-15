@@ -38,6 +38,10 @@ export class ListViewComponent {
     additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
     @Output('actualScrollPosition')
     actualScrollPosition: EventEmitter<[number, number, string, string]> = new EventEmitter<[number, number, string, string]>();
+    @Output('setFromBoundary')
+    setFromBoundary: EventEmitter<Date> = new EventEmitter<Date>();
+    @Output('setToBoundary')
+    setToBoundary: EventEmitter<Date> = new EventEmitter<Date>();
 
     tablePanelOpenState = true;
     searchString = '';
@@ -654,6 +658,35 @@ export class ListViewComponent {
     }
 
     /**
+     * Parse date from highlighted part of timestamp field
+     * @returns {{dateString: string; dateLevel: number}} dateString represents date in format yyyy-mm-dd HH:mm:ss
+     *                                                    dateLevel represents depth of highlighted part of timestamp ( 0 - only year, 1 - year and month, etc.)
+     */
+    parseDateFromHighlight() {
+        let dateLevel = 0;
+        for (let i = 0; i < this.highlightedTextDate.length; i++) {
+            if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':') {
+                dateLevel += 1;
+            }
+        }
+
+        let dateString = this.highlightedTextDate;
+        if (dateLevel === 3) {
+            dateString += ':00';
+        }
+        if (dateLevel === 2) {
+            dateString += ' 00:00';
+        }
+        if (dateLevel === 1) {
+            dateString += '-01 00:00';
+        }
+        if (dateLevel === 0) {
+            dateString += '-01-01 00:00';
+        }
+        return {'dateString': dateString, 'dateLevel': dateLevel};
+    }
+
+    /**
      * Skips (scrolls) the block by highlighted timestamp (mouse selection)
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
      */
@@ -668,17 +701,20 @@ export class ListViewComponent {
         console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
         const skipFrom = this.highlightedTextDateId;
-        let dateLevel = 0;
-        for (let i = 0; i < this.highlightedTextDate.length; i++) {
-            if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':') {
-                dateLevel += 1;
-            }
-        }
-
-        let dateString = this.highlightedTextDate;
-        if (dateLevel === 3) {
-            dateString += ':00';
-        }
+        // let dateLevel = 0;
+        // for (let i = 0; i < this.highlightedTextDate.length; i++) {
+        //     if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':') {
+        //         dateLevel += 1;
+        //     }
+        // }
+        //
+        // let dateString = this.highlightedTextDate;
+        // if (dateLevel === 3) {
+        //     dateString += ':00';
+        // }
+        const parsedDate = this.parseDateFromHighlight();
+        const dateString = parsedDate.dateString;
+        const dateLevel = parsedDate.dateLevel;
         console.log('skipping date', this.highlightedTextDate);
         this.skippingData = dateString;
         const selectedDate = new Date(dateString);
@@ -841,6 +877,26 @@ export class ListViewComponent {
             return buffer.length;
         }
         return skipIndex;
+    }
+
+    /**
+     * Sets actual highlighted part of timestamp field as "from" date boundary
+     */
+    setDateAsFromField() {
+        const parsedDate = this.parseDateFromHighlight();
+        const date = new Date(parsedDate.dateString);
+        const UTCDateTime = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
+        this.setFromBoundary.emit(UTCDateTime);
+    }
+
+    /**
+     * Sets actual highlighted part of timestamp field as "to" date boundary
+     */
+    setDateAsToField() {
+        const parsedDate = this.parseDateFromHighlight();
+        const date = new Date(parsedDate.dateString);
+        const UTCDateTime = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
+        this.setToBoundary.emit(UTCDateTime);
     }
 
     /**

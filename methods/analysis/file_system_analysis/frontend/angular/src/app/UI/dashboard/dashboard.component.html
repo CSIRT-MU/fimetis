@@ -97,6 +97,8 @@
                            (makeManualCluster)="makeManualCluster($event)"
                            (additionalFiltersChanged)="computeClustersItemCount($event)"
                            (actualScrollPosition)="drawActualScrollPosition($event)"
+                           (setFromBoundary)="graphComponent.setFromBoundary($event)"
+                           (setToBoundary)="graphComponent.setToBoundary($event)"
             ></app-list-view>
         </div>
     </div>
