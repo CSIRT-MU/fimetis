@@ -316,7 +316,7 @@
                         {
                             "name": "FILENAME_REGEX",
                             "type": "REGEX",
-                            "value": "((\\/usr\\/)(include|bin\\/gcc).*"
+                            "value": "(\\/usr\\/)(include|bin\\/gcc).*"
                         }
                     ]
                 }
