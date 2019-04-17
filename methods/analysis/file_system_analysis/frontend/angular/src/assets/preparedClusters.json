@@ -302,21 +302,21 @@
         {
             "name": "compilation signs",
             "color": "#886644",
-            "description": "signs of compilation proccess",
+            "description": "compilation signs",
             "subClusters": [],
             "tagged": false,
             "tag": "",
             "selectMode": 0,
             "filters": [
                 {
-                    "name": "mode_regex",
+                    "name": "filename_regex",
                     "isSelected": "true",
-                    "json": "{\"regexp\": { \"Mode.keyword\": \"${{MODE_REGEX}}$\" } }",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
                     "params": [
                         {
-                            "name": "MODE_REGEX",
+                            "name": "FILENAME_REGEX",
                             "type": "REGEX",
-                            "value": "(\\/usr\\/)(include|bin\\/gcc).*"
+                            "value": "((\\/usr\\/)(include|bin\\/gcc).*"
                         }
                     ]
                 }
@@ -332,12 +332,12 @@
             "selectMode": 0,
             "filters": [
                 {
-                    "name": "mode_regex",
+                    "name": "filename_regex",
                     "isSelected": "true",
-                    "json": "{\"regexp\": { \"Mode.keyword\": \"${{MODE_REGEX}}$\" } }",
+                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
                     "params": [
                         {
-                            "name": "MODE_REGEX",
+                            "name": "FILENAME_REGEX",
                             "type": "REGEX",
                             "value": "((\\/usr){0,1})(\\/(s){0,1}bin\\/)(shred|curl|wget)"
                         }
@@ -345,8 +345,6 @@
                 }
             ]
         },
-
-
         {
             "name": "all files",
             "color": "#886644",
