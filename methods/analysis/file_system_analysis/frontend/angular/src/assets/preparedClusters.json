@@ -300,6 +300,54 @@
             ]
         },
         {
+            "name": "compilation signs",
+            "color": "#886644",
+            "description": "signs of compilation proccess",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "filters": [
+                {
+                    "name": "mode_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"Mode.keyword\": \"${{MODE_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "MODE_REGEX",
+                            "type": "REGEX",
+                            "value": "(\\/usr\\/)(include|bin\\/gcc).*"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "unusual commands",
+            "color": "#886644",
+            "description": "commands wget curl shred",
+            "subClusters": [],
+            "tagged": false,
+            "tag": "",
+            "selectMode": 0,
+            "filters": [
+                {
+                    "name": "mode_regex",
+                    "isSelected": "true",
+                    "json": "{\"regexp\": { \"Mode.keyword\": \"${{MODE_REGEX}}$\" } }",
+                    "params": [
+                        {
+                            "name": "MODE_REGEX",
+                            "type": "REGEX",
+                            "value": "((\\/usr){0,1})(\\/(s){0,1}bin\\/)(shred|curl|wget)"
+                        }
+                    ]
+                }
+            ]
+        },
+
+
+        {
             "name": "all files",
             "color": "#886644",
             "description": "All files",
