@@ -470,6 +470,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
             from: from_edit.getTime(),
             to: to_edit.getTime() + (24 * 3600 * 1000),
             color: 'rgba(173, 216, 230, 0.4)',
+	    // color: 'rgba(245, 245, 220, 0.4)',
             // borderColor: 'rgba(30, 30, 30, 0.8)',
             // borderWidth: 1,
             label: {

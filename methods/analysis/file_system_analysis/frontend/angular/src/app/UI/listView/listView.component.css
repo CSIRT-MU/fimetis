@@ -249,7 +249,7 @@ virtual-scroll {
 }
 
 .larger-table-block {
-    width: 140px;
+    width: 155px;
 }
 
 .large-table-block {
@@ -271,6 +271,7 @@ virtual-scroll {
     border-radius: 50%;
     cursor: pointer;
     /*margin-bottom: 4px*/
+    margin-right: 5px;
 }
 
 .table-select-selected::before {
@@ -401,4 +402,8 @@ virtual-scroll {
 
 .pagination-control{
     display: inline-block;
+}
+
+.timestamp-field{
+    padding-right: 5px;
 }

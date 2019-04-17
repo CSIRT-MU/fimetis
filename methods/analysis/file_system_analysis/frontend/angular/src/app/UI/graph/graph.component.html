@@ -5,14 +5,22 @@
                                                                      (click)="collapseGraphPanel()"></span>
     </div>
     <div class="col-md-4 header-tools" *ngIf="graphPanelOpenState">
-        <span style="">
-            <input type="checkbox" (change)="allTypesTrigger()" [(ngModel)]="showAllTypes" class="timesix-slider" id="allTypesCheckbox">
-            <label for="allTypesCheckbox"></label>
-            <span class="all-types-label">Show all types</span>
-        </span>
+        <!--<span style="">-->
+            <!--<input type="checkbox" (change)="allTypesTrigger()" [(ngModel)]="showAllTypes" class="timesix-slider" id="allTypesCheckbox">-->
+            <!--<label for="allTypesCheckbox"></label>-->
+            <!--<span class="all-types-label">Show all types</span>-->
+        <!--</span>-->
+        <mat-button-toggle-group #group="matButtonToggleGroup" (change)="showAllTypes = ($event.value === 'true'); allTypesTrigger()" [appearance]="'legacy'">
+            <mat-button-toggle value="true" [checked]="showAllTypes">
+                file changes
+            </mat-button-toggle>
+            <mat-button-toggle value="false" [checked]="!showAllTypes">
+                timestamp changes
+            </mat-button-toggle>
+        </mat-button-toggle-group>
     </div>
     <div class="col-md-4 header-tools text-align-right" *ngIf="graphPanelOpenState">
-        <span *ngIf="graphPanelOpenState && saveGraphZoom" class="resetZoomButton" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
+        <span *ngIf="graphPanelOpenState && saveGraphZoom" class="mat-stroked-button timesix-button" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
     </div>
     <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
         <div class="graph-container">

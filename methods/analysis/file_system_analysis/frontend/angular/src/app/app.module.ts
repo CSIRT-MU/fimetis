@@ -26,6 +26,7 @@ import {MatTooltipModule} from '@angular/material';
 import { ToastrModule } from 'ngx-toastr';
 import { ngfModule } from 'angular-file';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 // auth
 import {JwtInterceptor} from './auth/jwt.interceptor';
 import {ErrorInterceptor} from './auth/error.interceptor';
@@ -95,7 +96,8 @@ import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confi
             positionClass: 'toast-bottom-left'
         }),
         ngfModule,
-        HttpClientModule
+        HttpClientModule,
+        MatButtonToggleModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
     providers: [

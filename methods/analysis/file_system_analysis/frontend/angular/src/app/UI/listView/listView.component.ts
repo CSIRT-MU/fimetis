@@ -71,7 +71,7 @@ export class ListViewComponent {
     // data
     total = 0;
     data: any[];
-    timestampColor = {colors: ['#fceada', '#ffffff'], colored_nodes: new Map<string, string>()};
+    timestampColor = {colors: ['#f0f0f0', '#ffffff'], colored_nodes: new Map<string, string>()};  //'#fceada'
     // skipping
     public highlightedTextBox: SelectionRectangle | null;
     highlightedText: string;
