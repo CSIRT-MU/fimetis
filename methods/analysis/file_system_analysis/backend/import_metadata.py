@@ -61,7 +61,8 @@ def document_stream(csv_file_path, case_name, remove_deleted=True, remove_delete
                 pass
 
 
-def import_csv(csv_file_path, es_client, es_index, es_type, case_name, remove_deleted=True, remove_deleted_realloc=True):
+def import_csv(csv_file_path, es_client, es_index, es_type, case_name, remove_deleted=True, remove_deleted_realloc=True,
+               delete_source=True):
     create_index(es_client, es_index)
     logging.info('Import file %s to case: %s' % (csv_file_path, case_name))
     if es_type is None:
@@ -82,7 +83,8 @@ def import_csv(csv_file_path, es_client, es_index, es_type, case_name, remove_de
             print('Failed to %s document %s: %r' % (action, doc_id, result))
             logging.warning('Failed to %s document %s: %r' % (action, doc_id, result))
     logging.info('Import of file %s finished' % csv_file_path)
-    delete_file(csv_file_path)
+    if delete_source:
+        delete_file(csv_file_path)
     send_mail('test@test.com', case_name)
 
 
@@ -95,43 +97,19 @@ def send_mail(mail_address, case_name):
 
 
 if __name__ == '__main__':
-    # # get trace logger and set level
-    # tracer = logging.getLogger('elasticsearch.trace')
-    # tracer.setLevel(logging.INFO)
-    # tracer.addHandler(logging.FileHandler('/tmp/es_trace.log'))
-    #
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument(
-    #     "-H", "--host",
-    #     action="store",
-    #     default="localhost:9200",
-    #     help="The elasticsearch host you wish to connect to. (Default: localhost:9200)")
-    # parser.add_argument(
-    #     "-p", "--path",
-    #     action="store",
-    #     default=None,
-    #     help="Path to git repo. Commits used as data to load into Elasticsearch. (Default: None")
-    #
-    # args = parser.parse_args()
-    #
-    # # instantiate es client, connects to localhost:9200 by default
-    # es = Elasticsearch(args.host)
-    #
-    # # we load the repo and all commits
-    # load_repo(es, path=args.path)
-    #
-    # # run the bulk operations
-    # success, _ = bulk(es, UPDATES, index='git')
-    # print('Performed %d actions' % success)
-    #
-    # # we can now make docs visible for searching
-    # es.indices.refresh(index='git')
-    #
-    # # now we can retrieve the documents
-    # initial_commit = es.get(index='git', doc_type='doc', id='20fbba1230cabbc0f4644f917c6c2be52b8a63e8')
-    # print('%s: %s' % (initial_commit['_id'], initial_commit['_source']['committed_date']))
-    #
-    # # and now we can count the documents
-    # print(es.count(index='git')['count'], 'documents in index')
-    es = Elasticsearch()
-    import_csv('/tmp/output.lite.mac', es, 'metadata', 'mactimes', 'testcase2')
+    es_index = 'metadata'
+    es_type = 'mactimes'
+    if len(sys.argv) == 3:
+        es = Elasticsearch()
+        _case = sys.argv[1]
+        _file = sys.argv[2]
+        import_csv(_file, es, es_index, es_type, _case, delete_source=False)
+    elif len(sys.argv) == 5:
+        es = Elasticsearch([{'host': sys.argv[1], 'port': sys.argv[2]}])
+        _case = sys.argv[3]
+        _file = sys.argv[4]
+        import_csv(_file, es, es_index, es_type, _case, delete_source=False)
+    else:
+        print('usage:')
+        print('1: case_name file_path')
+        print('2: elasticsearch_address elasticsearch_port case_name file_path')
