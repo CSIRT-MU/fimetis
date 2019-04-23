@@ -562,6 +562,7 @@ export class ListViewComponent {
             .replace('$', '\\$')
             .replace('|', '\\|');
         test += '.*';
+        test = '^' + test;
         const regex = new RegExp(test);
         console.log('skipping File Name by regex prefix: ', regex);
         this.skippingData = this.highlightedText;
