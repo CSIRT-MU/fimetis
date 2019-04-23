@@ -918,30 +918,39 @@ export class ListViewComponent {
         const selection = window.getSelection();
         const offset = window.getSelection().anchorOffset;
         const data = window.getSelection().anchorNode['data'];
-
-        let subString = '';
-        for (let i = window.getSelection().anchorOffset; i < data.length; i++) {
-            if (data[i] === '/' || data[i] === ' ') {
-                // Take it from index one because on index zero is now space
-                subString = data.substring(1, i + 1);
-                break;
-            }
-        }
+        const length = selection.toString().length;
 
         const range = selection.getRangeAt(0);
         const node = selection.anchorNode;
 
         range.setStart(node, 0);
-        range.setEnd(node, subString.length + 1);
+        if (length === 0) {
+            let subString = '';
+            for (let i = offset; i < data.length; i++) {
+                if (data[i] === '/' || data[i] === ' ') {
+                    // Take it from index one because on index zero is now space
+                    subString = data.substring(1, i + 1);
+                    break;
+                }
+            }
+            range.setEnd(node, subString.length);
+        } else {
+            range.setEnd(node, offset + length);
+        }
     }
 
-    selectDateByClick($event, index) {
+    selectDateByClick(index) {
         const selection = window.getSelection();
         const offset = window.getSelection().anchorOffset;
         const data = window.getSelection().anchorNode['data'];
+        const length = selection.toString().length;
 
+        const range = selection.getRangeAt(0);
+        const node = selection.anchorNode;
+
+        range.setStart(node, 0);
         let subString = '';
-        for (let i = window.getSelection().anchorOffset; i < data.length; i++) {
+        for (let i = offset + length; i < data.length; i++) {
             if (data[i] === '-' || data[i] === ' ' || data[i] === ':') {
                 // Take it from index one because on index zero is now space
                 subString = data.substring(1, i);
@@ -949,10 +958,6 @@ export class ListViewComponent {
                 break;
             }
         }
-        const range = selection.getRangeAt(0);
-        const node = selection.anchorNode;
-
-        range.setStart(node, 0);
         range.setEnd(node, subString.length + 1);
     }
 
