@@ -610,6 +610,10 @@ export class ListViewComponent {
                 }
             }
         }
+        // We want to see last entry of skipped block
+        if (toTheEnd) {
+            skipIndex -= 1;
+        }
         console.log('skip File Name to:', skipIndex + bufferOffset);
         this.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
@@ -764,7 +768,10 @@ export class ListViewComponent {
                 }
             }
         }
-
+        // We want to see last entry of skipped block
+        if (toTheEnd) {
+            skipIndex -= 1;
+        }
         console.log('skip date to:', skipIndex + bufferOffset);
         this.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
