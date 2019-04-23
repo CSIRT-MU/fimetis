@@ -95,6 +95,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
         legend: {
             enabled: false
         },
+        tooltip: {
+            enabled: false
+        },
         toolbar: {},
         xAxis: {
             type: 'datetime',
@@ -171,6 +174,15 @@ export class GraphComponent implements OnInit, AfterViewInit {
         title: {text: null, margin: 0},
         legend: {
             enabled: false
+        },
+        tooltip: {
+            // outside: true,
+            positioner: function(labelWidth, labelHeight, point) {
+                return {
+                    x: point.plotX,
+                    y: this.plotHeight
+                };
+            }
         },
         toolbar: {},
         xAxis: {
