@@ -420,9 +420,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
         console.log('graph zooming', x1, x2);
         this.dateChangeDebouncer.next([x1, x2]);
         let isoString = new Date(x1).toISOString();
-        this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+        this.pickedFromDate = isoString.substring(0, isoString.length - 5);
         isoString = new Date(x2).toISOString();
-        this.pickedToDate = isoString.substring(0, isoString.length - 1);
+        this.pickedToDate = isoString.substring(0, isoString.length - 5);
         this.saveGraphZoom = true;
     }
 
