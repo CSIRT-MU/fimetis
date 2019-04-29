@@ -348,7 +348,7 @@
         {
             "name": "system configuration changes",
             "color": "#886644",
-            "description": "System configuration files (matches crontab, /etc/init.d/, /etc/rc.local, /etc/passwd, /etc/shadow files)",
+            "description": "System configuration files (matches crontab definitions, /etc/init.d/, /etc/rc.local, /etc/passwd, /etc/shadow files)",
             "subClusters": [],
             "tagged": false,
             "tag": "",
@@ -362,7 +362,7 @@
                         {
                             "name": "FILENAME_REGEX",
                             "type": "REGEX",
-                            "value": "(\\/etc\\/crontab\\/.*|\\/etc\\/cron\\.d\\/.*|\\/var\\/spool\\/cron\\/crontabs\\/.*|\\/etc\\/init\\.d\\/.*|\\/etc\\/rc.local|\\/etc\\/passwd|\\/etc\\/shadow)"
+                            "value": "(\\/etc\\/crontab\\/.*|\\/etc\\/cron\\..*|\\/var\\/spool\\/cron\\/crontabs\\/.*|\\/etc\\/init\\.d\\/.*|\\/etc\\/rc.local|\\/etc\\/passwd|\\/etc\\/shadow)"
                         }
                     ]
                 }
