@@ -43,7 +43,7 @@ def document_stream(csv_file_path, case_name, remove_deleted=True, remove_delete
     #     encoding_detection = chardet.detect(raw_data.read())
     # logging.info('Detected encoding: ' + encoding_detection['encoding'])
     # with open(csv_file_path, mode='r', encoding=encoding_detection['encoding'], errors='surrogateescape') as file:
-    with open(csv_file_path, mode='r', errors='surrogateescape') as file:
+    with open(csv_file_path, mode='r', errors='ignore') as file:
         reader = csv.DictReader(file)
         for line in reader:
             try:

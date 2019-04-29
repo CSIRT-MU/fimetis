@@ -36,7 +36,7 @@ export class UploadComponent implements OnInit {
         formData.append('case', this._case);
         formData.append('removeDeleted', this.removeDeleted.toString());
         formData.append('removeDeletedRealloc', this.removeDeletedRealloc.toString());
-
+        const dataset_name = this._case;
         return this.httpEmitter = this.uploadService.upload(formData)
             .subscribe(
                 event => {
@@ -44,7 +44,7 @@ export class UploadComponent implements OnInit {
                     if (event instanceof HttpResponse) {
                         delete this.httpEmitter;
                         console.log('request done', event);
-                        this.toaster.success('Server is importing data from files to database', 'Upload successful');
+                        this.toaster.success('Import to ' + dataset_name + ' completed', 'Upload successful', {disableTimeOut: true});
                         this.files = [];
                     }
                 },
