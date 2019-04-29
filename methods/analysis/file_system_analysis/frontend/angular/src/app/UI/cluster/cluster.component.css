@@ -61,11 +61,14 @@
 
 .cluster-color {
     visibility: visible;
-    height: 20px;
+    min-height: 20px;
+    height: 100%;
+    width: 1px;
     margin-bottom: -5px;
     display: inline-block;
     border-left: 4px solid transparent;
     margin-right: 3px;
+
 }
 
 .cluster-list {
@@ -88,9 +91,10 @@
 .cluster-name-field {
     display: inline-block;
     width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+    /*white-space: nowrap;*/
+    text-wrap: normal;
     vertical-align: middle;
 }
 
