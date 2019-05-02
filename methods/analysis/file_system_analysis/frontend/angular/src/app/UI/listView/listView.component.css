@@ -385,7 +385,7 @@ virtual-scroll {
 }
 
 .list-view-header{
-    flex: 0;
+    flex: 0 0 auto;
 }
 .list-view-content{
     flex: 1;

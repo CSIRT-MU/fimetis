@@ -24,6 +24,7 @@ export class FilterComponent implements OnInit {
                 private toaster: ToastrService) { }
 
     ngOnInit() {
+        this.loadAllFilters();
     }
 
     loadAllFilters() {
