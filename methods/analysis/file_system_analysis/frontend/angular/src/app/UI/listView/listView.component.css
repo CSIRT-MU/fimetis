@@ -175,8 +175,7 @@
     /*display: block;*/
     visibility: visible;
     width: 100%;
-    flex-grow: 1;
-    flex-shrink: 0;
+    flex: 1 0 auto;
     overflow: auto;
     height: 150px;
     /*height: inherit !important;*/
@@ -386,16 +385,16 @@ virtual-scroll {
 }
 
 .list-view-header{
-    flex-grow: 0;
+    flex: 0;
 }
 .list-view-content{
-    flex-grow: 1;
+    flex: 1;
     display: flex;
     flex-flow: column;
 }
 
 .list-view-wrapper{
-    flex-grow: 1;
+    flex: 1;
     display: flex;
     flex-flow: column;
 }
