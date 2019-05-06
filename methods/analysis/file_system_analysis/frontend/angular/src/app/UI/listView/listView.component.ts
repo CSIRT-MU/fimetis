@@ -226,8 +226,13 @@ export class ListViewComponent {
         if (pageSort === 'M Time' || pageSort === 'A Time' || pageSort === 'C Time' || pageSort === 'B Time') {
             pageSort = 'timestamp';
         }
-        this.pageSortString = pageSort;
-        this.pageSortOrder = $event['direction'];
+        if ($event['direction'] != null && pageSort != null) {
+            this.pageSortString = pageSort;
+            this.pageSortOrder = $event['direction'];
+        } else {
+            this.pageSortString = 'timestamp';
+            this.pageSortOrder = 'asc';
+        }
         this.init();
     }
 

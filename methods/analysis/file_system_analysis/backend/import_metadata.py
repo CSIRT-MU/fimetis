@@ -50,6 +50,10 @@ def document_stream(csv_file_path, case_name, remove_deleted=True, remove_delete
                 line['case'] = case_name
                 line['@timestamp'] = parser.parse(line['Date']).strftime('%Y-%m-%dT%H:%M:%S.000Z')
                 del line['Date']
+                line['Meta'] = int(line['Meta'])
+                line['Size'] = int(line['Size'])
+                line['UID'] = int(line['UID'])
+                line['GID'] = int(line['GID'])
                 if remove_deleted and '(deleted)' in line['File Name']:
                     pass
                 elif remove_deleted_realloc and '(deleted-realloc)' in line['File Name']:

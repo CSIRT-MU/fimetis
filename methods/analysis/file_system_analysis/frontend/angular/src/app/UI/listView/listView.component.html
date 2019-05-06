@@ -37,19 +37,19 @@
         </div>
         <virtual-scroller #scroll class="scroll-block" [items]="virtualArray"
                           (change)="loadVisibleData($event)">
-            <table class="scroll-table">
+            <table class="scroll-table" matSort (matSortChange)="tableSort($event)">
                 <thead #header>
                     <th *ngFor="let tableItem of displayedTableColumns">
                         <div class="table-select" *ngIf="tableItem == 'select'"></div>
                         <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
-                        <div class="table-block table-header larger-table-block" *ngIf="tableItem == 'timestamp'">Timestamp</div>
-                        <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'size'">Size</div>
+                        <div class="table-block table-header larger-table-block" *ngIf="tableItem == 'timestamp'" mat-sort-header="{{tableItem}}">Timestamp</div>
+                        <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'size'" mat-sort-header="{{tableItem}}">Size</div>
                         <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'type'">Type</div>
                         <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'mode'">Mode</div>
-                        <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'uid'">UID</div>
-                        <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'gid'">GID</div>
-                        <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'inode'">I-node</div>
-                        <div class="table-block table-fixed-header large-table-block" *ngIf="tableItem == 'name'">File Name</div>
+                        <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'uid'" mat-sort-header="{{tableItem}}">UID</div>
+                        <div class="table-block table-header medium-small-table-block" *ngIf="tableItem == 'gid'" mat-sort-header="{{tableItem}}">GID</div>
+                        <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'inode'" mat-sort-header="{{tableItem}}">I-node</div>
+                        <div class="table-block table-fixed-header large-table-block" *ngIf="tableItem == 'name'" mat-sort-header="{{tableItem}}">File Name</div>
                         <!---->
                         <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'M-Time'">M-Time</div>
                         <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'A-Time'">A-Time</div>

@@ -53,14 +53,22 @@ def build_data_query(case_name,
     body['query'] = build_base_query(case_name, clusters, additional_filters, None)
 
     sort_type = "@timestamp"
-    if sort is 'timestamp':
+    if sort == 'timestamp':
         sort_type = "@timestamp"
-    elif sort is 'name':
+    elif sort == 'name':
         sort_type = "File Name.keyword"
-    elif sort is 'size':
-        sort_type = "Size.keyword"
-    elif sort is 'type':
+    elif sort == 'size':
+        sort_type = "Size"
+    elif sort == 'type':
         sort_type = "Type.keyword"
+    elif sort == 'mode':
+        sort_type = "Mode.keyword"
+    elif sort == 'uid':
+        sort_type = "UID"
+    elif sort == 'gid':
+        sort_type = "GID"
+    elif sort == 'inode':
+        sort_type = "Meta"
 
     body['sort'] = [{sort_type: {'order': sort_order}}]
     return body
