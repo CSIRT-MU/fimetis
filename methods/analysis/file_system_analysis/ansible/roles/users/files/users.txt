@@ -1,4 +1,4 @@
 # Username:password:group
-admin:timesix:administrators
+admin:timesix:admin
 user:userspassword:users
-both:password:administrators,users
+both:password:admin,users

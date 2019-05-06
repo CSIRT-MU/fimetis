@@ -69,11 +69,11 @@
       name: "{{ kibana_user }}"
       password: "{{ kibana_passwd }}"
 
-  - name: Creating passwd file for angular 
-    htpasswd:
-      path: /etc/nginx/.angular-user
-      name: "{{ angular_user }}"
-      password: "{{ angular_passwd }}"
+#  - name: Creating passwd file for angular 
+#    htpasswd:
+#      path: /etc/nginx/.angular-user
+#      name: "{{ angular_user }}"
+#      password: "{{ angular_passwd }}"
 
   - name: Removing default config for nginx 
     shell: rm /etc/nginx/sites-available/default && rm /etc/nginx/sites-enabled/default

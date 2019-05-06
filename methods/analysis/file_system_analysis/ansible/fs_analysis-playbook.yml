@@ -11,6 +11,6 @@
   - { role: kibana }
   - { role: nginx }
   - { role: logstash }
-  - { role: test-data }
   - { role: flask }
+  - { role: test-data }
   - { role: users }

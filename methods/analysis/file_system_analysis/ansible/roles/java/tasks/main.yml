@@ -24,7 +24,14 @@
 
   - name: Installing Java 8
     apt:
-      name: oracle-java8-installer
+#      name: oracle-java8-installer
+      name: default-jre
+      force: yes
+      update_cache: yes
+
+  - name: installing java 8
+    apt:
+      name: default-jdk
       force: yes
       update_cache: yes
 
