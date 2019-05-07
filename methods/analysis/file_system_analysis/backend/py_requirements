@@ -1,6 +1,6 @@
 flask
 flask_cors
-elasticsearch
+elasticsearch==6.3.1
 pyjwt
 wheel
 uwsgi
