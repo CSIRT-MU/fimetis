@@ -22,5 +22,5 @@ angular_passwd: timesix-elk
 backend_port: 5001
 backend_localhost_port: 5000
 backend_user: admin
-backend_passwd: timesix
+backend_passwd: timesix-elk
 
