@@ -29,6 +29,10 @@ export class AppComponent {
         this.userSettingsService.setAdvancedMode(mode);
     }
 
+    getRouter() {
+        return this.router;
+    }
+
     /**
      * Logout current user
      */
