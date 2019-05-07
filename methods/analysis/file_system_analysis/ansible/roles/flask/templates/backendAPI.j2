@@ -1,6 +1,6 @@
 server {
     listen 5001;
-    server_name 78.128.250.207;
+	client_max_body_size 100G;
 
     location / {
         include uwsgi_params;
