@@ -1,4 +1,2 @@
 # Username:password:group
-admin:timesix:admin
-user:userspassword:users
-both:password:admin,users
+admin:timesix-elk:admin
