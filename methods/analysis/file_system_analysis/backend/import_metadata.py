@@ -77,7 +77,7 @@ def import_csv(csv_file_path, es_client, es_index, es_type, case_name, remove_de
             document_stream(csv_file_path, case_name, remove_deleted, remove_deleted_realloc),
             index=es_index,
             doc_type=es_type,
-            chunk_size=50  # keep the batch sizes small for appearances only
+            chunk_size=5000  # keep the batch sizes small for appearances only
     ):
         action, result = result.popitem()
         doc_id = '/%s/doc/%s' % (es_index, result['_id'])
