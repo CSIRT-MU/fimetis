@@ -923,19 +923,28 @@ export class ListViewComponent {
     selectByClick(index) {
         const selection = window.getSelection();
         const offset = window.getSelection().anchorOffset;
-        const data = window.getSelection().anchorNode['data'];
+        let data = window.getSelection().anchorNode['data'];
         const length = selection.toString().length;
 
         const range = selection.getRangeAt(0);
-        const node = selection.anchorNode;
+        let node = selection.anchorNode;
+        if (node.parentNode.localName === 'mark') {
+            node = node.parentNode.parentElement;
+            data = node.textContent;
+        }
+        // data = node;
+        console.log(data, node.textContent, offset);
 
-        range.setStart(node, 0);
+        range.setStart(node.parentNode, 0);
         if (length === 0) {
             let subString = '';
             for (let i = offset; i < data.length; i++) {
-                if (data[i] === '/' || data[i] === ' ') {
+                if (data[i] === '/') {
                     // Take it from index one because on index zero is now space
                     subString = data.substring(1, i + 1);
+                    break;
+                } else if (i === (data.length - 1)) {
+                    subString = data;
                     break;
                 }
             }
