@@ -922,35 +922,56 @@ export class ListViewComponent {
      */
     selectByClick(index) {
         const selection = window.getSelection();
-        const offset = window.getSelection().anchorOffset;
-        let data = window.getSelection().anchorNode['data'];
+        let offset = window.getSelection().anchorOffset;
+        let data = window.getSelection().anchorNode.textContent;
         const length = selection.toString().length;
 
         const range = selection.getRangeAt(0);
-        let node = selection.anchorNode;
-        if (node.parentNode.localName === 'mark') {
-            node = node.parentNode.parentElement;
-            data = node.textContent;
+        const node = selection.anchorNode;
+        if (node.parentNode.parentElement.innerText.length > data.length) {
+            data = node.parentNode.parentElement.innerText;
         }
-        // data = node;
-        console.log(data, node.textContent, offset);
+        if (node.parentNode.localName === 'mark') {
+            range.setStart(node.parentNode.parentElement, 0);
+        } else {
+            range.setStart(node.parentNode, 0);
+        }
+        offset = range.toString().length;
 
-        range.setStart(node.parentNode, 0);
         if (length === 0) {
             let subString = '';
             for (let i = offset; i < data.length; i++) {
                 if (data[i] === '/') {
-                    // Take it from index one because on index zero is now space
-                    subString = data.substring(1, i + 1);
+                    subString = data.substring(0, i);
                     break;
                 } else if (i === (data.length - 1)) {
                     subString = data;
                     break;
                 }
             }
-            range.setEnd(node, subString.length);
+            if (offset >= data.length) {
+                subString = data;
+            }
+            // find end node of selection in case of <mark> in text
+            let endNode = range.endContainer;
+            let endOffset = range.endOffset + (subString.length - offset);
+            while (endOffset >= endNode.textContent.length) {
+                if (endNode.nextSibling != null) {
+                    endOffset -= endNode.textContent.length;
+                    endNode = endNode.nextSibling;
+                } else {
+                    if (node.parentNode.localName === 'mark' && endNode.parentNode.nextSibling != null) {
+                        endOffset -= endNode.textContent.length;
+                        endNode = endNode.parentNode.nextSibling;
+                    } else {
+                        break;
+                    }
+
+                }
+            }
+            range.setEnd(endNode, endOffset);
         } else {
-            range.setEnd(node, offset + length);
+            range.setEnd(node, offset);
         }
     }
 
