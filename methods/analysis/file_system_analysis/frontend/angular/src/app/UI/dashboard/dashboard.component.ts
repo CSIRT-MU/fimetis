@@ -447,10 +447,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         localStorage.setItem('savedClusters', JSON.stringify(this.savedClusters));
         localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
         localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
-        // localStorage.setItem('additionalFilters', JSON.stringify([...this.listViewComponent.additionalFilters]));
+        localStorage.setItem('additionalFilters', JSON.stringify(Array.from(this.listViewComponent.additionalFilters)));
+        localStorage.setItem('searchString', JSON.stringify(this.listViewComponent.searchString));
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
         localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
-        // localStorage.setItem('advancedMode', JSON.stringify(this.advancedMode));
         localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
         localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
         localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
@@ -460,7 +460,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * Restore application state from local storage
      */
     restoreApplicationState() {
-        // this.advancedMode = JSON.parse(localStorage.getItem('advancedMode'));
         this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
         this.clusters = JSON.parse(localStorage.getItem('clusters'));
         this.preloadedClusters = JSON.parse(localStorage.getItem('preloadedClusters'));
@@ -468,11 +467,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.savedClusters = JSON.parse(localStorage.getItem('savedClusters'));
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
-        // this.listViewComponent.displayedClusters = [];
         this.graphComponent._case = this.selectedCase;
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
-        // this.listViewComponent.additionalFilters = new Map(JSON.parse(localStorage.getItem('additionalFilters')));
+        this.listViewComponent.additionalFilters = new Map(JSON.parse(localStorage.getItem('additionalFilters')));
+        this.listViewComponent.searchString = JSON.parse(localStorage.getItem('searchString'));
         this.listViewComponent.displayedTableColumns = JSON.parse(localStorage.getItem('selectedTableColumns'));
         this.listViewComponent.init().then(() => {
             this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
