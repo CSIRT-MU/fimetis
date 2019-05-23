@@ -674,13 +674,14 @@ export class ListViewComponent {
      */
     parseDateFromHighlight() {
         let dateLevel = 0;
-        for (let i = 0; i < this.highlightedTextDate.length; i++) {
-            if (this.highlightedTextDate[i] === '-' || this.highlightedTextDate[i] === ' ' || this.highlightedTextDate[i] === ':') {
+        const highlightedDate = this.highlightedTextDate.trim();
+        for (let i = 0; i < highlightedDate.length; i++) {
+            if (highlightedDate[i] === '-' || highlightedDate[i] === ' ' || highlightedDate[i] === ':') {
                 dateLevel += 1;
             }
         }
 
-        let dateString = this.highlightedTextDate;
+        let dateString = highlightedDate;
         if (dateLevel === 3) {
             dateString += ':00';
         }
@@ -725,7 +726,7 @@ export class ListViewComponent {
         const parsedDate = this.parseDateFromHighlight();
         const dateString = parsedDate.dateString;
         const dateLevel = parsedDate.dateLevel;
-        console.log('skipping date', this.highlightedTextDate);
+        console.log('skipping date', this.highlightedTextDate, parsedDate);
         this.skippingData = dateString;
         const selectedDate = new Date(dateString);
         let index_start = (this.highlightedTextDateId - this.preloadedBegin);
@@ -806,6 +807,7 @@ export class ListViewComponent {
             for (let index = startIndex; index < buffer.length; index++) {
                 const next_date = new Date(buffer[index]._source['@timestamp']);
                 if (dateLevel >= 0) {
+                    console.log(selectedDate.getFullYear() < next_date.getUTCFullYear(), selectedDate.getFullYear(), next_date.getUTCFullYear());
                     if (selectedDate.getFullYear() < next_date.getUTCFullYear()) {
                         skipIndex = index;
                         break;
