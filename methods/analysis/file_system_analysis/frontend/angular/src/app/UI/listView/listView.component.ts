@@ -962,7 +962,7 @@ export class ListViewComponent {
                     endOffset -= endNode.textContent.length;
                     endNode = endNode.nextSibling;
                 } else {
-                    if (node.parentNode.localName === 'mark' && endNode.parentNode.nextSibling != null) {
+                    if (endNode.parentNode.localName === 'mark' && endNode.parentNode.nextSibling != null) {
                         endOffset -= endNode.textContent.length;
                         endNode = endNode.parentNode.nextSibling;
                     } else {
