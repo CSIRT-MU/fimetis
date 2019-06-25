@@ -3,7 +3,7 @@
 # Tasks for build angular app
   
   - name: Downloading installation script for nodejs
-    shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     args:
       warn: false
 
