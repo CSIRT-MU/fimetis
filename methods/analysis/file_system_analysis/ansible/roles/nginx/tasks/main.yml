@@ -51,11 +51,16 @@
       dest: /etc/nginx/sites-available/kibana
       regexp: "^.*listen .*"
       line: "    listen {{ kibana_app_port }};"
-      
-  - name: Installing prerequisites for htpasswd module
+
+  - name: Installing pip3
     apt:
-      name: python-passlib
-      state: present 
+      name: python3-pip
+      state: present
+
+  - name: Installing passlib
+    pip:
+      name: passlib
+      executable: pip3
 
   - name: Creating passwd file for elastic
     htpasswd:
