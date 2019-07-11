@@ -74,8 +74,6 @@ def build_data_query(case_name,
     return body
 
 
-
-
 def build_graph_data_query(case_name,
                            clusters,
                            additional_filters,
@@ -290,26 +288,22 @@ def build_additional_search_filter(search_string):
     return {'regexp': {'File Name.keyword': search}}
 
 
-def build_additional_range_filter(from_param, to_param):
+# non-used now
+# def build_additional_range_filter(from_param, to_param):
+#     if from_param is not None or to_param is not None:
+#         time_range = {}
+#         if from_param is not None:
+#             time_range['gte'] = from_param
+#         if to_param is not None:
+#             time_range['lte'] = to_param
+#         time_range['format'] = 'date_time'
+#         return {'range': {'@timestamp': time_range}}
+#     else:
+#         return None
 
 
-    if from_param is not None or to_param is not None:
-        time_range = {}
-        if from_param is not None:
-            time_range['gte'] = from_param
-        if to_param is not None:
-            time_range['lte'] = to_param
-        time_range['format'] = 'date_time'
-        return {'range': {'@timestamp': time_range}}
-    else:
-        return None
-
-
-
-
-def build_select_range_filter(select_filters):
+def build_multi_time_range_filter(select_filters):
     multiple_range_query = {}
-
 
     ranges = {}
     ranges['should'] = []
@@ -337,11 +331,19 @@ def build_additional_type_filter(type_param):
     else:
         return None
 
+
 def build_border_filter(time_border):
     return {'range': {'@timestamp': {'lt': time_border}}}
 
 
-# Returns array of additional filters in json
+# Returns array of additional filters in json that are ready to join in elastic query
+# Supported filters
+# dict keyword - description
+# searchString - filter in filename
+# multiTimeRange - selection of one or more timeblocks
+# timeBorder - border used for counting the position where to stay scrolled after changed of cluster
+# typeFilter - filtering by selected timestamps (m, c, a, b)
+
 def parse_additional_filters(additional_filters):
     additional_filters_obj = json.loads(additional_filters)
 
@@ -352,15 +354,13 @@ def parse_additional_filters(additional_filters):
     if 'searchString' in additional_filters_obj:
         processed_additional_filters.append(build_additional_search_filter(additional_filters_obj['searchString']))
 
-    if 'multiTimerange' in additional_filters_obj:
-        processed_additional_filters.append(build_select_range_filter(additional_filters_obj['multiTimerange']))
+    if 'multiTimeRange' in additional_filters_obj:
+        processed_additional_filters.append(build_multi_time_range_filter(additional_filters_obj['multiTimeRange']))
 
     if 'timeBorder' in additional_filters_obj:
         processed_additional_filters.append(build_border_filter(additional_filters_obj['timeBorder']))
 
     if 'typeFilter' in additional_filters_obj:
         processed_additional_filters.append(build_additional_types_filter(additional_filters_obj['typeFilter']))
-
-
 
     return processed_additional_filters
