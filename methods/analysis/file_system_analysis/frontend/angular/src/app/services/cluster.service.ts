@@ -72,10 +72,10 @@ export class ClusterService {
                     _clusters: ClusterModel[],
                     _additional_filters: object,
                     timeBorder: string) {
+        _additional_filters['timeBorder'] = timeBorder;
         return this.http.post<any>(environment.backendUrl + '/clusters/entries_border/' + _case, {
             'clusters': _clusters,
-            'additional_filters': JSON.stringify(_additional_filters),
-            'border': timeBorder
+            'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
             response => {
                 console.log('response', response);
