@@ -19,9 +19,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() _filter: string;
     @Input() _clusters: ClusterModel[] = [];
     @Input() _frequency: string;
-    @Output() getDateChange = new EventEmitter<[[string, string]]>();
+    @Output() getDateChange = new EventEmitter<Array<[string, string]>>();
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
-    dateChangeDebouncer: Subject<[[string, string]]> = new Subject();
+    dateChangeDebouncer: Subject<Array<[string, string]>> = new Subject();
     @Output() typesChanged = new EventEmitter<Set<string>>();
     typesChangedDebouncer: Subject<Set<string>> = new Subject();
     // @Input() fromDate: Date;
@@ -321,7 +321,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.chartOverview.series[0].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - m', response);
                 this.loadingMTimes = false;
-                // this.d3Histogram.data[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.d3Histogram.data[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
                 // console.log(data);
 
@@ -349,7 +349,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.chartOverview.series[1].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - a', response);
                 this.loadingATimes = false;
-                // this.d3Histogram.data[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+                this.d3Histogram.data[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
@@ -375,7 +375,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.chartOverview.series[2].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - c', response);
                 this.loadingCTimes = false;
-                // this.d3Histogram.data[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+                this.d3Histogram.data[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
@@ -402,7 +402,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 console.log('Graph data loaded async! - b', response);
 
                 this.loadingBTimes = false;
-                // this.d3Histogram.data[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+                this.d3Histogram.data[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
@@ -438,7 +438,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
             this.chart.redraw(false);
             this.chartOverview.redraw(false);
-            // this.d3Histogram.createChart();
+            this.d3Histogram.createChart();
         }
     }
 
@@ -577,7 +577,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.showHideTrace(type);
             // this.typesChanged.emit(this.selectedTypes);
-            // this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
+            this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
             this.typesChangedDebouncer.next(this.selectedTypes);
             console.log('selected metadata types changed', this.selectedTypes);
         }
@@ -691,19 +691,21 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     transformSelectionsToFilter(selections) {
         console.log(selections);
-        if (selections.length > 0) {
-            const fromUTCDateTime = new Date(selections[0][0]).getTime() - new Date(selections[0][0]).getTimezoneOffset() * 60000;
-            const toUTCDateTime = new Date(selections[0][1]).getTime() - new Date(selections[0][1]).getTimezoneOffset() * 60000;
+        const allSelections: Array<[string, string]> = [];
+        for (const sel of selections) {
+            const fromUTCDateTime = new Date(sel[0]).getTime() - new Date(sel[0]).getTimezoneOffset() * 60000;
+            const toUTCDateTime = new Date(sel[1]).getTime() - new Date(sel[1]).getTimezoneOffset() * 60000;
             this.saveGraphZoom = true;
             this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
             this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
             // this.chart.showResetZoom();
             // console.log(this.pickedFromDate);
-            this.dateChangeDebouncer.next([[
+            allSelections.push([
                 new Date(fromUTCDateTime).toISOString(),
                 new Date(toUTCDateTime).toISOString()
-            ]]);
-        } else {
+            ]);
+        }
+        if (allSelections.length < 1) {
             const fromUTCDateTime = new Date(this.min_date_boundary).getTime() - new Date(this.min_date_boundary).getTimezoneOffset() * 60000;
             const toUTCDateTime = new Date(this.max_date_boundary).getTime() - new Date(this.max_date_boundary).getTimezoneOffset() * 60000;
             this.saveGraphZoom = false;
@@ -711,10 +713,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
             // this.chart.showResetZoom();
             // console.log(this.pickedFromDate);
-            this.dateChangeDebouncer.next([[
+            allSelections.push([
                 new Date(fromUTCDateTime).toISOString(),
                 new Date(toUTCDateTime).toISOString()
-            ]]);
+            ]);
         }
+        this.dateChangeDebouncer.next(allSelections);
     }
 }
