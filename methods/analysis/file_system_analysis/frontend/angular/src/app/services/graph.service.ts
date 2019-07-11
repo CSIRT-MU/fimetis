@@ -14,7 +14,7 @@ export class GraphService {
             frequency: string) {
         return this.http.post<any>(environment.backendUrl + '/graph/data/' + _case, {
             'clusters': _clusters,
-            'additional_filters': _additional_filters,
+            'additional_filters': JSON.stringify(_additional_filters),
             'mac_type': mac_type,
             'frequency': frequency
         }).toPromise().then(

@@ -47,7 +47,7 @@ export class ClusterService {
             _additional_filters: object) {
         return this.http.post<any>(environment.backendUrl + '/cluster/count/' + _case, {
             'cluster': _cluster,
-            'additional_filters': _additional_filters
+            'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
             response => {
                 return response.hits.total;
@@ -74,7 +74,7 @@ export class ClusterService {
                     timeBorder: string) {
         return this.http.post<any>(environment.backendUrl + '/clusters/entries_border/' + _case, {
             'clusters': _clusters,
-            'additional_filters': _additional_filters,
+            'additional_filters': JSON.stringify(_additional_filters),
             'border': timeBorder
         }).toPromise().then(
             response => {
