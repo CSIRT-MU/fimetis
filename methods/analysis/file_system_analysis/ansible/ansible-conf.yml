@@ -4,6 +4,8 @@ gitlab_auth_token: 'oauth2:xxxxx'
 # Elasticsearch
 elastic_localhost_port: 9200
 elastic_reverse_proxy_port: 9201
+
+# not used now 
 elastic_user: elastic
 elastic_passwd: timesix-elk
 
@@ -15,12 +17,16 @@ kibana_app_port: 8080
 
 # Angular
 angular_app_port: 80
+
+# not used now 
 angular_user: admin
 angular_passwd: timesix-elk
 
 # Backend flask api
 backend_port: 5001
 backend_localhost_port: 5000
+
+# not used now
 backend_user: admin
 backend_passwd: timesix-elk
 

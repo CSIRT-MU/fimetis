@@ -1,6 +1,16 @@
 ---
 # Tasks for loading testing data
 
+  - name: Creating folder for uploading script
+    file:
+      path: /opt/metadata-uploader
+      state: directory
+
+  - name: Placing uploading script metadata-uploader
+    copy:
+      src: "{{ role_path }}/files/metadata-uploader.py"
+      dest: /opt/metadata-uploader/
+
   - name: Placing testing data file to machine
     copy:
       src: "{{ role_path }}/files/test.mac"

@@ -62,11 +62,11 @@
       name: passlib
       executable: pip3
 
-  - name: Creating passwd file for elastic
-    htpasswd:
-      path: /etc/nginx/.elastic-user
-      name: "{{ elastic_user }}"
-      password: "{{ elastic_passwd }}"
+#  - name: Creating passwd file for elastic
+#    htpasswd:
+#      path: /etc/nginx/.elastic-user
+#      name: "{{ elastic_user }}"
+#      password: "{{ elastic_passwd }}"
 
   - name: Creating passwd file for kibana
     htpasswd: 
