@@ -19,9 +19,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() _filter: string;
     @Input() _clusters: ClusterModel[] = [];
     @Input() _frequency: string;
-    @Output() getDateChange = new EventEmitter<[string, string]>();
+    @Output() getDateChange = new EventEmitter<[[string, string]]>();
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
-    dateChangeDebouncer: Subject<[string, string]> = new Subject();
+    dateChangeDebouncer: Subject<[[string, string]]> = new Subject();
     @Output() typesChanged = new EventEmitter<Set<string>>();
     typesChangedDebouncer: Subject<Set<string>> = new Subject();
     // @Input() fromDate: Date;
@@ -444,7 +444,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     graphZoom(x1, x2) {
         console.log('graph zooming', x1, x2);
-        this.dateChangeDebouncer.next([x1, x2]);
+        this.dateChangeDebouncer.next([[x1, x2]]);
         let isoString = new Date(x1).toISOString();
         this.pickedFromDate = isoString.substring(0, isoString.length - 5);
         isoString = new Date(x2).toISOString();
@@ -532,10 +532,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
         // this.chart.showResetZoom();
         // console.log(this.pickedFromDate);
-        this.dateChangeDebouncer.next([
+        this.dateChangeDebouncer.next([[
             new Date(fromUTCDateTime).toISOString(),
             new Date(toUTCDateTime).toISOString()
-        ]);
+        ]]);
     }
 
     collapseGraphPanel() {
@@ -577,7 +577,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.showHideTrace(type);
             // this.typesChanged.emit(this.selectedTypes);
-            this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
+            // this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
             this.typesChangedDebouncer.next(this.selectedTypes);
             console.log('selected metadata types changed', this.selectedTypes);
         }
@@ -610,9 +610,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         isoString = new Date(this.max_date_boundary).toISOString();
         this.pickedToDate = isoString.substring(0, isoString.length - 1);
         this.graphOverviewZoomLabel(new Date(this.min_date_boundary).getTime(), new Date(this.max_date_boundary).getTime());
-        this.dateChangeDebouncer.next([
+        this.dateChangeDebouncer.next([[
             this.pickedFromDate.replace('T', ' '),
-            this.pickedToDate.replace('T', ' ')]);
+            this.pickedToDate.replace('T', ' ')]]);
     }
 
     typeTooltip(type) {
@@ -699,10 +699,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
             // this.chart.showResetZoom();
             // console.log(this.pickedFromDate);
-            this.dateChangeDebouncer.next([
+            this.dateChangeDebouncer.next([[
                 new Date(fromUTCDateTime).toISOString(),
                 new Date(toUTCDateTime).toISOString()
-            ]);
+            ]]);
         } else {
             const fromUTCDateTime = new Date(this.min_date_boundary).getTime() - new Date(this.min_date_boundary).getTimezoneOffset() * 60000;
             const toUTCDateTime = new Date(this.max_date_boundary).getTime() - new Date(this.max_date_boundary).getTimezoneOffset() * 60000;
@@ -711,10 +711,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
             // this.chart.showResetZoom();
             // console.log(this.pickedFromDate);
-            this.dateChangeDebouncer.next([
+            this.dateChangeDebouncer.next([[
                 new Date(fromUTCDateTime).toISOString(),
                 new Date(toUTCDateTime).toISOString()
-            ]);
+            ]]);
         }
     }
 }

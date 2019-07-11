@@ -142,7 +142,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.preloadedClusters = [];
         const configManager = new ConfigManager();
         this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
-        this.computeClustersItemCount(this.listViewComponent.newAdditionalFilters);
+        this.computeClustersItemCount(this.listViewComponent.additionalFilters);
     }
 
     /**
@@ -324,27 +324,28 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * If graph boundaries has changed this method tries to fill boundaries into filter params called FROM and TO
      * @param $event Graph emit event
      */
-    changeDateBoundary($event) {
-        console.log($event, 'dashboard');
-        if ($event[0] !== undefined || $event[1] !== undefined) {
-            for (const param of this.selectedFilterModel.params) {
-                if (param.type === 'DATE') {
-                    if (param.name === 'FROM') {
-                        param.value = $event[0].split('.')[0].replace(' ', 'T');
-                    }
-                    if (param.name === 'TO') {
-                        param.value = $event[1].split('.')[0].replace(' ', 'T');
-                    }
-                }
-            }
-            this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
-        }
+    changeDateBoundary(timeRanges) {
+        // console.log($event, 'dashboard');
+        // if ($event[0] !== undefined || $event[1] !== undefined) {
+        //     for (const param of this.selectedFilterModel.params) {
+        //         if (param.type === 'DATE') {
+        //             if (param.name === 'FROM') {
+        //                 param.value = $event[0].split('.')[0].replace(' ', 'T');
+        //             }
+        //             if (param.name === 'TO') {
+        //                 param.value = $event[1].split('.')[0].replace(' ', 'T');
+        //             }
+        //         }
+        //     }
+        //     this.listViewComponent.timeRangeFilter(new Date($event[0]).toISOString(), new Date($event[1]).toISOString());
+        // }
+        this.listViewComponent.timeRangeFilter(timeRanges);
     }
 
     makeManualCluster(cluster: ClusterModel) {
         console.log('manual cluster', cluster);
         this.manualClusters = this.manualClusters.concat(cluster);
-        this.clusterService.countData(this.selectedCase, cluster, Array.from(this.listViewComponent.additionalFilters.values())).then(
+        this.clusterService.countData(this.selectedCase, cluster, this.listViewComponent.additionalFilters).then(
           response => {
               cluster.count = response;
           });
@@ -461,7 +462,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         localStorage.setItem('savedClusters', JSON.stringify(this.savedClusters));
         localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
         localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
-        localStorage.setItem('additionalFilters', JSON.stringify(Array.from(this.listViewComponent.additionalFilters)));
+        localStorage.setItem('additionalFilters', JSON.stringify(this.listViewComponent.additionalFilters));
         localStorage.setItem('searchString', JSON.stringify(this.listViewComponent.searchString));
         localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
         localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
@@ -485,7 +486,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.graphComponent._case = this.selectedCase;
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
-        this.listViewComponent.additionalFilters = new Map(JSON.parse(localStorage.getItem('additionalFilters')));
+        this.listViewComponent.additionalFilters = JSON.parse(localStorage.getItem('additionalFilters'));
         this.listViewComponent.searchString = JSON.parse(localStorage.getItem('searchString'));
         this.listViewComponent.displayedTableColumns = JSON.parse(localStorage.getItem('selectedTableColumns'));
         this.listViewComponent.init().then(() => {

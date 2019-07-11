@@ -41,9 +41,8 @@ export class ListViewComponent {
     tablePanelOpenState = true;
     searchString = '';
     searchMode = '';
-    additionalFilters: Map<string, string> = new Map<string, string>();
     //
-    newAdditionalFilters = {};
+    additionalFilters = {};
     selected_rows_id: Set<string> = new Set<string>();
     tableSelection = new SelectionModel<any>(true, []);
     availableTableColumns = [
@@ -121,19 +120,15 @@ export class ListViewComponent {
      * @returns {Promise<void>}
      */
     async init() {
-        console.log(this.additionalFilters, this.visibleDataFirstIndex);
+        // console.log(this.additionalFilters, this.visibleDataFirstIndex);
         this.loadingData = true;
-        // this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
-        // this.clusterManager.case = this.case;
-        // this.clusterManager.clusters = this.clusters;
-        // const shift = await this.clusterManager.getDifferenceShift(this.oldClusters, this.visibleDataFirstIndex, this.visibleData[0]);
         const shift = await this.clusterService.getDifferenceShift(
             this.case,
             this.clusters,
             this.oldClusters,
             this.visibleDataFirstIndex,
             this.visibleData[0]);
-        //const shift = 0;
+        // const shift = 0;
         // const loadEvent = {};
         // loadEvent['start'] = this.visibleDataFirstIndex;
         // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;
@@ -146,8 +141,7 @@ export class ListViewComponent {
         // const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
         const resp = await this.clusterService.getData(this.case,
             this.clusters,
-            //Array.from(this.additionalFilters.values()),
-            this.newAdditionalFilters,
+            this.additionalFilters,
             this.visibleDataFirstIndex,
             initSize,
             this.pageSortString,
@@ -232,94 +226,83 @@ export class ListViewComponent {
      * Filters data by search string
      */
     searchByString() {
-        console.log(this.newAdditionalFilters['test']);
+        console.log(this.additionalFilters['test']);
         if (this.searchString !== '') {
-            this.newAdditionalFilters['searchString'] = this.searchString;
+            this.additionalFilters['searchString'] = this.searchString;
             this.init();
-        } else if (this.newAdditionalFilters['searchString'] !== undefined){
-            this.newAdditionalFilters['searchString'] = undefined;
+        } else if (this.additionalFilters['searchString'] !== undefined){
+            this.additionalFilters['searchString'] = undefined;
             this.init();
         }
-        console.log(this.newAdditionalFilters);
-        console.log(JSON.stringify(this.newAdditionalFilters));
-        console.log('search - filename', this.searchString);
-        // if (this.searchString !== '') {
-        //     this.additionalFilters.set('searchString', this.baseService.buildAdditionSearchFilter(this.searchString));
-        //     this.init();
-        // } else if (this.additionalFilters.has('searchString')) {
-        //     this.additionalFilters.delete('searchString');
-        //     this.init();
-        // }
-        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
     /**
      * Filters data by search timestamp
      */
     searchByMode() {
         console.log('search - mode', this.searchMode);
-        // if (this.searchMode !== '') {
-        //     this.additionalFilters.set('searchMode', this.baseService.buildAdditionModeFilter(this.searchMode));
-        //     this.init();
-        // } else if (this.additionalFilters.has('searchMode')) {
-        //     this.additionalFilters.delete('searchMode');
-        //     this.init();
-        // }
         if (this.searchMode !== '') {
-            this.newAdditionalFilters['searchMode'] = this.searchMode;
+            this.additionalFilters['searchMode'] = this.searchMode;
             this.init();
-        } else if (this.newAdditionalFilters['searchMode'] !== undefined) {
-            this.newAdditionalFilters['searchMode'] = undefined;
+        } else if (this.additionalFilters['searchMode'] !== undefined) {
+            this.additionalFilters['searchMode'] = undefined;
             this.init();
         }
-        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
+
     /**
-     * Filters data by Date
-     * @param {string} from Date
-     * @param {string} to Date
+     * Filters data by date ranges
+     * @param {[[string, string]]} timeRanges Selected time ranges
      */
-    timeRangeFilter(from: string, to: string) {
-        console.log('time range filter: from:', from, 'to:', to);
-        // if (from != null || to != null) {
-        //     if (from !== undefined || to !== undefined) {
-        //         this.additionalFilters.set('timeRange', this.baseService.buildAdditionRangeFilter(from, to));
-        //         this.init();
-        //     }
-        // }
-        if (from != null || to != null) {
-            if (from !== undefined || to !== undefined) {
-                this.newAdditionalFilters['multiTimeRange'] = [[from, to]];
+    timeRangeFilter(timeRanges: [[string, string]]) {
+        if (timeRanges != null ) {
+            if (timeRanges !== undefined) {
+                this.additionalFilters['multiTimeRange'] = timeRanges;
                 this.init();
             }
-        } else if (this.newAdditionalFilters['multiTimeRange'] !== undefined) {
-            this.newAdditionalFilters['multiTimeRange'] = undefined;
+        } else if (this.additionalFilters['multiTimeRange'] !== undefined) {
+            this.additionalFilters['multiTimeRange'] = undefined;
             this.init();
         }
-        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
+
+    // /**
+    //  * Filters data by Date
+    //  * @param {string} from Date
+    //  * @param {string} to Date
+    //  */
+    // timeRangeFilter(from: string, to: string) {
+    //     console.log('time range filter: from:', from, 'to:', to);
+    //     if (from != null || to != null) {
+    //         if (from !== undefined || to !== undefined) {
+    //             this.additionalFilters['multiTimeRange'] = [[from, to]];
+    //             this.init();
+    //         }
+    //     } else if (this.additionalFilters['multiTimeRange'] !== undefined) {
+    //         this.additionalFilters['multiTimeRange'] = undefined;
+    //         this.init();
+    //     }
+    //     this.additionalFiltersChanged.emit(this.additionalFilters);
+    // }
     /**
      * Filters data in view by metadata types
      * @param types
      */
     typeFilter(types) {
         console.log('type filter:', types);
-        // if (types != null) {
-        //     if (types !== undefined) {
-        //         this.additionalFilters.set('typeFilter',
-        //             this.baseService.buildAdditionMactimeTypeFilter(Array.from(types)));
-        //         this.init();
-        //     }
-        // }
         if (types != null) {
             if (types !== undefined) {
-                this.newAdditionalFilters['typeFilter'] = Array.from(types);
+                this.additionalFilters['typeFilter'] = Array.from(types);
+                console.log(this.additionalFilters);
                 this.init();
             }
-        } else if (this.newAdditionalFilters['typeFilter'] !== undefined) {
-            this.newAdditionalFilters['typeFilter'] = undefined;
+        } else if (this.additionalFilters['typeFilter'] !== undefined) {
+            this.additionalFilters['typeFilter'] = undefined;
             this.init();
         }
-        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
+        this.additionalFiltersChanged.emit(this.additionalFilters);
     }
     /**
      * Opens dialog to edit visible table columns
@@ -439,8 +422,7 @@ export class ListViewComponent {
         this.clusterService.getData(
             this.case,
             this.clusters,
-            // Array.from(this.additionalFilters.values()),
-            this.newAdditionalFilters,
+            this.additionalFilters,
             begin_with_page,
             size,
             this.pageSortString,
@@ -612,8 +594,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        //Array.from(this.additionalFilters.values()),
-                        this.newAdditionalFilters,
+                        this.additionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -627,8 +608,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        //Array.from(this.additionalFilters.values()),
-                        this.newAdditionalFilters,
+                        this.additionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -766,8 +746,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        //Array.from(this.additionalFilters.values()),
-                        this.newAdditionalFilters,
+                        this.additionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -781,8 +760,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        //Array.from(this.additionalFilters.values()),
-                        this.newAdditionalFilters,
+                        this.additionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
