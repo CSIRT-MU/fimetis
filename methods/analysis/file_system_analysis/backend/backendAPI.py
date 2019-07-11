@@ -264,10 +264,8 @@ def clusters_get_data(current_user, case):
 def clusters_entries_border(current_user, case):
     clusters = request.json.get('clusters')
     additional_filters = request.json.get('additional_filters')
-    border = request.json.get('border')
 
-    query = fsa.build_number_of_entries_query(case, clusters, additional_filters, border)
-    print('border', json.dumps(query))
+    query = fsa.build_data_query(case, clusters, additional_filters, 0, 1, 'timestamp', 'asc')
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
                     body=json.dumps(query))

@@ -74,10 +74,6 @@ def build_data_query(case_name,
     return body
 
 
-def build_number_of_entries_query(case_name, clusters, additional_filters, time_border):
-    time_border_filter = {'range': {'@timestamp': {'lt': time_border}}}
-    additional_filters.append(json.dumps(time_border_filter))
-    return build_data_query(case_name, clusters, additional_filters, 0, 1, 'timestamp', 'asc')
 
 
 def build_graph_data_query(case_name,
@@ -341,23 +337,30 @@ def build_additional_type_filter(type_param):
     else:
         return None
 
+def build_border_filter(time_border):
+    return {'range': {'@timestamp': {'lt': time_border}}}
+
 
 # Returns array of additional filters in json
 def parse_additional_filters(additional_filters):
     additional_filters_obj = json.loads(additional_filters)
 
+    if additional_filters_obj is None:
+        return []
+
     processed_additional_filters = []
     if 'searchString' in additional_filters_obj:
         processed_additional_filters.append(build_additional_search_filter(additional_filters_obj['searchString']))
 
-    if 'range' in additional_filters_obj:
-        processed_additional_filters.append(build_select_range_filter(additional_filters_obj['range']))
+    if 'multiTimerange' in additional_filters_obj:
+        processed_additional_filters.append(build_select_range_filter(additional_filters_obj['multiTimerange']))
 
+    if 'timeBorder' in additional_filters_obj:
+        processed_additional_filters.append(build_border_filter(additional_filters_obj['timeBorder']))
 
-    # Just testing of build_select_range_filter
-    range = [['1994-09-01T00:00:00.000Z', '1994-09-01T23:00:00.000Z'], ['1996-02-06T00:00:00.000Z', '1996-02-06T23:00:00.000Z']]
-    processed_additional_filters.append(build_select_range_filter(range))
-    #
+    if 'typeFilter' in additional_filters_obj:
+        processed_additional_filters.append(build_additional_types_filter(additional_filters_obj['typeFilter']))
+
 
 
     return processed_additional_filters
