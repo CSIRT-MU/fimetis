@@ -1,0 +1,13 @@
+.selectionRemoveButton{
+    cursor: pointer !important;
+    border: 1px solid blue;
+}
+
+.histogram-date{
+    color: #ff0000;
+    border-radius: 15px;
+}
+
+.histogram-time{
+
+}
