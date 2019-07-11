@@ -7,6 +7,8 @@ import * as Highcharts from 'highcharts';
 import {GraphService} from '../../services/graph.service';
 import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 import {D3HistogramComponent} from './d3Histogram/d3Histogram.component';
+import * as d3 from 'd3';
+import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 
 @Component({
     selector: 'app-graph',
@@ -227,10 +229,31 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(D3HistogramComponent) d3Histogram: D3HistogramComponent;
 
     private subscriptions: Subscription[] = [];
-    constructor(private graphService: GraphService) {
+    constructor(private graphService: GraphService,
+                private _hotkeysService: HotkeysService) {
         // debouncer setup
         this.subscriptions.push(this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value)));
         this.subscriptions.push(this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value)));
+        this._hotkeysService.add(new Hotkey(['ctrl+m', 'command+m'], (event: KeyboardEvent): boolean => {
+            // shift graph view to left
+            this.typeCheckboxChanged('m');
+            return false; // Prevent bubbling
+        }, undefined, 'De/select m type switch button'));
+        this._hotkeysService.add(new Hotkey(['ctrl+a', 'command+a'], (event: KeyboardEvent): boolean => {
+            // shift graph view to left
+            this.typeCheckboxChanged('a');
+            return false; // Prevent bubbling
+        }, undefined, 'De/select a type switch button'));
+        this._hotkeysService.add(new Hotkey(['ctrl+c', 'command+c'], (event: KeyboardEvent): boolean => {
+            // shift graph view to left
+            this.typeCheckboxChanged('c');
+            return false; // Prevent bubbling
+        }, undefined, 'De/select c type switch button'));
+        this._hotkeysService.add(new Hotkey(['ctrl+b', 'command+b'], (event: KeyboardEvent): boolean => {
+            // shift graph view to left
+            this.typeCheckboxChanged('b');
+            return false; // Prevent bubbling
+        }, undefined, 'De/select b type switch button'));
     }
 
     ngOnInit() {
@@ -719,5 +742,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             ]);
         }
         this.dateChangeDebouncer.next(allSelections);
+    }
+
+    getSelectedTypes() {
+        return Array.from(this.selectedTypes);
     }
 }

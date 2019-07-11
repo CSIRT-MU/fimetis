@@ -75,10 +75,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             this.saveApplicationState();
             return false; // Prevent bubbling
         }, undefined, 'Save application state'));
-        this._hotkeysService.add(new Hotkey(['ctrl+r', 'command+r'], (event: KeyboardEvent): boolean => {
+        this._hotkeysService.add(new Hotkey(['ctrl+l', 'command+l'], (event: KeyboardEvent): boolean => {
             this.restoreApplicationState();
             return false; // Prevent bubbling
-        }, undefined, 'Restore application state'));
+        }, undefined, 'Load application state'));
     }
 
     ngOnInit() {

@@ -38,7 +38,7 @@
         <div class="chartContainer">
             <div #chartDiv id="chartDiv"></div>
         </div>
-        <app-d3-histogram [min_date_boundary]="min_date_boundary" [max_date_boundary]="max_date_boundary" (selectionsEmitter)="transformSelectionsToFilter($event)"></app-d3-histogram>
+        <app-d3-histogram [min_date_boundary]="min_date_boundary" [max_date_boundary]="max_date_boundary" [selectedTypes]="getSelectedTypes()" (selectionsEmitter)="transformSelectionsToFilter($event)"></app-d3-histogram>
         <form (submit)="updateBoundary()" class="from-date-form col-md-4">
             <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input"
                    (dragover)="dragOver($event)"

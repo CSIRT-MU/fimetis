@@ -29,6 +29,8 @@ export class D3HistogramComponent implements OnDestroy {
     min_date_boundary = null;
     @Input()
     max_date_boundary = null;
+    @Input()
+    selectedTypes = ['m', 'a', 'c', 'b'];
 
     selections = [];
     @Output() selectionsEmitter = new EventEmitter<any[]>();
@@ -268,6 +270,7 @@ export class D3HistogramComponent implements OnDestroy {
         drawBars();
         // drawZoomNavigation();
         drawSelections();
+        this.showAndHideTraces(this.selectedTypes);
 
 
         function zoomed() {
@@ -930,6 +933,7 @@ export class D3HistogramComponent implements OnDestroy {
     }
 
     showAndHideTraces(types: string[]) {
+        this.selectedTypes = types;
         d3.selectAll('.bar').style('visibility', 'hidden');
         for (const typeName of types) {
             d3.selectAll('.bar' + typeName).style('visibility', 'visible');
