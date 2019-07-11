@@ -44,7 +44,7 @@ export class ClusterService {
 
     countData(_case: string,
             _cluster: ClusterModel,
-            _additional_filters: string[]) {
+            _additional_filters: object) {
         return this.http.post<any>(environment.backendUrl + '/cluster/count/' + _case, {
             'cluster': _cluster,
             'additional_filters': _additional_filters
@@ -70,7 +70,7 @@ export class ClusterService {
 
     numberOfEntries(_case: string,
                     _clusters: ClusterModel[],
-                    _additional_filters: string[],
+                    _additional_filters: object,
                     timeBorder: string) {
         return this.http.post<any>(environment.backendUrl + '/clusters/entries_border/' + _case, {
             'clusters': _clusters,
@@ -94,8 +94,8 @@ export class ClusterService {
         if (oldClusters.length === 0) {
             return 0;
         }
-        const old_number = await this.numberOfEntries(_case, oldClusters, [], firstEntry._source['@timestamp']);
-        const new_number = await this.numberOfEntries(_case, newClusters, [], firstEntry._source['@timestamp']);
+        const old_number = await this.numberOfEntries(_case, oldClusters, {}, firstEntry._source['@timestamp']);
+        const new_number = await this.numberOfEntries(_case, newClusters, {}, firstEntry._source['@timestamp']);
         console.log('difference shift:', new_number - old_number);
         return new_number - old_number;
     }

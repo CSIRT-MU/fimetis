@@ -31,7 +31,7 @@ export class ListViewComponent {
     @Output('makeManualCluster')
     makeManualCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
     @Output('additionalFiltersChanged')
-    additionalFiltersChanged: EventEmitter<Map<string, string>> = new EventEmitter<Map<string, string>>();
+    additionalFiltersChanged: EventEmitter<object> = new EventEmitter<object>();
     @Output('actualScrollPosition')
     actualScrollPosition: EventEmitter<[number, number, string, string]> = new EventEmitter<[number, number, string, string]>();
     @Output('setFromBoundary')
@@ -235,36 +235,43 @@ export class ListViewComponent {
         console.log(this.newAdditionalFilters['test']);
         if (this.searchString !== '') {
             this.newAdditionalFilters['searchString'] = this.searchString;
-            //this.init();
+            this.init();
         } else if (this.newAdditionalFilters['searchString'] !== undefined){
             this.newAdditionalFilters['searchString'] = undefined;
-            //this.init();
+            this.init();
         }
         console.log(this.newAdditionalFilters);
         console.log(JSON.stringify(this.newAdditionalFilters));
         console.log('search - filename', this.searchString);
-        if (this.searchString !== '') {
-            this.additionalFilters.set('searchString', this.baseService.buildAdditionSearchFilter(this.searchString));
-            this.init();
-        } else if (this.additionalFilters.has('searchString')) {
-            this.additionalFilters.delete('searchString');
-            this.init();
-        }
-        // this.additionalFiltersChanged.emit(this.additionalFilters);
+        // if (this.searchString !== '') {
+        //     this.additionalFilters.set('searchString', this.baseService.buildAdditionSearchFilter(this.searchString));
+        //     this.init();
+        // } else if (this.additionalFilters.has('searchString')) {
+        //     this.additionalFilters.delete('searchString');
+        //     this.init();
+        // }
+        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
     }
     /**
      * Filters data by search timestamp
      */
     searchByMode() {
         console.log('search - mode', this.searchMode);
+        // if (this.searchMode !== '') {
+        //     this.additionalFilters.set('searchMode', this.baseService.buildAdditionModeFilter(this.searchMode));
+        //     this.init();
+        // } else if (this.additionalFilters.has('searchMode')) {
+        //     this.additionalFilters.delete('searchMode');
+        //     this.init();
+        // }
         if (this.searchMode !== '') {
-            this.additionalFilters.set('searchMode', this.baseService.buildAdditionModeFilter(this.searchMode));
+            this.newAdditionalFilters['searchMode'] = this.searchMode;
             this.init();
-        } else if (this.additionalFilters.has('searchMode')) {
-            this.additionalFilters.delete('searchMode');
+        } else if (this.newAdditionalFilters['searchMode'] !== undefined) {
+            this.newAdditionalFilters['searchMode'] = undefined;
             this.init();
         }
-        this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
     }
     /**
      * Filters data by Date
@@ -273,13 +280,22 @@ export class ListViewComponent {
      */
     timeRangeFilter(from: string, to: string) {
         console.log('time range filter: from:', from, 'to:', to);
+        // if (from != null || to != null) {
+        //     if (from !== undefined || to !== undefined) {
+        //         this.additionalFilters.set('timeRange', this.baseService.buildAdditionRangeFilter(from, to));
+        //         this.init();
+        //     }
+        // }
         if (from != null || to != null) {
             if (from !== undefined || to !== undefined) {
-                this.additionalFilters.set('timeRange', this.baseService.buildAdditionRangeFilter(from, to));
+                this.newAdditionalFilters['multiTimeRange'] = [[from, to]];
                 this.init();
             }
+        } else if (this.newAdditionalFilters['multiTimeRange'] !== undefined) {
+            this.newAdditionalFilters['multiTimeRange'] = undefined;
+            this.init();
         }
-        this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
     }
     /**
      * Filters data in view by metadata types
@@ -287,14 +303,23 @@ export class ListViewComponent {
      */
     typeFilter(types) {
         console.log('type filter:', types);
+        // if (types != null) {
+        //     if (types !== undefined) {
+        //         this.additionalFilters.set('typeFilter',
+        //             this.baseService.buildAdditionMactimeTypeFilter(Array.from(types)));
+        //         this.init();
+        //     }
+        // }
         if (types != null) {
             if (types !== undefined) {
-                this.additionalFilters.set('typeFilter',
-                    this.baseService.buildAdditionMactimeTypeFilter(Array.from(types)));
+                this.newAdditionalFilters['typeFilter'] = Array.from(types);
                 this.init();
             }
+        } else if (this.newAdditionalFilters['typeFilter'] !== undefined) {
+            this.newAdditionalFilters['typeFilter'] = undefined;
+            this.init();
         }
-        this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.additionalFiltersChanged.emit(this.newAdditionalFilters);
     }
     /**
      * Opens dialog to edit visible table columns

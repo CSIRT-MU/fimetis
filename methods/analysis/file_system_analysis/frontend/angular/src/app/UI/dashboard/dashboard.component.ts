@@ -142,7 +142,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.preloadedClusters = [];
         const configManager = new ConfigManager();
         this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
-        this.computeClustersItemCount(this.listViewComponent.additionalFilters);
+        this.computeClustersItemCount(this.listViewComponent.newAdditionalFilters);
     }
 
     /**
@@ -373,10 +373,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     /**
      * Computes count of items in each cluster.
      * Trigered by change of additional filters (searching, date filter etc.) in list view
-     * @param {Map<string, string>} filters Additional filters (search filter, date filter etc.)
+     * @param {Map<string, string>} additionalFilters Additional filters (search filter, date filter etc.)
      */
-    computeClustersItemCount(filters: Map<string, string>) {
-        this.clusterService.countEntriesOfClusters(this.selectedCase, this.getClusters(), Array.from(filters.values()));
+    // computeClustersItemCount(filters: Map<string, string>) {
+    //     this.clusterService.countEntriesOfClusters(this.selectedCase, this.getClusters(), Array.from(filters.values()));
+    // }
+    computeClustersItemCount(additionalFilters: object) {
+        this.clusterService.countEntriesOfClusters(this.selectedCase, this.getClusters(), additionalFilters);
     }
 
     /**

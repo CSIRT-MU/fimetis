@@ -9,7 +9,7 @@ export class GraphService {
 
     getData(_case: string,
             _clusters: ClusterModel[],
-            _additional_filters: string[],
+            _additional_filters: object,
             mac_type: string,
             frequency: string) {
         return this.http.post<any>(environment.backendUrl + '/graph/data/' + _case, {
@@ -32,7 +32,7 @@ export class GraphService {
 
     getFirstAndLastTimestamp(_case: string,
             _clusters: ClusterModel[],
-            _additional_filters: string[],
+            _additional_filters: object,
             mac_type: string) {
         return this.http.post<any>(environment.backendUrl + '/graph/first_and_last/' + _case, {
         }).toPromise().then(
@@ -48,7 +48,7 @@ export class GraphService {
         );
     }
 
-    async computeMaxFrequency(_case: string, _clusters: ClusterModel[], _additional_filters: string[]) {
+    async computeMaxFrequency(_case: string, _clusters: ClusterModel[], _additional_filters: object) {
         let first = 0;
         let last = 0;
         const one_day = 1000 * 60 * 60 * 24;
