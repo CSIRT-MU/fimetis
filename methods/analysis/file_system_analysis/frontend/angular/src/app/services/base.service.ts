@@ -2,19 +2,15 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {FilterModel} from '../models/filter.model';
-
 @Injectable({ providedIn: 'root' })
 export class BaseService {
     constructor(private http: HttpClient) { }
-
     getCases() {
         return this.http.get<any>(environment.backendUrl + '/case/all').toPromise();
     }
-
     getFilters() {
         return this.http.get<any>(environment.backendUrl + '/filter/all').toPromise();
     }
-
     getFilterByName(name: string) {
         return this.http.post<any>(environment.backendUrl + '/filter/name', {'name': name}).toPromise().then(response => {
             const filter = new FilterModel();
@@ -28,11 +24,9 @@ export class BaseService {
             return filter;
         });
     }
-
     deleteCase(_case: string) {
         return this.http.delete(environment.backendUrl + '/case/delete/' + _case).toPromise();
     }
-
     buildAdditionSearchFilter(searchString: string) {
         let search = searchString
             .replace('/', '\\\\/')
@@ -53,13 +47,19 @@ export class BaseService {
             .replace('&', '\\\\&')
             .replace('$', '\\\\$')
             .replace('|', '\\\\|');
-        search = '.*' + search + '.*';
+        search = '*' + search + '*';
         console.log('search string:', search);
-        return '{"regexp": {' +
-            '"File Name.keyword": "' + search + '"' +
-            '}}';
+        let query_string = '{ "query_string":';
+        query_string += '{';
+        query_string += '"query": "' + search + '",';
+        query_string += '"fields": ["@timestamp", "UID", "File Name", "Mode"]';
+        query_string += '}';
+        query_string += '}';
+        return query_string;
+        // return '{"regexp": {' +
+        //     '"File Name.keyword": "' + search + '"' +
+        //     '}}';
     }
-
     buildAdditionModeFilter(searchString: string) {
         let search = searchString
             .replace('/', '\\\\/')
@@ -84,10 +84,8 @@ export class BaseService {
         console.log('search string:', search);
         return '{"regexp": {' +
             '"Mode.keyword": "' + search + '"' +
-            //'"File Name.keyword": "' + search + '"' +
             '}}';
     }
-
     buildAdditionRangeFilter(from: string, to: string) {
         let filter = '{"range": {' +
             '"@timestamp": {';
@@ -103,9 +101,7 @@ export class BaseService {
             '}';
         return filter;
     }
-
     buildAdditionMactimeTypeFilter(mactimes: string[]) {
-
         let filter = '{"bool": {' +
             '"should": [';
         for (let index = 0; index < mactimes.length; index++) {
@@ -114,13 +110,11 @@ export class BaseService {
             filter += '"Type.keyword":"*' + mactimes[index] + '*"';
             filter += '}';
             filter += '}';
-
             if (index < (mactimes.length - 1)) {
                 filter += ',';
             }
         }
         filter += ']}}';
-
         return filter;
     }
 }

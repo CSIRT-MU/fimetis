@@ -145,9 +145,10 @@ def build_base_query(case_name, clusters, additional_filters, graph_filter):
     must_params = []
     must_params.append(get_match_string_from_case(case_name))
     if additional_filters is not None:
-        for add_filt in additional_filters:
-            must_params.append(json.loads(add_filt))
-        # must_params.extend(additional_filters)
+        filter_array = parse_additional_filters(additional_filters)
+        for add_filt in filter_array:
+            must_params.append(add_filt)
+
     if graph_filter is not None:
         must_params.append(graph_filter)
 
@@ -190,9 +191,9 @@ def build_count_query(case_name, cluster, additional_filters):
     must_params = []
     must_params.append(get_match_string_from_case(case_name))
     if additional_filters is not None:
-        for add_filt in additional_filters:
-            must_params.append(json.loads(add_filt))
-        # must_params.extend(additional_filters)
+        filter_array = parse_additional_filters(additional_filters)
+        for add_filt in filter_array:
+            must_params.append(add_filt)
 
     # if must clusters are empty, don't display anything
     if len(must_clusters) == 0:
@@ -294,6 +295,8 @@ def build_additional_search_filter(search_string):
 
 
 def build_additional_range_filter(from_param, to_param):
+
+
     if from_param is not None or to_param is not None:
         time_range = {}
         if from_param is not None:
@@ -304,6 +307,25 @@ def build_additional_range_filter(from_param, to_param):
         return {'range': {'@timestamp': time_range}}
     else:
         return None
+
+
+
+
+def build_select_range_filter(select_filters):
+    multiple_range_query = {}
+
+
+    ranges = {}
+    ranges['should'] = []
+    for select_filter in select_filters:
+        time_range = {}
+        time_range['gte'] = select_filter[0]
+        time_range['lte'] = select_filter[1]
+        ranges['should'].append({'range': {'@timestamp': time_range}})
+
+    multiple_range_query['bool'] = ranges
+
+    return  multiple_range_query
 
 
 def build_additional_types_filter(types):
@@ -318,3 +340,24 @@ def build_additional_type_filter(type_param):
         return {'wildcard': {'Type.keyword': '*' + str(type_param) + '*'}}
     else:
         return None
+
+
+# Returns array of additional filters in json
+def parse_additional_filters(additional_filters):
+    additional_filters_obj = json.loads(additional_filters)
+
+    processed_additional_filters = []
+    if 'searchString' in additional_filters_obj:
+        processed_additional_filters.append(build_additional_search_filter(additional_filters_obj['searchString']))
+
+    if 'range' in additional_filters_obj:
+        processed_additional_filters.append(build_select_range_filter(additional_filters_obj['range']))
+
+
+    # Just testing of build_select_range_filter
+    range = [['1994-09-01T00:00:00.000Z', '1994-09-01T23:00:00.000Z'], ['1996-02-06T00:00:00.000Z', '1996-02-06T23:00:00.000Z']]
+    processed_additional_filters.append(build_select_range_filter(range))
+    #
+
+
+    return processed_additional_filters

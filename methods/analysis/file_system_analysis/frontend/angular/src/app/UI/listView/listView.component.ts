@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, Output, ViewChild, ElementRef} from '@angular/core';
 import {MatDialog} from '@angular/material';
-
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
 import {Subject} from 'rxjs';
@@ -16,14 +15,12 @@ import {debounceTime} from 'rxjs/operators';
 import {ClusterService} from '../../services/cluster.service';
 import {DataModel} from '../../models/data.model';
 import {BaseService} from '../../services/base.service';
-
 @Component({
     selector: 'app-list-view',
     templateUrl: './listView.component.html',
     styleUrls: ['./listView.component.css']
 })
 export class ListViewComponent {
-
     @Input('case')
     case: string;
     @Input('filter')
@@ -31,7 +28,6 @@ export class ListViewComponent {
     @Input('clusters')
     clusters: ClusterModel[] = [];
     oldClusters: ClusterModel[] = [];
-
     @Output('makeManualCluster')
     makeManualCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
     @Output('additionalFiltersChanged')
@@ -42,11 +38,12 @@ export class ListViewComponent {
     setFromBoundary: EventEmitter<Date> = new EventEmitter<Date>();
     @Output('setToBoundary')
     setToBoundary: EventEmitter<Date> = new EventEmitter<Date>();
-
     tablePanelOpenState = true;
     searchString = '';
     searchMode = '';
     additionalFilters: Map<string, string> = new Map<string, string>();
+    //
+    newAdditionalFilters = {};
     selected_rows_id: Set<string> = new Set<string>();
     tableSelection = new SelectionModel<any>(true, []);
     availableTableColumns = [
@@ -102,10 +99,8 @@ export class ListViewComponent {
     visibleDataLastIndex = 0;
     loadingData = false;
     skippingData = null;
-
     @ViewChild('highlightedBox') highlightedBox: ElementRef;
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
-
     constructor(private clusterService: ClusterService,
                 private baseService: BaseService,
                 public dialog: MatDialog,
@@ -121,12 +116,12 @@ export class ListViewComponent {
         this.highlightedTextDateBox = null;
         this.highlightedTextDate = '';
     }
-
     /**
      * Initializes list asynchronously
      * @returns {Promise<void>}
      */
     async init() {
+        console.log(this.additionalFilters, this.visibleDataFirstIndex);
         this.loadingData = true;
         // this.clusterManager.additional_filters = Array.from(this.additionalFilters.values());
         // this.clusterManager.case = this.case;
@@ -138,7 +133,7 @@ export class ListViewComponent {
             this.oldClusters,
             this.visibleDataFirstIndex,
             this.visibleData[0]);
-        // const shift = 0;
+        //const shift = 0;
         // const loadEvent = {};
         // loadEvent['start'] = this.visibleDataFirstIndex;
         // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;
@@ -151,7 +146,8 @@ export class ListViewComponent {
         // const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
         const resp = await this.clusterService.getData(this.case,
             this.clusters,
-            Array.from(this.additionalFilters.values()),
+            //Array.from(this.additionalFilters.values()),
+            this.newAdditionalFilters,
             this.visibleDataFirstIndex,
             initSize,
             this.pageSortString,
@@ -184,7 +180,6 @@ export class ListViewComponent {
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
         }
         // this.virtualScroller.refresh();
-
         // this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
         //     .then(resp => {
         //         console.log('list data loaded async', resp, resp.data, resp.total);
@@ -207,20 +202,17 @@ export class ListViewComponent {
         this.oldClusters = lodash.cloneDeep(this.clusters);
         // this.virtualScroller.refresh();
     }
-
     isAllSelected() {
         const numSelected = this.tableSelection.selected.length;
         const numRows = this.data.length;
         return numSelected >= numRows;
     }
-
     /** Selects all rows if they are not all selected; otherwise clear selection. */
     masterToggle() {
         this.isAllSelected() ?
             this.tableSelection.clear() :
             this.data.forEach(row => this.tableSelection.select(row));
     }
-
     tableSort($event) {
         console.log($event);
         let pageSort = $event['active'];
@@ -236,12 +228,21 @@ export class ListViewComponent {
         }
         this.init();
     }
-
     /**
      * Filters data by search string
      */
     searchByString() {
-        console.log('search', this.searchString);
+        console.log(this.newAdditionalFilters['test']);
+        if (this.searchString !== '') {
+            this.newAdditionalFilters['searchString'] = this.searchString;
+            //this.init();
+        } else if (this.newAdditionalFilters['searchString'] !== undefined){
+            this.newAdditionalFilters['searchString'] = undefined;
+            //this.init();
+        }
+        console.log(this.newAdditionalFilters);
+        console.log(JSON.stringify(this.newAdditionalFilters));
+        console.log('search - filename', this.searchString);
         if (this.searchString !== '') {
             this.additionalFilters.set('searchString', this.baseService.buildAdditionSearchFilter(this.searchString));
             this.init();
@@ -249,9 +250,11 @@ export class ListViewComponent {
             this.additionalFilters.delete('searchString');
             this.init();
         }
-        this.additionalFiltersChanged.emit(this.additionalFilters);
+        // this.additionalFiltersChanged.emit(this.additionalFilters);
     }
-
+    /**
+     * Filters data by search timestamp
+     */
     searchByMode() {
         console.log('search - mode', this.searchMode);
         if (this.searchMode !== '') {
@@ -263,7 +266,6 @@ export class ListViewComponent {
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
     }
-
     /**
      * Filters data by Date
      * @param {string} from Date
@@ -279,7 +281,6 @@ export class ListViewComponent {
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
     }
-
     /**
      * Filters data in view by metadata types
      * @param types
@@ -295,7 +296,6 @@ export class ListViewComponent {
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
     }
-
     /**
      * Opens dialog to edit visible table columns
      */
@@ -317,7 +317,6 @@ export class ListViewComponent {
             }
         });
     }
-
     showScroll($event) {
         // console.log($event);
         // console.log(this.scrollbar.autoPropagation);
@@ -328,7 +327,6 @@ export class ListViewComponent {
         // thumb.style.height = '10px';
         // console.log(thumb.clientHeight);
     }
-
     /**
      * Method called by virtual scroll to get visible data from database or preloaded buffer.
      * @param $event Virtual scroll event
@@ -337,7 +335,7 @@ export class ListViewComponent {
         // console.log($event);
         const start = $event['startIndex'];
         const end = $event['endIndex'];
-        // console.log('visible start index:', this.visibleDataFirstIndex);
+        console.log('visible start index:',  start, this.visibleDataFirstIndex);
         this.visibleDataFirstIndex = start < 0 ? 0 : start;
         this.visibleDataLastIndex = end < 0 ? 0 : end;
         if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
@@ -377,7 +375,6 @@ export class ListViewComponent {
             }
         }
     }
-
     /**
      * Method called to preload data to buffer for virtual scroll.
      * @param begin Offset of loading data
@@ -395,9 +392,7 @@ export class ListViewComponent {
         } else if (!preloadBuffer) {
             this.dataLoaderDebouncer.next([begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer]);
         }
-
     }
-
     /**
      * Method called to load data from database into buffer.
      * @param begin Offset of loading data
@@ -419,29 +414,30 @@ export class ListViewComponent {
         this.clusterService.getData(
             this.case,
             this.clusters,
-            Array.from(this.additionalFilters.values()),
+            // Array.from(this.additionalFilters.values()),
+            this.newAdditionalFilters,
             begin_with_page,
             size,
             this.pageSortString,
             this.pageSortOrder)
             .then(resp => {
-                console.log('virtual scroll loaded data', resp, resp.data, resp.total,
-                    'from: ', begin, '(from + page index):', begin_with_page, 'size: ', size);
-                this.preloadedData = resp.data;
-                this.preloadedBegin = begin;
-                this.preloadedEnd = this.preloadedBegin + size;
-                if (visibleDataStart != null && visibleDataEnd != null) {
-                    this.visibleData = this.preloadedData.slice(
-                        (visibleDataStart - this.preloadedBegin),
-                        (visibleDataEnd - (this.preloadedBegin) + 1)
-                    );
-                }
-                this.virtualScroller.refresh();
-            },
-            () => {
-                this.toaster.error('Cannot load data', 'Loading failed');
-                this.loadingData = false;
-            }).then(() => {
+                    console.log('virtual scroll loaded data', resp, resp.data, resp.total,
+                        'from: ', begin, '(from + page index):', begin_with_page, 'size: ', size);
+                    this.preloadedData = resp.data;
+                    this.preloadedBegin = begin;
+                    this.preloadedEnd = this.preloadedBegin + size;
+                    if (visibleDataStart != null && visibleDataEnd != null) {
+                        this.visibleData = this.preloadedData.slice(
+                            (visibleDataStart - this.preloadedBegin),
+                            (visibleDataEnd - (this.preloadedBegin) + 1)
+                        );
+                    }
+                    this.virtualScroller.refresh();
+                },
+                () => {
+                    this.toaster.error('Cannot load data', 'Loading failed');
+                    this.loadingData = false;
+                }).then(() => {
             console.log('Preload data - done!');
             if (loadingState) {
                 this.loadingData = false;
@@ -451,7 +447,6 @@ export class ListViewComponent {
             }
         });
     }
-
     /**
      * Add item with given id to selection
      * @param id Id of item in database
@@ -463,11 +458,9 @@ export class ListViewComponent {
             this.selected_rows_id.add(id);
         }
     }
-
     selectionExists() {
         return window.getSelection().toString();
     }
-
     /**
      * Opens context menu after highlighting some text (mouse selection)
      * @param {TextSelectEvent} event
@@ -483,21 +476,17 @@ export class ListViewComponent {
         console.groupEnd();
         this.highlightedTextId = index + this.visibleDataFirstIndex;
         if (event.hostRectangle) {
-
             this.highlightedTextBox = event.hostRectangle;
             this.highlightedText = event.text;
             this.highlightedBox.nativeElement.style.display = 'block';
             this.highlightedBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
             this.highlightedBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
-
         } else {
             this.highlightedBox.nativeElement.style.display = 'none';
             this.highlightedTextBox = null;
             this.highlightedText = '';
-
         }
     }
-
     /**
      * Opens context menu after highlighting timestamp (mouse selection)
      * @param {TextSelectEvent} event
@@ -511,21 +500,17 @@ export class ListViewComponent {
         console.groupEnd();
         this.highlightedTextDateId = index + this.visibleDataFirstIndex;
         if (event.hostRectangle) {
-
             this.highlightedTextDateBox = event.hostRectangle;
             this.highlightedTextDate = event.text;
             this.highlightedDateBox.nativeElement.style.display = 'block';
             this.highlightedDateBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
             this.highlightedDateBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
-
         } else {
             this.highlightedDateBox.nativeElement.style.display = 'none';
             this.highlightedTextDateBox = null;
             this.highlightedTextDate = '';
-
         }
     }
-
     /**
      * Creates filter by highlighted prefix (mouse selection)
      */
@@ -543,7 +528,6 @@ export class ListViewComponent {
         // computation.filters.add(filter);
         this.makeManualCluster.emit(cluster);
     }
-
     /**
      * Skips (scrolls) the block by highlighted prefix (mouse selection) of File Name
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
@@ -584,17 +568,14 @@ export class ListViewComponent {
         const regex = new RegExp(test);
         console.log('skipping File Name by regex prefix: ', regex);
         this.skippingData = this.highlightedText;
-
         if (toTheEnd) {
             index_start += 1;
         } else {
             index_start -= 1;
         }
-
         let bufferSize = this.preloadedBufferSize;
         let bufferOffset = this.preloadedBegin + ((this.page_number - 1) * this.page_size);
         let buffer = this.preloadedData;
-
         while (skipIndex == null) {
             skipIndex = this.skipFileNameBlock(regex, index_start, buffer, bufferOffset, bufferSize, toTheEnd);
             if (skipIndex == null) {
@@ -606,7 +587,8 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        Array.from(this.additionalFilters.values()),
+                        //Array.from(this.additionalFilters.values()),
+                        this.newAdditionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -620,7 +602,8 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        Array.from(this.additionalFilters.values()),
+                        //Array.from(this.additionalFilters.values()),
+                        this.newAdditionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -643,7 +626,6 @@ export class ListViewComponent {
         this.toaster.success(skippedItems.toString(10) + (skippedItems > 1 ? ' items' : ' item'), 'You skipped');
         this.openHighlightedTextMenu(hideEvent, 0);
     }
-
     /**
      * Skips File Name in given buffer by given prefix regex
      * @param prefixRegex Prefix regex of File Name
@@ -679,7 +661,6 @@ export class ListViewComponent {
         }
         return skipIndex;
     }
-
     /**
      * Parse date from highlighted part of timestamp field
      * @returns {{dateString: string; dateLevel: number}} dateString represents date in format yyyy-mm-dd HH:mm:ss
@@ -693,7 +674,6 @@ export class ListViewComponent {
                 dateLevel += 1;
             }
         }
-
         let dateString = highlightedDate;
         if (dateLevel === 3) {
             dateString += ':00';
@@ -709,7 +689,6 @@ export class ListViewComponent {
         }
         return {'dateString': dateString, 'dateLevel': dateLevel};
     }
-
     /**
      * Skips (scrolls) the block by highlighted timestamp (mouse selection)
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
@@ -743,17 +722,14 @@ export class ListViewComponent {
         this.skippingData = dateString;
         const selectedDate = new Date(dateString);
         let index_start = (this.highlightedTextDateId - this.preloadedBegin);
-
         if (toTheEnd) {
             index_start += 1;
         } else {
             index_start -= 1;
         }
-
         let bufferSize = this.preloadedBufferSize;
         let bufferOffset = this.preloadedBegin + ((this.page_number - 1) * this.page_size);
         let buffer = this.preloadedData;
-
         while (skipIndex == null) {
             skipIndex = this.skipDateBlock(selectedDate, dateLevel, index_start, buffer, bufferOffset, bufferSize, toTheEnd);
             if (skipIndex == null) {
@@ -765,7 +741,8 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        Array.from(this.additionalFilters.values()),
+                        //Array.from(this.additionalFilters.values()),
+                        this.newAdditionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -779,7 +756,8 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
-                        Array.from(this.additionalFilters.values()),
+                        //Array.from(this.additionalFilters.values()),
+                        this.newAdditionalFilters,
                         bufferOffset,
                         bufferSize,
                         this.pageSortString,
@@ -802,7 +780,6 @@ export class ListViewComponent {
         this.toaster.success(skippedItems.toString(10) + (skippedItems > 1 ? ' items' : ' item'), 'You skipped');
         this.openHighlightedTextDateMenu(hideEvent, 0);
     }
-
     /**
      * Skips Date in given buffer
      * @param selectedDate Date to skip
@@ -906,7 +883,6 @@ export class ListViewComponent {
         }
         return skipIndex;
     }
-
     /**
      * Sets actual highlighted part of timestamp field as "from" date boundary
      */
@@ -916,7 +892,6 @@ export class ListViewComponent {
         const UTCDateTime = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
         this.setFromBoundary.emit(UTCDateTime);
     }
-
     /**
      * Sets actual highlighted part of timestamp field as "to" date boundary
      */
@@ -926,7 +901,6 @@ export class ListViewComponent {
         const UTCDateTime = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
         this.setToBoundary.emit(UTCDateTime);
     }
-
     /**
      * Select the part of path on the left by clicking to the filename
      *
@@ -940,7 +914,6 @@ export class ListViewComponent {
         let offset = window.getSelection().anchorOffset;
         let data = window.getSelection().anchorNode.textContent;
         const length = selection.toString().length;
-
         const range = selection.getRangeAt(0);
         const node = selection.anchorNode;
         if (node.parentNode.parentElement.innerText.length > data.length) {
@@ -952,7 +925,6 @@ export class ListViewComponent {
             range.setStart(node.parentNode, 0);
         }
         offset = range.toString().length;
-
         if (length === 0) {
             let subString = '';
             for (let i = offset; i < data.length; i++) {
@@ -981,7 +953,6 @@ export class ListViewComponent {
                     } else {
                         break;
                     }
-
                 }
             }
             range.setEnd(endNode, endOffset);
@@ -989,29 +960,24 @@ export class ListViewComponent {
             range.setEnd(node, offset);
         }
     }
-
     selectDateByClick(index) {
         const selection = window.getSelection();
         const offset = window.getSelection().anchorOffset;
         const data = window.getSelection().anchorNode['data'];
         const length = selection.toString().length;
-
         const range = selection.getRangeAt(0);
         const node = selection.anchorNode;
-
         range.setStart(node, 0);
         let subString = '';
         for (let i = offset + length; i < data.length; i++) {
             if (data[i] === '-' || data[i] === ' ' || data[i] === ':') {
                 // Take it from index one because on index zero is now space
                 subString = data.substring(1, i);
-
                 break;
             }
         }
         range.setEnd(node, subString.length + 1);
     }
-
     /**
      * Computes background color of timestamp field based on differences of timestamps
      * @param actual String time of actual item in list
@@ -1058,7 +1024,6 @@ export class ListViewComponent {
             }
         }
     }
-
     /**
      * Scrolls virtual scroll to given index
      * @param {number} index Index of item to scroll to
@@ -1072,7 +1037,6 @@ export class ListViewComponent {
         this.setPage(scrollPage);
         this.virtualScroller.scrollToIndex(scrollIndex - 1);
     }
-
     /**
      * Set page by page parameter
      * @param {number} page Number of requested page
@@ -1084,7 +1048,6 @@ export class ListViewComponent {
                 this.total - ((this.page_number - 1) * this.page_size) :
                 this.page_size;
     }
-
     /**
      * Triggered by page change
      * @param {number} page Number of page
@@ -1094,7 +1057,6 @@ export class ListViewComponent {
         this.scrollToIndex(scrollIndex);
         this.dataLoader(0, this.preloadedBufferSize, null, null, true, false);
     }
-
     /**
      * Method to drag timestamp
      * @param $event

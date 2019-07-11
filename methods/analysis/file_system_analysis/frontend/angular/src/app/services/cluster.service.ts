@@ -10,14 +10,24 @@ export class ClusterService {
 
     getData(_case: string,
             _clusters: ClusterModel[],
-            _additional_filters: string[],
+            _additional_filters: object,
             begin: number,
             page_size: number,
             sort: string,
             sort_order: string) {
+
+        console.log(JSON.stringify(_additional_filters));
+
+        console.log(begin);
+
+        // let my_begin = begin;
+        // if (begin === null || begin === undefined) {
+        //     my_begin = 0;
+        // }
         return this.http.post<any>(environment.backendUrl + '/clusters/data/' + _case, {
             'clusters': _clusters,
-            'additional_filters': _additional_filters,
+            'additional_filters': JSON.stringify(_additional_filters),
+            // 'begin': my_begin,
             'begin': begin,
             'page_size': page_size,
             'sort': sort,
