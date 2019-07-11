@@ -13,6 +13,8 @@ import {ClusterService} from '../../services/cluster.service';
 import {AuthenticationService} from '../../auth/authentication.service';
 import {UserSettingsService} from '../../services/userSettings.service';
 import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirmation-dialog.component';
+import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+import * as d3 from 'd3';
 
 @Component({
     selector: 'app-dashboard',
@@ -66,8 +68,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 public authService: AuthenticationService,
                 private toaster: ToastrService,
                 public dialog: MatDialog,
-                private userSettingsService: UserSettingsService) {
+                private userSettingsService: UserSettingsService,
+                private _hotkeysService: HotkeysService) {
         this.advancedMode = userSettingsService.advancedMode.getValue();
+        this._hotkeysService.add(new Hotkey(['ctrl+s', 'command+s'], (event: KeyboardEvent): boolean => {
+            this.saveApplicationState();
+            return false; // Prevent bubbling
+        }, undefined, 'Save application state'));
+        this._hotkeysService.add(new Hotkey(['ctrl+r', 'command+r'], (event: KeyboardEvent): boolean => {
+            this.restoreApplicationState();
+            return false; // Prevent bubbling
+        }, undefined, 'Restore application state'));
     }
 
     ngOnInit() {
@@ -454,6 +465,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
         localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
         localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
+        this.toaster.info('', 'Application state saved');
     }
 
     /**

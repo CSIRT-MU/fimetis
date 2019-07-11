@@ -1,17 +1,19 @@
-import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit} from '@angular/core';
+import {Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, AfterViewInit, OnDestroy} from '@angular/core';
 import {ClusterModel} from '../../models/cluster.model';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
 import {GraphService} from '../../services/graph.service';
+import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
+import {D3HistogramComponent} from './d3Histogram/d3Histogram.component';
 
 @Component({
     selector: 'app-graph',
     templateUrl: './graph.component.html',
     styleUrls: ['./graph.component.css']
 })
-export class GraphComponent implements OnInit, AfterViewInit {
+export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @Input() _case: string;
     @Input() _filter: string;
@@ -222,12 +224,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
         ]
     };
 
+    @ViewChild(D3HistogramComponent) d3Histogram: D3HistogramComponent;
+
+    private subscriptions: Subscription[] = [];
     constructor(private graphService: GraphService) {
         // debouncer setup
-        this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value));
-        this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value));
+        this.subscriptions.push(this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value)));
+        this.subscriptions.push(this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value)));
     }
-
 
     ngOnInit() {
     }
@@ -237,6 +241,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.chartOverview = chart(this.chartOverviewDiv.nativeElement, this.chartOverviewOptions);
     }
 
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    }
 
     /**
      * Graph initialization
@@ -301,7 +308,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 const data = response.x.map(function (x, i) {
 
                     if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null, 10];
+                        return [new Date(x).getTime(), null];
                     } else {
                         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
                     }
@@ -314,7 +321,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartOverview.series[0].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - m', response);
                 this.loadingMTimes = false;
+                // this.d3Histogram.data[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
+                // console.log(data);
+
             });
 
         // Loading mactimes - access
@@ -328,7 +338,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 const data = response.x.map(function (x, i) {
 
                     if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null, 10];
+                        return [new Date(x).getTime(), null];
                     } else {
                         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
                     }
@@ -339,6 +349,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartOverview.series[1].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - a', response);
                 this.loadingATimes = false;
+                // this.d3Histogram.data[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
@@ -353,7 +364,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 const data = response.x.map(function (x, i) {
 
                     if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null, 10];
+                        return [new Date(x).getTime(), null];
                     } else {
                         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
                     }
@@ -364,6 +375,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 this.chartOverview.series[2].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - c', response);
                 this.loadingCTimes = false;
+                // this.d3Histogram.data[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
@@ -378,7 +390,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 const data = response.x.map(function (x, i) {
 
                     if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null, 10];
+                        return [new Date(x).getTime(), null];
                     } else {
                         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
                     }
@@ -390,6 +402,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 console.log('Graph data loaded async! - b', response);
 
                 this.loadingBTimes = false;
+                // this.d3Histogram.data[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
@@ -404,7 +417,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
                 const data = response.x.map(function (x, i) {
 
                     if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null, 10];
+                        return [new Date(x).getTime(), null];
                     } else {
                         return [new Date(x).getTime(), parseInt(response.y[i], 10)];
                     }
@@ -412,7 +425,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
                 this.chart.series[4].setData(data, false, false,  false);
-                this.chartOverview.series[4].setData(data, false, false,  false);
+                // this.chartOverview.series[4].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - all', response);
 
                 this.loadingAllTimes = false;
@@ -425,6 +438,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
             this.chart.redraw(false);
             this.chartOverview.redraw(false);
+            // this.d3Histogram.createChart();
         }
     }
 
@@ -563,6 +577,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
             }
             this.showHideTrace(type);
             // this.typesChanged.emit(this.selectedTypes);
+            this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
             this.typesChangedDebouncer.next(this.selectedTypes);
             console.log('selected metadata types changed', this.selectedTypes);
         }
@@ -672,5 +687,34 @@ export class GraphComponent implements OnInit, AfterViewInit {
     setToBoundary(date: Date) {
         this.pickedToDate = date.toISOString().split('.')[0];
         this.updateBoundary();
+    }
+
+    transformSelectionsToFilter(selections) {
+        console.log(selections);
+        if (selections.length > 0) {
+            const fromUTCDateTime = new Date(selections[0][0]).getTime() - new Date(selections[0][0]).getTimezoneOffset() * 60000;
+            const toUTCDateTime = new Date(selections[0][1]).getTime() - new Date(selections[0][1]).getTimezoneOffset() * 60000;
+            this.saveGraphZoom = true;
+            this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
+            this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
+            // this.chart.showResetZoom();
+            // console.log(this.pickedFromDate);
+            this.dateChangeDebouncer.next([
+                new Date(fromUTCDateTime).toISOString(),
+                new Date(toUTCDateTime).toISOString()
+            ]);
+        } else {
+            const fromUTCDateTime = new Date(this.min_date_boundary).getTime() - new Date(this.min_date_boundary).getTimezoneOffset() * 60000;
+            const toUTCDateTime = new Date(this.max_date_boundary).getTime() - new Date(this.max_date_boundary).getTimezoneOffset() * 60000;
+            this.saveGraphZoom = false;
+            this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
+            this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
+            // this.chart.showResetZoom();
+            // console.log(this.pickedFromDate);
+            this.dateChangeDebouncer.next([
+                new Date(fromUTCDateTime).toISOString(),
+                new Date(toUTCDateTime).toISOString()
+            ]);
+        }
     }
 }

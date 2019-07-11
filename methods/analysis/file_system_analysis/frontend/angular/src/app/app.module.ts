@@ -27,6 +27,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { ngfModule } from 'angular-file';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {HotkeyModule} from 'angular2-hotkeys';
 // auth
 import {JwtInterceptor} from './auth/jwt.interceptor';
 import {ErrorInterceptor} from './auth/error.interceptor';
@@ -45,6 +46,7 @@ import {UploadComponent} from './UI/upload/upload.component';
 import {LoginComponent} from './UI/user/login/login.component';
 import { FilterComponent } from './UI/filter/filter.component';
 import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confirmation-dialog.component';
+import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component';
 
 @NgModule({
     declarations: [
@@ -61,7 +63,8 @@ import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confi
         HighlightPipe,
         UploadComponent,
         LoginComponent,
-        FilterComponent
+        FilterComponent,
+        D3HistogramComponent
     ],
     imports: [
         BrowserModule,
@@ -97,7 +100,8 @@ import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confi
         }),
         ngfModule,
         HttpClientModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        HotkeyModule.forRoot()
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
     providers: [

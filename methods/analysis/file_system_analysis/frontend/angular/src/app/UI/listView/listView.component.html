@@ -12,6 +12,10 @@
             <input type="text" name="searchString" [(ngModel)]="searchString" class="search-field" (change)="searchByString()">
             <span class="glyphicon glyphicon-search clickable search-icon" (click)="searchByString()"></span>
         </form>
+        <form #searchModeForm="ngForm" (submit)="searchByMode()" class="search-field-form">
+            <input type="text" name="searchMode" [(ngModel)]="searchMode" class="search-field" (change)="searchByMode()">
+            <span class="glyphicon glyphicon-search clickable search-icon" (click)="searchByMode()"></span>
+        </form>
         <span class="glyphicon glyphicon-option-vertical settings-menu-button"
               [matMenuTriggerFor]="settingsMenu"></span>
         <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">

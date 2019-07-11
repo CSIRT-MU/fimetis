@@ -60,6 +60,34 @@ export class BaseService {
             '}}';
     }
 
+    buildAdditionModeFilter(searchString: string) {
+        let search = searchString
+            .replace('/', '\\\\/')
+            .replace('.', '\\\\.')
+            .replace('-', '\\\\-')
+            .replace('(', '\\\\(')
+            .replace(')', '\\\\)')
+            .replace('[', '\\\\[')
+            .replace(']', '\\\\]')
+            .replace('*', '\\\\*')
+            .replace('+', '\\\\+')
+            .replace('{', '\\\\{')
+            .replace('}', '\\\\}')
+            .replace('^', '\\\\^')
+            .replace('?', '\\\\?')
+            .replace('<', '\\\\<')
+            .replace('>', '\\\\>')
+            .replace('&', '\\\\&')
+            .replace('$', '\\\\$')
+            .replace('|', '\\\\|');
+        search = '.*' + search + '.*';
+        console.log('search string:', search);
+        return '{"regexp": {' +
+            '"Mode.keyword": "' + search + '"' +
+            //'"File Name.keyword": "' + search + '"' +
+            '}}';
+    }
+
     buildAdditionRangeFilter(from: string, to: string) {
         let filter = '{"range": {' +
             '"@timestamp": {';

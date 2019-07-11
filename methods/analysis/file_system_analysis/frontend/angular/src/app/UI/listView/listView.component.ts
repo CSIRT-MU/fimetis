@@ -45,6 +45,7 @@ export class ListViewComponent {
 
     tablePanelOpenState = true;
     searchString = '';
+    searchMode = '';
     additionalFilters: Map<string, string> = new Map<string, string>();
     selected_rows_id: Set<string> = new Set<string>();
     tableSelection = new SelectionModel<any>(true, []);
@@ -246,6 +247,18 @@ export class ListViewComponent {
             this.init();
         } else if (this.additionalFilters.has('searchString')) {
             this.additionalFilters.delete('searchString');
+            this.init();
+        }
+        this.additionalFiltersChanged.emit(this.additionalFilters);
+    }
+
+    searchByMode() {
+        console.log('search - mode', this.searchMode);
+        if (this.searchMode !== '') {
+            this.additionalFilters.set('searchMode', this.baseService.buildAdditionModeFilter(this.searchMode));
+            this.init();
+        } else if (this.additionalFilters.has('searchMode')) {
+            this.additionalFilters.delete('searchMode');
             this.init();
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);

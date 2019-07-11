@@ -22,6 +22,9 @@
                 <button mat-menu-item (click)="logout()" >
                     <span>LOG OUT</span>
                 </button>
+                <button mat-menu-item (click)="toggleCheatsheet()">
+                    <span>HOTKEYS</span>
+                </button>
             </mat-menu>
         </div>
     </div>
@@ -29,3 +32,4 @@
         <router-outlet></router-outlet>
     </div>
 </div>
+<hotkeys-cheatsheet title="FILESYSTEM METADATA ANALYSIS HOTKEYS"></hotkeys-cheatsheet>
