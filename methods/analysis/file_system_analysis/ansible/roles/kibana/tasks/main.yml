@@ -10,19 +10,7 @@
     lineinfile:
       dest: /etc/kibana/kibana.yml
       regexp: "^(#)*elasticsearch.hosts.*"
-      line: "elasticsearch.hosts: [\"http{{':'}}//{{ inventory_hostname }}{{':'}}{{ elastic_reverse_proxy_port }}\"]"
-
-  - name: Setting elastic user in kibana.yml
-    lineinfile:
-      dest: /etc/kibana/kibana.yml
-      regexp: "^(#)*elasticsearch.username.*"
-      line: "elasticsearch.username{{':'}} \"{{ elastic_user }}\""
-
-  - name: Setting elastic password in kibana.yml
-    lineinfile:
-      dest: /etc/kibana/kibana.yml
-      regexp: "^(#)*elasticsearch.password.*"
-      line: "elasticsearch.password{{':'}} \"{{ elastic_passwd }}\""
+      line: "elasticsearch.hosts: [\"http{{':'}}//localhost{{':'}}{{ elastic_localhost_port }}\"]"
 
   - name: Setting port of kibana in kibana.yml
     lineinfile:

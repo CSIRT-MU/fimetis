@@ -1,9 +1,7 @@
 ---
-# - include: "{{ role_path }}/files/users.yml"
 
  - name: install werkezug
    shell: pip3 install werkzeug
-
 
  - name: copy script to machine
    copy:

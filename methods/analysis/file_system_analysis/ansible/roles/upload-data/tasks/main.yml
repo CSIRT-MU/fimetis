@@ -16,16 +16,10 @@
       src: "{{ role_path }}/files/test.mac"
       dest: /opt/metadata-uploader  
 
-
   - name: Loading data to elastic
     shell: source /opt/backend/venv/bin/activate && python3 /opt/backend/import_metadata.py test /opt/metadata-uploader/test.mac  
     args:
       executable: /bin/bash
-
-#  - name: Loading testing data to elastic
-#    shell: python3 /opt/metadata-uploader/metadata-uploader.py --case test --file /opt/metadata-uploader/test.mac --deleted true
-#    shell: /opt/metadata-uploader/metadata-uploader.sh -c test -h localhost:9200 -i metadata -t mactimes -u elastic -p timesix-elk -tp /opt/metadata-uploader/logstash-template.txt /opt/metadata-uploader/test.mac
-  
 
   - name: Loading testing filter to elastic
     shell: 'curl -XPOST ''localhost:{{ elastic_localhost_port }}/filter/typename'' -H ''Content-Type: application/json'' -d ''{ "name": "select all", "type": "template", "json": "{\"match_all\": {}}"}'''
@@ -34,5 +28,4 @@
     shell: 'curl -XPUT ''localhost:{{ elastic_localhost_port }}/_all/_settings?preserve_existing=true'' -H ''Content-Type: application/json'' -d ''{"index.max_result_window" : "20000000"}'''
     args:
       warn: false 
-
 

@@ -12,5 +12,5 @@
   - { role: nginx }
 #  - { role: logstash }
   - { role: flask }
-  - { role: test-data }
-  - { role: users }
+  - { role: upload-data }
+  - { role: upload-users }
