@@ -101,7 +101,7 @@ import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component
         ngfModule,
         HttpClientModule,
         MatButtonToggleModule,
-        HotkeyModule.forRoot()
+        HotkeyModule.forRoot({cheatSheetCloseEsc: true})
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
     providers: [
