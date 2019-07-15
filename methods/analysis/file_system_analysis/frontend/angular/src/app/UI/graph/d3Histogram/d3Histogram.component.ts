@@ -4,6 +4,7 @@ import {Observable, Subject, Subscription} from 'rxjs';
 import {bisect, select} from 'd3';
 import {debounceTime} from 'rxjs/operators';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+import {transformAll} from '@angular/compiler/src/render3/r3_ast';
 
 export interface HistogramData {
     data: number[][];
@@ -38,12 +39,13 @@ export class D3HistogramComponent implements OnDestroy {
     selectionsDebouncer: Subject<any[]> = new Subject();
 
     margin = { top: 30, right: 20, bottom: 40, left: 50 };
+    savedZoomProperties = null;
 
     private subscriptions: Subscription[] = [];
 
     constructor(private _hotkeysService: HotkeysService) {
         this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionsEmitter.emit(value)));
-        this._hotkeysService.add(new Hotkey(['ctrl+right', 'command+right'], (event: KeyboardEvent): boolean => {
+        this._hotkeysService.add(new Hotkey(['ctrl+right', 'meta+right'], (event: KeyboardEvent): boolean => {
             // shift graph view to right
             d3.selectAll('.zoomNavRight').dispatch('click');
             return false; // Prevent bubbling
@@ -58,6 +60,23 @@ export class D3HistogramComponent implements OnDestroy {
             d3.select('.resetZoomButton').dispatch('click');
             return false; // Prevent bubbling
         }, undefined, 'Reset histogram zoom'));
+        this._hotkeysService.add(new Hotkey(['ctrl+del', 'command+del'], (event: KeyboardEvent): boolean => {
+            // remove all time range selections
+            this.selections = [];
+            this.selectionsDebouncer.next(this.selections);
+            this.removeAllSelections();
+            return false; // Prevent bubbling
+        }, undefined, 'Remove all time range selections'));
+        this._hotkeysService.add(new Hotkey(['ctrl+plus', 'command+plus'], (event: KeyboardEvent): boolean => {
+            // zoom in histogram
+            d3.select('.zoomPlusButton').dispatch('click');
+            return false; // Prevent bubbling
+        }, undefined, 'Zoom in histogram'));
+        this._hotkeysService.add(new Hotkey(['ctrl+-', 'command+-'], (event: KeyboardEvent): boolean => {
+            // zoom out histogram
+            d3.select('.zoomMinusButton').dispatch('click');
+            return false; // Prevent bubbling
+        }, undefined, 'Zoom out histogram'));
     }
 
     ngOnDestroy() {
@@ -72,7 +91,7 @@ export class D3HistogramComponent implements OnDestroy {
         const data = this.data;
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
-        const selections = this.selections;
+        // const selections = this.selections;
         // let xShiftValue = 0;
 
         // const zoom = d3.zoom()
@@ -272,6 +291,13 @@ export class D3HistogramComponent implements OnDestroy {
         drawSelections();
         this.showAndHideTraces(this.selectedTypes);
 
+        // responsive - keep zoom
+        if (this.savedZoomProperties != null) {
+            const newX = -(element.offsetWidth * ((this.savedZoomProperties.zoom.x * -1) / this.savedZoomProperties.oldWidth));
+            const translateBy = (newX - this.savedZoomProperties.zoom.x) / this.savedZoomProperties.zoom.k;
+            d3.select(svg.node()).call(zoom.transform, this.savedZoomProperties.zoom.translate(translateBy, 0));
+            // bug: not zooming to the center of view
+        }
 
         function zoomed() {
 
@@ -341,6 +367,7 @@ export class D3HistogramComponent implements OnDestroy {
             drawZoomNavigation();
             // drawBars();
             drawSelections();
+            thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()), 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
         }
 
         function shift(shiftValue) {
@@ -359,8 +386,8 @@ export class D3HistogramComponent implements OnDestroy {
             // drawSelections();
         }
 
-        function zoomIn(zoomValue) {
-            const area = (zoomValue[1].getTime() - zoomValue[0].getTime());
+        function zoomIn(zoomRange) {
+            const area = (zoomRange[1].getTime() - zoomRange[0].getTime());
 
             // console.log('position', x(zoomValue[0]), x(zoomValue[1]), x(zoomValue[0]) + ((x(zoomValue[1]) - x(zoomValue[0])) / 2));
             // console.log('scale', contentWidth / (x(zoomValue[1]) - x(zoomValue[0]) + (0.4 * (x(zoomValue[1]) - x(zoomValue[0])))), contentWidth, (x(zoomValue[1]) - x(zoomValue[0]) + (0.4 * (x(zoomValue[1]) - x(zoomValue[0])))));
@@ -370,7 +397,7 @@ export class D3HistogramComponent implements OnDestroy {
 
 
             zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
-                (zoomValue[1].getTime() - zoomValue[0].getTime() + (0.2 * area)))
+                (zoomRange[1].getTime() - zoomRange[0].getTime() + (0.2 * area)))
             );
             // zoom.translateTo(svg, x(zoomValue[1]), 0);
             // zoom.transform(svg, d3.zoomTransform(svg.node()).scale(contentWidth / (x(zoomValue[1]) - x(zoomValue[0]) + 80 )));
@@ -381,7 +408,7 @@ export class D3HistogramComponent implements OnDestroy {
             // zoom.translateTo(svg, x(zoomValue[0]) + ((x(zoomValue[1]) - x(zoomValue[0])) / 2), 0);
             // zoom.translateTo(svg, actualX(zoomTo), 0);
 
-            shift(-actualX(new Date(zoomValue[0].getTime() - 0.1 * area)));
+            shift(-actualX(new Date(zoomRange[0].getTime() - 0.1 * area)));
             console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
 
             // const currentZoom = d3.zoomTransform(svg.node());
@@ -400,6 +427,27 @@ export class D3HistogramComponent implements OnDestroy {
 
         function zoomOut() {
             zoom.transform(svg, d3.zoomIdentity);
+        }
+
+        // zoom buttons
+        svg.selectAll('.zoomPlusButton').remove();
+        svg.selectAll('.zoomMinusButton').remove();
+        svg.append('rect')
+            .attr('class', 'zoomPlusButton')
+            .style('visibility', 'hidden')
+            .on('click', zoomPlus);
+        svg.append('rect')
+            .attr('class', 'zoomMinusButton')
+            .style('visibility', 'hidden')
+            .on('click', zoomMinus);
+
+        const zoomFactor = 0.9;
+        function zoomPlus() {
+            zoom.scaleTo(svg, d3.zoomTransform(svg.node()).k / zoomFactor);
+        }
+
+        function zoomMinus() {
+            zoom.scaleTo(svg, d3.zoomTransform(svg.node()).k * zoomFactor);
         }
 
         function updateBars() {
@@ -572,7 +620,7 @@ export class D3HistogramComponent implements OnDestroy {
         function drawSelections() {
             // shadow over whole chart
             g.selectAll('.shadowBar').remove();
-            if (selections.length > 0) {
+            if (thisClass.selections.length > 0) {
                 mask.selectAll('.maskShadowBar').remove();
                 mask.append('rect')
                     .attr('class', 'maskShadowBar')
@@ -583,7 +631,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('fill', 'white');
                 mask.selectAll('.maskSelection').remove();
                 mask.selectAll('.maskSelection')
-                    .data(selections)
+                    .data(thisClass.selections)
                     .enter()
                     .append('rect')
                     .attr('class', 'maskSelection')
@@ -621,7 +669,7 @@ export class D3HistogramComponent implements OnDestroy {
             // selection lines
             svgSel.selectAll('.selectionLineLeft').remove();
             svgSel.selectAll('.selectionLineLeft')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('line')
                 .attr('class', 'selectionLineLeft')
@@ -649,12 +697,12 @@ export class D3HistogramComponent implements OnDestroy {
                             d[1] = actualX.invert(dragX);
                             drawSelections();
                         }
-                        thisClass.selectionsDebouncer.next(selections);
+                        thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
             svgSel.selectAll('.selectionLineRight').remove();
             svgSel.selectAll('.selectionLineRight')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter().append('line')
                 .attr('class', 'selectionLineRight')
                 .attr('x1', d => actualX(d[1]) + margin.left)
@@ -681,14 +729,14 @@ export class D3HistogramComponent implements OnDestroy {
                             d[0] = actualX.invert(dragX);
                             drawSelections();
                         }
-                        thisClass.selectionsDebouncer.next(selections);
+                        thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
             // selection buttons
 
             svg.selectAll('.selectionRemoveButtonIcon').remove();
             svg.selectAll('.selectionRemoveButtonIcon')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
                 .attr('class', 'selectionRemoveButtonIcon')
@@ -703,7 +751,7 @@ export class D3HistogramComponent implements OnDestroy {
 
             svg.selectAll('.selectionRemoveButton').remove();
             svg.selectAll('.selectionRemoveButton')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('circle')
                 .attr('class', 'selectionRemoveButton')
@@ -718,15 +766,15 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 // .style('visibility', 'hidden')
                 .on('click', function(d, i) {
-                    selections.splice(i, 1);
+                    thisClass.selections.splice(i, 1);
                     drawSelections();
-                    thisClass.selectionsDebouncer.next(selections);
+                    thisClass.selectionsDebouncer.next(thisClass.selections);
                 })
                 .append('title').text('Remove this selection');
 
             svg.selectAll('.selectionZoomInButtonIcon').remove();
             svg.selectAll('.selectionZoomInButtonIcon')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
                 .attr('class', 'selectionZoomInButtonIcon')
@@ -741,7 +789,7 @@ export class D3HistogramComponent implements OnDestroy {
 
             svg.selectAll('.selectionZoomInButton').remove();
             svg.selectAll('.selectionZoomInButton')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('circle')
                 .attr('class', 'selectionZoomInButton')
@@ -799,7 +847,7 @@ export class D3HistogramComponent implements OnDestroy {
             // selection border text
             svg.selectAll('.selectionTextL').remove();
             svg.selectAll('.selectionTextL')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
                 .attr('class', 'selectionTextL')
@@ -830,7 +878,7 @@ export class D3HistogramComponent implements OnDestroy {
                 });
             svg.selectAll('.selectionTextR').remove();
             svg.selectAll('.selectionTextR')
-                .data(selections)
+                .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
                 .attr('class', 'selectionTextR')
@@ -857,7 +905,7 @@ export class D3HistogramComponent implements OnDestroy {
                     const thisElement = this as HTMLInputElement;
                     d[1] = new Date(thisElement.value);
                     drawSelections();
-                    thisClass.selectionsDebouncer.next(selections);
+                    thisClass.selectionsDebouncer.next(thisClass.selections);
                 }).on('keypress', function() {
                     if (d3.event.keyCode === 13) {
                         // if enter is pressed
@@ -900,12 +948,12 @@ export class D3HistogramComponent implements OnDestroy {
             const draggedX = d3.event.x - margin.left;
             if (draggedX - dragStartX !== 0) {
                 if (draggedX < dragStartX) {
-                    selections.push([actualX.invert(draggedX), actualX.invert(dragStartX)]);
+                    thisClass.selections.push([actualX.invert(draggedX), actualX.invert(dragStartX)]);
                 } else {
-                    selections.push([actualX.invert(dragStartX), actualX.invert(draggedX)]);
+                    thisClass.selections.push([actualX.invert(dragStartX), actualX.invert(draggedX)]);
                 }
-                thisClass.selectionsDebouncer.next(selections);
-                console.log('drag end', draggedX, x(draggedX), d3.mouse(this), selections);
+                thisClass.selectionsDebouncer.next(thisClass.selections);
+                console.log('drag end', draggedX, x(draggedX), d3.mouse(this), thisClass.selections);
                 g.selectAll('.dragRect').remove();
                 drawSelections();
             }
@@ -938,5 +986,17 @@ export class D3HistogramComponent implements OnDestroy {
         for (const typeName of types) {
             d3.selectAll('.bar' + typeName).style('visibility', 'visible');
         }
+    }
+
+    removeAllSelections() {
+        d3.selectAll('.shadowBar').remove();
+        d3.selectAll('.selectionLineLeft').remove();
+        d3.selectAll('.selectionLineRight').remove();
+        d3.selectAll('.selectionRemoveButtonIcon').remove();
+        d3.selectAll('.selectionRemoveButton').remove();
+        d3.selectAll('.selectionZoomInButtonIcon').remove();
+        d3.selectAll('.selectionZoomInButton').remove();
+        d3.selectAll('.selectionTextL').remove();
+        d3.selectAll('.selectionTextR').remove();
     }
 }

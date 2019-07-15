@@ -235,22 +235,22 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         this.subscriptions.push(this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value)));
         this.subscriptions.push(this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value)));
         this._hotkeysService.add(new Hotkey(['ctrl+m', 'command+m'], (event: KeyboardEvent): boolean => {
-            // shift graph view to left
+            // De/select m type switch button
             this.typeCheckboxChanged('m');
             return false; // Prevent bubbling
         }, undefined, 'De/select m type switch button'));
         this._hotkeysService.add(new Hotkey(['ctrl+a', 'command+a'], (event: KeyboardEvent): boolean => {
-            // shift graph view to left
+            // De/select a type switch button
             this.typeCheckboxChanged('a');
             return false; // Prevent bubbling
         }, undefined, 'De/select a type switch button'));
         this._hotkeysService.add(new Hotkey(['ctrl+c', 'command+c'], (event: KeyboardEvent): boolean => {
-            // shift graph view to left
+            // De/select c type switch button
             this.typeCheckboxChanged('c');
             return false; // Prevent bubbling
         }, undefined, 'De/select c type switch button'));
         this._hotkeysService.add(new Hotkey(['ctrl+b', 'command+b'], (event: KeyboardEvent): boolean => {
-            // shift graph view to left
+            // De/select b type switch button
             this.typeCheckboxChanged('b');
             return false; // Prevent bubbling
         }, undefined, 'De/select b type switch button'));
