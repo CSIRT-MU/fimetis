@@ -97,13 +97,7 @@ export class D3HistogramComponent implements OnDestroy {
         const data = this.data;
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
-        // const selections = this.selections;
-        // let xShiftValue = 0;
-
-        // const zoom = d3.zoom()
-        //     .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
-        //     .extent([[0, 0], [contentWidth, contentHeight]])
-        //     .on('zoom', updateChart);
+        const zoomFactor = 0.9;
 
         d3.select(element).select('svg').remove();
 
@@ -122,11 +116,16 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('height', element.offsetHeight)
             .call(drag)
             .call(zoom);
-            // .call(d3.zoom().on("zoom", function () {
-            //     svg.attr("transform", d3.event.transform)
-            // }));
 
+        // buttons (+ hidden buttons)
+        d3.select('.zoomPlusButton').on('click', zoomPlus);
+        d3.select('.zoomMinusButton').on('click', zoomMinus);
         d3.select('.resetZoomButton').on('click', zoomOut);
+        svg.selectAll('.selectActualAreaButton').remove();
+        svg.append('rect')
+            .attr('class', 'selectActualAreaButton')
+            .style('visibility', 'hidden')
+            .on('click', selectActualArea);
 
         const contentWidth = element.offsetWidth - this.margin.left - this.margin.right;
         const contentHeight = element.offsetHeight - this.margin.top - this.margin.bottom;
@@ -191,28 +190,6 @@ export class D3HistogramComponent implements OnDestroy {
             .style('border-radius', '5px')
             .style('padding', '3px');
 
-        // let firstDate: Date = null;
-        // let lastDate: Date = null;
-
-        // for (let i = 0; i < data.length; i++) {
-        //     if (firstDate == null) {
-        //         console.log(data);
-        //         firstDate = new Date(data[i].data[0][0]);
-        //     } else {
-        //         if (new Date(data[i].data[0][0]) < firstDate) {
-        //             firstDate = new Date(data[i].data[0][0]);
-        //         }
-        //     }
-        //     if (lastDate == null) {
-        //         lastDate = new Date(data[i].data[data[i].data.length - 1][0]);
-        //     } else {
-        //         if (new Date(data[i].data[data[i].data.length - 1][0]) > lastDate) {
-        //             lastDate = new Date(data[i].data[data[i].data.length - 1][0]);
-        //         }
-        //     }
-        //
-        // }
-
         const firstDate = new Date(this.min_date_boundary - (24 * 3600 * 1000));
         const lastDate = new Date(this.max_date_boundary + (24 * 3600 * 1000));
 
@@ -238,17 +215,6 @@ export class D3HistogramComponent implements OnDestroy {
 
         let actualX = x;
         const actualY = y;
-
-        // const x = d3
-        //     .scaleBand()
-        //     .rangeRound([0, contentWidth])
-        //     .padding(0.1)
-        //     .domain(data[i].dates);
-        //
-        // const y = d3
-        //     .scaleLinear()
-        //     .rangeRound([contentHeight, 0])
-        //     .domain([0, d3.max(data[i].values, d => d.value)]);
 
         const g = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
@@ -283,10 +249,6 @@ export class D3HistogramComponent implements OnDestroy {
             .select('.domain').remove()
             .append('text')
             .attr('transform', 'rotate(-90)');
-            // .attr('y', 6)
-            // .attr('dy', '0.71em')
-            // .attr('text-anchor', 'end')
-            // .text('Value');
 
         svg.selectAll('.tick line').attr('stroke', '#EBEBEB');
 
@@ -306,151 +268,44 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function zoomed() {
-
-            // const t = d3.event.transform;
-            // g.attr('transform', t);
-
-
-
             const t = d3.event.transform;
-
-            // dont allow to zoom out of borders
-
-            // if (x(t.invertX(0)) > x(firstDate)) {
-            //     t.x = x(firstDate) * t.k;
-            // }
-            // else if (x(t.invertX(contentWidth)) < x(lastDate)) {
-            //     t.x = contentWidth - x(lastDate) * t.k;
-            // }
-
             const range = x.range().map(t.invertX, t);
             const domain = range.map(x.invert, x);
             actualX = x.copy().domain(domain);
 
-            // // recover the new scale
-
+            // // same as above
             // actualX = d3.event.transform.rescaleX(x);
-            // const currentTransform = d3.zoomTransform(svg.node());
-            // if (currentTransform.x > x(lastDate)) {
-            //
-            // }
-            // actualX.domain([actualX.invert(actualX(actualX.domain()[0]) + xShiftValue), actualX.invert(actualX(actualX.domain()[1]) + xShiftValue)]);
-            // const newY = d3.event.transform.rescaleY(y);
-
-            // console.log(d3.event.scale, d3.event.translate);
-            // actualX = newX;
-
-            // console.log(newX.domain());
-            // console.log('zoomed', firstDate.getTime() !== newX.domain()[0].getTime() && lastDate.getTime() !== newX.domain()[1].getTime());
 
             // update axes with these new boundaries
             xAxis.attr('transform', 'translate(' + margin.left + ',' + (contentHeight + margin.top) + ')')
                 .call(d3.axisBottom(actualX));
-            // yAxis.call(d3.axisLeft(newY));
-
-            // g.attr('transform', d3.event.transform.x);
-
-            // update bars
-            // g.selectAll('.bar')
-            //     .attr('x', function(d) {return newX(new Date(d[0])); })
-            //     .attr('width', Math.max(contentWidth / ((newX.domain()[1].getTime() - newX.domain()[0].getTime()) / (24 * 3600 * 1000)), 1));
-                // .attr('y', function(d) { if (newY(d[1]) < 0) { return 0; } else { return newY(d[1]); }});
-
-
-            // g.selectAll('.selection')
-            //     .attr('x', function(d) {return newX(d[0]); })
-            //     .attr('width', function(d) {return newX(d[1]) - newX(d[0]); });
-            //
-            // g.selectAll('.selectionLineLeft')
-            //     .attr('x1', d => newX(d[0]))
-            //     .attr('x2', d => newX(d[0]));
-            //
-            // g.selectAll('.selectionLineRight')
-            //     .attr('x1', d => newX(d[1]))
-            //     .attr('x2', d => newX(d[1]));
 
             updateBars();
             drawZoomNavigation();
-            // drawBars();
             drawSelections();
+            // save zoom for responsive redraw
             thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()), 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
         }
 
         function shift(shiftValue) {
             const currentZoom = d3.zoomTransform(svg.node()).k;
-            // console.log(d3.zoomTransform(svg.node()).k);
-            // zoom.translateTo([actualX.invert(actualX(actualX.domain()[0]) + shiftValue), actualX.invert(actualX(actualX.domain()[1]) + shiftValue)]);
-            // actualX = d3.event.transform.rescaleX(x);
             zoom.transform(svg, d3.zoomTransform(svg.node()).translate(shiftValue / currentZoom, 0));
-            // actualX.domain([actualX.invert(actualX(actualX.domain()[0]) + shiftValue), actualX.invert(actualX(actualX.domain()[1]) + shiftValue)]);
-            // // xAxis.transition().duration(1000).call(d3.axisBottom(actualX));
-            // xAxis.call(d3.axisBottom(actualX));
-            // xShiftValue += shiftValue;
-
-            // updateBars();
-            // drawZoomNavigation();
-            // drawSelections();
         }
 
         function zoomIn(zoomRange) {
             const area = (zoomRange[1].getTime() - zoomRange[0].getTime());
-
-            // console.log('position', x(zoomValue[0]), x(zoomValue[1]), x(zoomValue[0]) + ((x(zoomValue[1]) - x(zoomValue[0])) / 2));
-            // console.log('scale', contentWidth / (x(zoomValue[1]) - x(zoomValue[0]) + (0.4 * (x(zoomValue[1]) - x(zoomValue[0])))), contentWidth, (x(zoomValue[1]) - x(zoomValue[0]) + (0.4 * (x(zoomValue[1]) - x(zoomValue[0])))));
-
-            // fixed to compare time between first - last date and selected area -- better results (not infinity / 0)
-            // zoom.scaleTo(svg, contentWidth / Math.max(1, (x(zoomValue[1]) - x(zoomValue[0]) + (0.4 * (x(zoomValue[1]) - x(zoomValue[0]))))));
-
-
             zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
                 (zoomRange[1].getTime() - zoomRange[0].getTime() + (0.2 * area)))
             );
-            // zoom.translateTo(svg, x(zoomValue[1]), 0);
-            // zoom.transform(svg, d3.zoomTransform(svg.node()).scale(contentWidth / (x(zoomValue[1]) - x(zoomValue[0]) + 80 )));
-            // zoom.transform(svg, d3.zoomTransform(svg.node()).scale(contentWidth / (x(zoomValue[1]) - x(zoomValue[0]))).translate(-actualX(zoomValue[0]), 0));
-
-            // const zoomTo = new Date(zoomValue[0].getTime() + ((zoomValue[1].getTime() - zoomValue[0].getTime()) / 2));
-            // console.log(zoomTo);
-            // zoom.translateTo(svg, x(zoomValue[0]) + ((x(zoomValue[1]) - x(zoomValue[0])) / 2), 0);
-            // zoom.translateTo(svg, actualX(zoomTo), 0);
 
             shift(-actualX(new Date(zoomRange[0].getTime() - 0.1 * area)));
             console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
-
-            // const currentZoom = d3.zoomTransform(svg.node());
-            // const currentZoomX = d3.zoomTransform(svg.node()).x;
-            // const zoomShift = x(zoomValue[0]) + currentZoomX;
-            //
-            // console.log(currentZoom, x(zoomValue[0]));
-            // // shift(zoomShift);
-            // zoom.transform(svg, d3.zoomTransform(svg.node()).translate(-zoomShift * currentZoom.k, 0));
-            // console.log(d3.zoomTransform(svg.node()));
-
-            // updateBars();
-            // drawZoomNavigation();
-            // drawSelections();
         }
 
         function zoomOut() {
             zoom.transform(svg, d3.zoomIdentity);
         }
 
-        // zoom buttons
-        // svg.selectAll('.zoomPlusButton').remove();
-        // svg.selectAll('.zoomMinusButton').remove();
-        // svg.append('rect')
-        //     .attr('class', 'zoomPlusButton')
-        //     .style('visibility', 'hidden')
-        //     .on('click', zoomPlus);
-        // svg.append('rect')
-        //     .attr('class', 'zoomMinusButton')
-        //     .style('visibility', 'hidden')
-        //     .on('click', zoomMinus);
-
-        d3.select('.zoomPlusButton').on('click', zoomPlus);
-        d3.select('.zoomMinusButton').on('click', zoomMinus);
-
-        const zoomFactor = 0.9;
         function zoomPlus() {
             zoom.scaleTo(svg, d3.zoomTransform(svg.node()).k / zoomFactor);
         }
@@ -565,10 +420,6 @@ export class D3HistogramComponent implements OnDestroy {
         function drawBars() {
             g.selectAll('.bar').remove();
             for (let i = 0; i < data.length; i++) {
-                // const x = d3
-                //     .scaleTime()
-                //     .domain([new Date(data[i][0][0]), d3.timeDay.offset(new Date(data[i][data[i].length - 1][0]), 8)])
-                //     .rangeRound([0, contentWidth]);
                 g.selectAll('.bar' + data[i].name)
                     .data(data[i].data)
                     .enter().append('rect')
@@ -624,12 +475,6 @@ export class D3HistogramComponent implements OnDestroy {
                     // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
             }
         }
-
-        svg.selectAll('.selectActualAreaButton').remove();
-        svg.append('rect')
-            .attr('class', 'selectActualAreaButton')
-            .style('visibility', 'hidden')
-            .on('click', selectActualArea);
 
         function selectActualArea() {
             thisClass.selections.push([actualX.domain()[0], actualX.domain()[1]]);
@@ -827,42 +672,6 @@ export class D3HistogramComponent implements OnDestroy {
                     zoomIn(d);
                 })
                 .append('title').text('Zoom into selection');
-
-
-
-            // g.selectAll('.selectionRemoveButtonIcon').remove();
-            // g.selectAll('.selectionRemoveButtonIcon')
-            //     .data(selections)
-            //     .enter()
-            //     .append('text')
-            //     .attr('class', 'selectionRemoveButtonIcon glyphicon glyphicon-remove')
-            //     .attr('x', d => actualX(d[1]) + 10)
-            //     .attr('y', 7)
-            //     // .attr('width', 10)
-            //     // .attr('height', 10)
-            //     // .html('<span class="glyphicon glyphicon-remove"></span>')
-            //     .text('&#xe014;')
-            //     .attr('fill', '#333333');
-                // .attr('x', d => actualX(d[1]) + 10)
-                // .attr('y', 7)
-                // .attr('width', 10)
-                // .attr('height', 10);
-            // g.selectAll('.selectionRemoveButtonIcon').remove();
-            // g.selectAll('.selectionRemoveButtonIcon')
-            //     .data(selections)
-            //     .enter()
-            //     .append('text')
-            //     .attr('class', 'selectionRemoveButtonIcon glyphicon glyphicon-remove')
-            //     // .classed('selectionRemoveButton', true)
-            //     .attr('x', d => actualX(d[1]) + 10)
-            //     .attr('y', 7)
-            //     .attr('width', 10)
-            //     .attr('height', 10)
-            //     .text('\\&#xe014;')
-            //     .attr('fill', 'rgba(220, 220, 220, 0.8)')
-            //     // .style('fill-opacity', 0.8)
-            //     .style('stroke', '#333333')
-            //     .style('cursor', 'pointer');
 
             // selection border text
             svg.selectAll('.selectionTextL').remove();
