@@ -430,16 +430,19 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         // zoom buttons
-        svg.selectAll('.zoomPlusButton').remove();
-        svg.selectAll('.zoomMinusButton').remove();
-        svg.append('rect')
-            .attr('class', 'zoomPlusButton')
-            .style('visibility', 'hidden')
-            .on('click', zoomPlus);
-        svg.append('rect')
-            .attr('class', 'zoomMinusButton')
-            .style('visibility', 'hidden')
-            .on('click', zoomMinus);
+        // svg.selectAll('.zoomPlusButton').remove();
+        // svg.selectAll('.zoomMinusButton').remove();
+        // svg.append('rect')
+        //     .attr('class', 'zoomPlusButton')
+        //     .style('visibility', 'hidden')
+        //     .on('click', zoomPlus);
+        // svg.append('rect')
+        //     .attr('class', 'zoomMinusButton')
+        //     .style('visibility', 'hidden')
+        //     .on('click', zoomMinus);
+
+        d3.select('.zoomPlusButton').on('click', zoomPlus);
+        d3.select('.zoomMinusButton').on('click', zoomMinus);
 
         const zoomFactor = 0.9;
         function zoomPlus() {
