@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewChild, ElementRef} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
@@ -15,6 +15,8 @@ import {debounceTime} from 'rxjs/operators';
 import {ClusterService} from '../../services/cluster.service';
 import {DataModel} from '../../models/data.model';
 import {BaseService} from '../../services/base.service';
+import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+
 @Component({
     selector: 'app-list-view',
     templateUrl: './listView.component.html',
@@ -41,6 +43,7 @@ export class ListViewComponent {
     tablePanelOpenState = true;
     searchString = '';
     searchMode = '';
+    pressedNumbers = [];
     //
     additionalFilters = {};
     selected_rows_id: Set<string> = new Set<string>();
@@ -103,7 +106,44 @@ export class ListViewComponent {
     constructor(private clusterService: ClusterService,
                 private baseService: BaseService,
                 public dialog: MatDialog,
-                private toaster: ToastrService) {
+                private toaster: ToastrService,
+                private _hotkeysService: HotkeysService
+    ) {
+        this._hotkeysService.add(new Hotkey(['g g'], (event: KeyboardEvent): boolean => {
+            const shift = this.createNumberFromPressedNumberKeys();
+            console.log(shift);
+            this.scrollToIndex(shift);
+            this.pressedNumbers = [];
+            return false; // Prevent bubbling
+        }, undefined, 'Jump to line or to start using gg'));
+        this._hotkeysService.add(new Hotkey(['G'], (event: KeyboardEvent): boolean => {
+            const shift = this.createNumberFromPressedNumberKeys();
+            if (shift === 0) {
+                this.scrollToIndex(this.total);
+            } else {
+                this.scrollToIndex(shift);
+            }
+            this.pressedNumbers = [];
+            return false; // Prevent bubbling
+        }, undefined, 'Jump to line or to end using G'));
+        this._hotkeysService.add(new Hotkey(['k'], (event: KeyboardEvent): boolean => {
+            let shift = this.createNumberFromPressedNumberKeys();
+            if (shift === 0) {
+                shift = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+            }
+            this.scrollToIndex(this.visibleDataFirstIndex - shift);
+            this.pressedNumbers = [];
+            return false; // Prevent bubbling
+        }, undefined, 'Scroll page up, or by number of lines setted '));
+        this._hotkeysService.add(new Hotkey(['j'], (event: KeyboardEvent): boolean => {
+            let shift = this.createNumberFromPressedNumberKeys();
+            if (shift === 0) {
+                shift = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+            }
+            this.scrollToIndex(this.visibleDataFirstIndex + shift);
+            this.pressedNumbers = [];
+            return false; // Prevent bubbling
+        }, undefined, 'Scroll page down, or by number of lines setted '));
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
@@ -114,6 +154,23 @@ export class ListViewComponent {
         this.highlightedText = '';
         this.highlightedTextDateBox = null;
         this.highlightedTextDate = '';
+    }
+
+    @HostListener('document:keypress', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent) {
+        // if number then added to pressedNumbers, if non number pressed, all numbers are resetted
+        const number = parseInt(event.key);
+        if (Number.isInteger(number)){
+            this.pressedNumbers.push(number);
+        }
+        else {
+            // Temp fix, if g g, then first g is captured and numbers are reseted, before shortcut cc is done
+            if (event.key !== 'g'){
+                this.pressedNumbers = [];
+
+            }
+        }
+
     }
     /**
      * Initializes list asynchronously
@@ -1069,5 +1126,20 @@ export class ListViewComponent {
         $event.dataTransfer.setData('timestamp', JSON.stringify(timestamp));
         $event.dataTransfer.dropEffect = 'copy';
         $event.effectAllowed = 'copyMove';
+    }
+
+
+    createNumberFromPressedNumberKeys() {
+        console.log(this.pressedNumbers);
+        let digit_weight = 1;
+        let result = 0;
+        for (let i = this.pressedNumbers.length - 1; i >= 0; i--) {
+
+            result = result + this.pressedNumbers[i] * digit_weight;
+            digit_weight = digit_weight * 10;
+
+        }
+
+        return result;
     }
 }
