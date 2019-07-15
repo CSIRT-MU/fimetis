@@ -47,18 +47,10 @@ export class BaseService {
             .replace('&', '\\\\&')
             .replace('$', '\\\\$')
             .replace('|', '\\\\|');
-        search = '*' + search + '*';
-        console.log('search string:', search);
-        let query_string = '{ "query_string":';
-        query_string += '{';
-        query_string += '"query": "' + search + '",';
-        query_string += '"fields": ["@timestamp", "UID", "File Name", "Mode"]';
-        query_string += '}';
-        query_string += '}';
-        return query_string;
-        // return '{"regexp": {' +
-        //     '"File Name.keyword": "' + search + '"' +
-        //     '}}';
+        search = '.*' + search + '.*';
+        return '{"regexp": {' +
+            '"File Name.keyword": "' + search + '"' +
+            '}}';
     }
     buildAdditionModeFilter(searchString: string) {
         let search = searchString

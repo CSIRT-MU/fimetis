@@ -266,24 +266,24 @@ def get_match_string_from_case(case_name):
 
 
 def build_additional_search_filter(search_string):
-    search = search_string.replace('/', '\\\\/')\
-        .replace('.', '\\\\.')\
-        .replace('-', '\\\\-')\
-        .replace('(', '\\\\(')\
-        .replace(')', '\\\\)')\
-        .replace('[', '\\\\[')\
-        .replace(']', '\\\\]')\
-        .replace('*', '\\\\*')\
-        .replace('+', '\\\\+')\
-        .replace('{', '\\\\{')\
-        .replace('}', '\\\\}')\
-        .replace('^', '\\\\^')\
-        .replace('?', '\\\\?')\
-        .replace('<', '\\\\<')\
-        .replace('>', '\\\\>')\
-        .replace('&', '\\\\&')\
-        .replace('$', '\\\\$')\
-        .replace('|', '\\\\|')
+    search = search_string.replace('/', '\\/')\
+        .replace('.', '\\.')\
+        .replace('-', '\\-')\
+        .replace('(', '\\(')\
+        .replace(')', '\\)')\
+        .replace('[', '\\[')\
+        .replace(']', '\\]')\
+        .replace('*', '\\*')\
+        .replace('+', '\\+')\
+        .replace('{', '\\{')\
+        .replace('}', '\\}')\
+        .replace('^', '\\^')\
+        .replace('?', '\\?')\
+        .replace('<', '\\<')\
+        .replace('>', '\\>')\
+        .replace('&', '\\&')\
+        .replace('$', '\\$')\
+        .replace('|', '\\|')
     search = '.*' + search + '.*'
     return {'regexp': {'File Name.keyword': search}}
 
