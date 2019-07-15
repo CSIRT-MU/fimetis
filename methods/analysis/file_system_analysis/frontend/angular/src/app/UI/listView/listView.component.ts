@@ -115,7 +115,7 @@ export class ListViewComponent {
             this.scrollToIndex(shift);
             this.pressedNumbers = [];
             return false; // Prevent bubbling
-        }, undefined, 'Jump to line or to start using gg'));
+        }, undefined, 'Scroll to start, or to line number x if used in format xgg'));
         this._hotkeysService.add(new Hotkey(['G'], (event: KeyboardEvent): boolean => {
             const shift = this.createNumberFromPressedNumberKeys();
             if (shift === 0) {
@@ -125,7 +125,7 @@ export class ListViewComponent {
             }
             this.pressedNumbers = [];
             return false; // Prevent bubbling
-        }, undefined, 'Jump to line or to end using G'));
+        }, undefined, 'Scroll to end, or to line number x if used in format xG'));
         this._hotkeysService.add(new Hotkey(['k'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
             if (shift === 0) {
@@ -134,7 +134,7 @@ export class ListViewComponent {
             this.scrollToIndex(this.visibleDataFirstIndex - shift);
             this.pressedNumbers = [];
             return false; // Prevent bubbling
-        }, undefined, 'Scroll page up, or by number of lines setted '));
+        }, undefined, 'Scroll page up, or by number of lines up if used in format xk'));
         this._hotkeysService.add(new Hotkey(['j'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
             if (shift === 0) {
@@ -143,7 +143,7 @@ export class ListViewComponent {
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
             this.pressedNumbers = [];
             return false; // Prevent bubbling
-        }, undefined, 'Scroll page down, or by number of lines setted '));
+        }, undefined, 'Scroll page down, or by number of lines down if used in format xj'));
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
