@@ -77,6 +77,12 @@ export class D3HistogramComponent implements OnDestroy {
             d3.select('.zoomMinusButton').dispatch('click');
             return false; // Prevent bubbling
         }, undefined, 'Zoom out histogram'));
+        this._hotkeysService.add(new Hotkey(['ctrl+alt+s', 'command+alt+s'], (event: KeyboardEvent): boolean => {
+            // select zoomed area in histogram
+            d3.select('.selectActualAreaButton').dispatch('click');
+            return false; // Prevent bubbling
+        }, undefined, 'Select zoomed area in histogram'));
+
     }
 
     ngOnDestroy() {
@@ -619,6 +625,17 @@ export class D3HistogramComponent implements OnDestroy {
             }
         }
 
+        svg.selectAll('.selectActualAreaButton').remove();
+        svg.append('rect')
+            .attr('class', 'selectActualAreaButton')
+            .style('visibility', 'hidden')
+            .on('click', selectActualArea);
+
+        function selectActualArea() {
+            thisClass.selections.push([actualX.domain()[0], actualX.domain()[1]]);
+            drawSelections();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
+        }
 
         function drawSelections() {
             // shadow over whole chart
