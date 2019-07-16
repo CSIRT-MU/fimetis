@@ -101,6 +101,7 @@ export class ListViewComponent {
     visibleDataLastIndex = 0;
     loadingData = false;
     skippingData = null;
+    @ViewChild('searchField') searchField: ElementRef;
     @ViewChild('highlightedBox') highlightedBox: ElementRef;
     @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
     constructor(private clusterService: ClusterService,
@@ -109,7 +110,8 @@ export class ListViewComponent {
                 private toaster: ToastrService,
                 private _hotkeysService: HotkeysService
     ) {
-        this._hotkeysService.add(new Hotkey(['g g'], (event: KeyboardEvent): boolean => {
+        this._hotkeysService.add(new Hotkey(['g g'], (event: KeyboardEvent, combo: string): boolean => {
+            console.log(combo);
             const shift = this.createNumberFromPressedNumberKeys();
             console.log(shift);
             this.scrollToIndex(shift);
@@ -144,6 +146,14 @@ export class ListViewComponent {
             this.pressedNumbers = [];
             return false; // Prevent bubbling
         }, undefined, 'Scroll page down, or by number of lines down if used in format xj'));
+        this._hotkeysService.add(new Hotkey(['ctrl+f'], (event: KeyboardEvent): boolean => {
+            this.searchField.nativeElement.focus();
+            return false; // Prevent bubbling
+        }, undefined, 'Search by File name'));
+        // this._hotkeysService.add(new Hotkey(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], (event: KeyboardEvent, combo: string): boolean => {
+        //     this.pressedNumbers.push(parseInt(combo, 10));
+        //     return true;
+        // });
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
@@ -159,15 +169,13 @@ export class ListViewComponent {
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent) {
         // if number then added to pressedNumbers, if non number pressed, all numbers are resetted
-        const number = parseInt(event.key);
-        if (Number.isInteger(number)){
+        const number = parseInt(event.key, 10);
+        if (Number.isInteger(number)) {
             this.pressedNumbers.push(number);
-        }
-        else {
+        } else {
             // Temp fix, if g g, then first g is captured and numbers are reseted, before shortcut cc is done
-            if (event.key !== 'g'){
+            if (event.key !== 'g') {
                 this.pressedNumbers = [];
-
             }
         }
 
