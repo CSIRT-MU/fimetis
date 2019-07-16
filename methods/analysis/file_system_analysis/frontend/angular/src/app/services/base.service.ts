@@ -109,4 +109,8 @@ export class BaseService {
         filter += ']}}';
         return filter;
     }
+
+    getDateWithoutOffset(dateToConvert: Date) {
+        return new Date(new Date(dateToConvert).getTime() - new Date(dateToConvert).getTimezoneOffset() * 60000);
+    }
 }

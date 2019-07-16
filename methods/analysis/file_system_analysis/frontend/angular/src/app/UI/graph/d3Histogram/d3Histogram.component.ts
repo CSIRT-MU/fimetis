@@ -5,6 +5,7 @@ import {bisect, select} from 'd3';
 import {debounceTime} from 'rxjs/operators';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {transformAll} from '@angular/compiler/src/render3/r3_ast';
+import {BaseService} from '../../../services/base.service';
 
 export interface HistogramData {
     data: number[][];
@@ -38,12 +39,13 @@ export class D3HistogramComponent implements OnDestroy {
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
     selectionsDebouncer: Subject<any[]> = new Subject();
 
-    margin = { top: 30, right: 20, bottom: 40, left: 50 };
+    margin = { top: 30, right: 40, bottom: 40, left: 50 };
     savedZoomProperties = null;
 
     private subscriptions: Subscription[] = [];
 
-    constructor(private _hotkeysService: HotkeysService) {
+    constructor(private _hotkeysService: HotkeysService,
+                private baseService: BaseService) {
         this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionsEmitter.emit(value)));
         this._hotkeysService.add(new Hotkey(['ctrl+right', 'meta+right'], (event: KeyboardEvent): boolean => {
             // shift graph view to right
@@ -317,7 +319,7 @@ export class D3HistogramComponent implements OnDestroy {
         function updateBars() {
             // update bars
             g.selectAll('.bar')
-                .attr('x', function(d) {return actualX(new Date(d[0])); })
+                .attr('x', function(d) {return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))); })
                 .attr('width', Math.max(0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1));
         }
 
@@ -425,7 +427,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .enter().append('rect')
                     .attr('class', 'bar bar' + data[i].name)
                     // .attr('class', 'bar' + data[i].name)
-                    .attr('x', d => actualX(new Date(d[0])))
+                    .attr('x', d => actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))))
                     // .attr('y', d => actualY(d[1]))
                     .attr('y', function(d) {
                         if (d[1] < 1) {
@@ -695,7 +697,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // .style('position', 'relative')
                 // .style('border', '2px solid blue')
                 .html(function(d) {
-                    const date = new Date(d[0]);
+                    const date = thisClass.baseService.getDateWithoutOffset(new Date(d[0]));
                     return '<p style="display: block; margin: 0; text-align: right; font-size: small">' +
                         date.getUTCFullYear() + '-' +
                         (date.getUTCMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2}) +
@@ -732,7 +734,7 @@ export class D3HistogramComponent implements OnDestroy {
                 })
                 .on('blur', function(d, i) {
                     const thisElement = this as HTMLInputElement;
-                    d[1] = new Date(thisElement.value);
+                    d[1] = thisClass.baseService.getDateWithoutOffset(new Date(thisElement.value));
                     drawSelections();
                     thisClass.selectionsDebouncer.next(thisClass.selections);
                 }).on('keypress', function() {
@@ -759,49 +761,68 @@ export class D3HistogramComponent implements OnDestroy {
                 // });
         }
 
-        let dragStartX;
+        let dragStartX = null;
+        let dragShiftStartX = null;
         function dragStart() {
-            dragStartX = d3.event.x - margin.left;
-            console.log('drag start', actualX.invert(dragStartX));
-            g.selectAll('.dragRect').remove();
-            g.append('rect')
-                .attr('class', 'dragRect')
-                .attr('x', actualX(actualX.invert(dragStartX)))
-                .attr('y', 0)
-                .attr('width', 0)
-                .attr('height', contentHeight)
-                .attr('fill', 'rgba(66, 135, 245, 0.4)');
+            if (d3.event.sourceEvent.ctrlKey) {
+                dragShiftStartX = null;
+                if (d3.event.x - margin.left > 0 && d3.event.x - margin.left < contentWidth) {
+                    dragStartX = d3.event.x - margin.left;
+                    console.log('drag start', actualX.invert(dragStartX));
+                    g.selectAll('.dragRect').remove();
+                    g.append('rect')
+                        .attr('class', 'dragRect')
+                        .attr('x', actualX(actualX.invert(dragStartX)))
+                        .attr('y', 0)
+                        .attr('width', 0)
+                        .attr('height', contentHeight)
+                        .attr('fill', 'rgba(66, 135, 245, 0.4)');
+                } else {
+                    dragStartX = null;
+                }
+            } else {
+                dragStartX = null;
+                dragShiftStartX = d3.event.x;
+            }
         }
 
         function dragEnd() {
-            const draggedX = d3.event.x - margin.left;
-            if (draggedX - dragStartX !== 0) {
-                if (draggedX < dragStartX) {
-                    thisClass.selections.push([actualX.invert(draggedX), actualX.invert(dragStartX)]);
-                } else {
-                    thisClass.selections.push([actualX.invert(dragStartX), actualX.invert(draggedX)]);
+            const draggedX = Math.max(0, Math.min(d3.event.x - margin.left, contentWidth));
+            if (dragStartX != null) {
+                if (draggedX - dragStartX !== 0) {
+                    if (draggedX < dragStartX) {
+                        thisClass.selections.push([actualX.invert(draggedX), actualX.invert(dragStartX)]);
+                    } else {
+                        thisClass.selections.push([actualX.invert(dragStartX), actualX.invert(draggedX)]);
+                    }
+                    thisClass.selectionsDebouncer.next(thisClass.selections);
+                    // console.log('drag end', draggedX, x(draggedX), d3.mouse(this), thisClass.selections);
+                    g.selectAll('.dragRect').remove();
+                    drawSelections();
                 }
-                thisClass.selectionsDebouncer.next(thisClass.selections);
-                console.log('drag end', draggedX, x(draggedX), d3.mouse(this), thisClass.selections);
-                g.selectAll('.dragRect').remove();
-                drawSelections();
             }
-
         }
 
         function dragging() {
-            const dragSelectionX = d3.event.x - margin.left;
-            // console.log('drag', dragSelectionX);
-            if (dragSelectionX - dragStartX < 1) {
-                g.selectAll('.dragRect')
-                    .attr('x', actualX(actualX.invert(dragSelectionX)))
-                    .attr('width', actualX(actualX.invert(dragStartX - dragSelectionX)));
+            if (d3.event.sourceEvent.ctrlKey) {
+                const dragSelectionX = d3.event.x - margin.left;
+                // console.log('drag', dragSelectionX);
+                if (dragStartX != null) {
+                    if (dragSelectionX - dragStartX < 1) {
+                        g.selectAll('.dragRect')
+                            .attr('x', actualX(actualX.invert(dragSelectionX)))
+                            .attr('width', actualX(actualX.invert(dragStartX - dragSelectionX)));
+                    } else {
+                        g.selectAll('.dragRect')
+                            .attr('x', actualX(actualX.invert(dragStartX)))
+                            .attr('width', actualX(actualX.invert(dragSelectionX - dragStartX)));
+                    }
+                }
             } else {
-                g.selectAll('.dragRect')
-                    .attr('x', actualX(actualX.invert(dragStartX)))
-                    .attr('width', actualX(actualX.invert(dragSelectionX - dragStartX)));
+                const shiftTo = d3.event.x;
+                shift(shiftTo - dragShiftStartX);
+                dragShiftStartX = shiftTo;
             }
-
         }
     }
 
