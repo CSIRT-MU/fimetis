@@ -567,11 +567,18 @@ export class D3HistogramComponent implements OnDestroy {
                         d3.event.sourceEvent.stopPropagation();
                         const dragX = d3.event.x - margin.left;
                         if (actualX(d[1]) > dragX) {
-                            d[0] = actualX.invert(dragX);
-                            drawSelections();
+                            const closestLeftSelectionEnd = getClosestLeftSelectionEnd(actualX(d[0]));
+                            if (actualX(actualX.invert(dragX)) > closestLeftSelectionEnd) {
+                                d[0] = actualX.invert(dragX);
+                                drawSelections();
+                            }
                         } else {
-                            d[1] = actualX.invert(dragX);
-                            drawSelections();
+                            // Find start of the closest selection on the right
+                            const closestRightSelectionStart = getClosestRightSelectionStart(actualX(d[1]));
+                            if (actualX(actualX.invert(dragX)) < closestRightSelectionStart) {
+                                d[1] = actualX.invert(dragX);
+                                drawSelections();
+                            }
                         }
                         thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
@@ -599,16 +606,41 @@ export class D3HistogramComponent implements OnDestroy {
                         d3.event.sourceEvent.stopPropagation();
                         const dragX = d3.event.x - margin.left;
                         if (actualX(d[0]) < dragX) {
-                            d[1] = actualX.invert(dragX);
-                            drawSelections();
+                            // Find start of the closest selection on the right
+                            const closestRightSelectionStart = getClosestRightSelectionStart(actualX(d[1]));
+                            if (actualX(actualX.invert(dragX)) < closestRightSelectionStart) {
+                                d[1] = actualX.invert(dragX);
+                                drawSelections();
+                            }
                         } else {
-                            d[0] = actualX.invert(dragX);
-                            drawSelections();
+                            // Find end of the closest selection on the left
+                            const closestLeftSelectionEnd = getClosestLeftSelectionEnd(actualX(d[0]));
+                            if (actualX(actualX.invert(dragX)) > closestLeftSelectionEnd) {
+                                d[0] = actualX.invert(dragX);
+                                drawSelections();
+                            }
                         }
                         thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
-
+            function getClosestLeftSelectionEnd(actualSelectionStart) {
+                let closestLeftSelectionEnd = Number.NEGATIVE_INFINITY;
+                for (let j = 0; j < thisClass.selections.length; j++) {
+                    if (actualX(thisClass.selections[j][1]) < actualSelectionStart) {
+                        closestLeftSelectionEnd = Math.max(actualX(thisClass.selections[j][1]), closestLeftSelectionEnd);
+                    }
+                }
+                return closestLeftSelectionEnd;
+            }
+            function getClosestRightSelectionStart(actualSelectionEnd) {
+                let closestRightSelectionStart = Number.POSITIVE_INFINITY;
+                for (let j = 0; j < thisClass.selections.length; j++) {
+                    if (actualX(thisClass.selections[j][0]) > actualSelectionEnd) {
+                        closestRightSelectionStart = Math.min(actualX(thisClass.selections[j][0]), closestRightSelectionStart);
+                    }
+                }
+                return closestRightSelectionStart;
+            }
             // selection buttons
             svg.selectAll('.selectionRemoveButtonIcon').remove();
             svg.selectAll('.selectionRemoveButtonIcon')
