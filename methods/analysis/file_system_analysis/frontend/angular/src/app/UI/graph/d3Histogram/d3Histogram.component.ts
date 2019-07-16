@@ -100,6 +100,8 @@ export class D3HistogramComponent implements OnDestroy {
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
         const zoomFactor = 0.9;
+        const hoverAreaOffset = 20;
+        // let shiftKey = false;
 
         d3.select(element).select('svg').remove();
 
@@ -116,6 +118,7 @@ export class D3HistogramComponent implements OnDestroy {
         const svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
             .attr('height', element.offsetHeight)
+            // .on('wheel', wheeled)
             .call(drag)
             .call(zoom);
 
@@ -270,6 +273,10 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function zoomed() {
+            // if (shiftKey) {
+            //     shift(50);
+            //     return;
+            // }
             const t = d3.event.transform;
             const range = x.range().map(t.invertX, t);
             const domain = range.map(x.invert, x);
@@ -287,6 +294,7 @@ export class D3HistogramComponent implements OnDestroy {
             drawSelections();
             // save zoom for responsive redraw
             thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()), 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
+
         }
 
         function shift(shiftValue) {
@@ -548,6 +556,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('stroke', '#666666')
                 .on('mouseover', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
+                    passThruEvents(svg);
                 })
                 .on('mouseout', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
@@ -599,14 +608,14 @@ export class D3HistogramComponent implements OnDestroy {
                         thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
-            // selection buttons
 
+            // selection buttons
             svg.selectAll('.selectionRemoveButtonIcon').remove();
             svg.selectAll('.selectionRemoveButtonIcon')
                 .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
-                .attr('class', 'selectionRemoveButtonIcon')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButtonIcon'; })
                 // .attr('x', 10)
                 .attr('x', d => actualX(d[1]) + 8 + margin.left)
                 .attr('y', 3 + margin.top)
@@ -621,7 +630,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .data(thisClass.selections)
                 .enter()
                 .append('circle')
-                .attr('class', 'selectionRemoveButton')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButton'; })
                 // .classed('selectionRemoveButton', true)
                 .attr('cx', d => actualX(d[1]) + 15 + margin.left)
                 .attr('r', 10)
@@ -644,7 +653,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
-                .attr('class', 'selectionZoomInButtonIcon')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButtonIcon'; })
                 // .attr('x', 10)
                 .attr('x', d => actualX(d[1]) + 33 + margin.left)
                 .attr('y', 3 + margin.top)
@@ -659,7 +668,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .data(thisClass.selections)
                 .enter()
                 .append('circle')
-                .attr('class', 'selectionZoomInButton')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButton'; })
                 // .classed('selectionRemoveButton', true)
                 .attr('cx', d => actualX(d[1]) + 40 + margin.left)
                 .attr('r', 10)
@@ -681,7 +690,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
-                .attr('class', 'selectionTextL')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionTextL'; })
                 .attr('x', function(d) {
                     const position = actualX(d[0]) - 100 + margin.left;
                     if (position > 0 || actualX(d[0]) < 0 || actualX(d[0]) > contentWidth) {
@@ -712,7 +721,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .data(thisClass.selections)
                 .enter()
                 .append('svg:foreignObject')
-                .attr('class', 'selectionTextR')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionTextR'; })
                 .attr('x', function(d) {
                     const position = actualX(d[1]) + margin.left;
                     if (position + 145 < contentWidth + margin.left + margin.right || actualX(d[1]) < 0 || actualX(d[1]) > contentWidth) {
@@ -759,6 +768,26 @@ export class D3HistogramComponent implements OnDestroy {
                 //     //     ':' + date.getUTCMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
                 //     //     ':' + date.getUTCSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2});
                 // });
+            // hover area
+            // svg.selectAll('.hoverArea').remove();
+            // svg.selectAll('.hoverArea')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('rect')
+            //     .attr('class', 'hoverArea')
+            //     .attr('x', function(d){ return actualX(d[0]) + margin.left - hoverAreaOffset; })
+            //     .attr('width', function(d) {return actualX(d[1]) - actualX(d[0]) + 80; })
+            //     .attr('y', 0)
+            //     .attr('height', element.offsetHeight)
+            //     .style('fill', 'transparent')
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', '2px')
+            //     .on('mouseover', function(d, i) {
+            //         d3.selectAll('.selectionHoverArea-' + i).style('visibility', 'visible');
+            //     })
+            //     .on('mouseout', function (d, i) {
+            //         d3.selectAll('.selectionHoverArea-' + i).style('visibility', 'hidden');
+            //     });
         }
 
         let dragStartX = null;
@@ -823,6 +852,51 @@ export class D3HistogramComponent implements OnDestroy {
                 shift(shiftTo - dragShiftStartX);
                 dragShiftStartX = shiftTo;
             }
+        }
+
+        // d3.select(window).on('keydown', function() {
+        //     shiftKey = d3.event.shiftKey;
+        // });
+        //
+        // d3.select(window).on('keyup', function() {
+        //     shiftKey = d3.event.shiftKey;
+        // });
+
+        function passThruEvents(g) {
+            g
+                .on('mouseover.passThru', passThru)
+                .on('click.passThru', passThru)
+                .on('mousemove.passThru', passThru)
+                .on('mousedown.passThru', passThru)
+            ;
+
+            function passThru(d) {
+                const e = d3.event;
+                const prev = this.style.pointerEvents;
+                this.style.pointerEvents = 'none';
+
+                const el = document.elementFromPoint(d3.event.x, d3.event.y);
+
+                const e2 = document.createEvent('MouseEvent');
+                e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
+
+                el.dispatchEvent(e2);
+                this.style.pointerEvents = prev;
+            }
+        }
+
+        function passThru(d) {
+            const e = d3.event;
+            const prev = this.style.pointerEvents;
+            this.style.pointerEvents = 'none';
+
+            const el = document.elementFromPoint(d3.event.x, d3.event.y);
+
+            const e2 = document.createEvent('MouseEvent');
+            e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
+
+            el.dispatchEvent(e2);
+            this.style.pointerEvents = prev;
         }
     }
 
