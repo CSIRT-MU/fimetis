@@ -100,7 +100,7 @@ export class D3HistogramComponent implements OnDestroy {
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
         const zoomFactor = 0.9;
-        const hoverAreaOffset = 20;
+        const hoverAreaOffset = {left: 20, right: 60};
         // let shiftKey = false;
 
         d3.select(element).select('svg').remove();
@@ -119,6 +119,19 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('width', element.offsetWidth)
             .attr('height', element.offsetHeight)
             // .on('wheel', wheeled)
+            .on('mousemove', function () {
+                const xAxisPos = d3.mouse(this)[0] - margin.left;
+                d3.selectAll('.selectionHoverArea').style('visibility', 'hidden');
+                for (let index = 0; index < thisClass.selections.length; index++) {
+                    if (xAxisPos > (actualX(thisClass.selections[index][0]) - hoverAreaOffset.left) &&
+                        xAxisPos < (actualX(thisClass.selections[index][1]) + hoverAreaOffset.right)) {
+                        d3.selectAll('.selectionHoverArea-' + index).style('visibility', 'visible');
+                    }
+                }
+            })
+            .on('mouseleave', function () {
+                d3.selectAll('.selectionHoverArea').style('visibility', 'hidden');
+            })
             .call(drag)
             .call(zoom);
 
@@ -309,7 +322,7 @@ export class D3HistogramComponent implements OnDestroy {
             );
 
             shift(-actualX(new Date(zoomRange[0].getTime() - 0.1 * area)));
-            console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
+            // console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
         }
 
         function zoomOut() {
@@ -648,12 +661,12 @@ export class D3HistogramComponent implements OnDestroy {
                 .enter()
                 .append('svg:foreignObject')
                 .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButtonIcon'; })
-                // .attr('x', 10)
                 .attr('x', d => actualX(d[1]) + 8 + margin.left)
                 .attr('y', 3 + margin.top)
                 .attr('width', 20)
                 .attr('height', 20)
-                // .style('visibility', 'hidden')
+                // hidden after init
+                .style('visibility', 'hidden')
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-remove');
 
@@ -663,16 +676,15 @@ export class D3HistogramComponent implements OnDestroy {
                 .enter()
                 .append('circle')
                 .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButton'; })
-                // .classed('selectionRemoveButton', true)
                 .attr('cx', d => actualX(d[1]) + 15 + margin.left)
                 .attr('r', 10)
                 .attr('cy', 12 + margin.top)
-                // .attr('fill', 'rgba(220, 220, 220, 0.8)')
                 .style('fill-opacity', 0)
                 .style('stroke', '#333333')
                 .style('stroke-width', 2)
                 .style('cursor', 'pointer')
-                // .style('visibility', 'hidden')
+                // hidden after init
+                .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     thisClass.selections.splice(i, 1);
                     drawSelections();
@@ -686,12 +698,12 @@ export class D3HistogramComponent implements OnDestroy {
                 .enter()
                 .append('svg:foreignObject')
                 .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButtonIcon'; })
-                // .attr('x', 10)
                 .attr('x', d => actualX(d[1]) + 33 + margin.left)
                 .attr('y', 3 + margin.top)
                 .attr('width', 20)
                 .attr('height', 20)
-                // .style('visibility', 'hidden')
+                // hidden after init
+                .style('visibility', 'hidden')
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-resize-small');
 
@@ -701,16 +713,15 @@ export class D3HistogramComponent implements OnDestroy {
                 .enter()
                 .append('circle')
                 .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButton'; })
-                // .classed('selectionRemoveButton', true)
                 .attr('cx', d => actualX(d[1]) + 40 + margin.left)
                 .attr('r', 10)
                 .attr('cy', 12 + margin.top)
-                // .attr('fill', 'rgba(220, 220, 220, 0.8)')
                 .style('fill-opacity', 0)
                 .style('stroke', '#333333')
                 .style('stroke-width', 2)
                 .style('cursor', 'pointer')
-                // .style('visibility', 'hidden')
+                // hidden after init
+                .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     zoomIn(d);
                 })
@@ -734,6 +745,8 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('y', 0)
                 .attr('width', 100)
                 .attr('height', margin.top)
+                // hidden after init
+                .style('visibility', 'hidden')
                 .append('xhtml:span')
                 // .style('position', 'relative')
                 // .style('border', '2px solid blue')
@@ -765,6 +778,8 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('y', 0)
                 .attr('width', 145)
                 .attr('height', margin.top)
+                // hidden after init
+                .style('visibility', 'hidden')
                 .append('xhtml:input')
                 .attr('type', 'datetime-local')
                 // .attr('(keydown.enter)', '\"$event.target.blur();submit();false\"')
@@ -779,47 +794,27 @@ export class D3HistogramComponent implements OnDestroy {
                     drawSelections();
                     thisClass.selectionsDebouncer.next(thisClass.selections);
                 }).on('keypress', function() {
-                    if (d3.event.keyCode === 13) {
-                        // if enter is pressed
-                        d3.event.target.blur();
-                    }
-                });
-                // .append('xhtml:span')
-                // .html(function(d) {
-                //     const date = new Date(d[1]);
-                //     const input = dateInputElement.cloneNode(true);
-                //     input.value = date.toISOString().split('.')[0];
-                //     return input.toString();
-                //     // return '<input type="datetime-local" style="display: block" value="' + date.toISOString().split('.')[0] + '" (change)="console.log(' + date + ')">';
-                //     // return '<p style="display: block; margin: 0; font-size: small">' +
-                //     //     date.getUTCFullYear() + '-' +
-                //     //     (date.getUTCMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                //     //     '-' + date.getUTCDate().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                //     //     '</p><p style="display: block; margin: 0; font-size: x-small;">' +
-                //     //     date.getUTCHours().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                //     //     ':' + date.getUTCMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                //     //     ':' + date.getUTCSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2});
-                // });
-            // hover area
-            // svg.selectAll('.hoverArea').remove();
-            // svg.selectAll('.hoverArea')
-            //     .data(thisClass.selections)
-            //     .enter()
-            //     .append('rect')
-            //     .attr('class', 'hoverArea')
-            //     .attr('x', function(d){ return actualX(d[0]) + margin.left - hoverAreaOffset; })
-            //     .attr('width', function(d) {return actualX(d[1]) - actualX(d[0]) + 80; })
-            //     .attr('y', 0)
-            //     .attr('height', element.offsetHeight)
-            //     .style('fill', 'transparent')
-            //     .style('stroke', '#333333')
-            //     .style('stroke-width', '2px')
-            //     .on('mouseover', function(d, i) {
-            //         d3.selectAll('.selectionHoverArea-' + i).style('visibility', 'visible');
-            //     })
-            //     .on('mouseout', function (d, i) {
-            //         d3.selectAll('.selectionHoverArea-' + i).style('visibility', 'hidden');
-            //     });
+                if (d3.event.keyCode === 13) {
+                    // if enter is pressed
+                    d3.event.target.blur();
+                }
+            });
+            // .append('xhtml:span')
+            // .html(function(d) {
+            //     const date = new Date(d[1]);
+            //     const input = dateInputElement.cloneNode(true);
+            //     input.value = date.toISOString().split('.')[0];
+            //     return input.toString();
+            //     // return '<input type="datetime-local" style="display: block" value="' + date.toISOString().split('.')[0] + '" (change)="console.log(' + date + ')">';
+            //     // return '<p style="display: block; margin: 0; font-size: small">' +
+            //     //     date.getUTCFullYear() + '-' +
+            //     //     (date.getUTCMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //     //     '-' + date.getUTCDate().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //     //     '</p><p style="display: block; margin: 0; font-size: x-small;">' +
+            //     //     date.getUTCHours().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //     //     ':' + date.getUTCMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //     //     ':' + date.getUTCSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2});
+            // });
         }
 
         let dragStartX = null;
