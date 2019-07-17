@@ -12,6 +12,9 @@ import subprocess
 import fsa_lib as fsa
 import import_metadata
 import tempfile
+import logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO)
 
 app = Flask(__name__)
 CORS(app)
@@ -93,6 +96,7 @@ def admin_required(f):
 @app.route('/login', methods=['POST'])
 def login():
     if not request.get_json() or not request.get_json()['username'] or not request.get_json()['password']:
+        logging.warning('LOGIN - Wrong username or password')
         return jsonify({'message': 'Wrong username or password'}), 400
     body = {'query': {'term': {'username': request.get_json()['username']}}}
     res = es.search(index=app.config['elastic_user_index'], doc_type=app.config['elastic_user_type'], body=body)
@@ -107,7 +111,9 @@ def login():
                      'groups': groups,
                      'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
                     app.config['SECRET_KEY'])
+                logging.warning('LOGIN - successful for user: ' + str(username))
                 return jsonify({'username': username, 'groups': groups, 'token': token.decode('UTF-8')})
+    logging.warning('LOGIN - Wrong username or password')
     return jsonify({'message': 'Wrong username or password'}), 400
 
 
@@ -142,7 +148,7 @@ def upload(current_user):
     if 'file' not in request.files:
         return jsonify({'status': 'failed', 'message': 'No file to upload'})
     for file in request.files.getlist('file'):
-        print(file)
+        logging.info('upload file: ' + str(file) + ' to case: ' + str(case_name))
         if file.filename == '':
             return jsonify({'status': 'failed', 'message': 'Invalid file name'})
         if file:
@@ -165,16 +171,17 @@ def upload(current_user):
 @token_required
 @admin_required
 def delete_case(current_user, case):
-    body = {
+    query = {
       'query': {
         'match_phrase': {
           'case': case
         }
       }
     }
+    logging.info('QUERY delete case: ' + '\n' + json.dumps(query))
     res = es.delete_by_query(index=app.config['elastic_metadata_index'],
                              doc_type=app.config['elastic_metadata_type'],
-                             body=body)
+                             body=query)
     return jsonify(res)
 
 
@@ -191,7 +198,7 @@ def cases(current_user):
             }
         }
     }
-
+    logging.info('QUERY get all cases: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
                     body=query)
@@ -211,7 +218,7 @@ def filters(current_user):
                 }
             }
     }
-
+    logging.info('QUERY get all filters: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_filter_index'], doc_type=app.config['elastic_filter_type'], body=query)
     return jsonify(filters=res['aggregations']['filters']['buckets'])
 
@@ -232,7 +239,7 @@ def filter_by_name(current_user):
                 }
             }
     }
-
+    logging.info('QUERY filter by name: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_filter_index'], doc_type=app.config['elastic_filter_type'], body=query)
     return jsonify(res['hits']['hits'][0]['_source'])
 
@@ -248,7 +255,7 @@ def clusters_get_data(current_user, case):
     sort_order = request.json.get('sort_order')
 
     query = fsa.build_data_query(case, clusters, additional_filters, begin, page_size, sort, sort_order)
-    print(json.dumps(query))
+    logging.info('QUERY cluster get data: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
                     body=json.dumps(query))
@@ -263,6 +270,7 @@ def clusters_entries_border(current_user, case):
     additional_filters = request.json.get('additional_filters')
 
     query = fsa.build_data_query(case, clusters, additional_filters, 0, 1, 'timestamp', 'asc')
+    logging.info('QUERY cluster entries border: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
                     body=json.dumps(query))
@@ -276,7 +284,7 @@ def cluster_get_count(current_user, case):
     additional_filters = request.json.get('additional_filters')
 
     query = fsa.build_count_query(case, cluster, additional_filters)
-    print(json.dumps(query))
+    logging.info('QUERY cluster get count: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
                     body=json.dumps(query))
@@ -293,6 +301,7 @@ def cluster_get_first_and_last_entry(current_user, case):
     first_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'asc')
     last_query = fsa.build_first_entry_query(case, clusters, additional_filters, mac_type, 'desc')
 
+    logging.info('QUERY cluster get first and last entry: ' + '\n' + json.dumps(first_query) + '\n' + json.dumps(last_query))
     first = es.search(index=app.config['elastic_metadata_index'],
                       doc_type=app.config['elastic_metadata_type'],
                       body=json.dumps(first_query))
@@ -313,6 +322,7 @@ def graph_get_first_and_last_entry(current_user, case):
     first_query = fsa.build_whole_case_first_entry_query(case, 'asc')
     last_query = fsa.build_whole_case_first_entry_query(case, 'desc')
 
+    logging.info('QUERY cluster get first and last entry: ' + '\n' + json.dumps(first_query) + '\n' + json.dumps(last_query))
     first = es.search(index=app.config['elastic_metadata_index'],
                       doc_type=app.config['elastic_metadata_type'],
                       body=json.dumps(first_query))
@@ -338,7 +348,7 @@ def graph_get_data(current_user, case):
         frequency = 'day'
 
     query = fsa.build_graph_data_query(case, clusters, additional_filters, mac_type, frequency)
-    print(json.dumps(query))
+    logging.info('QUERY graph get data: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],
                     body=json.dumps(query))

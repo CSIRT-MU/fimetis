@@ -11,7 +11,7 @@ from elasticsearch.helpers import streaming_bulk
 # import chardet
 import logging
 
-logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+# logging.basicConfig(format='%(asctime)s %(levelname)-8s %(name)s %(message)s', level=logging.INFO)
 
 
 def create_index(client, index):
