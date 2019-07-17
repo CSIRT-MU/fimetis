@@ -10,14 +10,15 @@
             <!--<label for="allTypesCheckbox"></label>-->
             <!--<span class="all-types-label">Show all types</span>-->
         <!--</span>-->
-        <mat-button-toggle-group #group="matButtonToggleGroup" (change)="showAllTypes = ($event.value === 'true'); allTypesTrigger()" [appearance]="'legacy'">
-            <mat-button-toggle value="true" [checked]="showAllTypes">
-                file changes
-            </mat-button-toggle>
-            <mat-button-toggle value="false" [checked]="!showAllTypes">
-                timestamp changes
-            </mat-button-toggle>
-        </mat-button-toggle-group>
+
+        <!--<mat-button-toggle-group #group="matButtonToggleGroup" (change)="showAllTypes = ($event.value === 'true'); allTypesTrigger()" [appearance]="'legacy'">-->
+            <!--<mat-button-toggle value="true" [checked]="showAllTypes">-->
+                <!--file changes-->
+            <!--</mat-button-toggle>-->
+            <!--<mat-button-toggle value="false" [checked]="!showAllTypes">-->
+                <!--timestamp changes-->
+            <!--</mat-button-toggle>-->
+        <!--</mat-button-toggle-group>-->
     </div>
     <div class="col-md-4 header-tools text-align-right" *ngIf="graphPanelOpenState">
         <span *ngIf="graphPanelOpenState && saveGraphZoom" class="mat-stroked-button timesix-button" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
@@ -32,22 +33,22 @@
                 </div>
             </div>
         </div>
-        <div class="chartOverviewContainer">
-            <div #chartOverviewDiv id="chartOverviewDiv"></div>
-        </div>
-        <div class="chartContainer">
-            <div #chartDiv id="chartDiv"></div>
-        </div>
+        <!--<div class="chartOverviewContainer">-->
+            <!--<div #chartOverviewDiv id="chartOverviewDiv"></div>-->
+        <!--</div>-->
+        <!--<div class="chartContainer">-->
+            <!--<div #chartDiv id="chartDiv"></div>-->
+        <!--</div>-->
         <app-d3-histogram [min_date_boundary]="min_date_boundary" [max_date_boundary]="max_date_boundary" [selectedTypes]="getSelectedTypes()" (selectionsEmitter)="transformSelectionsToFilter($event)"></app-d3-histogram>
-        <form (submit)="updateBoundary()" class="from-date-form col-md-4">
-            <input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input"
-                   (dragover)="dragOver($event)"
-                   (drop)="pickedFromDate = dropFilter($event, pickedFromDate); updateBoundary();"
-                   (change)="updateBoundary()"
-            >
-            <button type="submit" hidden></button>
-        </form>
-        <div class="col-md-4">
+        <!--<form (submit)="updateBoundary()" class="from-date-form col-md-4">-->
+            <!--<input name="fromDatePicker" type="datetime-local" [(ngModel)]="pickedFromDate" required class="date-form-input"-->
+                   <!--(dragover)="dragOver($event)"-->
+                   <!--(drop)="pickedFromDate = dropFilter($event, pickedFromDate); updateBoundary();"-->
+                   <!--(change)="updateBoundary()"-->
+            <!--&gt;-->
+            <!--<button type="submit" hidden></button>-->
+        <!--</form>-->
+        <div class="col-md-3 col-md-offset-4 col-sm-4 col-sm-offset-2 col-xs-6 col-xs-offset-3">
             <div *ngIf="!showAllTypes">
                 <span *ngFor="let type of supportedTypes" class="type-checkbox" matTooltip="{{typeTooltip(type)}}">
                     <input type="checkbox" (change)="typeCheckboxChanged(type)"
@@ -56,13 +57,13 @@
                 </span>
             </div>
         </div>
-        <form (submit)="updateBoundary()" class="to-date-form col-md-4">
-            <input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate" required class="date-form-input"
-                   (dragover)="dragOver($event)"
-                   (drop)="pickedToDate = dropFilter($event, pickedToDate); updateBoundary();"
-                   (change)="updateBoundary()"
-            >
-            <button type="submit" hidden></button>
-        </form>
+        <!--<form (submit)="updateBoundary()" class="to-date-form col-md-4">-->
+            <!--<input name="toDatePicker" type="datetime-local" [(ngModel)]="pickedToDate" required class="date-form-input"-->
+                   <!--(dragover)="dragOver($event)"-->
+                   <!--(drop)="pickedToDate = dropFilter($event, pickedToDate); updateBoundary();"-->
+                   <!--(change)="updateBoundary()"-->
+            <!--&gt;-->
+            <!--<button type="submit" hidden></button>-->
+        <!--</form>-->
     </div>
 </div>

@@ -57,174 +57,174 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     bTypeColor = '#976CBF';
     allTypeColor = '#150abf';
 
-    @ViewChild('chartOverviewDiv') chartOverviewDiv: ElementRef;
-    chartOverview: Highcharts.ChartObject;
-    chartOverviewOptions = {
-        chart: {
-            borderWidth: 0,
-            backgroundColor: null,
-            type: 'column',
-            zoomType: 'x',
-            animation: false,
-            events: {
-                selection: (event) => {
-                    console.log(this.chartOverview.xAxis[0]);
-                    let min = 0, max = 0;
-                    if (event['resetSelection']) {
-                        console.log('reset', event, this);
-                        min = event.target['axes'][0].dataMin;
-                        max = event.target['axes'][0].dataMax;
-                    } else {
-                        console.log(event);
-                        min = event.xAxis[0].min;
-                        max = event.xAxis[0].max;
-                    }
-                    this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
-                    this.chart.xAxis[0].setExtremes(min, max);
-                    this.graphOverviewZoomLabel(min, max);
-                    return false;
-
-                },
-                redraw: (event) => {
-                    this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
-                }
-            }
-        },
-        boost: {
-            enabled: true,
-            // useGPUTranslations: true,
-            seriesThreshold: 1
-        },
-        title: {text: null, margin: 0},
-        legend: {
-            enabled: false
-        },
-        tooltip: {
-            enabled: false
-        },
-        toolbar: {},
-        xAxis: {
-            type: 'datetime',
-            dateTimeLabelFormats: {
-                millisecond: '%H:%M:%S.%L',
-                second: '%H:%M:%S',
-                minute: '%H:%M',
-                hour: '%H:%M',
-                day: '%e. %b %Y',
-                week: '%e. %b %Y',
-                month: '%b %Y',
-                year: '%Y'
-            }
-        },
-        yAxis: {
-            type: 'logarithmic',
-            title: null,
-            min: 1,
-            softmax: 100000
-        },
-        plotOptions: {
-            column: {
-                stacking: 'normal',
-                groupPadding: 0,
-                pointPadding: 0,
-                pointPlacement: 0.5,
-                minPointLength: 3
-            }
-        },
-        credits: {enabled: false},
-        series: [
-            {name: 'm', color: this.mTypeColor, boostThreshold: 10, data: []},
-            {name: 'a', color: this.aTypeColor, boostThreshold: 10, data: []},
-            {name: 'c', color: this.cTypeColor, boostThreshold: 10, data: []},
-            {name: 'b', color: this.bTypeColor, boostThreshold: 10, data: []},
-            {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
-        ]
-    };
-
-    @ViewChild('chartDiv') chartDiv: ElementRef;
-    chart: Highcharts.ChartObject;
-    chartOptions = {
-        chart: {
-            type: 'column',
-            zoomType: 'x',
-            animation: false,
-            events: {
-                selection: (event) => {
-                    let min = 0, max = 0;
-                    if (event['resetSelection']) {
-                        console.log('reset', event, this);
-                        min = event.target['axes'][0].dataMin;
-                        max = event.target['axes'][0].dataMax;
-                    } else {
-                        console.log(event);
-                        min = event.xAxis[0].min;
-                        max = event.xAxis[0].max;
-                    }
-                    this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
-                    this.graphOverviewZoomLabel(min, max);
-                }
-            },
-            resetZoomButton: {
-                theme: {
-                    display: 'None'
-                }
-            }
-        },
-        boost: {
-            enabled: true,
-            // useGPUTranslations: true,
-            seriesThreshold: 1
-        },
-        title: {text: null, margin: 0},
-        legend: {
-            enabled: false
-        },
-        tooltip: {
-            // outside: true,
-            positioner: function(labelWidth, labelHeight, point) {
-                return {
-                    x: point.plotX,
-                    y: this.plotHeight
-                };
-            }
-        },
-        toolbar: {},
-        xAxis: {
-            type: 'datetime',
-            dateTimeLabelFormats: {
-                millisecond: '%H:%M:%S.%L',
-                second: '%H:%M:%S',
-                minute: '%H:%M',
-                hour: '%H:%M',
-                day: '%e. %b %Y',
-                week: '%e. %b %Y',
-                month: '%b %Y',
-                year: '%Y'
-            }
-        },
-        yAxis: {
-            type: 'logarithmic',
-            title: null,
-            min: 1
-        },
-        plotOptions: {
-            column: {
-                stacking: 'normal',
-                groupPadding: 0,
-                pointPadding: 0,
-                pointPlacement: 0.5,
-                minPointLength: 5
-            }
-        },
-        credits: {enabled: false},
-        series: [
-            {name: 'm', color: this.mTypeColor, boostThreshold: 10, data: []},
-            {name: 'a', color: this.aTypeColor, boostThreshold: 10, data: []},
-            {name: 'c', color: this.cTypeColor, boostThreshold: 10, data: []},
-            {name: 'b', color: this.bTypeColor, boostThreshold: 10, data: []},
-            {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
-        ]
-    };
+    // @ViewChild('chartOverviewDiv') chartOverviewDiv: ElementRef;
+    // chartOverview: Highcharts.ChartObject;
+    // chartOverviewOptions = {
+    //     chart: {
+    //         borderWidth: 0,
+    //         backgroundColor: null,
+    //         type: 'column',
+    //         zoomType: 'x',
+    //         animation: false,
+    //         events: {
+    //             selection: (event) => {
+    //                 console.log(this.chartOverview.xAxis[0]);
+    //                 let min = 0, max = 0;
+    //                 if (event['resetSelection']) {
+    //                     console.log('reset', event, this);
+    //                     min = event.target['axes'][0].dataMin;
+    //                     max = event.target['axes'][0].dataMax;
+    //                 } else {
+    //                     console.log(event);
+    //                     min = event.xAxis[0].min;
+    //                     max = event.xAxis[0].max;
+    //                 }
+    //                 this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
+    //                 this.chart.xAxis[0].setExtremes(min, max);
+    //                 this.graphOverviewZoomLabel(min, max);
+    //                 return false;
+    //
+    //             },
+    //             redraw: (event) => {
+    //                 this.graphOverviewZoomLabel(new Date(this.pickedFromDate).getTime(), new Date(this.pickedToDate).getTime());
+    //             }
+    //         }
+    //     },
+    //     boost: {
+    //         enabled: true,
+    //         // useGPUTranslations: true,
+    //         seriesThreshold: 1
+    //     },
+    //     title: {text: null, margin: 0},
+    //     legend: {
+    //         enabled: false
+    //     },
+    //     tooltip: {
+    //         enabled: false
+    //     },
+    //     toolbar: {},
+    //     xAxis: {
+    //         type: 'datetime',
+    //         dateTimeLabelFormats: {
+    //             millisecond: '%H:%M:%S.%L',
+    //             second: '%H:%M:%S',
+    //             minute: '%H:%M',
+    //             hour: '%H:%M',
+    //             day: '%e. %b %Y',
+    //             week: '%e. %b %Y',
+    //             month: '%b %Y',
+    //             year: '%Y'
+    //         }
+    //     },
+    //     yAxis: {
+    //         type: 'logarithmic',
+    //         title: null,
+    //         min: 1,
+    //         softmax: 100000
+    //     },
+    //     plotOptions: {
+    //         column: {
+    //             stacking: 'normal',
+    //             groupPadding: 0,
+    //             pointPadding: 0,
+    //             pointPlacement: 0.5,
+    //             minPointLength: 3
+    //         }
+    //     },
+    //     credits: {enabled: false},
+    //     series: [
+    //         {name: 'm', color: this.mTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'a', color: this.aTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'c', color: this.cTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'b', color: this.bTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
+    //     ]
+    // };
+    //
+    // @ViewChild('chartDiv') chartDiv: ElementRef;
+    // chart: Highcharts.ChartObject;
+    // chartOptions = {
+    //     chart: {
+    //         type: 'column',
+    //         zoomType: 'x',
+    //         animation: false,
+    //         events: {
+    //             selection: (event) => {
+    //                 let min = 0, max = 0;
+    //                 if (event['resetSelection']) {
+    //                     console.log('reset', event, this);
+    //                     min = event.target['axes'][0].dataMin;
+    //                     max = event.target['axes'][0].dataMax;
+    //                 } else {
+    //                     console.log(event);
+    //                     min = event.xAxis[0].min;
+    //                     max = event.xAxis[0].max;
+    //                 }
+    //                 this.graphZoom(new Date(min).toISOString(), new Date(max).toISOString());
+    //                 this.graphOverviewZoomLabel(min, max);
+    //             }
+    //         },
+    //         resetZoomButton: {
+    //             theme: {
+    //                 display: 'None'
+    //             }
+    //         }
+    //     },
+    //     boost: {
+    //         enabled: true,
+    //         // useGPUTranslations: true,
+    //         seriesThreshold: 1
+    //     },
+    //     title: {text: null, margin: 0},
+    //     legend: {
+    //         enabled: false
+    //     },
+    //     tooltip: {
+    //         // outside: true,
+    //         positioner: function(labelWidth, labelHeight, point) {
+    //             return {
+    //                 x: point.plotX,
+    //                 y: this.plotHeight
+    //             };
+    //         }
+    //     },
+    //     toolbar: {},
+    //     xAxis: {
+    //         type: 'datetime',
+    //         dateTimeLabelFormats: {
+    //             millisecond: '%H:%M:%S.%L',
+    //             second: '%H:%M:%S',
+    //             minute: '%H:%M',
+    //             hour: '%H:%M',
+    //             day: '%e. %b %Y',
+    //             week: '%e. %b %Y',
+    //             month: '%b %Y',
+    //             year: '%Y'
+    //         }
+    //     },
+    //     yAxis: {
+    //         type: 'logarithmic',
+    //         title: null,
+    //         min: 1
+    //     },
+    //     plotOptions: {
+    //         column: {
+    //             stacking: 'normal',
+    //             groupPadding: 0,
+    //             pointPadding: 0,
+    //             pointPlacement: 0.5,
+    //             minPointLength: 5
+    //         }
+    //     },
+    //     credits: {enabled: false},
+    //     series: [
+    //         {name: 'm', color: this.mTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'a', color: this.aTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'c', color: this.cTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'b', color: this.bTypeColor, boostThreshold: 10, data: []},
+    //         {name: 'all', color: this.allTypeColor, visible: false, boostThreshold: 10, data: []}
+    //     ]
+    // };
 
     @ViewChild(D3HistogramComponent) d3Histogram: D3HistogramComponent;
 
@@ -260,8 +260,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        this.chart = chart(this.chartDiv.nativeElement, this.chartOptions);
-        this.chartOverview = chart(this.chartOverviewDiv.nativeElement, this.chartOverviewOptions);
+        // this.chart = chart(this.chartDiv.nativeElement, this.chartOptions);
+        // this.chartOverview = chart(this.chartOverviewDiv.nativeElement, this.chartOverviewOptions);
     }
 
     ngOnDestroy() {
@@ -292,15 +292,15 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             this.max_date_boundary = last.getTime() + (24 * 3600 * 1000);
             console.log(this.max_date_boundary);
 
-            this.chart.xAxis[0].update({
-                min: this.min_date_boundary,
-                max: this.max_date_boundary
-            });
-
-            this.chartOverview.xAxis[0].update({
-                min: this.min_date_boundary,
-                max: this.max_date_boundary
-            });
+            // this.chart.xAxis[0].update({
+            //     min: this.min_date_boundary,
+            //     max: this.max_date_boundary
+            // });
+            //
+            // this.chartOverview.xAxis[0].update({
+            //     min: this.min_date_boundary,
+            //     max: this.max_date_boundary
+            // });
 
             if (!this.saveGraphZoom) {
                 console.log('loaded', this.min_date_boundary, this.max_date_boundary);
@@ -340,8 +340,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.charter.addSerie({name: 'm', color: this.mTypeColor, data: data});
                 // this.chartOptions.series[0].data = data;
                 // this.highCharts.series[0].data = data;
-                this.chart.series[0].setData(data, false, false,  false);
-                this.chartOverview.series[0].setData(data, false, false,  false);
+                // this.chart.series[0].setData(data, false, false,  false);
+                // this.chartOverview.series[0].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - m', response);
                 this.loadingMTimes = false;
                 this.d3Histogram.data[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
@@ -368,8 +368,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
                 // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
-                this.chart.series[1].setData(data, false, false,  false);
-                this.chartOverview.series[1].setData(data, false, false,  false);
+                // this.chart.series[1].setData(data, false, false,  false);
+                // this.chartOverview.series[1].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - a', response);
                 this.loadingATimes = false;
                 this.d3Histogram.data[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
@@ -394,8 +394,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
                 // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
-                this.chart.series[2].setData(data, false, false,  false);
-                this.chartOverview.series[2].setData(data, false, false,  false);
+                // this.chart.series[2].setData(data, false, false,  false);
+                // this.chartOverview.series[2].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - c', response);
                 this.loadingCTimes = false;
                 this.d3Histogram.data[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
@@ -420,8 +420,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
-                this.chart.series[3].setData(data, false, false,  false);
-                this.chartOverview.series[3].setData(data, false, false,  false);
+                // this.chart.series[3].setData(data, false, false,  false);
+                // this.chartOverview.series[3].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - b', response);
 
                 this.loadingBTimes = false;
@@ -447,7 +447,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
-                this.chart.series[4].setData(data, false, false,  false);
+                // this.chart.series[4].setData(data, false, false,  false);
                 // this.chartOverview.series[4].setData(data, false, false,  false);
                 console.log('Graph data loaded async! - all', response);
 
@@ -459,8 +459,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     chartDataLoaded() {
         if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes) {
-            this.chart.redraw(false);
-            this.chartOverview.redraw(false);
+            // this.chart.redraw(false);
+            // this.chartOverview.redraw(false);
             this.d3Histogram.createChart();
         }
     }
@@ -476,36 +476,36 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     graphOverviewZoomLabel(from: number, to: number) {
-        this.chartOverview.xAxis[0].removePlotBand('mask-before');
-        this.chartOverview.xAxis[0].addPlotBand({
-            id: 'mask-before',
-            from: this.min_date_boundary,
-            to: from,
-            color: 'rgba(30, 30, 30, 0.4)'
-        });
-        this.chartOverview.xAxis[0].removePlotBand('mask-after');
-        this.chartOverview.xAxis[0].addPlotBand({
-            id: 'mask-after',
-            from: to,
-            to: this.max_date_boundary,
-            color: 'rgba(30, 30, 30, 0.4)'
-        });
-        this.chartOverview.xAxis[0].removePlotLine('start');
-        this.chartOverview.xAxis[0].addPlotLine({
-            id: 'start',
-            value: from,
-            color: 'rgba(250, 250, 250, 0.4)',
-            width: 1,
-            zIndex: 8
-        });
-        this.chartOverview.xAxis[0].removePlotLine('end');
-        this.chartOverview.xAxis[0].addPlotLine({
-            id: 'end',
-            value: to,
-            color: 'rgba(250, 250, 250, 0.4)',
-            width: 1,
-            zIndex: 8
-        });
+        // this.chartOverview.xAxis[0].removePlotBand('mask-before');
+        // this.chartOverview.xAxis[0].addPlotBand({
+        //     id: 'mask-before',
+        //     from: this.min_date_boundary,
+        //     to: from,
+        //     color: 'rgba(30, 30, 30, 0.4)'
+        // });
+        // this.chartOverview.xAxis[0].removePlotBand('mask-after');
+        // this.chartOverview.xAxis[0].addPlotBand({
+        //     id: 'mask-after',
+        //     from: to,
+        //     to: this.max_date_boundary,
+        //     color: 'rgba(30, 30, 30, 0.4)'
+        // });
+        // this.chartOverview.xAxis[0].removePlotLine('start');
+        // this.chartOverview.xAxis[0].addPlotLine({
+        //     id: 'start',
+        //     value: from,
+        //     color: 'rgba(250, 250, 250, 0.4)',
+        //     width: 1,
+        //     zIndex: 8
+        // });
+        // this.chartOverview.xAxis[0].removePlotLine('end');
+        // this.chartOverview.xAxis[0].addPlotLine({
+        //     id: 'end',
+        //     value: to,
+        //     color: 'rgba(250, 250, 250, 0.4)',
+        //     width: 1,
+        //     zIndex: 8
+        // });
     }
 
     drawGraphSliderWindow(from: number, to: number) {
@@ -513,20 +513,21 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         from_edit = new Date(Date.UTC(from_edit.getFullYear(), from_edit.getMonth(), from_edit.getDate()));
         let to_edit = new Date(to);
         to_edit = new Date(Date.UTC(to_edit.getFullYear(), to_edit.getMonth(), to_edit.getDate()));
-        this.chart.xAxis[0].removePlotBand('range');
-        this.chart.xAxis[0].addPlotBand({
-            id: 'range',
-            from: from_edit.getTime(),
-            to: to_edit.getTime() + (24 * 3600 * 1000),
-            color: 'rgba(173, 216, 230, 0.4)',
-	    // color: 'rgba(245, 245, 220, 0.4)',
-            // borderColor: 'rgba(30, 30, 30, 0.8)',
-            // borderWidth: 1,
-            label: {
-                text: '<span style="position: relative; top: -16px;">view position</span>',
-                useHTML: true
-            }
-        });
+        // this.chart.xAxis[0].removePlotBand('range');
+        // this.chart.xAxis[0].addPlotBand({
+        //     id: 'range',
+        //     from: from_edit.getTime(),
+        //     to: to_edit.getTime() + (24 * 3600 * 1000),
+        //     color: 'rgba(173, 216, 230, 0.4)',
+        // // color: 'rgba(245, 245, 220, 0.4)',
+        //     // borderColor: 'rgba(30, 30, 30, 0.8)',
+        //     // borderWidth: 1,
+        //     label: {
+        //         text: '<span style="position: relative; top: -16px;">view position</span>',
+        //         useHTML: true
+        //     }
+        // });
+
         // this.chart.xAxis[0].removePlotLine('box-start');
         // this.chart.xAxis[0].addPlotLine({
         //     id: 'box-start',
@@ -551,7 +552,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         const fromUTCDateTime = new Date(this.pickedFromDate).getTime() - new Date(this.pickedFromDate).getTimezoneOffset() * 60000;
         const toUTCDateTime = new Date(this.pickedToDate).getTime() - new Date(this.pickedToDate).getTimezoneOffset() * 60000;
         this.saveGraphZoom = true;
-        this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
+        // this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
         this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
         // this.chart.showResetZoom();
         // console.log(this.pickedFromDate);
@@ -566,29 +567,29 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     showHideTrace(metadataType) {
-        for (let i = 0; i < this.chart.series.length; i++) {
-            if (this.chart.series[i].name === metadataType) {
-                if (this.chart.series[i].visible) {
-                    this.chart.series[i].hide();
-                    this.chartOverview.series[i].hide();
-                } else {
-                    this.chart.series[i].show();
-                    this.chartOverview.series[i].show();
-                }
-            }
-        }
+        // for (let i = 0; i < this.chart.series.length; i++) {
+        //     if (this.chart.series[i].name === metadataType) {
+        //         if (this.chart.series[i].visible) {
+        //             this.chart.series[i].hide();
+        //             this.chartOverview.series[i].hide();
+        //         } else {
+        //             this.chart.series[i].show();
+        //             this.chartOverview.series[i].show();
+        //         }
+        //     }
+        // }
     }
 
     showSelectedTraces() {
-        for (let i = 0; i < this.chart.series.length; i++) {
-            if (this.selectedTypes.has(this.chart.series[i].name)) {
-                this.chart.series[i].show();
-                this.chartOverview.series[i].show();
-            } else {
-                this.chart.series[i].hide();
-                this.chartOverview.series[i].hide();
-            }
-        }
+        // for (let i = 0; i < this.chart.series.length; i++) {
+        //     if (this.selectedTypes.has(this.chart.series[i].name)) {
+        //         this.chart.series[i].show();
+        //         this.chartOverview.series[i].show();
+        //     } else {
+        //         this.chart.series[i].hide();
+        //         this.chartOverview.series[i].hide();
+        //     }
+        // }
     }
 
     typeCheckboxChanged(type) {
@@ -625,8 +626,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     resetZoom() {
         this.saveGraphZoom = false;
         // reset charts zoom
-        this.chart.xAxis[0].setExtremes(null, null);
-        this.chartOverview.xAxis[0].setExtremes(null, null);
+        // this.chart.xAxis[0].setExtremes(null, null);
+        // this.chartOverview.xAxis[0].setExtremes(null, null);
         // reset date Inputs
         let isoString = new Date(this.min_date_boundary).toISOString();
         this.pickedFromDate = isoString.substring(0, isoString.length - 1);
@@ -656,17 +657,17 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     allTypesTrigger() {
         if (this.showAllTypes) {
-            for (let i = 0; i < this.chart.series.length; i++) {
-                console.log(this.chart.series[i].name);
-                if (this.chart.series[i].name === 'all') {
-                    console.log('triggered');
-                    this.chart.series[i].show();
-                    this.chartOverview.series[i].show();
-                } else {
-                    this.chart.series[i].hide();
-                    this.chartOverview.series[i].hide();
-                }
-            }
+            // for (let i = 0; i < this.chart.series.length; i++) {
+            //     console.log(this.chart.series[i].name);
+            //     if (this.chart.series[i].name === 'all') {
+            //         console.log('triggered');
+            //         this.chart.series[i].show();
+            //         this.chartOverview.series[i].show();
+            //     } else {
+            //         this.chart.series[i].hide();
+            //         this.chartOverview.series[i].hide();
+            //     }
+            // }
             this.typesChangedDebouncer.next(this.supportedTypes);
         } else {
             this.showSelectedTraces();
@@ -719,7 +720,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             const fromUTCDateTime = new Date(sel[0]).getTime() - new Date(sel[0]).getTimezoneOffset() * 60000;
             const toUTCDateTime = new Date(sel[1]).getTime() - new Date(sel[1]).getTimezoneOffset() * 60000;
             this.saveGraphZoom = true;
-            this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
+            // this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
             this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
             // this.chart.showResetZoom();
             // console.log(this.pickedFromDate);
@@ -732,7 +733,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             const fromUTCDateTime = new Date(this.min_date_boundary).getTime() - new Date(this.min_date_boundary).getTimezoneOffset() * 60000;
             const toUTCDateTime = new Date(this.max_date_boundary).getTime() - new Date(this.max_date_boundary).getTimezoneOffset() * 60000;
             this.saveGraphZoom = false;
-            this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
+            // this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
             this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
             // this.chart.showResetZoom();
             // console.log(this.pickedFromDate);
