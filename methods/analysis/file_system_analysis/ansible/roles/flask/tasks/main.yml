@@ -66,6 +66,13 @@
   - name: Chowning /opt/backend to user www-data
     shell:  chown www-data:www-data -R /opt/backend
 
+  - name: Prepare folder for logs
+    file: 
+       path: /var/log/fimetis/
+       owner: www-data 
+       group: www-data 
+       state: directory
+
   - name: Starting backendAPI.service
     systemd:
       name: backendAPI
