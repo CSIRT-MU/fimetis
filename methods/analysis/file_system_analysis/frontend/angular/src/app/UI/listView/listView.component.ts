@@ -116,6 +116,10 @@ export class ListViewComponent {
             console.log(shift);
             this.scrollToIndex(shift);
             this.pressedNumbers = [];
+            this.toaster.success(
+                'You have jumped to ' + (shift === 0 ? 'start' : 'line ' + shift),
+                'Shortcut ' + (shift === 0 ? '' : shift) + 'gg'
+            );
             return false; // Prevent bubbling
         }, undefined, 'Scroll to start, or to line number x if used in format xgg'));
         this._hotkeysService.add(new Hotkey(['G'], (event: KeyboardEvent): boolean => {
@@ -126,27 +130,41 @@ export class ListViewComponent {
                 this.scrollToIndex(shift);
             }
             this.pressedNumbers = [];
+            this.toaster.success(
+                'You have jumped to ' + (shift === 0 ? 'end' : 'line ' + shift) ,
+                'Shortcut ' + (shift === 0 ? '' : shift) + 'G'
+            );
             return false; // Prevent bubbling
         }, undefined, 'Scroll to end, or to line number x if used in format xG'));
         this._hotkeysService.add(new Hotkey(['k'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
+            const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
             if (shift === 0) {
-                shift = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+                shift = view_size;
             }
             this.scrollToIndex(this.visibleDataFirstIndex - shift);
             this.pressedNumbers = [];
+            this.toaster.success(
+                'You have scrolled up by ' + (shift === view_size ? 'one page' : shift + ' lines') ,
+                'Shortcut ' + (shift === view_size ? '' : shift) + 'k'
+            );
             return false; // Prevent bubbling
         }, undefined, 'Scroll page up, or by number of lines up if used in format xk'));
         this._hotkeysService.add(new Hotkey(['j'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
+            const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
             if (shift === 0) {
-                shift = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+                shift = view_size;
             }
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
             this.pressedNumbers = [];
+            this.toaster.success(
+                'You have scrolled down by ' + (shift === view_size ? 'one page' : shift + ' lines'),
+                'Shortcut ' + (shift === view_size ? '' : shift) + 'j'
+            );
             return false; // Prevent bubbling
         }, undefined, 'Scroll page down, or by number of lines down if used in format xj'));
-        this._hotkeysService.add(new Hotkey(['ctrl+f'], (event: KeyboardEvent): boolean => {
+        this._hotkeysService.add(new Hotkey(['ctrl+f', '/'], (event: KeyboardEvent): boolean => {
             this.searchField.nativeElement.focus();
             return false; // Prevent bubbling
         }, undefined, 'Search by File name'));
