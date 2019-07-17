@@ -310,9 +310,11 @@ def cluster_get_first_and_last_entry(current_user, case):
                      body=json.dumps(last_query))
     res = []
     if first is not None:
-        res.append(first['hits']['hits'][0])
+        if len(first['hits']['hits']) > 0:
+            res.append(first['hits']['hits'][0])
     if last is not None:
-        res.append(last['hits']['hits'][0])
+        if len(last['hits']['hits']) > 0:
+            res.append(last['hits']['hits'][0])
     return jsonify(res)
 
 
@@ -331,9 +333,11 @@ def graph_get_first_and_last_entry(current_user, case):
                      body=json.dumps(last_query))
     res = []
     if first is not None:
-        res.append(first['hits']['hits'][0])
+        if len(first['hits']['hits']) > 0:
+            res.append(first['hits']['hits'][0])
     if last is not None:
-        res.append(last['hits']['hits'][0])
+        if len(last['hits']['hits']) > 0:
+            res.append(last['hits']['hits'][0])
     return jsonify(res)
 
 

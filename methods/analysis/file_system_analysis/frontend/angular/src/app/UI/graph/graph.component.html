@@ -20,9 +20,9 @@
             <!--</mat-button-toggle>-->
         <!--</mat-button-toggle-group>-->
     </div>
-    <div class="col-md-4 header-tools text-align-right" *ngIf="graphPanelOpenState">
-        <span *ngIf="graphPanelOpenState && saveGraphZoom" class="mat-stroked-button timesix-button" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>
-    </div>
+    <!--<div class="col-md-4 header-tools text-align-right" *ngIf="graphPanelOpenState">-->
+        <!--<span *ngIf="graphPanelOpenState && saveGraphZoom" class="mat-stroked-button timesix-button" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>-->
+    <!--</div>-->
     <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
         <div class="graph-container">
             <div class="chart-loader" *ngIf="loadingMTimes || loadingATimes || loadingBTimes || loadingCTimes">
