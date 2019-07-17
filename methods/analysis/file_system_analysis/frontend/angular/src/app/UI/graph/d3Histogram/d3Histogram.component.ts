@@ -848,7 +848,32 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function dragEnd() {
+            g.selectAll('.dragRect').remove();
             const draggedX = Math.max(0, Math.min(d3.event.x - margin.left, contentWidth));
+
+            //Check if new selection does not intersect any current selections
+            for (let i = 0; i < thisClass.selections.length; i++) {
+                // If new selection would end in another one, then return
+                if (draggedX >= actualX(thisClass.selections[i][0]) && draggedX <= actualX(thisClass.selections[i][1])){
+                    return;
+                }
+                // If new selection would start in another one, then return
+                if (dragStartX >= actualX(thisClass.selections[i][0]) && dragStartX <= actualX(thisClass.selections[i][1])) {
+                    return;
+                }
+                // If new selection would contain another one, then return
+                // Selection from left to right
+                if (dragStartX <= actualX(thisClass.selections[i][0]) && draggedX >= actualX(thisClass.selections[i][1])){
+                    return;
+                }
+                // If new selection would contain another one, then return
+                // Selection from right to left
+                if (draggedX <= actualX(thisClass.selections[i][0]) && dragStartX >= actualX(thisClass.selections[i][1])){
+                    return;
+                }
+
+            }
+
             if (dragStartX != null) {
                 if (draggedX - dragStartX !== 0) {
                     if (draggedX < dragStartX) {
