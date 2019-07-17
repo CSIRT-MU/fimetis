@@ -426,7 +426,7 @@ export class ListViewComponent {
         // console.log($event);
         const start = $event['startIndex'];
         const end = $event['endIndex'];
-        console.log('visible start index:',  start, this.visibleDataFirstIndex);
+        // console.log('visible start index:',  start, this.visibleDataFirstIndex);
         this.visibleDataFirstIndex = start < 0 ? 0 : start;
         this.visibleDataLastIndex = end < 0 ? 0 : end;
         if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
@@ -1167,5 +1167,26 @@ export class ListViewComponent {
         }
 
         return result;
+    }
+
+    isDateOnSelectionBorder(actualDate, nextDate) {
+        if (this.additionalFilters['multiTimeRange'] === undefined) {
+            return false;
+        }
+        if (actualDate == null || nextDate == null) {
+            return false;
+        }
+        if (actualDate === undefined || nextDate === undefined) {
+            return false;
+        }
+        const compareDate = this.baseService.getDateWithoutOffset(new Date(actualDate));
+        const compareNextDate = this.baseService.getDateWithoutOffset(new Date(nextDate));
+        for (const range of this.additionalFilters['multiTimeRange']) {
+            const compareToDate = this.baseService.getDateWithoutOffset(new Date(range[1]));
+            if (compareDate.getTime() <= compareToDate.getTime() && compareNextDate.getTime() > compareToDate.getTime()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

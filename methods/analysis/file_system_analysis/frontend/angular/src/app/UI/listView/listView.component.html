@@ -64,7 +64,8 @@
                 </thead>
                 <tbody #container>
                     <tr class="table-row-definition" *ngFor="let element of visibleData; index as i"
-                         [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null ) }">
+                         [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null ),
+                          'border-bottom': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true ? '1px solid red': 'none'}">
                         <td *ngFor="let tableItem of displayedTableColumns">
                             <div class="table-select" *ngIf="tableItem == 'select'"
                             [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}"
