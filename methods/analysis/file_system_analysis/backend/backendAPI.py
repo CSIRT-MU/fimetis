@@ -111,7 +111,7 @@ def login():
                      'groups': groups,
                      'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
                     app.config['SECRET_KEY'])
-                logging.warning('LOGIN - successful for user: ' + str(username))
+                logging.warning('LOGIN - successful for user: ' + str(username + ' from ' + str(request.remote_addr)))
                 return jsonify({'username': username, 'groups': groups, 'token': token.decode('UTF-8')})
     logging.warning('LOGIN - Wrong username or password')
     return jsonify({'message': 'Wrong username or password'}), 400
