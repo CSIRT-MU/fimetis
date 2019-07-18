@@ -76,8 +76,6 @@
 
 .table-skip-loader {
     position: absolute;
-    width: 400px;
-    left: 35%;
     top: 30%;
     z-index: 7;
     background-color:  rgba(107, 252, 255, 0.8);
