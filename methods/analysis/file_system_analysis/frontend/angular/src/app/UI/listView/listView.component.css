@@ -134,12 +134,22 @@
 .search-field {
     border-radius: 15px;
     border-color: #666666;
-    padding-left: 5px;
-    padding-right: 25px;
+    padding-left: 10px;
+    padding-right: 30px;
+    height: 34px;
 }
 
 .search-field:focus {
     outline: none;
+}
+
+.search-field:not(:placeholder-shown) {
+    background-color: #ff756e;
+    color: #fefefe;
+}
+
+.search-field:not(:placeholder-shown) ~ .search-icon{
+    color: #fefefe;
 }
 
 .search-icon{
