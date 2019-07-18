@@ -197,6 +197,10 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('x', margin.left)
             .attr('y',  0);
 
+        // clip path with offset values
+        const positionWindowClip = svg.append('defs').append('svg:clipPath')
+            .attr('id', 'positionWindowClip');
+
         d3.selectAll('.tooltip').remove();
         const tooltip = d3.select(element)
             .append('div')
@@ -826,6 +830,8 @@ export class D3HistogramComponent implements OnDestroy {
             //     //     ':' + date.getUTCMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
             //     //     ':' + date.getUTCSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2});
             // });
+
+            drawActualPositionWindow();
         }
 
         let dragStartX = null;
@@ -926,6 +932,47 @@ export class D3HistogramComponent implements OnDestroy {
         // });
 
         function drawActualPositionWindow() {
+            d3.selectAll('.positionWindowRect').remove();
+            d3.selectAll('.positionWindowBar').remove();
+            if (thisClass.selections.length > 0) {
+                positionWindowClip.selectAll('.positionWindowBar')
+                    .data(thisClass.selections)
+                    .enter()
+                    .append('svg:rect')
+                    .attr('class', 'positionWindowBar')
+                    .attr('x', function(d) {
+                        const xVal = actualX(d[0]) + margin.left;
+                        if (xVal < margin.left) {
+                            return margin.left;
+                        } else if (xVal > (contentWidth + margin.left)) {
+                            return contentWidth + margin.left;
+                        } else {
+                            return xVal;
+                        }
+                    })
+                    .attr('width', function(d) {
+                        const xWidth = actualX(d[1]) - actualX(d[0]);
+                        const xVal = actualX(d[1]) + margin.left;
+                        if (xVal < margin.left) {
+                            return 0;
+                        } else if (xVal > (contentWidth + margin.left)) {
+                            return contentWidth - (actualX(d[0]));
+                        } else {
+                            return xWidth;
+                        }
+                    })
+                    .attr('y', 0)
+                    .attr('height', element.offsetHeight);
+            } else {
+                positionWindowClip
+                    .append('svg:rect')
+                    .attr('class', 'positionWindowRect')
+                    .attr('width', contentWidth)
+                    .attr('height', element.offsetHeight )
+                    .attr('x', margin.left)
+                    .attr('y',  0);
+            }
+
             svg.selectAll('.actualPositionWindow').remove();
             svg.append('rect')
                 .attr('class', 'actualPositionWindow')
@@ -952,7 +999,8 @@ export class D3HistogramComponent implements OnDestroy {
                         .attr('width', actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from));
                 })
                 .lower()
-                .attr('clip-path', 'url(#offsetClip)');
+                // .attr('mask', 'url(#rightShadowMask)')
+                .attr('clip-path', 'url(#positionWindowClip)');
         }
     }
 
