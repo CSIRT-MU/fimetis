@@ -67,7 +67,7 @@ export class D3HistogramComponent implements OnDestroy {
             // remove all time range selections
             this.selections = [];
             this.selectionsDebouncer.next(this.selections);
-            this.removeAllSelections();
+            d3.select('.removeAllSelectionsButton').dispatch('click');
             return false; // Prevent bubbling
         }, undefined, 'Remove all time range selections'));
         this._hotkeysService.add(new Hotkey(['ctrl+plus', 'command+plus'], (event: KeyboardEvent): boolean => {
@@ -140,6 +140,14 @@ export class D3HistogramComponent implements OnDestroy {
         d3.select('.zoomPlusButton').on('click', zoomPlus);
         d3.select('.zoomMinusButton').on('click', zoomMinus);
         d3.select('.resetZoomButton').on('click', zoomOut);
+        svg.selectAll('.removeAllSelectionsButton').remove();
+        svg.append('rect')
+            .attr('class', 'removeAllSelectionsButton')
+            .style('visibility', 'hidden')
+            .on('click', function () {
+                drawSelections();
+                drawActualPositionWindow();
+            });
         svg.selectAll('.selectActualAreaButton').remove();
         svg.append('rect')
             .attr('class', 'selectActualAreaButton')
@@ -1014,18 +1022,6 @@ export class D3HistogramComponent implements OnDestroy {
         for (const typeName of types) {
             d3.selectAll('.bar' + typeName).style('visibility', 'visible');
         }
-    }
-
-    removeAllSelections() {
-        d3.selectAll('.shadowBar').remove();
-        d3.selectAll('.selectionLineLeft').remove();
-        d3.selectAll('.selectionLineRight').remove();
-        d3.selectAll('.selectionRemoveButtonIcon').remove();
-        d3.selectAll('.selectionRemoveButton').remove();
-        d3.selectAll('.selectionZoomInButtonIcon').remove();
-        d3.selectAll('.selectionZoomInButton').remove();
-        d3.selectAll('.selectionTextL').remove();
-        d3.selectAll('.selectionTextR').remove();
     }
 
     updatePositionWindow(from: Date, to: Date) {
