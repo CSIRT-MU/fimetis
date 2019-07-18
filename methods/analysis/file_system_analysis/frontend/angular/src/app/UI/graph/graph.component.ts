@@ -546,6 +546,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         //     width: 1,
         //     zIndex: 8
         // });
+        this.d3Histogram.updatePositionWindow(from_edit, to_edit);
     }
 
     updateBoundary() {

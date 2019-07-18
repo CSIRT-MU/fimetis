@@ -33,6 +33,7 @@ export class D3HistogramComponent implements OnDestroy {
     max_date_boundary = null;
     @Input()
     selectedTypes = ['m', 'a', 'c', 'b'];
+    windowPosition = {from: null, to: null};
 
     selections = [];
     @Output() selectionsEmitter = new EventEmitter<any[]>();
@@ -272,6 +273,8 @@ export class D3HistogramComponent implements OnDestroy {
 
         const svgSel = svg.append('g')
             .attr('clip-path', 'url(#offsetClip)');
+
+        drawActualPositionWindow();
         drawBars();
         // drawZoomNavigation();
         drawSelections();
@@ -302,11 +305,13 @@ export class D3HistogramComponent implements OnDestroy {
             xAxis.attr('transform', 'translate(' + margin.left + ',' + (contentHeight + margin.top) + ')')
                 .call(d3.axisBottom(actualX));
 
+            drawActualPositionWindow();
             updateBars();
             drawZoomNavigation();
             drawSelections();
             // save zoom for responsive redraw
-            thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()), 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
+            thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()),
+                'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
 
         }
 
@@ -341,7 +346,9 @@ export class D3HistogramComponent implements OnDestroy {
             // update bars
             g.selectAll('.bar')
                 .attr('x', function(d) {return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))); })
-                .attr('width', Math.max(0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1));
+                .attr('width',
+                    Math.max(
+                        0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1));
         }
 
         function drawZoomNavigation() {
@@ -454,18 +461,20 @@ export class D3HistogramComponent implements OnDestroy {
                         if (d[1] < 1) {
                             return 0;
                         } else if (d[1] < 2) {
-                            return actualY(2) + ((actualY(1) - actualY(2))/2);
+                            return actualY(2) + ((actualY(1) - actualY(2)) / 2);
                         } else {
                             return actualY(d[1]);
                         }
                     })
                     // .attr('width', contentWidth / data[i].data.length)
-                    .attr('width', Math.max(0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1))
+                    .attr('width',
+                        Math.max(
+                            0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1))
                     .attr('height', function(d) {
                         if (d[1] < 1) {
                             return 0;
                         } else if (d[1] < 2) {
-                            return actualY(1) - actualY(2) - ((actualY(1) - actualY(2))/2);
+                            return actualY(1) - actualY(2) - ((actualY(1) - actualY(2)) / 2);
                         } else {
                             return actualY(1) - actualY(d[1]);
                         }
@@ -487,9 +496,11 @@ export class D3HistogramComponent implements OnDestroy {
                     .on('mousemove', function(d) {
                         tooltip
                             .html('<p style="display: block; margin: 0; font-size: x-small">' +
-                                new Date(d[0]).toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                                new Date(d[0]).toLocaleString('en-US',
+                                    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
                                 + '</p>' +
-                                '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' + data[i].name + ': ' + d[1] + '</p>')
+                                '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
+                                data[i].name + ': ' + d[1] + '</p>')
                             .style('left', actualX(d[0]) + 5 + 'px')
                             .style('border-color', data[i].color)
                             .style('margin-top', -25 + 'px');
@@ -569,7 +580,6 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('stroke', '#666666')
                 .on('mouseover', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
-                    passThruEvents(svg);
                 })
                 .on('mouseout', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
@@ -805,7 +815,8 @@ export class D3HistogramComponent implements OnDestroy {
             //     const input = dateInputElement.cloneNode(true);
             //     input.value = date.toISOString().split('.')[0];
             //     return input.toString();
-            //     // return '<input type="datetime-local" style="display: block" value="' + date.toISOString().split('.')[0] + '" (change)="console.log(' + date + ')">';
+            //     // return '<input type="datetime-local" style="display: block" value="' +
+            //  date.toISOString().split('.')[0] + '" (change)="console.log(' + date + ')">';
             //     // return '<p style="display: block; margin: 0; font-size: small">' +
             //     //     date.getUTCFullYear() + '-' +
             //     //     (date.getUTCMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2}) +
@@ -846,7 +857,7 @@ export class D3HistogramComponent implements OnDestroy {
             g.selectAll('.dragRect').remove();
             const draggedX = Math.max(0, Math.min(d3.event.x - margin.left, contentWidth));
 
-            //Check if new selection does not intersect any current selections
+            // Check if new selection does not intersect any current selections
             for (let i = 0; i < thisClass.selections.length; i++) {
                 // If new selection would end in another one, then return
                 if (draggedX >= actualX(thisClass.selections[i][0]) && draggedX <= actualX(thisClass.selections[i][1])){
@@ -914,41 +925,34 @@ export class D3HistogramComponent implements OnDestroy {
         //     shiftKey = d3.event.shiftKey;
         // });
 
-        function passThruEvents(g) {
-            g
-                .on('mouseover.passThru', passThru)
-                .on('click.passThru', passThru)
-                .on('mousemove.passThru', passThru)
-                .on('mousedown.passThru', passThru)
-            ;
-
-            function passThru(d) {
-                const e = d3.event;
-                const prev = this.style.pointerEvents;
-                this.style.pointerEvents = 'none';
-
-                const el = document.elementFromPoint(d3.event.x, d3.event.y);
-
-                const e2 = document.createEvent('MouseEvent');
-                e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
-
-                el.dispatchEvent(e2);
-                this.style.pointerEvents = prev;
-            }
-        }
-
-        function passThru(d) {
-            const e = d3.event;
-            const prev = this.style.pointerEvents;
-            this.style.pointerEvents = 'none';
-
-            const el = document.elementFromPoint(d3.event.x, d3.event.y);
-
-            const e2 = document.createEvent('MouseEvent');
-            e2.initMouseEvent(e.type,e.bubbles,e.cancelable,e.view, e.detail,e.screenX,e.screenY,e.clientX,e.clientY,e.ctrlKey,e.altKey,e.shiftKey,e.metaKey,e.button,e.relatedTarget);
-
-            el.dispatchEvent(e2);
-            this.style.pointerEvents = prev;
+        function drawActualPositionWindow() {
+            svg.selectAll('.actualPositionWindow').remove();
+            svg.append('rect')
+                .attr('class', 'actualPositionWindow')
+                .attr('y', margin.top)
+                .attr('height', contentHeight)
+                .attr('x', function () {
+                    if (thisClass.windowPosition.from != null) {
+                        return actualX(thisClass.windowPosition.from) + margin.left;
+                    } else {
+                        return 0;
+                    }
+                })
+                .attr('width', function() {
+                    if (thisClass.windowPosition.from != null && thisClass.windowPosition.to != null) {
+                        return actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from);
+                    } else {
+                        return 0;
+                    }
+                })
+                .attr('fill', 'rgba(173, 216, 230, 0.4)')
+                .on('click', function() {
+                    d3.selectAll('.actualPositionWindow')
+                        .attr('x', actualX(thisClass.windowPosition.from) + margin.left)
+                        .attr('width', actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from));
+                })
+                .lower()
+                .attr('clip-path', 'url(#offsetClip)');
         }
     }
 
@@ -974,5 +978,12 @@ export class D3HistogramComponent implements OnDestroy {
         d3.selectAll('.selectionZoomInButton').remove();
         d3.selectAll('.selectionTextL').remove();
         d3.selectAll('.selectionTextR').remove();
+    }
+
+    updatePositionWindow(from: Date, to: Date) {
+        this.windowPosition.from = from;
+        to.setDate(to.getDate() + 1);
+        this.windowPosition.to = to;
+        d3.selectAll('.actualPositionWindow').dispatch('click');
     }
 }
