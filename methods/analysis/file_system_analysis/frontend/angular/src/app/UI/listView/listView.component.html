@@ -147,6 +147,8 @@
 </div>
 <div #highlightedBox id="highlightedBox" class="highlightedBox" *ngIf="selectionExists()">
     {{highlightedText}}
+    <span class="glyphicon glyphicon-copy clickable highlighted-icon" matTooltip="Copy highlighted text to clipboard"
+          [matTooltipPosition]="'above'" (click)="copyHighlightedTextToClipboard()"></span>
     <span class="glyphicon glyphicon-indent-right clickable highlighted-icon" matTooltip="Make cluster by path"
           [matTooltipPosition]="'above'" (click)="makeClusterByHighlight()"></span>
     <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block"
@@ -157,6 +159,8 @@
 
 <div #highlightedDateBox id="highlightedDateBox" class="highlightedBox" *ngIf="selectionExists()">
     {{highlightedTextDate}}
+    <span class="glyphicon glyphicon-copy clickable highlighted-icon" matTooltip="Copy highlighted text to clipboard"
+          [matTooltipPosition]="'above'" (click)="copyHighlightedDateToClipboard()"></span>
     <span class="glyphicon glyphicon-save clickable highlighted-icon" matTooltip="Skip to the end of the block"
           [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(true)"></span>
     <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block"

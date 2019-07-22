@@ -326,7 +326,7 @@ export class ListViewComponent {
         if (this.searchString !== '') {
             this.additionalFilters['searchString'] = this.searchString;
             this.init();
-        } else if (this.additionalFilters['searchString'] !== undefined){
+        } else if (this.additionalFilters['searchString'] !== undefined) {
             this.additionalFilters['searchString'] = undefined;
             this.init();
         }
@@ -632,6 +632,23 @@ export class ListViewComponent {
         // computation.filters.add(filter);
         this.makeManualCluster.emit(cluster);
     }
+
+    /**
+     * Copies selected highlighted text to clipboard
+     */
+    copyHighlightedTextToClipboard(): void {
+        document.execCommand('copy');
+        this.toaster.success('Text: "' + this.highlightedText + '" has been copied to clipboard');
+    }
+
+    /**
+     * Copies selected highlighted text to clipboard
+     */
+    copyHighlightedDateToClipboard(): void {
+        document.execCommand('copy');
+        this.toaster.success('Date: "' + this.highlightedTextDate + '" has been copied to clipboard');
+    }
+
     /**
      * Skips (scrolls) the block by highlighted prefix (mouse selection) of File Name
      * @param {boolean} toTheEnd If true then skip to the end of the block else skip to the start
@@ -897,7 +914,6 @@ export class ListViewComponent {
             for (let index = startIndex; index < buffer.length; index++) {
                 const next_date = new Date(buffer[index]._source['@timestamp']);
                 if (dateLevel >= 0) {
-                    console.log(selectedDate.getFullYear() < next_date.getUTCFullYear(), selectedDate.getFullYear(), next_date.getUTCFullYear());
                     if (selectedDate.getFullYear() < next_date.getUTCFullYear()) {
                         skipIndex = index;
                         break;
