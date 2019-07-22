@@ -84,7 +84,7 @@ export class ListViewComponent {
     page_number = 1;
     page_size = 1500000;
     // Virtual scroll
-    @ViewChild(VirtualScrollerComponent) virtualScroller: VirtualScrollerComponent;
+    @ViewChild(VirtualScrollerComponent, {static: false}) virtualScroller: VirtualScrollerComponent;
     virtualArray: VirtualArrayModel = new VirtualArrayModel();
     preloadedBufferSize = 4000; // buffer window size - minimum = (2*preloadBufferBorder) + preloadBufferOffset
     preloadBufferOffset = 1200; // shift of buffer window - should be bigger than preloadBufferBorder
@@ -102,9 +102,9 @@ export class ListViewComponent {
     visibleDataLastIndex = 0;
     loadingData = false;
     skippingData = null;
-    @ViewChild('searchField') searchField: ElementRef;
-    @ViewChild('highlightedBox') highlightedBox: ElementRef;
-    @ViewChild('highlightedDateBox') highlightedDateBox: ElementRef;
+    @ViewChild('searchField', {static: false}) searchField: ElementRef;
+    @ViewChild('highlightedBox', {static: false}) highlightedBox: ElementRef;
+    @ViewChild('highlightedDateBox', {static: false}) highlightedDateBox: ElementRef;
     constructor(private clusterService: ClusterService,
                 private baseService: BaseService,
                 public dialog: MatDialog,

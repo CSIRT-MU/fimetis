@@ -8,7 +8,7 @@ import {MAT_DIALOG_DATA, MatDialogRef, MatSelectionList} from '@angular/material
 })
 export class SelectDialogComponent implements OnInit {
 
-    @ViewChild(MatSelectionList)
+    @ViewChild(MatSelectionList, {static: false})
     list: MatSelectionList;
 
     constructor(public dialogRef: MatDialogRef<SelectDialogComponent>,

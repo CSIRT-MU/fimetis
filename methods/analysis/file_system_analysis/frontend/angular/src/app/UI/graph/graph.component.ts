@@ -28,8 +28,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     typesChangedDebouncer: Subject<Set<string>> = new Subject();
     // @Input() fromDate: Date;
 
-    @ViewChild('graph') private chartElement: ElementRef;
-    @ViewChild('plot_div') private plotElement: ElementRef;
+    @ViewChild('graph', {static: false}) private chartElement: ElementRef;
+    @ViewChild('plot_div', {static: false}) private plotElement: ElementRef;
 
     @Input()
     graphPanelOpenState = true;
@@ -226,7 +226,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     //     ]
     // };
 
-    @ViewChild(D3HistogramComponent) d3Histogram: D3HistogramComponent;
+    @ViewChild(D3HistogramComponent, {static: false}) d3Histogram: D3HistogramComponent;
 
     private subscriptions: Subscription[] = [];
     constructor(private graphService: GraphService,

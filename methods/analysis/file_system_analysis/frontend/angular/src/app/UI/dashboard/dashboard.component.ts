@@ -48,19 +48,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
-    @ViewChild(ListViewComponent)
+    @ViewChild(ListViewComponent, {static: false})
     listViewComponent: ListViewComponent;
 
-    @ViewChild(GraphComponent)
+    @ViewChild(GraphComponent, {static: false})
     graphComponent: GraphComponent;
 
-    @ViewChild(ClusterComponent)
+    @ViewChild(ClusterComponent, {static: false})
     clusterComponent: ClusterComponent;
 
-    @ViewChild(MatTabGroup)
+    @ViewChild(MatTabGroup, {static: false})
     tabGroup: MatTabGroup;
 
-    @ViewChild(MatChipList)
+    @ViewChild(MatChipList, {static: false})
     chipList: MatChipList;
 
     constructor(private baseService: BaseService,

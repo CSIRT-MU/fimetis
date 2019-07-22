@@ -21,7 +21,7 @@ export interface HistogramData {
 })
 export class D3HistogramComponent implements OnDestroy {
 
-    @ViewChild('chart')
+    @ViewChild('chart', {static: false})
     private chartContainer: ElementRef;
 
     @Input()

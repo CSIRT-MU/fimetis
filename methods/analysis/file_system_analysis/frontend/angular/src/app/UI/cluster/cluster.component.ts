@@ -11,7 +11,7 @@ import {Subject} from 'rxjs';
 })
 export class ClusterComponent implements OnInit {
 
-    @ViewChild(MatSelectionList)
+    @ViewChild(MatSelectionList, {static: false})
     clusterList: MatSelectionList;
 
     @Input('clusters')
