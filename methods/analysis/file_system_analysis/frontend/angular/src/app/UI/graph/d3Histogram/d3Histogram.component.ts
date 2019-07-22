@@ -862,12 +862,17 @@ export class D3HistogramComponent implements OnDestroy {
                     dragStartX = null;
                 }
             } else {
+                svg.style('cursor', 'move');
                 dragStartX = null;
                 dragShiftStartX = d3.event.x;
             }
         }
 
         function dragEnd() {
+            if (dragShiftStartX != null) {
+                svg.style('cursor', 'default');
+                dragShiftStartX = null;
+            }
             g.selectAll('.dragRect').remove();
             const draggedX = Math.max(0, Math.min(d3.event.x - margin.left, contentWidth));
 
