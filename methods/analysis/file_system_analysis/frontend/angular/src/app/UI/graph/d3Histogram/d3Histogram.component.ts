@@ -658,24 +658,7 @@ export class D3HistogramComponent implements OnDestroy {
                         thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
-            function getClosestLeftSelectionEnd(actualSelectionStart) {
-                let closestLeftSelectionEnd = Number.NEGATIVE_INFINITY;
-                for (let j = 0; j < thisClass.selections.length; j++) {
-                    if (actualX(thisClass.selections[j][1]) < actualSelectionStart) {
-                        closestLeftSelectionEnd = Math.max(actualX(thisClass.selections[j][1]), closestLeftSelectionEnd);
-                    }
-                }
-                return closestLeftSelectionEnd;
-            }
-            function getClosestRightSelectionStart(actualSelectionEnd) {
-                let closestRightSelectionStart = Number.POSITIVE_INFINITY;
-                for (let j = 0; j < thisClass.selections.length; j++) {
-                    if (actualX(thisClass.selections[j][0]) > actualSelectionEnd) {
-                        closestRightSelectionStart = Math.min(actualX(thisClass.selections[j][0]), closestRightSelectionStart);
-                    }
-                }
-                return closestRightSelectionStart;
-            }
+
             // selection buttons
             svg.selectAll('.selectionRemoveButtonIcon').remove();
             svg.selectAll('.selectionRemoveButtonIcon')
@@ -849,7 +832,12 @@ export class D3HistogramComponent implements OnDestroy {
                 dragShiftStartX = null;
                 if (d3.event.x - margin.left > 0 && d3.event.x - margin.left < contentWidth) {
                     dragStartX = d3.event.x - margin.left;
-                    console.log('drag start', actualX.invert(dragStartX));
+                    for (let j = 0; j < thisClass.selections.length; j++) {
+                        if (dragStartX > actualX(thisClass.selections[j][0]) && dragStartX < actualX(thisClass.selections[j][1])) {
+                            return;
+                        }
+                    }
+
                     g.selectAll('.dragRect').remove();
                     g.append('rect')
                         .attr('class', 'dragRect')
@@ -874,29 +862,37 @@ export class D3HistogramComponent implements OnDestroy {
                 dragShiftStartX = null;
             }
             g.selectAll('.dragRect').remove();
-            const draggedX = Math.max(0, Math.min(d3.event.x - margin.left, contentWidth));
+            let draggedX = Math.max(0, Math.min(d3.event.x - margin.left, contentWidth));
 
-            // Check if new selection does not intersect any current selections
+            // If selection left->right, looking for closest right selection start, if right->left then closest left selection end
+            if (dragStartX < draggedX) {
+                draggedX = Math.min(getClosestRightSelectionStart(dragStartX), draggedX);
+            } else {
+                draggedX = Math.max(getClosestLeftSelectionEnd(dragStartX), draggedX);
+            }
+
+
+            // Check if new selection intersect any current selections then return
             for (let i = 0; i < thisClass.selections.length; i++) {
-                // If new selection would end in another one, then return
-                if (draggedX >= actualX(thisClass.selections[i][0]) && draggedX <= actualX(thisClass.selections[i][1])){
-                    return;
+                if (dragStartX < draggedX) {
+                    // new left->right selection contain another selection
+                    if (dragStartX <= actualX(thisClass.selections[i][0]) && draggedX >= actualX(thisClass.selections[i][1])) {
+                        return;
+                    }
+                    // new left->right selection is in another selection
+                    if (dragStartX >= actualX(thisClass.selections[i][0]) && draggedX <= actualX(thisClass.selections[i][1])) {
+                        return;
+                    }
+                } else {
+                    // new right->left selection contain another selection
+                    if (dragStartX <= actualX(thisClass.selections[i][1]) && draggedX >= actualX(thisClass.selections[i][0])) {
+                        return;
+                    }
+                    // new right->left selection is in another selection
+                    if (dragStartX >= actualX(thisClass.selections[i][1]) && draggedX <= actualX(thisClass.selections[i][0])) {
+                        return;
+                    }
                 }
-                // If new selection would start in another one, then return
-                if (dragStartX >= actualX(thisClass.selections[i][0]) && dragStartX <= actualX(thisClass.selections[i][1])) {
-                    return;
-                }
-                // If new selection would contain another one, then return
-                // Selection from left to right
-                if (dragStartX <= actualX(thisClass.selections[i][0]) && draggedX >= actualX(thisClass.selections[i][1])){
-                    return;
-                }
-                // If new selection would contain another one, then return
-                // Selection from right to left
-                if (draggedX <= actualX(thisClass.selections[i][0]) && dragStartX >= actualX(thisClass.selections[i][1])){
-                    return;
-                }
-
             }
 
             if (dragStartX != null) {
@@ -917,7 +913,20 @@ export class D3HistogramComponent implements OnDestroy {
         function dragging() {
             if (d3.event.sourceEvent.ctrlKey) {
                 const dragSelectionX = d3.event.x - margin.left;
-                // console.log('drag', dragSelectionX);
+
+                // Stops draging to right if get to closest selection
+                if (dragStartX < dragSelectionX) {
+                    if (dragSelectionX > getClosestRightSelectionStart(dragStartX)) {
+                        return;
+                    }
+                }
+                // Stops draging to left if get to closest selection
+                if (dragStartX > dragSelectionX) {
+                    if (dragSelectionX < getClosestLeftSelectionEnd(dragStartX)) {
+                        return;
+                    }
+                }
+
                 if (dragStartX != null) {
                     if (dragSelectionX - dragStartX < 1) {
                         g.selectAll('.dragRect')
@@ -1015,6 +1024,29 @@ export class D3HistogramComponent implements OnDestroy {
                 // .attr('mask', 'url(#rightShadowMask)')
                 .attr('clip-path', 'url(#positionWindowClip)');
         }
+
+        function getClosestLeftSelectionEnd(actualSelectionStart) {
+            let closestLeftSelectionEnd = Number.NEGATIVE_INFINITY;
+            for (let j = 0; j < thisClass.selections.length; j++) {
+                if (actualX(thisClass.selections[j][1]) <= actualSelectionStart) {
+                    closestLeftSelectionEnd = Math.max(actualX(thisClass.selections[j][1]), closestLeftSelectionEnd);
+                }
+            }
+            return closestLeftSelectionEnd;
+        }
+
+        function getClosestRightSelectionStart(actualSelectionEnd) {
+            let closestRightSelectionStart = Number.POSITIVE_INFINITY;
+            for (let j = 0; j < thisClass.selections.length; j++) {
+                if (actualX(thisClass.selections[j][0]) >= actualSelectionEnd) {
+                    closestRightSelectionStart = Math.min(actualX(thisClass.selections[j][0]), closestRightSelectionStart);
+                }
+            }
+            return closestRightSelectionStart;
+        }
+
+
+
     }
 
     onResize() {
@@ -1035,4 +1067,5 @@ export class D3HistogramComponent implements OnDestroy {
         this.windowPosition.to = to;
         d3.selectAll('.actualPositionWindow').dispatch('click');
     }
+
 }
