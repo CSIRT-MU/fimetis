@@ -3,7 +3,7 @@ import {MatDialog} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
 import {Subject} from 'rxjs';
-import 'rxjs/add/observable/of';
+
 import {VirtualArrayModel} from '../../models/virtualArray.model';
 import {ClusterModel} from '../../models/cluster.model';
 import {TextSelectEvent, SelectionRectangle} from '../text-select.directive';
@@ -1019,7 +1019,7 @@ export class ListViewComponent {
         if (node.parentNode.parentElement.innerText.length > data.length) {
             data = node.parentNode.parentElement.innerText;
         }
-        if (node.parentNode.localName === 'mark') {
+        if (node.parentNode['localName'] === 'mark') {
             range.setStart(node.parentNode.parentElement, 0);
         } else {
             range.setStart(node.parentNode, 0);
@@ -1047,7 +1047,7 @@ export class ListViewComponent {
                     endOffset -= endNode.textContent.length;
                     endNode = endNode.nextSibling;
                 } else {
-                    if (endNode.parentNode.localName === 'mark' && endNode.parentNode.nextSibling != null) {
+                    if (endNode.parentNode['localName'] === 'mark' && endNode.parentNode.nextSibling != null) {
                         endOffset -= endNode.textContent.length;
                         endNode = endNode.parentNode.nextSibling;
                     } else {
