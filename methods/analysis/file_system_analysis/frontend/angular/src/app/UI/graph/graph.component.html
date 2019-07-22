@@ -52,8 +52,8 @@
             <div *ngIf="!showAllTypes">
                 <span *ngFor="let type of supportedTypes" class="type-checkbox" matTooltip="{{typeTooltip(type)}}">
                     <input type="checkbox" (change)="typeCheckboxChanged(type)"
-                           [checked]="selectedTypes.has(type)" class="form-checkbox" id="check-{{type}}" [ngStyle]="{ 'border-color': selectedTypes.has(type) ? getCheckboxColor(type) : '#A9A9A9', 'background-color': selectedTypes.has(type) ? getCheckboxColor(type) : '#A9A9A9'}">
-                    <label for="check-{{type}}" id="label-for-check-{{type}}" [ngStyle]="{'color': '#ffffff' }">{{type}}</label>
+                           [checked]="selectedTypes.has(type)" class="form-checkbox" id="check-{{type}}" [ngStyle]="{ 'border-color': selectedTypes.has(type) ? getCheckboxColor(type) : '#808080', 'background-color': selectedTypes.has(type) ? getCheckboxColor(type) : '#ffffff'}">
+                    <label for="check-{{type}}" id="label-for-check-{{type}}" [ngStyle]="{'color': selectedTypes.has(type) ? '#ffffff' : '#808080' }">{{type}}</label>
                 </span>
             </div>
         </div>
