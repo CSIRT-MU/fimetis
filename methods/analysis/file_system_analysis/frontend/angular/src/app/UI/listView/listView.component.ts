@@ -247,7 +247,7 @@ export class ListViewComponent {
                 this.loadingData = false;
                 return new DataModel;
             });
-        console.log('list data loaded async', resp, resp.data, resp.total);
+        // console.log('list data loaded async', resp, resp.data, resp.total);
         this.data = resp.data;
         // this.total = resp.total;
         this.preloadedData = resp.data;
@@ -491,7 +491,7 @@ export class ListViewComponent {
      */
     preloadData(begin, size, visibleDataStart, visibleDataEnd, loadingState: boolean, preloadBuffer: boolean) {
         if (!this.preloadBufferState && preloadBuffer) {
-            console.log('calling data preload');
+            // console.log('calling data preload');
             this.preloadBufferState = true;
             this.dataLoader(begin, size, visibleDataStart, visibleDataEnd, loadingState, preloadBuffer);
         } else if (!preloadBuffer) {
@@ -525,8 +525,8 @@ export class ListViewComponent {
             this.pageSortString,
             this.pageSortOrder)
             .then(resp => {
-                    console.log('virtual scroll loaded data', resp, resp.data, resp.total,
-                        'from: ', begin, '(from + page index):', begin_with_page, 'size: ', size);
+                    // console.log('virtual scroll loaded data', resp, resp.data, resp.total,
+                    //     'from: ', begin, '(from + page index):', begin_with_page, 'size: ', size);
                     this.preloadedData = resp.data;
                     this.preloadedBegin = begin;
                     this.preloadedEnd = this.preloadedBegin + size;
@@ -542,7 +542,7 @@ export class ListViewComponent {
                     this.toaster.error('Cannot load data', 'Loading failed');
                     this.loadingData = false;
                 }).then(() => {
-            console.log('Preload data - done!');
+            // console.log('Preload data - done!');
             if (loadingState) {
                 this.loadingData = false;
             }
@@ -1129,10 +1129,10 @@ export class ListViewComponent {
      * @param {number} index Index of item to scroll to
      */
     scrollToIndex(index: number) {
-        console.log('requested scroll index:', index);
+        // console.log('requested scroll index:', index);
         const actualIndex = index < 0 ? 0 : index;
         const scrollPage = Math.floor(actualIndex / this.page_size) + 1;
-        console.log('scrolling to index: ', actualIndex, ' on page: ', scrollPage);
+        // console.log('scrolling to index: ', actualIndex, ' on page: ', scrollPage);
         const scrollIndex = actualIndex % this.page_size;
         this.setPage(scrollPage);
         this.virtualScroller.scrollToIndex(scrollIndex - 1);

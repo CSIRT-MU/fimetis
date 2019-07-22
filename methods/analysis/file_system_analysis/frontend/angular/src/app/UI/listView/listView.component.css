@@ -414,3 +414,8 @@ virtual-scroll {
 .timestamp-field{
     padding-right: 5px;
 }
+
+.total-count-block{
+    margin-left: 15px;
+    display: inline-block
+}

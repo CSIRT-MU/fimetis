@@ -134,6 +134,10 @@
     outline: none;
 }
 
+.form-checkbox:focus {
+    outline: none;
+}
+
 /*.form-checkbox:checked::before*/
 /*{*/
     /*position: absolute;*/

@@ -280,17 +280,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
         console.log('compute graph');
         this.graphService.getFirstAndLastTimestamp(this._case, this._clusters, null, null).then((res) => {
-            console.log(res[0], res[1]);
             let first = new Date(res[0]);
             first = new Date(Date.UTC(first.getFullYear(), first.getMonth(), first.getDate()));
-            console.log(first);
             this.min_date_boundary = first.getTime();
             let last = new Date(res[1]);
-            console.log(last);
             last = new Date(Date.UTC(last.getFullYear(), last.getMonth(), last.getDate()));
-            console.log(last);
             this.max_date_boundary = last.getTime() + (24 * 3600 * 1000);
-            console.log(this.max_date_boundary);
 
             // this.chart.xAxis[0].update({
             //     min: this.min_date_boundary,
@@ -303,7 +298,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             // });
 
             if (!this.saveGraphZoom) {
-                console.log('loaded', this.min_date_boundary, this.max_date_boundary);
+                // console.log('loaded', this.min_date_boundary, this.max_date_boundary);
                 let isoString = new Date(this.min_date_boundary).toISOString();
                 this.pickedFromDate = isoString.substring(0, isoString.length - 1);
                 isoString = new Date(this.max_date_boundary).toISOString();
@@ -342,7 +337,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.highCharts.series[0].data = data;
                 // this.chart.series[0].setData(data, false, false,  false);
                 // this.chartOverview.series[0].setData(data, false, false,  false);
-                console.log('Graph data loaded async! - m', response);
+                // console.log('Graph data loaded async! - m', response);
                 this.loadingMTimes = false;
                 this.d3Histogram.data[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
@@ -370,7 +365,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
                 // this.chart.series[1].setData(data, false, false,  false);
                 // this.chartOverview.series[1].setData(data, false, false,  false);
-                console.log('Graph data loaded async! - a', response);
+                // console.log('Graph data loaded async! - a', response);
                 this.loadingATimes = false;
                 this.d3Histogram.data[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
@@ -396,7 +391,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
                 // this.chart.series[2].setData(data, false, false,  false);
                 // this.chartOverview.series[2].setData(data, false, false,  false);
-                console.log('Graph data loaded async! - c', response);
+                // console.log('Graph data loaded async! - c', response);
                 this.loadingCTimes = false;
                 this.d3Histogram.data[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
@@ -422,7 +417,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
                 // this.chart.series[3].setData(data, false, false,  false);
                 // this.chartOverview.series[3].setData(data, false, false,  false);
-                console.log('Graph data loaded async! - b', response);
+                // console.log('Graph data loaded async! - b', response);
 
                 this.loadingBTimes = false;
                 this.d3Histogram.data[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
@@ -449,7 +444,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
                 // this.chart.series[4].setData(data, false, false,  false);
                 // this.chartOverview.series[4].setData(data, false, false,  false);
-                console.log('Graph data loaded async! - all', response);
+                // console.log('Graph data loaded async! - all', response);
 
                 this.loadingAllTimes = false;
                 this.chartDataLoaded();
@@ -604,7 +599,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             // this.typesChanged.emit(this.selectedTypes);
             this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
             this.typesChangedDebouncer.next(this.selectedTypes);
-            console.log('selected metadata types changed', this.selectedTypes);
+            // console.log('selected metadata types changed', this.selectedTypes);
         }
     }
 
