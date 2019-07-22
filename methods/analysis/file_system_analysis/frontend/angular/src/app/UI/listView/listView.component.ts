@@ -70,6 +70,7 @@ export class ListViewComponent {
     pageSortOrder = 'asc';
     // data
     total = 0;
+    totalOf = 0;
     data: any[];
     timestampColor = {colors: ['#f0f0f0', '#ffffff'], colored_nodes: new Map<string, string>()};  //'#fceada'
     // skipping
@@ -222,6 +223,18 @@ export class ListViewComponent {
         // }
         const initSize = 200;
         // const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
+        this.clusterService.countAllDataTotal(this.case,
+            this.clusters,
+            this.additionalFilters
+        ).then( response => {
+            this.total = response.total;
+            this.totalOf = response.total_all;
+        }).catch(
+        () => {
+            this.toaster.error('Cannot load data', 'Loading failed');
+            this.loadingData = false;
+            return new DataModel;
+        });
         const resp = await this.clusterService.getData(this.case,
             this.clusters,
             this.additionalFilters,
@@ -236,7 +249,7 @@ export class ListViewComponent {
             });
         console.log('list data loaded async', resp, resp.data, resp.total);
         this.data = resp.data;
-        this.total = resp.total;
+        // this.total = resp.total;
         this.preloadedData = resp.data;
         this.preloadedBegin = this.visibleDataFirstIndex;
         this.preloadedEnd = this.visibleDataFirstIndex + initSize;
@@ -457,7 +470,8 @@ export class ListViewComponent {
                 }
             } else {
                 if (end > this.preloadedEnd) {
-                    const begVal = end - (this.preloadedBufferSize - this.preloadBufferOffset) < 0 ? 0 : end - (this.preloadedBufferSize - this.preloadBufferOffset);
+                    const begVal = end - (this.preloadedBufferSize - this.preloadBufferOffset) < 0 ?
+                        0 : end - (this.preloadedBufferSize - this.preloadBufferOffset);
                     this.preloadData(begVal, this.preloadedBufferSize, start, end, true, false);
                 } else {
                     const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;

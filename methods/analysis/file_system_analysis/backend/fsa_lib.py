@@ -43,7 +43,7 @@ class FilterParam:
 def build_data_query(case_name,
                      clusters,
                      additional_filters,
-                     from_param,
+                     from_param=0,
                      size=1,
                      sort='timestamp',
                      sort_order='asc'):

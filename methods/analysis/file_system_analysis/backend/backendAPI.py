@@ -277,18 +277,39 @@ def clusters_entries_border(current_user, case):
     return jsonify(res)
 
 
+@app.route('/clusters/data_counts/<string:case>', methods=['POST'])
+@token_required
+def clusters_data_counts(current_user, case):
+    clusters = request.json.get('clusters')
+    additional_filters = request.json.get('additional_filters')
+    query_filters = fsa.build_data_query(case, clusters, additional_filters)
+    query_all = fsa.build_data_query(case, clusters, None)
+    logging.info('QUERY clusters counts: ' + '\n' + json.dumps(query_filters) + '\n' + json.dumps(query_all))
+    res_filters = es.search(index=app.config['elastic_metadata_index'],
+                            doc_type=app.config['elastic_metadata_type'],
+                            body=json.dumps(query_filters))
+    res_all = es.search(index=app.config['elastic_metadata_index'],
+                        doc_type=app.config['elastic_metadata_type'],
+                        body=json.dumps(query_all))
+    return jsonify({'total': res_filters['hits']['total'], 'total_all': res_all['hits']['total']})
+
+
 @app.route('/cluster/count/<string:case>', methods=['POST'])
 @token_required
 def cluster_get_count(current_user, case):
     cluster = request.json.get('cluster')
     additional_filters = request.json.get('additional_filters')
 
-    query = fsa.build_count_query(case, cluster, additional_filters)
-    logging.info('QUERY cluster get count: ' + '\n' + json.dumps(query))
-    res = es.search(index=app.config['elastic_metadata_index'],
-                    doc_type=app.config['elastic_metadata_type'],
-                    body=json.dumps(query))
-    return jsonify(res)
+    query_filters = fsa.build_count_query(case, cluster, additional_filters)
+    query_all = fsa.build_count_query(case, cluster, additional_filters)
+    logging.info('QUERY cluster get count: ' + '\n' + json.dumps(query_filters) + '\n' + json.dumps(query_all))
+    res_filters = es.search(index=app.config['elastic_metadata_index'],
+                            doc_type=app.config['elastic_metadata_type'],
+                            body=json.dumps(query_filters))
+    res_all = es.search(index=app.config['elastic_metadata_index'],
+                        doc_type=app.config['elastic_metadata_type'],
+                        body=json.dumps(query_filters))
+    return jsonify({'total': res_filters['hits']['total'], 'total_all': res_all['hits']['total']})
 
 
 @app.route('/cluster/first_and_last/<string:case>', methods=['POST'])

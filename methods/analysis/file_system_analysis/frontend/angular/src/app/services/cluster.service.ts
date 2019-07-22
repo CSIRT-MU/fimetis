@@ -42,6 +42,22 @@ export class ClusterService {
         );
     }
 
+    countAllDataTotal(_case: string,
+              _clusters: ClusterModel[],
+              _additional_filters: object) {
+        return this.http.post<any>(environment.backendUrl + '/clusters/data_counts/' + _case, {
+            'clusters': _clusters,
+            'additional_filters': JSON.stringify(_additional_filters)
+        }).toPromise().then(
+            response => {
+                return response;
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
+
     countData(_case: string,
             _cluster: ClusterModel,
             _additional_filters: object) {
@@ -50,7 +66,7 @@ export class ClusterService {
             'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
             response => {
-                return response.hits.total;
+                return response.total;
             }, error => {
                 console.error(error);
                 return error;

@@ -3,7 +3,7 @@
         <span class="text-gray title"><h4>Interactive List View</h4></span><span class="glyphicon panel-header-button"
                                                                                  [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}"
                                                                                  (click)="tablePanelOpenState = !tablePanelOpenState"></span>
-        <span class="text-gray" style="margin-left: 15px">Total: {{total}}</span>
+        <span class="text-gray" style="margin-left: 15px">Total: {{total}} of: {{totalOf}}</span>
     </div>
     <div class="col-md-7 table-controls">
         <mat-paginator class="pagination-control" *ngIf="total > page_size" (page)="changePage($event.pageIndex + 1)" [hidePageSize]="true" [pageIndex]="page_number - 1" [pageSize]="page_size" [length]="total"></mat-paginator>
