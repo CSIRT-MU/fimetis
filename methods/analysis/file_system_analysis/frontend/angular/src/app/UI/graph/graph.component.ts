@@ -720,24 +720,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         for (const sel of selections) {
             const fromUTCDateTime = new Date(sel[0]).getTime() - new Date(sel[0]).getTimezoneOffset() * 60000;
             const toUTCDateTime = new Date(sel[1]).getTime() - new Date(sel[1]).getTimezoneOffset() * 60000;
-            this.saveGraphZoom = true;
-            // this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
-            this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
-            // this.chart.showResetZoom();
-            // console.log(this.pickedFromDate);
-            allSelections.push([
-                new Date(fromUTCDateTime).toISOString(),
-                new Date(toUTCDateTime).toISOString()
-            ]);
-        }
-        if (allSelections.length < 1) {
-            const fromUTCDateTime = new Date(this.min_date_boundary).getTime() - new Date(this.min_date_boundary).getTimezoneOffset() * 60000;
-            const toUTCDateTime = new Date(this.max_date_boundary).getTime() - new Date(this.max_date_boundary).getTimezoneOffset() * 60000;
-            this.saveGraphZoom = false;
-            // this.chart.xAxis[0].setExtremes(fromUTCDateTime, toUTCDateTime);
-            this.graphOverviewZoomLabel(fromUTCDateTime, toUTCDateTime);
-            // this.chart.showResetZoom();
-            // console.log(this.pickedFromDate);
             allSelections.push([
                 new Date(fromUTCDateTime).toISOString(),
                 new Date(toUTCDateTime).toISOString()
