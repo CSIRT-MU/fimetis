@@ -65,9 +65,9 @@ export class D3HistogramComponent implements OnDestroy {
         }, undefined, 'Reset histogram zoom'));
         this._hotkeysService.add(new Hotkey(['ctrl+del', 'command+del'], (event: KeyboardEvent): boolean => {
             // remove all time range selections
-            this.selections = [];
-            this.selectionsDebouncer.next(this.selections);
             d3.select('.removeAllSelectionsButton').dispatch('click');
+            this.selectionsDebouncer.next(this.selections);
+
             return false; // Prevent bubbling
         }, undefined, 'Remove all time range selections'));
         this._hotkeysService.add(new Hotkey(['ctrl+plus', 'command+plus'], (event: KeyboardEvent): boolean => {
@@ -140,14 +140,15 @@ export class D3HistogramComponent implements OnDestroy {
         d3.select('.zoomPlusButton').on('click', zoomPlus);
         d3.select('.zoomMinusButton').on('click', zoomMinus);
         d3.select('.resetZoomButton').on('click', zoomOut);
-        svg.selectAll('.removeAllSelectionsButton').remove();
-        svg.append('rect')
-            .attr('class', 'removeAllSelectionsButton')
-            .style('visibility', 'hidden')
-            .on('click', function () {
-                drawSelections();
-                drawActualPositionWindow();
-            });
+        d3.select('.removeAllSelectionsButton').on('click', removeAllSelections);
+        // svg.selectAll('.removeAllSelectionsButton').remove();
+        // svg.append('rect')
+        //     .attr('class', 'removeAllSelectionsButton')
+        //     .style('visibility', 'hidden')
+        //     .on('click', function () {
+        //         drawSelections();
+        //         drawActualPositionWindow();
+        //     });
         svg.selectAll('.selectActualAreaButton').remove();
         svg.append('rect')
             .attr('class', 'selectActualAreaButton')
@@ -352,6 +353,12 @@ export class D3HistogramComponent implements OnDestroy {
 
         function zoomMinus() {
             zoom.scaleTo(svg, d3.zoomTransform(svg.node()).k * zoomFactor);
+        }
+
+        function removeAllSelections() {
+            thisClass.selections = [];
+            drawSelections();
+            drawActualPositionWindow();
         }
 
         function updateBars() {
