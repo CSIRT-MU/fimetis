@@ -223,18 +223,17 @@ export class ListViewComponent {
         // }
         const initSize = 200;
         // const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
-        this.clusterService.countAllDataTotal(this.case,
+        const counts = await this.clusterService.countAllDataTotal(this.case,
             this.clusters,
             this.additionalFilters
-        ).then( response => {
-            this.total = response.total;
-            this.totalOf = response.total_all;
-        }).catch(
-        () => {
+        ).catch(() => {
             this.toaster.error('Cannot load data', 'Loading failed');
             this.loadingData = false;
             return new DataModel;
         });
+        this.total = counts.total;
+        this.totalOf = counts.total_all;
+        
         const resp = await this.clusterService.getData(this.case,
             this.clusters,
             this.additionalFilters,
