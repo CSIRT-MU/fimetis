@@ -231,11 +231,6 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     private subscriptions: Subscription[] = [];
     constructor(private graphService: GraphService,
                 private _hotkeysService: HotkeysService) {
-        this.loadingMTimes = false;
-        this.loadingATimes = false;
-        this.loadingCTimes = false;
-        this.loadingBTimes = false;
-        this.loadingAllTimes = false;
         // debouncer setup
         this.subscriptions.push(this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value)));
         this.subscriptions.push(this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value)));

@@ -15,6 +15,7 @@ import {UserSettingsService} from '../../services/userSettings.service';
 import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirmation-dialog.component';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as d3 from 'd3';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-dashboard',
@@ -63,6 +64,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild(MatChipList, {static: false})
     chipList: MatChipList;
 
+    private subscriptions: Subscription[] = [];
     constructor(private baseService: BaseService,
                 private clusterService: ClusterService,
                 public authService: AuthenticationService,
@@ -87,11 +89,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.userSettingsService.advancedMode.subscribe(mode => {
+        this.subscriptions.push(this.userSettingsService.advancedMode.subscribe(mode => {
             this.advancedModeToggle(mode);
-        });
+        }));
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     loadAllCases() {
@@ -395,11 +401,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * @param {boolean} advancedMode If true than advanced mode is turn on
      */
     advancedModeToggle(advancedMode: boolean) {
-        this.advancedMode = advancedMode;
-        this.resetClusterStates();
-        this.clusterComponent.advancedMode = this.advancedMode;
-        this.listViewComponent.init();
-        this.graphComponent.init();
+        if (this.advancedMode !== advancedMode) {
+            this.advancedMode = advancedMode;
+            this.resetClusterStates();
+            this.clusterComponent.advancedMode = this.advancedMode;
+            this.listViewComponent.init();
+            this.graphComponent.init();
+        }
     }
 
     /**
