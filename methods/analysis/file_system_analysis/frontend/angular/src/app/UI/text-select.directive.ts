@@ -170,7 +170,7 @@ export class TextSelectDirective implements OnInit, OnDestroy {
     private processSelection(): void {
 
         const selection = document.getSelection();
-        console.log('selection process');
+        // console.log('selection process');
 
         // If there is a new selection and an existing selection, let's clear out the
         // existing selection first.

@@ -82,9 +82,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this.graphComponent._clusters = this.getClusters();
-        this.listViewComponent.clusters = this.getClusters();
-
         this.loadAllCases();
         this.loadAllFilters();
     }
@@ -93,6 +90,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.userSettingsService.advancedMode.subscribe(mode => {
             this.advancedModeToggle(mode);
         });
+        this.graphComponent._clusters = this.getClusters();
+        this.listViewComponent.clusters = this.getClusters();
     }
 
     loadAllCases() {
@@ -103,7 +102,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 console.error(error);
                 this.toaster.error('Error:' + error['message'], 'Cannot load datasets');
             }).then(() => {
-            console.log('Show Cases completed!');
+            // console.log('Show Cases completed!');
         });
     }
 
@@ -114,7 +113,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             }, error => {
                 console.error(error);
             }).then(() => {
-            console.log('Show Filters completed!');
+            // console.log('Show Filters completed!');
         });
     }
 
@@ -170,8 +169,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * Triggered by changing mode of clusters (select, deselect, deduct)
      */
     clusterSelectionChanged($event) {
-        console.log(this.clusters);
-        console.log(this.getClusters());
         this.listViewComponent.clusters = this.getClusters();
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.init();

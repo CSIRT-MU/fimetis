@@ -38,8 +38,10 @@ export class GraphService {
         }).toPromise().then(
             response => {
                 const timestamps = [];
-                timestamps.push(response[0]._source['@timestamp']);
-                timestamps.push(response[1]._source['@timestamp']);
+                if (response.length > 0) {
+                    timestamps.push(response[0]._source['@timestamp']);
+                    timestamps.push(response[1]._source['@timestamp']);
+                }
                 return timestamps;
             }, error => {
                 console.error(error);

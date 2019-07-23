@@ -85,7 +85,6 @@ export class ClusterService {
             'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
             response => {
-                console.log('response', response);
                 return response.hits.total;
             }, error => {
                 console.error(error);
@@ -103,7 +102,6 @@ export class ClusterService {
         }
         const old_number = await this.numberOfEntries(_case, oldClusters, {}, firstEntry._source['@timestamp']);
         const new_number = await this.numberOfEntries(_case, newClusters, {}, firstEntry._source['@timestamp']);
-        console.log('difference shift:', new_number - old_number);
         return new_number - old_number;
     }
 }

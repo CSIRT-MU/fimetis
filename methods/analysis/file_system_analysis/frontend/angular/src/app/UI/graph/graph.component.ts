@@ -231,6 +231,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     private subscriptions: Subscription[] = [];
     constructor(private graphService: GraphService,
                 private _hotkeysService: HotkeysService) {
+        this.loadingMTimes = false;
+        this.loadingATimes = false;
+        this.loadingCTimes = false;
+        this.loadingBTimes = false;
+        this.loadingAllTimes = false;
         // debouncer setup
         this.subscriptions.push(this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value)));
         this.subscriptions.push(this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value)));
@@ -278,39 +283,41 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadingBTimes = true;
         this.loadingAllTimes = true;
 
-        console.log('compute graph');
+        // console.log('compute graph');
         this.graphService.getFirstAndLastTimestamp(this._case, this._clusters, null, null).then((res) => {
-            let first = new Date(res[0]);
-            first = new Date(Date.UTC(first.getFullYear(), first.getMonth(), first.getDate()));
-            this.min_date_boundary = first.getTime();
-            let last = new Date(res[1]);
-            last = new Date(Date.UTC(last.getFullYear(), last.getMonth(), last.getDate()));
-            this.max_date_boundary = last.getTime() + (24 * 3600 * 1000);
+            if (res.length > 0) {
+                let first = new Date(res[0]);
+                first = new Date(Date.UTC(first.getFullYear(), first.getMonth(), first.getDate()));
+                this.min_date_boundary = first.getTime();
+                let last = new Date(res[1]);
+                last = new Date(Date.UTC(last.getFullYear(), last.getMonth(), last.getDate()));
+                this.max_date_boundary = last.getTime() + (24 * 3600 * 1000);
 
-            // this.chart.xAxis[0].update({
-            //     min: this.min_date_boundary,
-            //     max: this.max_date_boundary
-            // });
-            //
-            // this.chartOverview.xAxis[0].update({
-            //     min: this.min_date_boundary,
-            //     max: this.max_date_boundary
-            // });
+                // this.chart.xAxis[0].update({
+                //     min: this.min_date_boundary,
+                //     max: this.max_date_boundary
+                // });
+                //
+                // this.chartOverview.xAxis[0].update({
+                //     min: this.min_date_boundary,
+                //     max: this.max_date_boundary
+                // });
 
-            if (!this.saveGraphZoom) {
-                // console.log('loaded', this.min_date_boundary, this.max_date_boundary);
-                let isoString = new Date(this.min_date_boundary).toISOString();
-                this.pickedFromDate = isoString.substring(0, isoString.length - 1);
-                isoString = new Date(this.max_date_boundary).toISOString();
-                this.pickedToDate = isoString.substring(0, isoString.length - 1);
-            } else {
-                const fromDate = new Date(this.pickedFromDate);
-                const fromUTCDate = new Date(fromDate.getTime() - (fromDate.getTimezoneOffset() * 60000));
-                const toDate = new Date(this.pickedToDate);
-                const toUTCDate = new Date(toDate.getTime() - (fromDate.getTimezoneOffset() * 60000));
-                if (new Date(fromUTCDate).getTime() === new Date(this.min_date_boundary).getTime() &&
-                    new Date(toUTCDate).getTime() === new Date(this.max_date_boundary).getTime()) {
-                    this.saveGraphZoom = false;
+                if (!this.saveGraphZoom) {
+                    // console.log('loaded', this.min_date_boundary, this.max_date_boundary);
+                    let isoString = new Date(this.min_date_boundary).toISOString();
+                    this.pickedFromDate = isoString.substring(0, isoString.length - 1);
+                    isoString = new Date(this.max_date_boundary).toISOString();
+                    this.pickedToDate = isoString.substring(0, isoString.length - 1);
+                } else {
+                    const fromDate = new Date(this.pickedFromDate);
+                    const fromUTCDate = new Date(fromDate.getTime() - (fromDate.getTimezoneOffset() * 60000));
+                    const toDate = new Date(this.pickedToDate);
+                    const toUTCDate = new Date(toDate.getTime() - (fromDate.getTimezoneOffset() * 60000));
+                    if (new Date(fromUTCDate).getTime() === new Date(this.min_date_boundary).getTime() &&
+                        new Date(toUTCDate).getTime() === new Date(this.max_date_boundary).getTime()) {
+                        this.saveGraphZoom = false;
+                    }
                 }
             }
         });
@@ -710,7 +717,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     transformSelectionsToFilter(selections) {
-        console.log(selections);
+        // console.log(selections);
         const allSelections: Array<[string, string]> = [];
         for (const sel of selections) {
             const fromUTCDateTime = new Date(sel[0]).getTime() - new Date(sel[0]).getTimezoneOffset() * 60000;

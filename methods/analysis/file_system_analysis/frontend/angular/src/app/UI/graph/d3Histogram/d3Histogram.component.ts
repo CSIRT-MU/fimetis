@@ -91,7 +91,7 @@ export class D3HistogramComponent implements OnDestroy {
     }
 
     createChart() {
-        console.log('create graph');
+        // console.log('create graph');
 
         const thisClass = this;
         const element = this.chartContainer.nativeElement;

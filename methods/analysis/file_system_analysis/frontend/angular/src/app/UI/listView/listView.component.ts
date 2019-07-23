@@ -206,23 +206,17 @@ export class ListViewComponent {
     async init() {
         // console.log(this.additionalFilters, this.visibleDataFirstIndex);
         this.loadingData = true;
+        // get difference between selected clusters in previous step and thi step -> we want to keep time context
         const shift = await this.clusterService.getDifferenceShift(
             this.case,
             this.clusters,
             this.oldClusters,
             this.visibleDataFirstIndex,
             this.visibleData[0]);
-        // const shift = 0;
-        // const loadEvent = {};
-        // loadEvent['start'] = this.visibleDataFirstIndex;
-        // loadEvent['end'] = this.visibleDataLastIndex === 0 ? (this.visibleDataFirstIndex + 20) : this.visibleDataLastIndex;
-        // this.loadVisibleData(loadEvent);
-        // let size = this.visibleDataLastIndex - this.visibleDataFirstIndex + 1;
-        // if (size === 0) {
-        //     size = 20;
-        // }
+        // init size -> load small amount of data at first.
         const initSize = 200;
         // const resp = await this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder);
+        // Get count of data with and without additional filters
         const counts = await this.clusterService.countAllDataTotal(this.case,
             this.clusters,
             this.additionalFilters
@@ -233,7 +227,8 @@ export class ListViewComponent {
         });
         this.total = counts.total;
         this.totalOf = counts.total_all;
-        
+
+        // Load init data to list
         const resp = await this.clusterService.getData(this.case,
             this.clusters,
             this.additionalFilters,
@@ -252,6 +247,7 @@ export class ListViewComponent {
         this.preloadedData = resp.data;
         this.preloadedBegin = this.visibleDataFirstIndex;
         this.preloadedEnd = this.visibleDataFirstIndex + initSize;
+        // compute number of pages and length of virtual array
         if (this.total > this.page_size) {
             if (this.page_number * this.page_size > this.total) {
                 this.virtualArray.length = this.total - ((this.page_number - 1) * this.page_size);
@@ -268,28 +264,7 @@ export class ListViewComponent {
         } else {
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
         }
-        // this.virtualScroller.refresh();
-        // this.clusterManager.getData(this.visibleDataFirstIndex, initSize, this.pageSortString, this.pageSortOrder)
-        //     .then(resp => {
-        //         console.log('list data loaded async', resp, resp.data, resp.total);
-        //         this.data = resp.data;
-        //         this.total = resp.total;
-        //         this.preloadedData = resp.data;
-        //         this.preloadedBegin = this.visibleDataFirstIndex;
-        //         this.preloadedEnd = this.visibleDataFirstIndex + initSize;
-        //         this.virtualArray.length = this.total;
-        //         this.loadingData = false;
-        //         this.visibleData = this.data;
-        //         if (this.visibleDataFirstIndex + shift > this.total ) {
-        //             this.scrollToIndex(this.total - 20 < 0 ? 0 : this.total - 20);
-        //         } else {
-        //             this.scrollToIndex(this.visibleDataFirstIndex + shift);
-        //         }
-        //         // this.virtualScroller.refresh();
-        //     });
-        // this.virtualScroller.scrollToIndex(this.visibleDataFirstIndex + shift);
         this.oldClusters = lodash.cloneDeep(this.clusters);
-        // this.virtualScroller.refresh();
     }
     isAllSelected() {
         const numSelected = this.tableSelection.selected.length;
@@ -570,22 +545,26 @@ export class ListViewComponent {
      * @param index Index of item in list
      */
     openHighlightedTextMenu(event: TextSelectEvent, index) {
-        console.log(index);
-        console.log(window.getSelection());
-        console.group('Text Select Event');
-        console.log('Text:', event.text);
-        console.log('Viewport Rectangle:', event.viewportRectangle);
-        console.log('Host Rectangle:', event.hostRectangle);
-        console.groupEnd();
+        // console.log(index);
+        // console.log(window.getSelection());
+        // console.group('Text Select Event');
+        // console.log('Text:', event.text);
+        // console.log('Viewport Rectangle:', event.viewportRectangle);
+        // console.log('Host Rectangle:', event.hostRectangle);
+        // console.groupEnd();
         this.highlightedTextId = index + this.visibleDataFirstIndex;
         if (event.hostRectangle) {
             this.highlightedTextBox = event.hostRectangle;
             this.highlightedText = event.text;
-            this.highlightedBox.nativeElement.style.display = 'block';
-            this.highlightedBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
-            this.highlightedBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
+            if (this.highlightedBox !== undefined) {
+                this.highlightedBox.nativeElement.style.display = 'block';
+                this.highlightedBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
+                this.highlightedBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
+            }
         } else {
-            this.highlightedBox.nativeElement.style.display = 'none';
+            if (this.highlightedBox !== undefined) {
+                this.highlightedBox.nativeElement.style.display = 'none';
+            }
             this.highlightedTextBox = null;
             this.highlightedText = '';
         }
@@ -596,20 +575,24 @@ export class ListViewComponent {
      * @param index Index of item in list
      */
     openHighlightedTextDateMenu(event: TextSelectEvent, index) {
-        console.group('Text Select Date Event');
-        console.log('Text:', event.text);
-        console.log('Viewport Rectangle:', event.viewportRectangle);
-        console.log('Host Rectangle:', event.hostRectangle);
-        console.groupEnd();
+        // console.group('Text Select Date Event');
+        // console.log('Text:', event.text);
+        // console.log('Viewport Rectangle:', event.viewportRectangle);
+        // console.log('Host Rectangle:', event.hostRectangle);
+        // console.groupEnd();
         this.highlightedTextDateId = index + this.visibleDataFirstIndex;
         if (event.hostRectangle) {
             this.highlightedTextDateBox = event.hostRectangle;
             this.highlightedTextDate = event.text;
-            this.highlightedDateBox.nativeElement.style.display = 'block';
-            this.highlightedDateBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
-            this.highlightedDateBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
+            if (this.highlightedDateBox != null) {
+                this.highlightedDateBox.nativeElement.style.display = 'block';
+                this.highlightedDateBox.nativeElement.style.top = (event.viewportRectangle.top - 35) + 'px';
+                this.highlightedDateBox.nativeElement.style.left = event.viewportRectangle.left + 'px';
+            }
         } else {
-            this.highlightedDateBox.nativeElement.style.display = 'none';
+            if (this.highlightedDateBox != null) {
+                this.highlightedDateBox.nativeElement.style.display = 'none';
+            }
             this.highlightedTextDateBox = null;
             this.highlightedTextDate = '';
         }
