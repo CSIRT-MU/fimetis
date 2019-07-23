@@ -278,7 +278,6 @@ export class ListViewComponent {
             this.data.forEach(row => this.tableSelection.select(row));
     }
     tableSort($event) {
-        console.log($event);
         let pageSort = $event['active'];
         if (pageSort === 'M Time' || pageSort === 'A Time' || pageSort === 'C Time' || pageSort === 'B Time') {
             pageSort = 'timestamp';
@@ -296,7 +295,6 @@ export class ListViewComponent {
      * Filters data by search string
      */
     searchByString() {
-        console.log(this.additionalFilters['test']);
         if (this.searchString !== '') {
             this.additionalFilters['searchString'] = this.searchString;
             this.init();
@@ -361,11 +359,9 @@ export class ListViewComponent {
      * @param types
      */
     typeFilter(types) {
-        console.log('type filter:', types);
         if (types != null) {
             if (types !== undefined) {
                 this.additionalFilters['typeFilter'] = Array.from(types);
-                console.log(this.additionalFilters);
                 this.init();
             }
         } else if (this.additionalFilters['typeFilter'] !== undefined) {
@@ -389,7 +385,6 @@ export class ListViewComponent {
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result != null) {
-                console.log(result);
                 this.displayedTableColumns = result;
                 // this.displayedTableColumns = ['name'];
             }
@@ -638,12 +633,12 @@ export class ListViewComponent {
     async skipTheBlockByHighlightedFileName(toTheEnd: boolean) {
         const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
         if (this.skippingData) {
-            console.log('already skipping this block =>', this.skippingData);
+            // console.log('already skipping this block =>', this.skippingData);
             this.toaster.error('Skipping: ' + this.skippingData, 'You are already skipping');
             this.openHighlightedTextMenu(hideEvent, 0);
             return;
         }
-        console.log('skip File Name from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
+        // console.log('skip File Name from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
         const skipFrom = this.highlightedTextId;
         let test = this.highlightedText;
@@ -669,7 +664,7 @@ export class ListViewComponent {
         test += '.*';
         test = '^' + test;
         const regex = new RegExp(test);
-        console.log('skipping File Name by regex prefix: ', regex);
+        // console.log('skipping File Name by regex prefix: ', regex);
         this.skippingData = this.highlightedText;
         if (toTheEnd) {
             index_start += 1;
@@ -717,7 +712,7 @@ export class ListViewComponent {
         if (toTheEnd) {
             skipIndex -= 1;
         }
-        console.log('skip File Name to:', skipIndex + bufferOffset);
+        // console.log('skip File Name to:', skipIndex + bufferOffset);
         this.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
         let skippedItems = skipIndex + bufferOffset - skipFrom;
@@ -797,12 +792,12 @@ export class ListViewComponent {
     async skipTheBlockByDate(toTheEnd: boolean) {
         const hideEvent: TextSelectEvent = {text: ' ', viewportRectangle: null, hostRectangle: null};
         if (this.skippingData) {
-            console.log('already skipping this block =>', this.skippingData);
+            // console.log('already skipping this block =>', this.skippingData);
             this.toaster.error('Skipping: ' + this.skippingData, 'You are already skipping');
             this.openHighlightedTextDateMenu(hideEvent, 0);
             return;
         }
-        console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
+        // console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
         const skipFrom = this.highlightedTextDateId;
         // let dateLevel = 0;
@@ -819,7 +814,7 @@ export class ListViewComponent {
         const parsedDate = this.parseDateFromHighlight();
         const dateString = parsedDate.dateString;
         const dateLevel = parsedDate.dateLevel;
-        console.log('skipping date', this.highlightedTextDate, parsedDate);
+        // console.log('skipping date', this.highlightedTextDate, parsedDate);
         this.skippingData = dateString;
         const selectedDate = new Date(dateString);
         let index_start = (this.highlightedTextDateId - this.preloadedBegin);
@@ -869,7 +864,7 @@ export class ListViewComponent {
         if (toTheEnd) {
             skipIndex -= 1;
         }
-        console.log('skip date to:', skipIndex + bufferOffset);
+        // console.log('skip date to:', skipIndex + bufferOffset);
         this.scrollToIndex(skipIndex + bufferOffset);
         this.skippingData = null;
         let skippedItems = skipIndex + bufferOffset - skipFrom;
@@ -1168,7 +1163,6 @@ export class ListViewComponent {
 
 
     createNumberFromPressedNumberKeys() {
-        console.log(this.pressedNumbers);
         let digit_weight = 1;
         let result = 0;
         for (let i = this.pressedNumbers.length - 1; i >= 0; i--) {

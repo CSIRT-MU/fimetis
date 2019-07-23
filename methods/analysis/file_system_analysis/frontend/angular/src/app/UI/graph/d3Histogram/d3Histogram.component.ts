@@ -354,7 +354,6 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function removeAllSelections() {
-            console.log('remove');
             thisClass.selections = [];
             drawSelections();
             drawActualPositionWindow();

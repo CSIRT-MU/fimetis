@@ -27,7 +27,6 @@ export class SelectDialogComponent implements OnInit {
         for (const option of this.list.selectedOptions.selected) {
             result.push(option.getLabel().replace(new RegExp(' ', 'g'), ''));
         }
-        console.log(result);
         this.dialogRef.close(result);
     }
 
