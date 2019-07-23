@@ -15,15 +15,6 @@ export class ClusterService {
             page_size: number,
             sort: string,
             sort_order: string) {
-
-        console.log(JSON.stringify(_additional_filters));
-
-        console.log(begin);
-
-        // let my_begin = begin;
-        // if (begin === null || begin === undefined) {
-        //     my_begin = 0;
-        // }
         return this.http.post<any>(environment.backendUrl + '/clusters/data/' + _case, {
             'clusters': _clusters,
             'additional_filters': JSON.stringify(_additional_filters),

@@ -66,8 +66,6 @@ export class D3HistogramComponent implements OnDestroy {
         this._hotkeysService.add(new Hotkey(['ctrl+del', 'command+del'], (event: KeyboardEvent): boolean => {
             // remove all time range selections
             d3.select('.removeAllSelectionsButton').dispatch('click');
-            this.selectionsDebouncer.next(this.selections);
-
             return false; // Prevent bubbling
         }, undefined, 'Remove all time range selections'));
         this._hotkeysService.add(new Hotkey(['ctrl+plus', 'command+plus'], (event: KeyboardEvent): boolean => {
@@ -356,9 +354,11 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function removeAllSelections() {
+            console.log('remove');
             thisClass.selections = [];
             drawSelections();
             drawActualPositionWindow();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
         function updateBars() {
@@ -488,7 +488,8 @@ export class D3HistogramComponent implements OnDestroy {
                     // .attr('width', contentWidth / data[i].data.length)
                     .attr('width',
                         Math.max(
-                            0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1))
+                            0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
+                            / (24 * 3600 * 1000))), 1))
                     .attr('height', function(d) {
                         if (d[1] < 1) {
                             return 0;
@@ -1074,5 +1075,4 @@ export class D3HistogramComponent implements OnDestroy {
         this.windowPosition.to = to;
         d3.selectAll('.actualPositionWindow').dispatch('click');
     }
-
 }
