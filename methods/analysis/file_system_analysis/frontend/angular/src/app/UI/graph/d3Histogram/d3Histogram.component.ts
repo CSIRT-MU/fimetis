@@ -403,9 +403,9 @@ export class D3HistogramComponent implements OnDestroy {
         function extendSelectionToLeftByDay(index) {
             const millisecondsInDay = 24 * 3600 * 1000;
 
-            const new_selection_start = new Date(thisClass.selections[index][0].getTime() + millisecondsInDay);
+            const new_selection_start = new Date(thisClass.selections[index][0].getTime() - millisecondsInDay);
 
-            if (actualX(new_selection_start) <= getClosestLeftSelectionEnd(actualX(thisClass.selections[index][0]))) {
+            if (actualX(new_selection_start) >= getClosestLeftSelectionEnd(actualX(thisClass.selections[index][0]))) {
                 thisClass.selections[index][0] = new_selection_start;
             }
 
