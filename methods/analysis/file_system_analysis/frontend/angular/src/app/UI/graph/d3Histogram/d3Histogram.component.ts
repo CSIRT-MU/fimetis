@@ -360,7 +360,7 @@ export class D3HistogramComponent implements OnDestroy {
             thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
-        function moveSelectionByDay(selection, index, direction) {
+        function moveSelectionByDay(index, direction) {
             const millisecondsInDay = 24 * 3600 * 1000;
 
             if (direction === 'left') {
@@ -379,6 +379,34 @@ export class D3HistogramComponent implements OnDestroy {
                 }
             } else {
                 console.log('error in moveSelectionByDay: ' + direction);
+            }
+
+            drawSelections();
+            drawActualPositionWindow();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
+        }
+
+        function extendSelectionToRightByDay(index) {
+            const millisecondsInDay = 24 * 3600 * 1000;
+
+            const new_selection_end = new Date(thisClass.selections[index][1].getTime() + millisecondsInDay);
+
+            if (actualX(new_selection_end) <= getClosestRightSelectionStart(actualX(thisClass.selections[index][1]))) {
+                thisClass.selections[index][1] = new_selection_end;
+            }
+
+            drawSelections();
+            drawActualPositionWindow();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
+        }
+
+        function extendSelectionToLeftByDay(index) {
+            const millisecondsInDay = 24 * 3600 * 1000;
+
+            const new_selection_start = new Date(thisClass.selections[index][0].getTime() + millisecondsInDay);
+
+            if (actualX(new_selection_start) <= getClosestLeftSelectionEnd(actualX(thisClass.selections[index][0]))) {
+                thisClass.selections[index][0] = new_selection_start;
             }
 
             drawSelections();
@@ -796,7 +824,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
-                    moveSelectionByDay(d, i, 'right');
+                    moveSelectionByDay(i, 'right');
                 })
                 .append('title').text('Move Selection to right by Day');
 
@@ -831,9 +859,79 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
-                    moveSelectionByDay(d, i, 'left');
+                    moveSelectionByDay(i, 'left');
                 })
                 .append('title').text('Move Selection by Day to left');
+
+            svg.selectAll('.selectionExtendToRightByDayIcon').remove();
+            svg.selectAll('.selectionExtendToightByDayIcon')
+                .data(thisClass.selections)
+                .enter()
+                .append('svg:foreignObject')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayIcon'; })
+                .attr('x', d => actualX(d[1]) + 8 + margin.left)
+                .attr('y', 56 + margin.top)
+                .attr('width', 20)
+                .attr('height', 20)
+                // hidden after init
+                .style('visibility', 'hidden')
+                .append('xhtml:span')
+                .attr('class', 'glyphicon glyphicon glyphicon-arrow-right');
+
+            svg.selectAll('.selectionExtendToRightByDayButton').remove();
+            svg.selectAll('.selectionExtendTORightByDayButton')
+                .data(thisClass.selections)
+                .enter()
+                .append('circle')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayButton'; })
+                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+                .attr('r', 10)
+                .attr('cy', 65 + margin.top)
+                .style('fill-opacity', 0)
+                .style('stroke', '#333333')
+                .style('stroke-width', 2)
+                .style('cursor', 'pointer')
+                // hidden after init
+                .style('visibility', 'hidden')
+                .on('click', function(d, i) {
+                    extendSelectionToRightByDay(i);
+                })
+                .append('title').text('Extend Selection to right by Day');
+
+            svg.selectAll('.selectionExtendToLeftByDayIcon').remove();
+            svg.selectAll('.selectionExtendToLeftByDayIcon')
+                .data(thisClass.selections)
+                .enter()
+                .append('svg:foreignObject')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayIcon'; })
+                .attr('x', d => actualX(d[0]) - 22 + margin.left)
+                .attr('y', 56 + margin.top)
+                .attr('width', 20)
+                .attr('height', 20)
+                // hidden after init
+                .style('visibility', 'hidden')
+                .append('xhtml:span')
+                .attr('class', 'glyphicon glyphicon glyphicon-arrow-left');
+
+            svg.selectAll('.selectionExtendToLeftByDayButton').remove();
+            svg.selectAll('.selectionExtendToLeftByDayButton')
+                .data(thisClass.selections)
+                .enter()
+                .append('circle')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayButton'; })
+                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
+                .attr('r', 10)
+                .attr('cy', 65 + margin.top)
+                .style('fill-opacity', 0)
+                .style('stroke', '#333333')
+                .style('stroke-width', 2)
+                .style('cursor', 'pointer')
+                // hidden after init
+                .style('visibility', 'hidden')
+                .on('click', function(d, i) {
+                    extendSelectionToLeftByDay(i);
+                })
+                .append('title').text('Extend Selection by Day to left');
 
             // selection border text
             svg.selectAll('.selectionTextL').remove();
