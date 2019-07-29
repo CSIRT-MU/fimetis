@@ -373,7 +373,7 @@ export class D3HistogramComponent implements OnDestroy {
             } else if (direction === 'right') {
                 const new_selection_start = new Date(thisClass.selections[index][0].getTime() + millisecondsInDay);
                 const new_selection_end = new Date(thisClass.selections[index][1].getTime() + millisecondsInDay);
-                if (actualX(new_selection_end) <= getClosestRightSelectionStart(actualX(thisClass.selections[index[1]]))) {
+                if (actualX(new_selection_end) <= getClosestRightSelectionStart(actualX(thisClass.selections[index][1]))) {
                     thisClass.selections[index][0] = new_selection_start;
                     thisClass.selections[index][1] = new_selection_end;
                 }
