@@ -237,9 +237,20 @@ export class D3HistogramComponent implements OnDestroy {
         //     .rangeRound([contentHeight, 0])
         //     .domain([0, d3.max(data, d => d.maxValue)]);
 
+
+        function countMaxGraphDomain() {
+            let maxGraphDomain = 1;
+            while (maxGraphDomain <= d3.max(data, d => d.maxValue)) {
+                maxGraphDomain *= 10;
+            }
+            maxGraphDomain *= 10;
+
+            return maxGraphDomain;
+        }
+
         const y = d3
             .scaleLog()
-            .domain([1, d3.max(data, d => d.maxValue)])
+            .domain([1, countMaxGraphDomain()])
             .rangeRound([contentHeight, 0])
             .base(10);
 
@@ -256,13 +267,33 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('transform', 'translate(' + this.margin.left + ',' + (contentHeight + this.margin.top) + ')')
             .call(d3.axisBottom(x));
 
+
+        function countTickValues() {
+            const maximum = d3.max(data, d => d.maxValue);
+
+            if (maximum === undefined) {
+                // no ticks if no data loaded
+                return [];
+            }
+            const tickvalues = [];
+
+            let tick = 1;
+            while (tick <= maximum) {
+                tickvalues.push(tick);
+                tick *= 10;
+            }
+            tickvalues.push(tick);
+
+            return tickvalues;
+        }
+
         const yAxis = svg.append('g')
             .attr('class', 'axis axis--y')
             .attr('transform', 'translate(' + this.margin.left + ', ' + margin.top + ')')
             // .call(d3.axisLeft(y).ticks(10))
             .call(d3.axisLeft(y)
                 .tickSize(- contentWidth)
-                .ticks(3)
+                .tickValues(countTickValues())
                 .tickFormat(d3.format('.1s'))
             //     .tickFormat( function (d) {
             //         console.log(typeof d);
