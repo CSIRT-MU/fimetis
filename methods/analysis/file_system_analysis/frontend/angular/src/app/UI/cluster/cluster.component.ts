@@ -3,6 +3,7 @@ import {MatRadioGroup, MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import {debounceTime} from 'rxjs/operators';
 import {Subject} from 'rxjs';
+import {PerfectScrollbarComponent} from 'ngx-perfect-scrollbar';
 
 @Component({
     selector: 'app-cluster',
@@ -26,6 +27,9 @@ export class ClusterComponent implements OnInit {
     addNewCluster: EventEmitter<any> = new EventEmitter<any>();
     @Output('editCluster')
     editCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
+
+    @ViewChild(PerfectScrollbarComponent, {static: false})
+    perfectScrollbar: PerfectScrollbarComponent;
 
 
     constructor() {
@@ -63,6 +67,22 @@ export class ClusterComponent implements OnInit {
 
     addCluster() {
         this.addNewCluster.emit(null);
+    }
+
+    scrollListToBottom() {
+        // we need to wait for loading new list of data
+        setTimeout(() => {
+            this.perfectScrollbar.directiveRef.scrollToBottom(0, 300);
+        }, 100);
+    }
+
+    getPercentageValue(cluster: ClusterModel) {
+        const onePercent = cluster.totalCount / 100;
+        if (onePercent !== 0) {
+            return cluster.count / onePercent;
+        } else {
+            return 100;
+        }
     }
 
 }

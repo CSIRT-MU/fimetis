@@ -57,7 +57,7 @@ export class ClusterService {
             'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
             response => {
-                return response.total;
+                return {'total': response.total, 'totalAll': response.total_all};
             }, error => {
                 console.error(error);
                 return error;
@@ -68,7 +68,8 @@ export class ClusterService {
     countEntriesOfClusters(_case, _clusters, _additionalFilters) {
         for (const clust of _clusters) {
             this.countData(_case, clust, _additionalFilters).then(res => {
-                clust.count = res;
+                clust.count = res.total;
+                clust.totalCount = res.totalAll;
             }, error => {
                 console.error(error);
             });

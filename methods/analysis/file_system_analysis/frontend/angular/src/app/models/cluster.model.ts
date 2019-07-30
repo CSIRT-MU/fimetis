@@ -4,6 +4,7 @@ export class ClusterModel {
     name: string;
     color: string;
     count: number;
+    totalCount: number;
     // computation: ComputationModel;
     filters: FilterModel[] = [];
     tagged = false;

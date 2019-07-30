@@ -350,7 +350,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.manualClusters = this.manualClusters.concat(cluster);
         this.clusterService.countData(this.selectedCase, cluster, this.listViewComponent.additionalFilters).then(
           response => {
-              cluster.count = response;
+              cluster.count = response.total;
+              cluster.totalCount = response.totalAll;
           });
     }
 
@@ -429,8 +430,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 cluster.name = result[0];
                 cluster.color = result[1];
                 cluster.count = 0;
+                cluster.totalCount = 0;
                 this.manualClusters.push(cluster);
                 this.editCluster(cluster);
+                this.clusterComponent.scrollListToBottom();
             }
         });
     }

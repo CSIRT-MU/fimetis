@@ -1,25 +1,16 @@
 <div class="cluster-list">
-    <!--<perfect-scrollbar class="computed-cluster-list">-->
-    <!--<div>-->
-    <!--<mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">-->
-    <!--<mat-list-option *ngFor="let compCluster of clusters" [selected]="selectAll" checkboxPosition="before" >-->
-    <!--{{compCluster?.key ? compCluster.key : compCluster}}-->
-    <!--</mat-list-option>-->
-    <!--</mat-selection-list>-->
-    <!--<mat-selection-list dense #computedClustersID (selectionChange)="emitSelectedClusters()">-->
-    <!--<mat-list-option *ngFor="let cluster of clusters" checkboxPosition="before" (click)="nextVal(cluster)">-->
-    <!--{{cluster.name}}-->
-    <!--{{cluster.selectMode}}-->
-    <!--</mat-list-option>-->
-    <!--</mat-selection-list>-->
-
-    <!--</div>-->
     <div class="list-header">
-        <div class="cluster-list-content">
-            <div class="cluster-icon cluster-not-selected"></div>
-            <div class="cluster-color"></div>
-            <div class="cluster-name-field">cluster name</div>
-            <div class="cluster-items-field text-align-right">items #</div>
+        <div class="cluster-list-content cluster-item">
+            <div class="cluster-icon-wrapper">
+                <div class="cluster-icon cluster-not-selected"></div>
+            </div>
+            <div class="cluster-info-container">
+                <div class="cluster-name-field">cluster name</div>
+                <div class="cluster-count-field">
+                    filtered entries / total entries
+                </div>
+                <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
+            </div>
             <div *ngIf="advancedMode" class="cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil"></span></div>
         </div>
     </div>
@@ -29,16 +20,20 @@
         <!--<div #container>-->
             <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
             <div *ngFor="let cluster of clusters" class="cluster-item">
-                <!--<mat-radio-button *ngIf="mode === 0" [checked]="clusterChecked(cluster)"-->
-                                  <!--[value]="cluster"></mat-radio-button>-->
-                <div class="cluster-icon clickable"
-                     (click)="nextVal(cluster)"
-                     [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
-                <div class="cluster-color clickable" [ngStyle]="{'border-color': cluster.color}" (click)="nextVal(cluster)"></div>
-                <div class="cluster-name-field clickable" (click)="nextVal(cluster)" matTooltip="{{cluster.description}}"
-                     [matTooltipPosition]="'right'">{{cluster.name}}
+                <div class="cluster-icon-wrapper">
+                    <div class="cluster-icon clickable"
+                         (click)="nextVal(cluster)"
+                         [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
                 </div>
-                <div class="cluster-items-field text-align-right">{{cluster.count}}</div>
+                <div class="cluster-info-container clickable" [ngStyle]="{'border-color': cluster.color}" (click)="nextVal(cluster)">
+                    <div class="cluster-name-field clickable" (click)="nextVal(cluster)" matTooltip="{{cluster.description}}"
+                         [matTooltipPosition]="'right'">{{cluster.name}}
+                    </div>
+                    <div class="cluster-count-field">
+                        {{cluster.count}} / {{cluster.totalCount}}
+                    </div>
+                    <mat-progress-bar mode="determinate" value="{{getPercentageValue(cluster)}}"></mat-progress-bar>
+                </div>
                 <div *ngIf="advancedMode" class="clickable cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil" (click)="edit(cluster)"></span></div>
             </div>
         <!--</div>-->

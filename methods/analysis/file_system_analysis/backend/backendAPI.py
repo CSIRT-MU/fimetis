@@ -301,14 +301,14 @@ def cluster_get_count(current_user, case):
     additional_filters = request.json.get('additional_filters')
 
     query_filters = fsa.build_count_query(case, cluster, additional_filters)
-    query_all = fsa.build_count_query(case, cluster, additional_filters)
+    query_all = fsa.build_count_query(case, cluster, None)
     logging.info('QUERY cluster get count: ' + '\n' + json.dumps(query_filters) + '\n' + json.dumps(query_all))
     res_filters = es.search(index=app.config['elastic_metadata_index'],
                             doc_type=app.config['elastic_metadata_type'],
                             body=json.dumps(query_filters))
     res_all = es.search(index=app.config['elastic_metadata_index'],
                         doc_type=app.config['elastic_metadata_type'],
-                        body=json.dumps(query_filters))
+                        body=json.dumps(query_all))
     return jsonify({'total': res_filters['hits']['total'], 'total_all': res_all['hits']['total']})
 
 
