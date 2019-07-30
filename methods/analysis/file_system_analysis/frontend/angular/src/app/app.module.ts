@@ -28,6 +28,7 @@ import { ngfModule } from 'angular-file';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {HotkeyModule} from 'angular2-hotkeys';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 // auth
 import {JwtInterceptor} from './auth/jwt.interceptor';
 import {ErrorInterceptor} from './auth/error.interceptor';
@@ -101,7 +102,8 @@ import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component
         ngfModule,
         HttpClientModule,
         MatButtonToggleModule,
-        HotkeyModule.forRoot({cheatSheetCloseEsc: true})
+        HotkeyModule.forRoot({cheatSheetCloseEsc: true}),
+        MatProgressBarModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
     providers: [
