@@ -28,9 +28,9 @@ export class D3HistogramComponent implements OnDestroy {
     data: HistogramData[] = [];
 
     @Input()
-    min_date_boundary = null;
+    min_date_boundary: Date;
     @Input()
-    max_date_boundary = null;
+    max_date_boundary: Date;
     @Input()
     selectedTypes = ['m', 'a', 'c', 'b'];
     windowPosition = {from: null, to: null};
@@ -1241,7 +1241,7 @@ export class D3HistogramComponent implements OnDestroy {
                 })
                 .attr('width', function() {
                     if (thisClass.windowPosition.from != null && thisClass.windowPosition.to != null) {
-                        return actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from);
+                        return Math.max((actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from)), 1);
                     } else {
                         return 0;
                     }
@@ -1250,7 +1250,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .on('click', function() {
                     d3.selectAll('.actualPositionWindow')
                         .attr('x', actualX(thisClass.windowPosition.from) + margin.left)
-                        .attr('width', actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from));
+                        .attr('width', Math.max((actualX(thisClass.windowPosition.to) - actualX(thisClass.windowPosition.from)), 1));
                 })
                 .lower()
                 // .attr('mask', 'url(#rightShadowMask)')
