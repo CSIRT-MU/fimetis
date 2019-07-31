@@ -56,6 +56,9 @@
 
 .grid-sidebar {
     grid-area: grid-sidebar;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
     z-index: 9;
 }
 
@@ -93,6 +96,17 @@
     /*grid-area: list-view-block;*/
 }
 
+.cluster-block {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.buttons-block{
+    flex: 0 1 auto;
+}
+
 .setup-window {
     position: fixed;
     height: 100%;
@@ -121,19 +135,6 @@
     background-color: rgba(51,51,51,0.82);
 }
 
-.panel {
-    background-color: #efefef;
-    margin: 0px 2px 2px 2px;
-}
-
-.panel-header {
-    /*border: 2px solid #a9a9a9;*/
-    padding: 0.75em;
-    margin-top: 2px;
-    /*margin-bottom: 2px;*/
-    color: #666666;
-}
-
 .panel-controls {
     text-align: right;
 }
@@ -147,11 +148,6 @@
     cursor: pointer;
 }
 
-.panel-content {
-    /*margin-bottom: 1em;*/
-    /*padding-bottom: 1em;*/
-}
-
 .text-right {
     text-align: right;
     padding-right: 1.5em;
@@ -159,14 +155,6 @@
 
 .button-right {
     text-align: right;
-}
-
-.panel-hidden {
-    display: none;
-}
-
-.panel-visible {
-    display: inline-block;
 }
 
 .chip-list .mat-radio-group {

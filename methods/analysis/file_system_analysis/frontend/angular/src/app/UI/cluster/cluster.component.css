@@ -76,6 +76,12 @@
     margin-top: 8px;
     padding-top: 8px;
     padding-bottom: 8px;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    /*position: relative;*/
+    overflow: hidden;
 }
 
 .cluster-list-content {
@@ -85,6 +91,8 @@
 
 .list-header {
     border-bottom: 1px solid #e4e4e4;
+    display: flex;
+    flex: 0 0 auto;
 }
 
 .cluster-name-field {
@@ -105,21 +113,41 @@
     margin-left: 3px;
 }
 
+.cluster-list-scroll{
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    /*min-height: 0;*/
+    overflow: hidden;
+}
+
 .scrollable-block {
-    max-height: 750px;
+    /*max-height: 750px;*/
+    /*height: 100px;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*position: relative;*/
+    /*display: flex;*/
     overflow: auto;
+    flex: 1 1 auto;
+    height: 0;
+    /*flex: 0;*/
+/*    display: flex;*/
+/*    flex: 1;*/
 }
 
 .cluster-item{
-    overflow: hidden;
+    /*overflow: hidden;*/
+    /*position: relative;*/
     display: table;
     width: 96%;
     margin-top: 1px;
+    min-height: 0;
 }
 
 .cluster-info-container {
     min-height: 20px;
-    height: 100%;
+    /*height: 100%;*/
     display: table-cell;
     border-left: 4px solid transparent;
     margin-right: 3px;
@@ -137,4 +165,18 @@
     width: 100%;
     text-align: right;
     font-size: small;
+}
+
+.cluster-block-panel-header {
+    flex: 0 0 auto;
+}
+
+.cluster-block-panel {
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: column;
+}
+
+.addClusterButton {
+    font-size: large;
 }

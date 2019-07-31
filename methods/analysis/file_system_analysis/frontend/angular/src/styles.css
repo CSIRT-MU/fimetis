@@ -1,6 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~bootstrap/dist/css/bootstrap.min.css";
+/*@import "~bootstrap/dist/css/bootstrap-grid.min.css";*/
+/*@import "~bootstrap/dist/css/bootstrap-reboot.min.css";*/
 @import '~ngx-toastr/toastr.css';
 
 @font-face {
@@ -234,4 +236,31 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 
 .timesix-slider ~ label:active:after {
     width: 12px;
+}
+
+.fimetis-panel {
+    background-color: #efefef;
+}
+
+.panel-header {
+    margin-top: 2px;
+    color: #666666;
+}
+
+.title h4 {
+    display: inline-block;
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+.panel-header-button {
+    cursor: pointer;
+}
+
+.panel-hidden {
+    display: none;
+}
+
+.panel-visible {
+    display: inline-block;
 }

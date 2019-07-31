@@ -31,6 +31,7 @@ export class ClusterComponent implements OnInit {
     @ViewChild(PerfectScrollbarComponent, {static: false})
     perfectScrollbar: PerfectScrollbarComponent;
 
+    clusterPanelOpenState = true;
 
     constructor() {
         this.clusterSelectionDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionChanged.emit(value));

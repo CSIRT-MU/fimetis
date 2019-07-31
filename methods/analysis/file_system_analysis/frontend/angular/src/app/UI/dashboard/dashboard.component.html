@@ -51,8 +51,8 @@
     </div>
 
     <div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
-        <div class="grid-sidebar panel">
-            <div class="panel-header" *ngIf="clusterPanelOpenState">
+        <div class="grid-sidebar fimetis-panel">
+            <div class="panel-header buttons-block" *ngIf="clusterPanelOpenState">
                 <button mat-stroked-button class="timesix-button settings-button"
                         (click)="setupWindowOpen = !setupWindowOpen">
                     <span class="glyphicon glyphicon-refresh"></span> CHANGE DATASET</button>
@@ -71,22 +71,13 @@
                         (click)="restoreApplicationState()" [disabled]="!ableToRestoreState()">
                     <span class="glyphicon glyphicon-open"></span> RESTORE APP STATE</button>
             </div>
-            <div class="panel-header">
-                <span class="text-gray"><b>CLUSTERS</b></span>
-                <span class="glyphicon panel-header-button"
-                      [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}"
-                      (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
-            </div>
-            <div [ngClass]="{'panel-hidden': !clusterPanelOpenState, 'panel-visible': clusterPanelOpenState}"
-                 class="panel-content col-md-12">
-                <app-cluster
-                        [clusters]="getClusters()"
-                        [advancedMode]="advancedMode"
-                        (selectionChanged)="clusterSelectionChanged($event)"
-                        (addNewCluster)="addNewCluster()"
-                        (editCluster)="editCluster($event)">
-                </app-cluster>
-            </div>
+            <app-cluster class="cluster-block"
+                    [clusters]="getClusters()"
+                    [advancedMode]="advancedMode"
+                    (selectionChanged)="clusterSelectionChanged($event)"
+                    (addNewCluster)="addNewCluster()"
+                    (editCluster)="editCluster($event)">
+            </app-cluster>
         </div>
         <div class="grid-main">
             <app-graph class="graph-block" [_case]="selectedCase" [_clusters]="getClusters()"

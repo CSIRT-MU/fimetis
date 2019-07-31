@@ -1,51 +1,61 @@
-<div class="cluster-list">
-    <div class="list-header">
-        <div class="cluster-list-content cluster-item">
-            <div class="cluster-icon-wrapper">
-                <div class="cluster-icon cluster-not-selected"></div>
-            </div>
-            <div class="cluster-info-container">
-                <div class="cluster-name-field">cluster name</div>
-                <div class="cluster-count-field">
-                    filtered entries / total entries
-                </div>
-                <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
-            </div>
-            <div *ngIf="advancedMode" class="cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil"></span></div>
-        </div>
-    </div>
-    <div class="cluster-list-content">
-        <perfect-scrollbar class="scrollable-block">
-        <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
-        <!--<div #container>-->
-            <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
-            <div *ngFor="let cluster of clusters" class="cluster-item">
+<div class="panel-header col-md-12 cluster-block-panel-header">
+    <span class="text-gray title"><h4>Clusters</h4></span>
+    <span class="glyphicon panel-header-button"
+          [ngClass]="{'glyphicon-chevron-down': !clusterPanelOpenState, 'glyphicon-chevron-up': clusterPanelOpenState}"
+          (click)="clusterPanelOpenState = !clusterPanelOpenState"></span>
+</div>
+<div [ngClass]="{'panel-hidden': !clusterPanelOpenState, 'panel-visible': clusterPanelOpenState}"
+     class="panel-content col-md-12 cluster-block-panel">
+    <div class="cluster-list">
+        <div class="list-header">
+            <div class="cluster-list-content cluster-item">
                 <div class="cluster-icon-wrapper">
-                    <div class="cluster-icon clickable"
-                         (click)="nextVal(cluster)"
-                         [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
+                    <div class="cluster-icon cluster-not-selected"></div>
                 </div>
-                <div class="cluster-info-container clickable" [ngStyle]="{'border-color': cluster.color}" (click)="nextVal(cluster)">
-                    <div class="cluster-name-field clickable" (click)="nextVal(cluster)" matTooltip="{{cluster.description}}"
-                         [matTooltipPosition]="'right'">{{cluster.name}}
-                    </div>
+                <div class="cluster-info-container">
+                    <div class="cluster-name-field">cluster name</div>
                     <div class="cluster-count-field">
-                        {{cluster.count}} / {{cluster.totalCount}}
+                        filtered entries / total entries
                     </div>
-                    <mat-progress-bar mode="determinate" value="{{getPercentageValue(cluster)}}"></mat-progress-bar>
+                    <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
                 </div>
-                <div *ngIf="advancedMode" class="clickable cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil" (click)="edit(cluster)"></span></div>
+                <div *ngIf="advancedMode" class="cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil"></span></div>
             </div>
-        <!--</div>-->
-        <!--</virtual-scroller>-->
-        <!--</perfect-scrollbar>-->
-        <div *ngIf="clusters?.length == 0">
-            There are no clusters yet
         </div>
-        </perfect-scrollbar>
-        <div *ngIf="advancedMode" style="text-align: center">
-            <span class="clickable glyphicon glyphicon glyphicon-plus-sign" (click)="addCluster()"></span>
+        <div class="cluster-list-content cluster-list-scroll">
+            <div class="scrollable-block">
+            <!--<virtual-scroller #scroll style="height: 400px; scroll-snap-type: y mandatory;" class="scroll-block" [items]="clusters" *ngIf="clusters?.length > 0">-->
+            <!--<div #container>-->
+                <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
+                <div *ngFor="let cluster of clusters" class="cluster-item">
+                    <div class="cluster-icon-wrapper">
+                        <div class="cluster-icon clickable"
+                             [matTooltip]="'Change cluster selection mode'" matTooltipPosition="right"
+                             (click)="nextVal(cluster)"
+                             [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
+                    </div>
+                    <div class="cluster-info-container clickable" [ngStyle]="{'border-color': cluster.color}" (click)="nextVal(cluster)">
+                        <div class="cluster-name-field clickable" (click)="nextVal(cluster)" matTooltip="{{cluster.description}}"
+                             [matTooltipPosition]="'right'">{{cluster.name}}
+                        </div>
+                        <div class="cluster-count-field">
+                            {{cluster.count}} / {{cluster.totalCount}}
+                        </div>
+                        <mat-progress-bar mode="determinate" value="{{getPercentageValue(cluster)}}"></mat-progress-bar>
+                    </div>
+                    <div *ngIf="advancedMode" class="clickable cluster-edit-field text-align-right"><span class="glyphicon glyphicon-pencil" [matTooltip]="'Edit this cluster'" matTooltipPosition="right" (click)="edit(cluster)"></span></div>
+                </div>
+            <!--</div>-->
+            <!--</virtual-scroller>-->
+            <!--</perfect-scrollbar>-->
+            <div *ngIf="clusters?.length == 0">
+                There are no clusters yet
+            </div>
+            </div>
+            <div *ngIf="advancedMode" style="text-align: center">
+                <span class="clickable addClusterButton glyphicon glyphicon-plus-sign" [matTooltip]="'Add new cluster'" matTooltipPosition="above" (click)="addCluster()"></span>
+            </div>
         </div>
-    </div>
 
+    </div>
 </div>
