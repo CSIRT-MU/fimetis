@@ -15,7 +15,6 @@
     width: 20px;
     background-color: transparent;
     line-height: 20px;
-    /*vertical-align: middle;*/
 }
 
 .cluster-not-selected::before {
@@ -80,8 +79,8 @@
     flex: 1 1 auto;
     flex-direction: column;
     min-height: 0;
-    /*position: relative;*/
     overflow: hidden;
+    margin-bottom: 10px;
 }
 
 .cluster-list-content {
@@ -107,7 +106,6 @@
 }
 
 .cluster-edit-field {
-    /*display: inline-block;*/
     display: table-cell;
     width: 10px;
     margin-left: 3px;
@@ -122,23 +120,13 @@
 }
 
 .scrollable-block {
-    /*max-height: 750px;*/
-    /*height: 100px;*/
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*position: relative;*/
-    /*display: flex;*/
     overflow: auto;
     flex: 1 1 auto;
     height: 0;
-    /*flex: 0;*/
-/*    display: flex;*/
-/*    flex: 1;*/
+    margin-bottom: 5px;
 }
 
 .cluster-item{
-    /*overflow: hidden;*/
-    /*position: relative;*/
     display: table;
     width: 96%;
     margin-top: 1px;
@@ -147,7 +135,6 @@
 
 .cluster-info-container {
     min-height: 20px;
-    /*height: 100%;*/
     display: table-cell;
     border-left: 4px solid transparent;
     margin-right: 3px;
