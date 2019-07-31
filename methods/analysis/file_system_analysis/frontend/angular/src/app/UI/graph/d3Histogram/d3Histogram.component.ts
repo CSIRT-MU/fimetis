@@ -238,36 +238,7 @@ export class D3HistogramComponent implements OnDestroy {
         //     .domain([0, d3.max(data, d => d.maxValue)]);
 
 
-        function countMaxGraphDomain() {
-            let maxGraphDomain = 1;
-            while (maxGraphDomain <= d3.max(data, d => d.maxValue)) {
-                maxGraphDomain *= 10;
-            }
-            maxGraphDomain *= 10;
-
-            return maxGraphDomain;
-        }
-
-        const y = d3
-            .scaleLog()
-            .domain([1, countMaxGraphDomain()])
-            .rangeRound([contentHeight, 0])
-            .base(10);
-
-        let actualX = x;
-        const actualY = y;
-
-        const g = svg.append('g')
-            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-            .attr('clip-path', 'url(#clip)');
-        // const mask = svg.append('mask').attr('id', 'maskurl');
-
-        const xAxis = svg.append('g')
-            .attr('class', 'axis axis--x')
-            .attr('transform', 'translate(' + this.margin.left + ',' + (contentHeight + this.margin.top) + ')')
-            .call(d3.axisBottom(x));
-
-
+        // Returns ticks in ascending order, last one is also maximum of Y axis
         function countTickValues() {
             const maximum = d3.max(data, d => d.maxValue);
 
@@ -286,6 +257,28 @@ export class D3HistogramComponent implements OnDestroy {
 
             return tickvalues;
         }
+
+        const y = d3
+            .scaleLog()
+            .domain([1, countTickValues()[countTickValues().length - 1]])
+            .rangeRound([contentHeight, 0])
+            .base(10);
+
+        let actualX = x;
+        const actualY = y;
+
+        const g = svg.append('g')
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+            .attr('clip-path', 'url(#clip)');
+        // const mask = svg.append('mask').attr('id', 'maskurl');
+
+        const xAxis = svg.append('g')
+            .attr('class', 'axis axis--x')
+            .attr('transform', 'translate(' + this.margin.left + ',' + (contentHeight + this.margin.top) + ')')
+            .call(d3.axisBottom(x));
+
+
+
 
         const yAxis = svg.append('g')
             .attr('class', 'axis axis--y')
