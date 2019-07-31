@@ -101,6 +101,10 @@ export class D3HistogramComponent implements OnDestroy {
         const zoomFactor = 0.9;
         const hoverAreaOffset = {left: 20, right: 60};
         // let shiftKey = false;
+        // maximum difference between [ first data | last date ] and the edge of the graph, used for boundaries when
+        const maxEdgeMargin = 100;
+
+
 
         d3.select(element).select('svg').remove();
 
@@ -266,6 +270,8 @@ export class D3HistogramComponent implements OnDestroy {
 
         let actualX = x;
         const actualY = y;
+        console.log();
+
 
         const g = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
@@ -1165,8 +1171,12 @@ export class D3HistogramComponent implements OnDestroy {
                 }
             } else {
                 const shiftTo = d3.event.x;
-                shift(shiftTo - dragShiftStartX);
-                dragShiftStartX = shiftTo;
+                const shiftLength = shiftTo - dragShiftStartX;
+
+                if (actualX(firstDate) + shiftLength < maxEdgeMargin && actualX(lastDate) + shiftLength > contentWidth - maxEdgeMargin) {
+                    shift(shiftTo - dragShiftStartX);
+                    dragShiftStartX = shiftTo;
+                }
             }
         }
 
