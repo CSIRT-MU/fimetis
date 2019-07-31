@@ -28,9 +28,9 @@ export class D3HistogramComponent implements OnDestroy {
     data: HistogramData[] = [];
 
     @Input()
-    min_date_boundary: Date;
+    min_date_boundary: any;
     @Input()
-    max_date_boundary: Date;
+    max_date_boundary: any;
     @Input()
     selectedTypes = ['m', 'a', 'c', 'b'];
     windowPosition = {from: null, to: null};
