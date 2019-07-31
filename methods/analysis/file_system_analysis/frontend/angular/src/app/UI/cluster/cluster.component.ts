@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MatRadioGroup, MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import {debounceTime} from 'rxjs/operators';
@@ -28,8 +28,8 @@ export class ClusterComponent implements OnInit {
     @Output('editCluster')
     editCluster: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
 
-    @ViewChild(PerfectScrollbarComponent, {static: false})
-    perfectScrollbar: PerfectScrollbarComponent;
+    @ViewChild('scrollBlock', {static: false})
+    scrollableBlock: ElementRef;
 
     clusterPanelOpenState = true;
 
@@ -73,7 +73,7 @@ export class ClusterComponent implements OnInit {
     scrollListToBottom() {
         // we need to wait for loading new list of data
         setTimeout(() => {
-            this.perfectScrollbar.directiveRef.scrollToBottom(0, 300);
+            this.scrollableBlock.nativeElement.scrollTop = this.scrollableBlock.nativeElement.scrollHeight;
         }, 100);
     }
 

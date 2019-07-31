@@ -353,6 +353,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
               cluster.count = response.total;
               cluster.totalCount = response.totalAll;
           });
+        this.clusterComponent.scrollListToBottom();
     }
 
     /**
