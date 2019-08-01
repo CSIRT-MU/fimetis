@@ -87,6 +87,7 @@
             <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"
                            (makeManualCluster)="makeManualCluster($event)"
                            (additionalFiltersChanged)="computeClustersItemCount($event)"
+                           (additionalFiltersChanged)="sendAdditionalFiltersToGraphComponent($event)"
                            (actualScrollPosition)="drawActualScrollPosition($event)"
                            (setFromBoundary)="graphComponent.setFromBoundary($event)"
                            (setToBoundary)="graphComponent.setToBoundary($event)"

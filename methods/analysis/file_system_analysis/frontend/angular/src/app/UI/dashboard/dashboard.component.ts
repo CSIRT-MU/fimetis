@@ -568,4 +568,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
     }
 
+    sendAdditionalFiltersToGraphComponent(additionalFilters: object) {
+        this.graphComponent.additionalFilters = additionalFilters;
+        this.graphComponent.loadFilteredData();
+    }
+
 }

@@ -31,6 +31,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('graph', {static: false}) private chartElement: ElementRef;
     @ViewChild('plot_div', {static: false}) private plotElement: ElementRef;
 
+    additionalFilters;
+
     @Input()
     graphPanelOpenState = true;
 
@@ -452,6 +454,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.chartDataLoaded();
             });
 
+        if (this.additionalFilters !== undefined || this.additionalFilters !== null) {
+            this.loadFilteredData();
+        }
+
     }
 
     chartDataLoaded() {
@@ -728,4 +734,120 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     getSelectedTypes() {
         return Array.from(this.selectedTypes);
     }
+
+    loadFilteredData() {
+        this.graphService.getData(this._case, this._clusters, this.additionalFilters, 'm', null)
+            .then(response => {
+                // this.graphPlot.data[0].x = response.x;
+                // this.graphPlot.data[0].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'm', color: this.mTypeColor, data: data});
+                // this.chartOptions.series[0].data = data;
+                // this.highCharts.series[0].data = data;
+                // this.chart.series[0].setData(data, false, false,  false);
+                // this.chartOverview.series[0].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - m', response);
+                this.loadingMTimes = false;
+                this.d3Histogram.filteredData[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+                // console.log(data);
+
+            });
+
+        // Loading mactimes - access
+        this.graphService.getData(this._case, this._clusters, this.additionalFilters, 'a', null)
+            .then(response => {
+                // this.graphPlot.data[1].x = response.x;
+                // this.graphPlot.data[1].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
+                // this.chart.series[1].setData(data, false, false,  false);
+                // this.chartOverview.series[1].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - a', response);
+                this.loadingATimes = false;
+                this.d3Histogram.filteredData[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - changed
+        this.graphService.getData(this._case, this._clusters, this.additionalFilters, 'c', null)
+            .then(response => {
+                // this.graphPlot.data[2].x = response.x;
+                // this.graphPlot.data[2].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+                // this.chart.series[2].setData(data, false, false,  false);
+                // this.chartOverview.series[2].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - c', response);
+                this.loadingCTimes = false;
+                this.d3Histogram.filteredData[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - birth
+        this.graphService.getData(this._case, this._clusters, this.additionalFilters, 'b', null)
+            .then(response => {
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                // this.chart.series[3].setData(data, false, false,  false);
+                // this.chartOverview.series[3].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - b', response);
+
+                this.loadingBTimes = false;
+                this.d3Histogram.filteredData[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+
+
+    }
+
+
+
 }
