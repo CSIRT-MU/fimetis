@@ -287,7 +287,7 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 }
 
 .panel-hidden {
-    display: none;
+    display: none !important;
 }
 
 .panel-visible {
