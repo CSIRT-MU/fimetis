@@ -338,6 +338,7 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function zoomed() {
+            console.log('zoom');
             // if (shiftKey) {
             //     shift(50);
             //     return;
@@ -366,7 +367,11 @@ export class D3HistogramComponent implements OnDestroy {
 
         function shift(shiftValue) {
             const currentZoom = d3.zoomTransform(svg.node()).k;
-            zoom.transform(svg, d3.zoomTransform(svg.node()).translate(shiftValue / currentZoom, 0));
+
+            const shiftLength = shiftValue / currentZoom;
+            if (actualX(firstDate) + shiftLength < maxEdgeMargin && actualX(lastDate) + shiftLength > contentWidth - maxEdgeMargin) {
+                zoom.transform(svg, d3.zoomTransform(svg.node()).translate(shiftValue / currentZoom, 0));
+            }
         }
 
         function zoomIn(zoomRange) {
