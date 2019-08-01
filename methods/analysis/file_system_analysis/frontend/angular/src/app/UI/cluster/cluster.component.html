@@ -55,7 +55,7 @@
                              [matTooltipPosition]="'right'">{{cluster.name}}
                         </div>
                         <div class="cluster-count-field">
-                            {{cluster.count}} / {{cluster.totalCount}}
+                            <p class="total-filtered">{{cluster.count}}</p><p>&nbsp;/&nbsp;</p><p>{{cluster.totalCount}}</p>
                         </div>
                         <mat-progress-bar mode="determinate" value="{{getPercentageValue(cluster)}}"></mat-progress-bar>
                     </div>

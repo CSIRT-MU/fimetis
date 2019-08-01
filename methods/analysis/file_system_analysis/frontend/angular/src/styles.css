@@ -301,3 +301,7 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 .color-red {
     color: var(--redColor);
 }
+
+.mat-progress-bar {
+    border-radius: 5px !important;
+}

@@ -154,6 +154,17 @@
     font-size: small;
 }
 
+.cluster-count-field p {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    color: #646464;
+}
+
+.cluster-count-field .total-filtered {
+    color: #000000;
+}
+
 .cluster-block-panel-header {
     flex: 0 0 auto;
 }
