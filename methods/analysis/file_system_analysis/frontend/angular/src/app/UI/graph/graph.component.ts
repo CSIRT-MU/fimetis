@@ -816,6 +816,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
             } else {
                 this.d3Histogram.filteredData = [];
+                this.chartDataLoaded();
             }
         }
 
