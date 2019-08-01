@@ -478,6 +478,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
         localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
         localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
+        localStorage.setItem('selections', JSON.stringify(this.graphComponent.d3Histogram.selections));
         this.toaster.info('', 'Application state saved');
     }
 
@@ -513,6 +514,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.graphComponent.pickedFromDate = JSON.parse(localStorage.getItem('fromDate'));
         this.graphComponent.pickedToDate = JSON.parse(localStorage.getItem('toDate'));
         this.graphComponent.updateBoundary();
+        const selections = JSON.parse(localStorage.getItem('selections'));
+        const transformSelections = [];
+        for (const sel of selections) {
+            transformSelections.push([new Date(sel[0]), new Date(sel[1])]);
+        }
+        this.graphComponent.d3Histogram.setSelections(transformSelections);
     }
 
     /**

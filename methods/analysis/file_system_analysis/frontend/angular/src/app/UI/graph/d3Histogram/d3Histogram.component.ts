@@ -153,6 +153,11 @@ export class D3HistogramComponent implements OnDestroy {
         //         drawSelections();
         //         drawActualPositionWindow();
         //     });
+        svg.selectAll('.resetSelectionsButton').remove();
+        svg.append('rect')
+            .attr('class', 'resetSelectionsButton')
+            .style('visibility', 'hidden')
+            .on('click', selectionsReset);
         svg.selectAll('.selectActualAreaButton').remove();
         svg.append('rect')
             .attr('class', 'selectActualAreaButton')
@@ -388,6 +393,10 @@ export class D3HistogramComponent implements OnDestroy {
 
         function removeAllSelections() {
             thisClass.selections = [];
+            selectionsReset();
+        }
+
+        function selectionsReset() {
             drawSelections();
             drawActualPositionWindow();
             thisClass.selectionsDebouncer.next(thisClass.selections);
@@ -1377,5 +1386,12 @@ export class D3HistogramComponent implements OnDestroy {
         to.setDate(to.getDate() + 1);
         this.windowPosition.to = to;
         d3.selectAll('.actualPositionWindow').dispatch('click');
+    }
+
+    setSelections(selections) {
+        d3.select('.removeAllSelectionsButton').dispatch('click');
+        this.selections = selections;
+        d3.selectAll('.resetSelectionsButton').dispatch('click');
+        this.selectionsEmitter.emit(this.selections);
     }
 }
