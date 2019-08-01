@@ -62,7 +62,7 @@ body {
     z-index: 999;
 }
 
-.timesix-checkbox {
+.fimetis-checkbox {
     visibility: hidden;
     position: relative;
     margin-top: 0 !important;
@@ -70,15 +70,15 @@ body {
     height: 20px;
 }
 
-.timesix-radio {
+.fimetis-radio {
     visibility: hidden;
     position: relative;
     width: 15px;
     height: 15px;
 }
 
-.timesix-checkbox::before,
-.timesix-radio::before {
+.fimetis-checkbox::before,
+.fimetis-radio::before {
     position: absolute;
     top: 0;
     visibility: visible;
@@ -91,8 +91,8 @@ body {
     border-radius: 50%;
 }
 
-.timesix-checkbox:checked::after,
-.timesix-radio:checked::after {
+.fimetis-checkbox:checked::after,
+.fimetis-radio:checked::after {
     position: absolute;
     top: 25%;
     left: 25%;
@@ -105,7 +105,7 @@ body {
     background-color: #666666;
 }
 
-.timesix-checkbox:indeterminate::after {
+.fimetis-checkbox:indeterminate::after {
     position: absolute;
     top: 35%;
     left: 20%;
@@ -142,7 +142,7 @@ body {
     color: #888888;
 }
 
-.timesix-button {
+.fimetis-button {
     font-size: x-small;
     font-weight: bold;
     border-color: #cccccc !important;
@@ -223,14 +223,14 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 
 
 /* custom slider */
-.timesix-slider{
+.fimetis-slider{
     height: 0;
     width: 0;
     visibility: hidden;
     display: inline-block;
 }
 
-.timesix-slider ~ label {
+.fimetis-slider ~ label {
     cursor: pointer;
     text-indent: -9999px;
     width: 30px;
@@ -242,7 +242,7 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
     margin-bottom: 0;
 }
 
-.timesix-slider ~ label:after {
+.fimetis-slider ~ label:after {
     content: '';
     position: absolute;
     top: 2px;
@@ -254,16 +254,16 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
     transition: 0.3s;
 }
 
-.timesix-slider:checked + label {
+.fimetis-slider:checked + label {
     background: #52AE58;
 }
 
-.timesix-slider:checked + label:after {
+.fimetis-slider:checked + label:after {
     left: calc(100% - 2px);
     transform: translateX(-100%);
 }
 
-.timesix-slider ~ label:active:after {
+.fimetis-slider ~ label:active:after {
     width: 12px;
 }
 

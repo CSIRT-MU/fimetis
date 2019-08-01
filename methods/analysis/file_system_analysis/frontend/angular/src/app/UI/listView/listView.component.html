@@ -7,7 +7,7 @@
     </div>
     <div class="col-md-7 table-controls">
         <mat-paginator class="pagination-control" *ngIf="total > page_size" (page)="changePage($event.pageIndex + 1)" [hidePageSize]="true" [pageIndex]="page_number - 1" [pageSize]="page_size" [length]="total"></mat-paginator>
-        <span class="mat-stroked-button timesix-button" *ngIf="searchString" (click)="searchString=''; searchByString()"><span class="glyphicon glyphicon-remove"></span> RESET SEARCH</span>
+        <span class="mat-stroked-button fimetis-button" *ngIf="searchString" (click)="searchString=''; searchByString()"><span class="glyphicon glyphicon-remove"></span> RESET SEARCH</span>
         <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
             <input #searchField id="searchField" type="text" name="searchString" placeholder="search by File Name" [(ngModel)]="searchString" class="search-field" (change)="searchByString()">
             <span class="glyphicon glyphicon-search clickable search-icon" (click)="searchByString()"></span>

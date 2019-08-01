@@ -33,6 +33,13 @@
     margin-right: 0.5em;
 }
 
+.app-bar .main-title .title-highlight{
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    text-decoration: underline;
+}
+
 .app-bar .sub-title {
     color: #aaaaaa;
     font-size: x-large;

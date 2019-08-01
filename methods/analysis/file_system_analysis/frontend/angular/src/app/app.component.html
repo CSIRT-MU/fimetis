@@ -1,14 +1,14 @@
 <div class="app-container">
     <div class="app-bar">
         <span class="main-title">
-        <b>FILE SYSTEM ANALYSIS</b>
+            <b><p class="title-highlight">FI</p>LESYSTEM <p class="title-highlight">MET</p>ADATA ANALYS<p class="title-highlight">IS</p></b>
         </span>
         <div class="settings">
             <span class="glyphicon glyphicon-menu-hamburger clickable" [matMenuTriggerFor]="settings"></span>
             <mat-menu #settings="matMenu" [overlapTrigger]="false">
                 <button mat-menu-item (click)="setAdvancedMode(!advancedMode)">
                     ADVANCED MODE
-                    <input type="checkbox" [ngModel]="advancedMode" class="timesix-slider" id="advancedModeCheckbox">
+                    <input type="checkbox" [ngModel]="advancedMode" class="fimetis-slider" id="advancedModeCheckbox">
                     <label for="advancedModeCheckbox"></label>
                 </button>
                 <button mat-menu-item routerLink="/upload" routerLinkActive="active"

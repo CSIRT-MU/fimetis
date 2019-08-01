@@ -46,7 +46,7 @@
       chdir: /tmp/angular
 
   - name:  Placing build app to /opt/
-    shell: mv /tmp/angular/dist/timesix-angular /opt/
+    shell: mv /tmp/angular/dist/fimetis-angular /opt/
 
   - name: Cleaning source codes from /tmp
     file:

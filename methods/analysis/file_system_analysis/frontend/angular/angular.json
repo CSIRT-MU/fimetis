@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "timesix-angular": {
+    "fimetis-angular": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/timesix-angular",
+            "outputPath": "dist/fimetis-angular",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -50,18 +50,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "timesix-angular:build"
+            "browserTarget": "fimetis-angular:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "timesix-angular:build:production"
+              "browserTarget": "fimetis-angular:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "timesix-angular:build"
+            "browserTarget": "fimetis-angular:build"
           }
         },
         "test": {
@@ -103,11 +103,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "timesix-angular:serve"
+            "devServerTarget": "fimetis-angular:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "timesix-angular:serve:production"
+              "devServerTarget": "fimetis-angular:serve:production"
             }
           }
         },
@@ -123,5 +123,5 @@
       }
     }
   },
-  "defaultProject": "timesix-angular"
+  "defaultProject": "fimetis-angular"
 }
