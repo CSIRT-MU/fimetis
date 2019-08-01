@@ -419,3 +419,21 @@ virtual-scroll {
     margin-left: 15px;
     display: inline-block
 }
+
+.list-red-line {
+    position: relative;
+    border-bottom: 10px solid var(--redColor);
+}
+
+.list-red-line::after {
+    position: absolute;
+    width: 0;
+    left: 5px;
+    margin-top: 17px;
+    color: white;
+    content: 'NEXT SELECTION';
+    font-size: 10px;
+    font-weight: bold;
+    /*text-shadow: 10px 0 0px 0px #EDC330, -10px 0 0px 0px #EDC330;*/
+
+}
