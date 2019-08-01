@@ -215,7 +215,7 @@
 }
 
 .resetZoomButtonIcon {
-    color: red;
+    color: var(--redColor);
 }
 
 .header-tools{
@@ -225,4 +225,15 @@
 .all-types-label{
     font-size: 18px;
     margin-left: 5px;
+}
+
+.timestamp-selection {
+    display: flex;
+    align-items: center;
+}
+
+.timestamp-selection-text {
+    /*display: inline-block;*/
+    vertical-align: center;
+    margin-right: 8px;
 }

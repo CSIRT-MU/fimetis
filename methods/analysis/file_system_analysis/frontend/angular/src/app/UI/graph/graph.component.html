@@ -48,9 +48,10 @@
             <!--&gt;-->
             <!--<button type="submit" hidden></button>-->
         <!--</form>-->
-        <div class="col-md-3 col-md-offset-4 col-sm-4 col-sm-offset-2 col-xs-6 col-xs-offset-3">
-            <div *ngIf="!showAllTypes">
-                <span *ngFor="let type of supportedTypes" class="type-checkbox" matTooltip="{{typeTooltip(type)}}">
+        <div class="col-md-5 col-md-offset-2 col-sm-6 col-sm-offset-0 col-xs-9 col-xs-offset-0">
+            <div *ngIf="!showAllTypes" class="timestamp-selection">
+                <span class="text-gray timestamp-selection-text"><b>Timestamp selection: </b></span>
+                <span *ngFor="let type of supportedTypes" class="type-checkbox timestamp-selection-button" matTooltip="{{typeTooltip(type)}}">
                     <input type="checkbox" (change)="typeCheckboxChanged(type)"
                            [checked]="selectedTypes.has(type)" class="form-checkbox" id="check-{{type}}" [ngStyle]="{ 'border-color': selectedTypes.has(type) ? getCheckboxColor(type) : '#808080', 'background-color': selectedTypes.has(type) ? getCheckboxColor(type) : '#ffffff'}">
                     <label for="check-{{type}}" id="label-for-check-{{type}}" [ngStyle]="{'color': selectedTypes.has(type) ? '#ffffff' : '#808080' }">{{type}}</label>
