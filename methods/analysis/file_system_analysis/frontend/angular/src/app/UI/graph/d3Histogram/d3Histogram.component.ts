@@ -627,7 +627,6 @@ export class D3HistogramComponent implements OnDestroy {
                 g.selectAll('.bar').attr('fill', '#cccccc');
 
                 for (let i = 0; i < thisClass.filteredData.length; i++) {
-                    console.log(thisClass.filteredData.length, thisClass.filteredData);
                     g.selectAll('.filteredBar' + thisClass.filteredData[i].name)
                         .data(thisClass.filteredData[i].data)
                         .enter().append('rect')
