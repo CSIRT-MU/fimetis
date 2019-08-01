@@ -1,8 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~bootstrap/dist/css/bootstrap.min.css";
-/*@import "~bootstrap/dist/css/bootstrap-grid.min.css";*/
-/*@import "~bootstrap/dist/css/bootstrap-reboot.min.css";*/
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
 @import '~ngx-toastr/toastr.css';
 
 @font-face {
@@ -13,6 +12,8 @@
 :root {
     --secondaryColor: #fefefe;
     --primaryColor: #666666;
+    --greenColor: #228B22;
+    --redColor: #e50000;
 }
 
 html,
@@ -291,4 +292,12 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 
 .panel-visible {
     display: inline-block;
+}
+
+.color-green {
+    color: var(--greenColor);
+}
+
+.color-red {
+    color: var(--redColor);
 }

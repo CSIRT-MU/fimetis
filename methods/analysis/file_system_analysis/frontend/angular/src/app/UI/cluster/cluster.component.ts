@@ -1,9 +1,8 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MatRadioGroup, MatSelectionList} from '@angular/material';
+import {MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import {debounceTime} from 'rxjs/operators';
 import {Subject} from 'rxjs';
-import {PerfectScrollbarComponent} from 'ngx-perfect-scrollbar';
 
 @Component({
     selector: 'app-cluster',
@@ -84,6 +83,25 @@ export class ClusterComponent implements OnInit {
         } else {
             return 100;
         }
+    }
+
+    selectedClustersCount() {
+        let num = 0;
+        if (this.advancedMode) {
+            for (const cluster of this.clusters) {
+                if (cluster.selectMode !== ClusterSelectMode.notSelected) {
+                    num ++;
+                }
+            }
+        }
+        return num;
+    }
+
+    deselectAllClusters() {
+        for (const cluster of this.clusters) {
+            cluster.selectMode = ClusterSelectMode.notSelected;
+        }
+        this.clusterSelectionDebouncer.next(null);
     }
 
 }

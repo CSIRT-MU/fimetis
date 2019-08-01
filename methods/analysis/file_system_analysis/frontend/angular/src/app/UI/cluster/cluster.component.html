@@ -10,7 +10,10 @@
         <div class="list-header">
             <div class="cluster-list-content cluster-item">
                 <div class="cluster-icon-wrapper">
-                    <div class="cluster-icon cluster-not-selected"></div>
+<!--                    <div class="cluster-icon cluster-not-selected"></div>-->
+                    <i *ngIf="selectedClustersCount() < 1" class="far fa-circle"></i>
+                    <i *ngIf="selectedClustersCount() > 0" class="clickable far fa-times-circle"
+                       (click)="deselectAllClusters()" [matTooltip]="'deselect all clusters'" matTooltipPosition="above"></i>
                 </div>
                 <div class="cluster-info-container">
                     <div class="cluster-name-field">cluster name</div>
@@ -28,14 +31,27 @@
             <!--<div #container>-->
                 <!--<div class="cluster-item" *ngFor="let cluster of scroll.viewPortItems" (click)="nextVal(cluster)">-->
                 <div *ngFor="let cluster of clusters" class="cluster-item">
+<!--                    <div class="cluster-icon-wrapper">-->
+<!--                        <div class="cluster-icon clickable"-->
+<!--                             [matTooltip]="'Change cluster selection mode'" matTooltipPosition="right"-->
+<!--                             (click)="nextVal(cluster)"-->
+<!--                             [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>-->
+<!--                    </div>-->
                     <div class="cluster-icon-wrapper">
-                        <div class="cluster-icon clickable"
+                        <i class="clickable"
                              [matTooltip]="'Change cluster selection mode'" matTooltipPosition="right"
                              (click)="nextVal(cluster)"
-                             [ngClass]="{'cluster-not-selected': cluster.selectMode == 0, 'cluster-selected': cluster.selectMode == 1 && !advancedMode, 'cluster-added': cluster.selectMode == 1 && advancedMode, 'cluster-deducted': cluster.selectMode == 2}"></div>
+                             [ngClass]="{
+                             'far fa-circle': cluster.selectMode == 0,
+                             'fas': cluster.selectMode !== 0,
+                             'color-green': cluster.selectMode == 1,
+                             'fa-check': cluster.selectMode == 1 && !advancedMode,
+                             'fa-plus': cluster.selectMode == 1 && advancedMode,
+                             'fa-minus color-red': cluster.selectMode == 2}">
+                        </i>
                     </div>
                     <div class="cluster-info-container clickable" [ngStyle]="{'border-color': cluster.color}" (click)="nextVal(cluster)">
-                        <div class="cluster-name-field clickable" (click)="nextVal(cluster)" matTooltip="{{cluster.description}}"
+                        <div class="cluster-name-field clickable" matTooltip="{{cluster.description}}"
                              [matTooltipPosition]="'right'">{{cluster.name}}
                         </div>
                         <div class="cluster-count-field">
