@@ -1233,8 +1233,8 @@ export class D3HistogramComponent implements OnDestroy {
             svg.selectAll('.actualPositionWindow').remove();
             svg.append('rect')
                 .attr('class', 'actualPositionWindow')
-                .attr('y', margin.top)
-                .attr('height', contentHeight)
+                .attr('y', contentHeight + margin.top)
+                .attr('height', margin.bottom)
                 .attr('x', function () {
                     if (thisClass.windowPosition.from != null) {
                         return actualX(thisClass.windowPosition.from) + margin.left;
