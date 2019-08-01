@@ -454,8 +454,13 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.chartDataLoaded();
             });
 
-        if (this.additionalFilters !== undefined || this.additionalFilters !== null) {
-            this.loadFilteredData();
+        if (this.additionalFilters !== undefined) {
+            if (this.additionalFilters['searchString'] !== undefined) {
+                console.log('filter', this.additionalFilters['searchString']);
+                this.loadFilteredData();
+            } else {
+                this.d3Histogram.filteredData = [];
+            }
         }
 
     }

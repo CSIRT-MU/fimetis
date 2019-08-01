@@ -26,6 +26,8 @@ export class D3HistogramComponent implements OnDestroy {
 
     @Input()
     data: HistogramData[] = [];
+    @Input()
+    filteredData: HistogramData[] = [];
 
     @Input()
     min_date_boundary: any;
@@ -317,6 +319,7 @@ export class D3HistogramComponent implements OnDestroy {
 
         drawActualPositionWindow();
         drawBars();
+        drawFilteredBars();
         // drawZoomNavigation();
         drawSelections();
         this.showAndHideTraces(this.selectedTypes);
@@ -447,6 +450,11 @@ export class D3HistogramComponent implements OnDestroy {
         function updateBars() {
             // update bars
             g.selectAll('.bar')
+                .attr('x', function(d) {return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))); })
+                .attr('width',
+                    Math.max(
+                        0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime()) / (24 * 3600 * 1000))), 1));
+            g.selectAll('.filteredBar')
                 .attr('x', function(d) {return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))); })
                 .attr('width',
                     Math.max(
@@ -610,6 +618,75 @@ export class D3HistogramComponent implements OnDestroy {
                             // .style('top', 0 + 'px');
                     });
                     // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
+            }
+        }
+
+        function drawFilteredBars() {
+            g.selectAll('.filteredBar').remove();
+            if (thisClass.filteredData.length > 0) {
+                g.selectAll('.bar').attr('fill', '#cccccc');
+
+                for (let i = 0; i < thisClass.filteredData.length; i++) {
+                    console.log(thisClass.filteredData.length, thisClass.filteredData);
+                    g.selectAll('.filteredBar' + thisClass.filteredData[i].name)
+                        .data(thisClass.filteredData[i].data)
+                        .enter().append('rect')
+                        .attr('class', 'filteredBar filteredBar' + data[i].name)
+                        // .attr('class', 'bar' + data[i].name)
+                        .attr('x', d => actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))))
+                        // .attr('y', d => actualY(d[1]))
+                        .attr('y', function(d) {
+                            if (d[1] < 1) {
+                                return 0;
+                            } else if (d[1] < 2) {
+                                return actualY(2) + ((actualY(1) - actualY(2)) / 2);
+                            } else {
+                                return actualY(d[1]);
+                            }
+                        })
+                        // .attr('width', contentWidth / data[i].data.length)
+                        .attr('width',
+                            Math.max(
+                                0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
+                                / (24 * 3600 * 1000))), 1))
+                        .attr('height', function(d) {
+                            if (d[1] < 1) {
+                                return 0;
+                            } else if (d[1] < 2) {
+                                return actualY(1) - actualY(2) - ((actualY(1) - actualY(2)) / 2);
+                            } else {
+                                return actualY(1) - actualY(d[1]);
+                            }
+                        })
+                        .attr('fill', data[i].color)
+                        .on('mouseover', function(d) {
+                            d3.select(this)
+                                .style('filter', 'brightness(3)');
+                            tooltip
+                            // .style('opacity', 1);
+                                .style('display', 'inline-block');
+                        })
+                        .on('mouseout', function() {
+                            d3.select(this).style('filter', 'brightness(1)');
+                            tooltip
+                            // .style('opacity', 0);
+                                .style('display', 'none');
+                        })
+                        .on('mousemove', function(d) {
+                            tooltip
+                                .html('<p style="display: block; margin: 0; font-size: x-small">' +
+                                    new Date(d[0]).toLocaleString('en-US',
+                                        { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                                    + '</p>' +
+                                    '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
+                                    data[i].name + ': ' + d[1] + '</p>')
+                                .style('left', actualX(d[0]) + 5 + 'px')
+                                .style('border-color', data[i].color)
+                                .style('margin-top', -25 + 'px');
+                            // .style('top', 0 + 'px');
+                        });
+                    // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
+                }
             }
         }
 
