@@ -19,7 +19,7 @@
                 <!--timestamp changes-->
             <!--</mat-button-toggle>-->
         <!--</mat-button-toggle-group>-->
-        <div class="col-md-12">
+<!--        <div class="col-md-12">-->
             <div *ngIf="!showAllTypes" class="timestamp-selection" style="float: right">
                 <span class="text-gray timestamp-selection-text"><b>Timestamp selection: </b></span>
                 <span *ngFor="let type of supportedTypes" class="type-checkbox timestamp-selection-button" matTooltip="{{typeTooltip(type)}}">
@@ -28,7 +28,7 @@
                         <label for="check-{{type}}" id="label-for-check-{{type}}" [ngStyle]="{'color': selectedTypes.has(type) ? '#ffffff' : '#808080' }">{{type}}</label>
                     </span>
             </div>
-        </div>
+<!--        </div>-->
     </div>
     <!--<div class="col-md-4 header-tools text-align-right" *ngIf="graphPanelOpenState">-->
         <!--<span *ngIf="graphPanelOpenState && saveGraphZoom" class="mat-stroked-button timesix-button" (click)="resetZoom()"><span class="resetZoomButtonIcon glyphicon glyphicon-remove"></span> RESET ZOOM</span>-->
