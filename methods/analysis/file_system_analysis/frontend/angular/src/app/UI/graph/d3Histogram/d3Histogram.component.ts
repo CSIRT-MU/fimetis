@@ -841,6 +841,28 @@ export class D3HistogramComponent implements OnDestroy {
                 );
 
             // selection buttons
+            svg.selectAll('.selectionRemoveButton').remove();
+            svg.selectAll('.selectionRemoveButton')
+                .data(thisClass.selections)
+                .enter()
+                .append('circle')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButton'; })
+                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+                .attr('r', 10)
+                .attr('cy', 12 + margin.top)
+                .style('stroke', '#333333')
+                .style('stroke-width', 2)
+                .style('cursor', 'pointer')
+                .style('fill', '#ffffff')
+                // hidden after init
+                .style('visibility', 'hidden')
+                .on('click', function(d, i) {
+                    thisClass.selections.splice(i, 1);
+                    drawSelections();
+                    thisClass.selectionsDebouncer.next(thisClass.selections);
+                })
+                .append('title').text('Remove this selection');
+
             svg.selectAll('.selectionRemoveButtonIcon').remove();
             svg.selectAll('.selectionRemoveButtonIcon')
                 .data(thisClass.selections)
@@ -853,30 +875,37 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('height', 20)
                 // hidden after init
                 .style('visibility', 'hidden')
+                .style('cursor', 'pointer')
+                .on('click', function(d, i) {
+                    thisClass.selections.splice(i, 1);
+                    drawSelections();
+                    thisClass.selectionsDebouncer.next(thisClass.selections);
+                })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-remove');
 
-            svg.selectAll('.selectionRemoveButton').remove();
-            svg.selectAll('.selectionRemoveButton')
+            svg.selectAll('.selectionRemoveButtonIcon')
+                .append('title').text('Remove this selection');
+
+            svg.selectAll('.selectionZoomInButton').remove();
+            svg.selectAll('.selectionZoomInButton')
                 .data(thisClass.selections)
                 .enter()
                 .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButton'; })
-                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButton'; })
+                .attr('cx', d => actualX(d[1]) + 40 + margin.left)
                 .attr('r', 10)
                 .attr('cy', 12 + margin.top)
-                .style('fill-opacity', 0)
+                .style('fill', '#ffffff')
                 .style('stroke', '#333333')
                 .style('stroke-width', 2)
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
-                    thisClass.selections.splice(i, 1);
-                    drawSelections();
-                    thisClass.selectionsDebouncer.next(thisClass.selections);
+                    zoomIn(d);
                 })
-                .append('title').text('Remove this selection');
+                .append('title').text('Zoom into selection');
 
             svg.selectAll('.selectionZoomInButtonIcon').remove();
             svg.selectAll('.selectionZoomInButtonIcon')
@@ -890,28 +919,36 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('height', 20)
                 // hidden after init
                 .style('visibility', 'hidden')
+                .style('cursor', 'pointer')
+                .on('click', function(d, i) {
+                    zoomIn(d);
+                })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-resize-small');
 
-            svg.selectAll('.selectionZoomInButton').remove();
-            svg.selectAll('.selectionZoomInButton')
+            svg.selectAll('.selectionZoomInButtonIcon')
+                .append('title').text('Zoom into selection');
+
+
+            svg.selectAll('.selectionMoveRightByDayButton').remove();
+            svg.selectAll('.selectionMoveRightByDayButton')
                 .data(thisClass.selections)
                 .enter()
                 .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButton'; })
-                .attr('cx', d => actualX(d[1]) + 40 + margin.left)
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveRightByDayButton'; })
+                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
                 .attr('r', 10)
-                .attr('cy', 12 + margin.top)
-                .style('fill-opacity', 0)
+                .attr('cy', 39 + margin.top)
+                .style('fill', '#ffffff')
                 .style('stroke', '#333333')
                 .style('stroke-width', 2)
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
-                    zoomIn(d);
+                    moveSelectionByDay(i, 'right');
                 })
-                .append('title').text('Zoom into selection');
+                .append('title').text('Move Selection to right by Day');
 
             svg.selectAll('.selectionMoveRightByDayIcon').remove();
             svg.selectAll('.selectionMoveRightByDayIcon')
@@ -925,28 +962,35 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('height', 20)
                 // hidden after init
                 .style('visibility', 'hidden')
+                .style('cursor', 'pointer')
+                .on('click', function(d, i) {
+                    moveSelectionByDay(i, 'right');
+                })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-resize-horizontal');
 
-            svg.selectAll('.selectionMoveRightByDayButton').remove();
-            svg.selectAll('.selectionMoveRightByDayButton')
+            svg.selectAll('.selectionMoveRightByDayIcon')
+                .append('title').text('Move Selection to right by Day');
+
+            svg.selectAll('.selectionLeftMoveByDayButton').remove();
+            svg.selectAll('.selectionLeftMoveByDayButton')
                 .data(thisClass.selections)
                 .enter()
                 .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveRightByDayButton'; })
-                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionLeftMoveByDayButton'; })
+                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
                 .attr('r', 10)
                 .attr('cy', 39 + margin.top)
-                .style('fill-opacity', 0)
+                .style('fill', '#ffffff')
                 .style('stroke', '#333333')
                 .style('stroke-width', 2)
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
-                    moveSelectionByDay(i, 'right');
+                    moveSelectionByDay(i, 'left');
                 })
-                .append('title').text('Move Selection to right by Day');
+                .append('title').text('Move Selection by Day to left');
 
             svg.selectAll('.selectionMoveLeftByDayIcon').remove();
             svg.selectAll('.selectionMoveLeftByDayIcon')
@@ -960,43 +1004,15 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('height', 20)
                 // hidden after init
                 .style('visibility', 'hidden')
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon-resize-horizontal');
-
-            svg.selectAll('.selectionLeftMoveByDayButton').remove();
-            svg.selectAll('.selectionLeftMoveByDayButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionLeftMoveByDayButton'; })
-                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 39 + margin.top)
-                .style('fill-opacity', 0)
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
                 .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     moveSelectionByDay(i, 'left');
                 })
-                .append('title').text('Move Selection by Day to left');
-
-            svg.selectAll('.selectionExtendToRightByDayIcon').remove();
-            svg.selectAll('.selectionExtendToightByDayIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayIcon'; })
-                .attr('x', d => actualX(d[1]) + 8 + margin.left)
-                .attr('y', 56 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
                 .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon glyphicon-arrow-right');
+                .attr('class', 'glyphicon glyphicon-resize-horizontal');
+
+            svg.selectAll('.selectionMoveLeftByDayIcon')
+                .append('title').text('Move Selection by Day to left');
 
             svg.selectAll('.selectionExtendToRightByDayButton').remove();
             svg.selectAll('.selectionExtendTORightByDayButton')
@@ -1007,7 +1023,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('cx', d => actualX(d[1]) + 15 + margin.left)
                 .attr('r', 10)
                 .attr('cy', 65 + margin.top)
-                .style('fill-opacity', 0)
+                .style('fill', '#ffffff')
                 .style('stroke', '#333333')
                 .style('stroke-width', 2)
                 .style('cursor', 'pointer')
@@ -1017,6 +1033,48 @@ export class D3HistogramComponent implements OnDestroy {
                     extendSelectionToRightByDay(i);
                 })
                 .append('title').text('Extend Selection to right by Day');
+
+            svg.selectAll('.selectionExtendToRightByDayIcon').remove();
+            svg.selectAll('.selectionExtendToRightByDayIcon')
+                .data(thisClass.selections)
+                .enter()
+                .append('svg:foreignObject')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayIcon'; })
+                .attr('x', d => actualX(d[1]) + 8 + margin.left)
+                .attr('y', 56 + margin.top)
+                .attr('width', 20)
+                .attr('height', 20)
+                // hidden after init
+                .style('visibility', 'hidden')
+                .style('cursor', 'pointer')
+                .on('click', function(d, i) {
+                    extendSelectionToRightByDay(i);
+                })
+                .append('xhtml:span')
+                .attr('class', 'glyphicon glyphicon glyphicon-arrow-right');
+
+            svg.selectAll('.selectionExtendToRightByDayIcon')
+                .append('title').text('Extend Selection to right by Day');
+
+            svg.selectAll('.selectionExtendToLeftByDayButton').remove();
+            svg.selectAll('.selectionExtendToLeftByDayButton')
+                .data(thisClass.selections)
+                .enter()
+                .append('circle')
+                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayButton'; })
+                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
+                .attr('r', 10)
+                .attr('cy', 65 + margin.top)
+                .style('fill', '#ffffff')
+                .style('stroke', '#333333')
+                .style('stroke-width', 2)
+                .style('cursor', 'pointer')
+                // hidden after init
+                .style('visibility', 'hidden')
+                .on('click', function(d, i) {
+                    extendSelectionToLeftByDay(i);
+                })
+                .append('title').text('Extend Selection by Day to left');
 
             svg.selectAll('.selectionExtendToLeftByDayIcon').remove();
             svg.selectAll('.selectionExtendToLeftByDayIcon')
@@ -1030,27 +1088,14 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('height', 20)
                 // hidden after init
                 .style('visibility', 'hidden')
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon glyphicon-arrow-left');
-
-            svg.selectAll('.selectionExtendToLeftByDayButton').remove();
-            svg.selectAll('.selectionExtendToLeftByDayButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayButton'; })
-                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 65 + margin.top)
-                .style('fill-opacity', 0)
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
                 .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     extendSelectionToLeftByDay(i);
                 })
+                .append('xhtml:span')
+                .attr('class', 'glyphicon glyphicon glyphicon-arrow-left');
+
+            svg.selectAll('.selectionExtendToLeftByDayIcon')
                 .append('title').text('Extend Selection by Day to left');
 
             // selection border text
