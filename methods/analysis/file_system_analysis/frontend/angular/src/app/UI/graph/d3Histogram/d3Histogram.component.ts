@@ -6,6 +6,8 @@ import {debounceTime} from 'rxjs/operators';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {transformAll} from '@angular/compiler/src/render3/r3_ast';
 import {BaseService} from '../../../services/base.service';
+import {ToastrService} from 'ngx-toastr';
+
 
 export interface HistogramData {
     data: number[][];
@@ -48,6 +50,7 @@ export class D3HistogramComponent implements OnDestroy {
     private subscriptions: Subscription[] = [];
 
     constructor(private _hotkeysService: HotkeysService,
+                private toaster: ToastrService,
                 private baseService: BaseService) {
         this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionsEmitter.emit(value)));
         this._hotkeysService.add(new Hotkey(['ctrl+right', 'meta+right'], (event: KeyboardEvent): boolean => {
@@ -947,6 +950,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     moveSelectionByDay(i, 'right');
+                    thisClass.toaster.success(
+                        'Selection was moved by one day to future'
+                    );
                 })
                 .append('title').text('Move Selection to right by Day');
 
@@ -965,6 +971,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 .on('click', function(d, i) {
                     moveSelectionByDay(i, 'right');
+                    thisClass.toaster.success(
+                        'Selection was moved by one day to future'
+                    );
                 })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-resize-horizontal');
@@ -989,6 +998,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     moveSelectionByDay(i, 'left');
+                    thisClass.toaster.success(
+                        'Selection was moved by one day to past'
+                    );
                 })
                 .append('title').text('Move Selection by Day to left');
 
@@ -1007,6 +1019,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 .on('click', function(d, i) {
                     moveSelectionByDay(i, 'left');
+                    thisClass.toaster.success(
+                        'Selection was moved by one day to past'
+                    );
                 })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon-resize-horizontal');
@@ -1031,6 +1046,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     extendSelectionToRightByDay(i);
+                    thisClass.toaster.success(
+                        'Selection was extended one day to future'
+                    );
                 })
                 .append('title').text('Extend Selection to right by Day');
 
@@ -1049,6 +1067,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 .on('click', function(d, i) {
                     extendSelectionToRightByDay(i);
+                    thisClass.toaster.success(
+                        'Selection was extended one day to future'
+                    );
                 })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon glyphicon-arrow-right');
@@ -1073,6 +1094,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('visibility', 'hidden')
                 .on('click', function(d, i) {
                     extendSelectionToLeftByDay(i);
+                    thisClass.toaster.success(
+                        'Selection was extended one day to past'
+                    );
                 })
                 .append('title').text('Extend Selection by Day to left');
 
@@ -1091,6 +1115,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 .on('click', function(d, i) {
                     extendSelectionToLeftByDay(i);
+                    thisClass.toaster.success(
+                        'Selection was extended one day to past'
+                    );
                 })
                 .append('xhtml:span')
                 .attr('class', 'glyphicon glyphicon glyphicon-arrow-left');
