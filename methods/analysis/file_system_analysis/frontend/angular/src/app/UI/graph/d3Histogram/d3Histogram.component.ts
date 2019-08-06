@@ -105,6 +105,10 @@ export class D3HistogramComponent implements OnDestroy {
         const zoomSideShadowWidth = 70;
         const zoomFactor = 0.9;
         const hoverAreaOffset = {left: 20, right: 60};
+        // valid zoom parameters
+        let lastValidZoomFactor = 1.0;
+        let lastValidZoomRange = [];
+        let lastValidZoomX = 0;
         // let shiftKey = false;
         // maximum difference between [ first data | last date ] and the edge of the graph, used for boundaries when
         const maxEdgeMargin = 100;
@@ -347,14 +351,28 @@ export class D3HistogramComponent implements OnDestroy {
             //     return;
             // }
             const t = d3.event.transform;
-            const range = x.range().map(t.invertX, t);
-            const domain = range.map(x.invert, x);
+            let range: number[] = x.range().map(t.invertX, t);
+
+            let domain = range.map(x.invert, x);
             actualX = x.copy().domain(domain);
+
+            // if range zoom is out of toleranted boundaries, then restore last valid zoom state
+            if (range[1] - actualX(lastDate)  > maxEdgeMargin || actualX(firstDate) - range[0] > maxEdgeMargin) {
+                range = lastValidZoomRange;
+                d3.event.transform.k = lastValidZoomFactor;
+                d3.event.transform.x = lastValidZoomX;
+                domain = range.map(x.invert, x);
+                actualX = x.copy().domain(domain);
+            } else {
+                lastValidZoomRange = range;
+                lastValidZoomFactor = d3.event.transform.k;
+                lastValidZoomX = d3.event.transform.x;
+            }
 
             // // same as above
             // actualX = d3.event.transform.rescaleX(x);
 
-            // update axes with these new boundaries
+             // update axes with these new boundaries
             xAxis.attr('transform', 'translate(' + margin.left + ',' + (contentHeight + margin.top) + ')')
                 .call(d3.axisBottom(actualX));
 
@@ -365,7 +383,6 @@ export class D3HistogramComponent implements OnDestroy {
             // save zoom for responsive redraw
             thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()),
                 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
-
         }
 
         function shift(shiftValue) {
@@ -1034,7 +1051,9 @@ export class D3HistogramComponent implements OnDestroy {
                 .data(thisClass.selections)
                 .enter()
                 .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayButton'; })
+                .attr('class', function(d, i) {
+                    return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayButton';
+                })
                 .attr('cx', d => actualX(d[1]) + 15 + margin.left)
                 .attr('r', 10)
                 .attr('cy', 65 + margin.top)
@@ -1441,9 +1460,6 @@ export class D3HistogramComponent implements OnDestroy {
             }
             return closestRightSelectionStart;
         }
-
-
-
     }
 
     onResize() {
