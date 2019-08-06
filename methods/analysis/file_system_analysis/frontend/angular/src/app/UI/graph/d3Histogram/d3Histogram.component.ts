@@ -137,6 +137,7 @@ export class D3HistogramComponent implements OnDestroy {
                 for (let index = 0; index < thisClass.selections.length; index++) {
                     if (xAxisPos > (actualX(thisClass.selections[index][0]) - hoverAreaOffset.left) &&
                         xAxisPos < (actualX(thisClass.selections[index][1]) + hoverAreaOffset.right)) {
+                        console.log('Hover on selection', thisClass.selections[index]);
                         d3.selectAll('.selectionHoverArea-' + index).style('visibility', 'visible');
                     }
                 }
