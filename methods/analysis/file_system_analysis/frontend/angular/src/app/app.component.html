@@ -1,5 +1,10 @@
 <div class="app-container">
     <div class="app-bar">
+        <div class="user-info">
+            <span *ngIf="currentUser">
+                <span class="fas fa-user"></span> {{currentUser.username}}
+            </span>
+        </div>
         <span class="main-title">
             <b><p class="title-highlight">FI</p>LESYSTEM <p class="title-highlight">MET</p>ADATA ANALYS<p class="title-highlight">IS</p></b>
         </span>

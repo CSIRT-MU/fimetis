@@ -64,3 +64,10 @@
 .content{
     grid-area: grid-content;
 }
+
+.app-bar .user-info {
+    display: inline-block;
+    color: #fefefe;
+    float: left;
+    margin-left: 5px;
+}
