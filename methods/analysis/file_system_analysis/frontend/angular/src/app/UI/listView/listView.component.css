@@ -153,9 +153,10 @@
 }
 
 .search-icon{
-    position: relative;
+    position: absolute;
     display: inline-block;
     margin-left: -25px;
+    margin-top: 8px;
 }
 
 .table-radio-type {
@@ -420,12 +421,12 @@ virtual-scroll {
     display: inline-block
 }
 
-.list-red-line {
+.list-selection-line {
     position: relative;
-    border-bottom: 10px solid var(--redColor);
+    border-bottom: 10px solid var(--selectionBorderColor);
 }
 
-.list-red-line::after {
+.list-selection-line::after {
     position: absolute;
     width: 0;
     left: 5px;
