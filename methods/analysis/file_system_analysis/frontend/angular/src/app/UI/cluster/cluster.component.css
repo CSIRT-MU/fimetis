@@ -163,6 +163,7 @@
 
 .cluster-count-field .total-filtered {
     color: #000000;
+    font-weight: bold;
 }
 
 .cluster-block-panel-header {
