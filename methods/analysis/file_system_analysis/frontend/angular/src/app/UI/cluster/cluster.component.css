@@ -179,3 +179,10 @@
 .addClusterButton {
     font-size: large;
 }
+
+.no-clusters-yet{
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: large;
+}
