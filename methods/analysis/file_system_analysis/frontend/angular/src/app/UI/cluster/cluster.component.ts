@@ -1,15 +1,18 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MatSelectionList} from '@angular/material';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {MatDialog, MatSelectionList} from '@angular/material';
 import {ClusterModel, ClusterSelectMode} from '../../models/cluster.model';
 import {debounceTime} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {StateService} from '../../services/state.service';
+import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
+import {ClusterService} from '../../services/cluster.service';
 
 @Component({
     selector: 'app-cluster',
     templateUrl: './cluster.component.html',
     styleUrls: ['./cluster.component.css']
 })
-export class ClusterComponent implements OnInit {
+export class ClusterComponent implements OnInit, OnDestroy {
 
     @ViewChild(MatSelectionList, {static: false})
     clusterList: MatSelectionList;
@@ -31,12 +34,22 @@ export class ClusterComponent implements OnInit {
     scrollableBlock: ElementRef;
 
     clusterPanelOpenState = true;
+    private subscriptions: Subscription[] = [];
 
-    constructor() {
-        this.clusterSelectionDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionChanged.emit(value));
+    constructor(private stateService: StateService,
+                private dialog: MatDialog,
+                private clusterService: ClusterService) {
+        // this.clusterSelectionDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionChanged.emit(value));
+        this.subscriptions.push(this.clusterSelectionDebouncer.pipe(debounceTime(500)).subscribe((value) => this.stateService.clusters = value));
+        this.subscriptions.push(this.stateService.currentStateClusters.subscribe((value) => this.clusters = value));
+        this.subscriptions.push(this.stateService.currentStateAdditionalFilters.subscribe((value) => this.computeClustersItemCount(value)));
     }
 
     ngOnInit() {
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     /**
@@ -49,7 +62,7 @@ export class ClusterComponent implements OnInit {
                 clust.selectMode = ClusterSelectMode.notSelected;
             }
             cluster.selectMode = ClusterSelectMode.added;
-            this.clusterSelectionDebouncer.next(null);
+            this.clusterSelectionDebouncer.next(this.clusters);
         } else {
             cluster.selectMode = ClusterSelectMode.next(cluster.selectMode);
             if (cluster.subClusters.length > 0) {
@@ -57,7 +70,7 @@ export class ClusterComponent implements OnInit {
                     clust.selectMode = cluster.selectMode;
                 }
             }
-            this.clusterSelectionDebouncer.next(null);
+            this.clusterSelectionDebouncer.next(this.clusters);
         }
     }
 
@@ -66,7 +79,29 @@ export class ClusterComponent implements OnInit {
     }
 
     addCluster() {
-        this.addNewCluster.emit(null);
+        // this.addNewCluster.emit(null);
+        const dialogRef = this.dialog.open(ComputationDialogComponent, {
+            width: '350px',
+            data: {
+                title: 'Create new cluster',
+                namePlaceholder: 'Type new cluster\'s name',
+                colorPlaceHolder: 'Select cluster color'
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('cluster dialog closed', result);
+            if (result != null) {
+                const cluster = new ClusterModel();
+                cluster.name = result[0];
+                cluster.color = result[1];
+                cluster.count = 0;
+                cluster.totalCount = 0;
+                this.stateService.addCluster(cluster);
+                this.editCluster.emit(cluster);
+                this.scrollListToBottom();
+            }
+        });
+
     }
 
     scrollListToBottom() {
@@ -79,9 +114,14 @@ export class ClusterComponent implements OnInit {
     getPercentageValue(cluster: ClusterModel) {
         const onePercent = cluster.totalCount / 100;
         if (onePercent !== 0) {
-            return cluster.count / onePercent;
+            if (cluster.count > 0) {
+                return Math.max(1, cluster.count / onePercent);
+            } else {
+                return 0;
+            }
         } else {
-            return 100;
+            // if total is zero
+            return 0;
         }
     }
 
@@ -102,6 +142,10 @@ export class ClusterComponent implements OnInit {
             cluster.selectMode = ClusterSelectMode.notSelected;
         }
         this.clusterSelectionDebouncer.next(null);
+    }
+
+    computeClustersItemCount(additionalFilters: object) {
+        this.clusterService.countEntriesOfClusters(this.stateService.selectedCase, this.clusters, additionalFilters);
     }
 
 }

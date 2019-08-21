@@ -7,6 +7,7 @@ import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {transformAll} from '@angular/compiler/src/render3/r3_ast';
 import {BaseService} from '../../../services/base.service';
 import {ToastrService} from 'ngx-toastr';
+import {StateService} from '../../../services/state.service';
 
 
 export interface HistogramData {
@@ -51,8 +52,11 @@ export class D3HistogramComponent implements OnDestroy {
 
     constructor(private _hotkeysService: HotkeysService,
                 private toaster: ToastrService,
-                private baseService: BaseService) {
-        this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionsEmitter.emit(value)));
+                private baseService: BaseService,
+                private stateService: StateService) {
+        // this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionsEmitter.emit(value)));
+        this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => stateService.selections = value));
+        this.subscriptions.push(this.stateService.currentStateSelections.subscribe((value) => this.setSelectionsWithoutEmit(value)));
         this._hotkeysService.add(new Hotkey(['ctrl+right', 'meta+right'], (event: KeyboardEvent): boolean => {
             // shift graph view to right
             d3.selectAll('.zoomNavRight').dispatch('click');
@@ -420,12 +424,12 @@ export class D3HistogramComponent implements OnDestroy {
         function removeAllSelections() {
             thisClass.selections = [];
             selectionsReset();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
         function selectionsReset() {
             drawSelections();
             drawActualPositionWindow();
-            thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
         function moveSelectionByDay(index, direction) {
@@ -1483,9 +1487,12 @@ export class D3HistogramComponent implements OnDestroy {
     }
 
     setSelections(selections) {
-        d3.select('.removeAllSelectionsButton').dispatch('click');
-        this.selections = selections;
-        d3.selectAll('.resetSelectionsButton').dispatch('click');
+        this.setSelectionsWithoutEmit(selections);
         this.selectionsEmitter.emit(this.selections);
+    }
+
+    private setSelectionsWithoutEmit(selections) {
+        this.selections = selections.map(function(val) {return [new Date(val[0]), new Date(val[1])]; });
+        d3.selectAll('.resetSelectionsButton').dispatch('click');
     }
 }

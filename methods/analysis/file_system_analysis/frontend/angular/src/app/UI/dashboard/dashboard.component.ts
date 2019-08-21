@@ -16,6 +16,7 @@ import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirm
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as d3 from 'd3';
 import {Subscription} from 'rxjs';
+import {StateService} from '../../services/state.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -71,7 +72,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 private toaster: ToastrService,
                 public dialog: MatDialog,
                 private userSettingsService: UserSettingsService,
-                private _hotkeysService: HotkeysService) {
+                private _hotkeysService: HotkeysService,
+                private stateService: StateService) {
         this.advancedMode = userSettingsService.advancedMode.getValue();
         this._hotkeysService.add(new Hotkey(['ctrl+s', 'command+s'], (event: KeyboardEvent): boolean => {
             this.saveApplicationState();
@@ -132,6 +134,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * Method triggered by selecting Case
      */
     selectedCaseChanged() {
+        this.stateService.selectedCase = this.selectedCase;
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
         this.initPreLoadedClusters().then(() => this.clusterSelectionChanged(null));
@@ -148,6 +151,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const configManager = new ConfigManager();
         this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
         this.computeClustersItemCount(this.listViewComponent.additionalFilters);
+        this.stateService.clusters = this.preloadedClusters;
     }
 
     /**
@@ -578,6 +582,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     sendAdditionalFiltersToGraphComponent(additionalFilters: object) {
         this.graphComponent.additionalFilters = additionalFilters;
         this.graphComponent.loadFilteredData();
+    }
+
+    restorePreviousState(previous: boolean) {
+        this.stateService.restoreState(previous);
+    }
+
+    ableToRestoreHistoryState(previous: boolean) {
+        if (previous) {
+            return this.stateService.stateIndex > 0;
+        } else {
+            return this.stateService.stateIndex < (this.stateService.stateHistory.length - 1);
+        }
     }
 
 }

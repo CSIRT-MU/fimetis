@@ -9,6 +9,7 @@ import {VirtualScrollerComponent} from 'ngx-virtual-scroller';
 import {D3HistogramComponent} from './d3Histogram/d3Histogram.component';
 import * as d3 from 'd3';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+import {StateService} from '../../services/state.service';
 
 @Component({
     selector: 'app-graph',
@@ -236,10 +237,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private subscriptions: Subscription[] = [];
     constructor(private graphService: GraphService,
-                private _hotkeysService: HotkeysService) {
+                private _hotkeysService: HotkeysService,
+                private stateService: StateService) {
         // debouncer setup
         this.subscriptions.push(this.dateChangeDebouncer.pipe(debounceTime(100)).subscribe((value) => this.getDateChange.emit(value)));
         this.subscriptions.push(this.typesChangedDebouncer.pipe(debounceTime(100)).subscribe((value) => this.typesChanged.emit(value)));
+        this.subscriptions.push(this.stateService.currentStateClusters.subscribe((value) => this.setClusters(value)));
         this._hotkeysService.add(new Hotkey(['shift+m'], (event: KeyboardEvent): boolean => {
             // De/select m type switch button
             this.typeCheckboxChanged('m');
@@ -823,6 +826,8 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-
-
+    setClusters(clusters) {
+        this._clusters = clusters;
+        this.init();
+    }
 }

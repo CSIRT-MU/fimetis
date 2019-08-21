@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, Output, ViewChild, ElementRef, HostListe
 import {MatDialog} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 import {SelectDialogComponent} from '../dialog/select-dialog/select-dialog.component';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 
 import {VirtualArrayModel} from '../../models/virtualArray.model';
 import {ClusterModel} from '../../models/cluster.model';
@@ -16,6 +16,7 @@ import {ClusterService} from '../../services/cluster.service';
 import {DataModel} from '../../models/data.model';
 import {BaseService} from '../../services/base.service';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
+import {StateService} from '../../services/state.service';
 
 @Component({
     selector: 'app-list-view',
@@ -105,12 +106,18 @@ export class ListViewComponent {
     @ViewChild('searchField', {static: false}) searchField: ElementRef;
     @ViewChild('highlightedBox', {static: false}) highlightedBox: ElementRef;
     @ViewChild('highlightedDateBox', {static: false}) highlightedDateBox: ElementRef;
+
+    private subscriptions: Subscription[] = [];
+
     constructor(private clusterService: ClusterService,
                 private baseService: BaseService,
                 public dialog: MatDialog,
                 private toaster: ToastrService,
-                private _hotkeysService: HotkeysService
+                private _hotkeysService: HotkeysService,
+                private stateService: StateService
     ) {
+        this.subscriptions.push(this.stateService.currentStateSelections.subscribe((value) => this.timeRangeFilter(this.stateService.transformSelections(value))));
+        this.subscriptions.push(this.stateService.currentStateClusters.subscribe((value) => this.setClusters(value)));
         this._hotkeysService.add(new Hotkey(['g g'], (event: KeyboardEvent, combo: string): boolean => {
             console.log(combo);
             const shift = this.createNumberFromPressedNumberKeys();
@@ -199,11 +206,17 @@ export class ListViewComponent {
         }
 
     }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    }
+
     /**
      * Initializes list asynchronously
      * @returns {Promise<void>}
      */
     async init() {
+        console.log('list init');
         // console.log(this.additionalFilters, this.visibleDataFirstIndex);
         this.loadingData = true;
         // get difference between selected clusters in previous step and thi step -> we want to keep time context
@@ -303,6 +316,7 @@ export class ListViewComponent {
             this.init();
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.stateService.additionalFilters = this.additionalFilters;
     }
     /**
      * Filters data by search timestamp
@@ -317,13 +331,14 @@ export class ListViewComponent {
             this.init();
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.stateService.additionalFilters = this.additionalFilters;
     }
 
     /**
      * Filters data by date ranges
      * @param {[[string, string]]} timeRanges Selected time ranges
      */
-    timeRangeFilter(timeRanges: [[string, string]]) {
+    timeRangeFilter(timeRanges: Array<[string, string]>) {
         if (timeRanges != null ) {
             if (timeRanges !== undefined) {
                 this.additionalFilters['multiTimeRange'] = timeRanges;
@@ -334,6 +349,7 @@ export class ListViewComponent {
             this.init();
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.stateService.additionalFilters = this.additionalFilters;
     }
 
     // /**
@@ -369,6 +385,7 @@ export class ListViewComponent {
             this.init();
         }
         this.additionalFiltersChanged.emit(this.additionalFilters);
+        this.stateService.additionalFilters = this.additionalFilters;
     }
     /**
      * Opens dialog to edit visible table columns
@@ -1194,5 +1211,10 @@ export class ListViewComponent {
             }
         }
         return false;
+    }
+
+    setClusters(clusters) {
+        this.clusters = clusters;
+        this.init();
     }
 }

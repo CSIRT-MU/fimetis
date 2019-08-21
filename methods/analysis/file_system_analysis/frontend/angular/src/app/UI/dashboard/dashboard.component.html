@@ -70,9 +70,18 @@
                 <button mat-stroked-button class="fimetis-button settings-button"
                         (click)="restoreApplicationState()" [disabled]="!ableToRestoreState()">
                     <span class="glyphicon glyphicon-open"></span> RESTORE APP STATE</button>
+                <button mat-stroked-button class="fimetis-button settings-button"
+                        [disabled]="!ableToRestoreHistoryState(true)"
+                        (click)="restorePreviousState(true)">
+                    <span class="fas fa-undo"></span> BACK</button>
+                <button mat-stroked-button class="fimetis-button settings-button"
+                        [disabled]="!ableToRestoreHistoryState(false)"
+                        (click)="restorePreviousState(false)">
+                    <span class="fas fa-redo"></span> FORWARD</button>
             </div>
+<!--            [clusters]="getClusters()"-->
             <app-cluster class="cluster-block"
-                    [clusters]="getClusters()"
+
                     [advancedMode]="advancedMode"
                     (selectionChanged)="clusterSelectionChanged($event)"
                     (addNewCluster)="addNewCluster()"
