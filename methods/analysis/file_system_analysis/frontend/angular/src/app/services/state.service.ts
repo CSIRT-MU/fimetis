@@ -3,30 +3,24 @@ import { Location } from '@angular/common';
 import {ClusterModel} from '../models/cluster.model';
 import {StateModel} from '../models/state.model';
 import * as lodash from 'lodash';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class StateService {
     private state = new StateModel();
     stateHistory: Array<StateModel> = [];
     stateIndex = -1;
-    stateSubject: BehaviorSubject<StateModel> = new BehaviorSubject(this.state);
-    selectionsSubject: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
-    clustersSubject: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
-    additionalFiltersSubject: BehaviorSubject<object> = new BehaviorSubject({});
-    public currentState: Observable<StateModel>;
-    public currentStateSelections: Observable<Array<any>>;
-    public currentStateClusters: Observable<Array<any>>;
-    public currentStateAdditionalFilters: Observable<object>;
+    public currentState: Subject<StateModel> = new Subject<StateModel>();
+    public currentStateSelections: Subject<Array<any>> = new Subject<Array<any>>();
+    public currentStateClusters: Subject<Array<any>> = new Subject<Array<any>>();
+    public currentStateAdditionalFilters: Subject<object> = new Subject<object>();
+    public currentStateSelectedCase: Subject<string> = new Subject<string>();
+    public currentStateScrollPosition: Subject<number> = new Subject<number>();
+    public currentStateSelectedTypes: Subject<Set<string>> = new Subject<Set<string>>();
 
     constructor(
         private _location: Location
-    ) {
-        this.currentState = this.stateSubject.asObservable();
-        this.currentStateSelections = this.selectionsSubject.asObservable();
-        this.currentStateClusters = this.clustersSubject.asObservable();
-        this.currentStateAdditionalFilters = this.additionalFiltersSubject.asObservable();
-    }
+    ) {}
 
     getState() {
         return this.state;
@@ -38,7 +32,7 @@ export class StateService {
 
     set selectedCase(value: string) {
         this.state.selectedCase = value;
-        this.stateSubject.next(this.state);
+        this.currentState.next(this.state);
         this.saveState();
     }
 
@@ -48,7 +42,9 @@ export class StateService {
 
     set selectedTypes(value: Set<string>) {
         this.state.selectedTypes = value;
-        this.stateSubject.next(this.state);
+        this.currentState.next(this.state);
+        this.currentStateSelectedTypes.next(this.state.selectedTypes);
+        this.saveState();
     }
 
     get additionalFilters(): object {
@@ -57,8 +53,8 @@ export class StateService {
 
     set additionalFilters(value: object) {
         this.state.additionalFilters = value;
-        this.stateSubject.next(this.state);
-        this.additionalFiltersSubject.next(this.state.additionalFilters);
+        this.currentState.next(this.state);
+        this.currentStateAdditionalFilters.next(this.state.additionalFilters);
         console.log('change state add filt', value);
         // this.saveState();
     }
@@ -69,7 +65,7 @@ export class StateService {
 
     set selectedTableColumns(value: Set<string>) {
         this.state.selectedTableColumns = value;
-        this.stateSubject.next(this.state);
+        this.currentState.next(this.state);
     }
 
     get showAllTypesSwitch(): boolean {
@@ -78,7 +74,7 @@ export class StateService {
 
     set showAllTypesSwitch(value: boolean) {
         this.state.showAllTypesSwitch = value;
-        this.stateSubject.next(this.state);
+        this.currentState.next(this.state);
     }
 
     get pageNumber(): number {
@@ -87,7 +83,7 @@ export class StateService {
 
     set pageNumber(value: number) {
         this.state.pageNumber = value;
-        this.stateSubject.next(this.state);
+        this.currentState.next(this.state);
     }
 
     get scrollPosition(): number {
@@ -104,15 +100,15 @@ export class StateService {
 
     set clusters(value: Array<ClusterModel>) {
         this.state.clusters = value;
-        this.stateSubject.next(this.state);
-        this.clustersSubject.next(this.state.clusters);
+        this.currentState.next(this.state);
+        this.currentStateClusters.next(this.state.clusters);
         this.saveState();
     }
 
     addCluster(value: ClusterModel) {
         this.state.clusters.push(value);
-        this.stateSubject.next(this.state);
-        this.clustersSubject.next(this.state.clusters);
+        this.currentState.next(this.state);
+        this.currentStateClusters.next(this.state.clusters);
         this.saveState();
     }
 
@@ -122,8 +118,8 @@ export class StateService {
 
     set selections(value) {
         this.state.selections = value;
-        this.stateSubject.next(this.state);
-        this.selectionsSubject.next(this.state.selections);
+        this.currentState.next(this.state);
+        this.currentStateSelections.next(this.state.selections);
         this.saveState();
     }
 
@@ -141,10 +137,10 @@ export class StateService {
             if (this.stateIndex !== 0) {
                 this.stateIndex--;
                 this.state = JSON.parse(JSON.stringify(this.stateHistory[this.stateIndex]));
-                this.stateSubject.next(this.state);
-                this.selectionsSubject.next(this.state.selections);
-                this.clustersSubject.next(this.state.clusters);
-                this.additionalFiltersSubject.next(this.state.additionalFilters);
+                this.currentState.next(this.state);
+                this.currentStateSelections.next(this.state.selections);
+                this.currentStateClusters.next(this.state.clusters);
+                this.currentStateAdditionalFilters.next(this.state.additionalFilters);
             } else {
                 // this._location.back();
             }
@@ -152,10 +148,10 @@ export class StateService {
             if ((this.stateIndex + 1) !== this.stateHistory.length) {
                 this.stateIndex++;
                 this.state = JSON.parse(JSON.stringify(this.stateHistory[this.stateIndex]));
-                this.stateSubject.next(this.state);
-                this.selectionsSubject.next(this.state.selections);
-                this.clustersSubject.next(this.state.clusters);
-                this.additionalFiltersSubject.next(this.state.additionalFilters);
+                this.currentState.next(this.state);
+                this.currentStateSelections.next(this.state.selections);
+                this.currentStateClusters.next(this.state.clusters);
+                this.currentStateAdditionalFilters.next(this.state.additionalFilters);
             } else {
                 // this._location.forward();
             }
@@ -163,18 +159,35 @@ export class StateService {
         console.log('restore state', this.state);
     }
 
+    resetStateHistory() {
+        this.stateHistory = [];
+        this.stateIndex = -1;
+    }
+
     saveStateToLocalStorage() {
         localStorage.setItem('selectedCase', JSON.stringify(this.state.selectedCase));
         localStorage.setItem('clusters', JSON.stringify(this.state.clusters));
-        localStorage.setItem('preloadedClusters', JSON.stringify(this.state.preloadedClusters));
-        localStorage.setItem('manualClusters', JSON.stringify(this.state.manualClusters));
-        localStorage.setItem('savedClusters', JSON.stringify(this.state.savedClusters));
+        // localStorage.setItem('preloadedClusters', JSON.stringify(this.state.preloadedClusters));
+        // localStorage.setItem('manualClusters', JSON.stringify(this.state.manualClusters));
+        // localStorage.setItem('savedClusters', JSON.stringify(this.state.savedClusters));
         // localStorage.setItem('additionalFilters', JSON.stringify([...this.listViewComponent.additionalFilters]));
         localStorage.setItem('scrollPosition', JSON.stringify(this.state.scrollPosition));
         localStorage.setItem('pageNumber', JSON.stringify(this.state.pageNumber));
         localStorage.setItem('showAllTypes', JSON.stringify(this.state.showAllTypesSwitch));
         localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.state.selectedTypes)));
         localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.state.selectedTableColumns)));
+        localStorage.setItem('selections', JSON.stringify(this.state.selections));
+        localStorage.setItem('additionalFilters', JSON.stringify(this.state.additionalFilters));
+    }
+
+    restoreStateFromLocalStorage() {
+        this.state = new StateModel();
+        this.state.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
+        this.currentStateSelectedCase.next(this.state.selectedCase);
+        this.state.clusters = JSON.parse(localStorage.getItem('clusters'));
+        this.currentStateClusters.next(this.state.clusters);
+        this.state.scrollPosition = JSON.parse(localStorage.getItem('scrollPosition'));
+        this.currentStateScrollPosition.next(this.state.scrollPosition);
     }
 
     transformSelections(selections): Array<[string, string]> {
