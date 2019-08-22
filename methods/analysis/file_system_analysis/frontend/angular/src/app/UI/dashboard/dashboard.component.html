@@ -64,20 +64,39 @@
                         *ngIf="authService.isAdmin()"
                         (click)="uploadWindowOpen = !uploadWindowOpen">
                     <span class="glyphicon glyphicon-upload"></span> EXTEND DATASET</button>
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        (click)="saveApplicationState()">
-                    <span class="glyphicon glyphicon-save"></span> SAVE APP STATE</button>
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        (click)="restoreApplicationState()" [disabled]="!ableToRestoreState()">
-                    <span class="glyphicon glyphicon-open"></span> RESTORE APP STATE</button>
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        [disabled]="!ableToRestoreHistoryState(true)"
-                        (click)="restorePreviousState(true)">
-                    <span class="fas fa-undo"></span> BACK</button>
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        [disabled]="!ableToRestoreHistoryState(false)"
-                        (click)="restorePreviousState(false)">
-                    <span class="fas fa-redo"></span> FORWARD</button>
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        (click)="saveApplicationState()">-->
+<!--                    <span class="glyphicon glyphicon-save"></span> SAVE APP STATE</button>-->
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        (click)="restoreApplicationState()" [disabled]="!ableToRestoreState()">-->
+<!--                    <span class="glyphicon glyphicon-open"></span> RESTORE APP STATE</button>-->
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        [disabled]="!ableToRestoreHistoryState(true)"-->
+<!--                        (click)="restorePreviousState(true)">-->
+<!--                    <span class="fas fa-undo"></span> BACK</button>-->
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        [disabled]="!ableToRestoreHistoryState(false)"-->
+<!--                        (click)="restorePreviousState(false)">-->
+<!--                    <span class="fas fa-redo"></span> FORWARD</button>-->
+                <div>
+                    <button mat-stroked-button class="fimetis-button settings-button"
+                            [disabled]="!ableToRestoreHistoryState(true)"
+                            (click)="restorePreviousState(true)">
+                        <span class="fas fa-undo"></span> BACK</button>
+                    <button mat-stroked-button class="fimetis-button settings-button"
+                            (click)="saveApplicationState()"
+                            [matTooltip]="'Save App State'">
+                        <span class="glyphicon glyphicon-save"></span></button>
+                    <button mat-stroked-button class="fimetis-button settings-button"
+                            (click)="restoreApplicationState()"
+                            [matTooltip]="'Restore App State'"
+                            [disabled]="!ableToRestoreState()">
+                        <span class="glyphicon glyphicon-open"></span></button>
+                    <button mat-stroked-button class="fimetis-button settings-button"
+                            [disabled]="!ableToRestoreHistoryState(false)"
+                            (click)="restorePreviousState(false)">
+                        <span class="fas fa-redo"></span> FORWARD</button>
+                </div>
             </div>
 <!--            [clusters]="getClusters()"-->
             <app-cluster class="cluster-block"
