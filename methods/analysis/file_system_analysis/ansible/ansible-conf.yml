@@ -4,6 +4,8 @@ gitlab_auth_token: 'oauth2:xxxxx'
 # Elasticsearch
 elastic_localhost_port: 9200
 elastic_reverse_proxy_port: 9201
+# in GB
+elastic_heap_size: 2
 
 # Kibana
 kibana_user: elastic

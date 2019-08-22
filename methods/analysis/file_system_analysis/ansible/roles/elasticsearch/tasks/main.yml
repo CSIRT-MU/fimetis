@@ -80,6 +80,19 @@
     args:
       warn: false 
 
+  - name: Setting elastic min heapsize
+    lineinfile:
+      path: /etc/elasticsearch/jvm.options
+      regexp: "^-Xms.*"
+      line: "-Xms{{ elastic_heap_size }}g"
+
+  - name: Setting elastic max heapsize
+    lineinfile:
+      path: /etc/elasticsearch/jvm.options
+      regexp: "^-Xmx.*"
+      line: "-Xmx{{ elastic_heap_size }}g"
+
+
   - name: Reloading elastic
     systemd:
       name: elasticsearch
