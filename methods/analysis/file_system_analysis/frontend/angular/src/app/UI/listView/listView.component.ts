@@ -625,6 +625,7 @@ export class ListViewComponent {
         cluster.filters.push(filter);
         // computation.filters.add(filter);
         this.makeManualCluster.emit(cluster);
+        this.stateService.addCluster(cluster);
     }
 
     /**
