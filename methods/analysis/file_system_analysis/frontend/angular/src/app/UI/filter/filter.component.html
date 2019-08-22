@@ -3,6 +3,7 @@
     <div class="col-md-12 panel-header">
       <span class="col-md-1"><input matInput [(ngModel)]="inputCluster.color" type="color"></span>
       <span><b>Edit cluster</b> "{{inputCluster.name}}"</span>
+      <button mat-stroked-button class="fimetis-button" style="float: right" (click)="removeCluster()"><i class="fas fa-trash"></i> REMOVE</button>
     </div>
     <div [ngClass]="{'panel-hidden': !filterPanelOpenState, 'panel-visible': filterPanelOpenState}"
          class="panel-content col-md-12">

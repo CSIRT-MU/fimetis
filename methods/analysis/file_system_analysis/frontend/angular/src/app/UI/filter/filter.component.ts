@@ -3,6 +3,7 @@ import {ClusterModel} from '../../models/cluster.model';
 import {FilterModel} from '../../models/filter.model';
 import {BaseService} from '../../services/base.service';
 import {ToastrService} from 'ngx-toastr';
+import {StateService} from '../../services/state.service';
 
 @Component({
   selector: 'app-filter',
@@ -21,7 +22,8 @@ export class FilterComponent implements OnInit {
     editDone: EventEmitter<ClusterModel> = new EventEmitter<ClusterModel>();
 
     constructor(private baseService: BaseService,
-                private toaster: ToastrService) { }
+                private toaster: ToastrService,
+                private stateService: StateService) { }
 
     ngOnInit() {
         this.loadAllFilters();
@@ -148,5 +150,11 @@ export class FilterComponent implements OnInit {
 
     editClusterDone() {
         this.editDone.emit(this.inputCluster);
+        this.stateService.saveState();
+    }
+
+    removeCluster() {
+        this.editDone.emit(this.inputCluster);
+        this.stateService.removeCluster(this.inputCluster);
     }
 }

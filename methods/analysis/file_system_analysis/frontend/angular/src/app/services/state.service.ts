@@ -112,6 +112,16 @@ export class StateService {
         this.saveState();
     }
 
+    removeCluster(value: ClusterModel) {
+        const index = this.state.clusters.indexOf(value);
+        if (index !== -1) {
+            this.state.clusters.splice(index, 1);
+        }
+        this.currentState.next(this.state);
+        this.currentStateClusters.next(this.state.clusters);
+        this.saveState();
+    }
+
     get selections(): Array<[string, string]> {
         return this.state.selections;
     }
