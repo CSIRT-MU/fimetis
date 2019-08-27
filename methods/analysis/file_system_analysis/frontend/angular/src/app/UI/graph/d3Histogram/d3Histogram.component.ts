@@ -129,7 +129,8 @@ export class D3HistogramComponent implements OnDestroy {
         const drag = d3.drag()
             .on('start', dragStart)
             .on('end', dragEnd)
-            .on('drag', dragging);
+            .on('drag', dragging)
+            .filter(function() {return !d3.event.button; });
 
         const svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
@@ -399,6 +400,7 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function zoomIn(zoomRange) {
+            console.log('zooming in');
             const area = (zoomRange[1].getTime() - zoomRange[0].getTime());
             zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
                 (zoomRange[1].getTime() - zoomRange[0].getTime() + (0.2 * area)))
