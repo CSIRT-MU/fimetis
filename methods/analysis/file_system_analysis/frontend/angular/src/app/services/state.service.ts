@@ -15,6 +15,7 @@ export class StateService {
     public currentStateClusters: Subject<Array<any>> = new Subject<Array<any>>();
     public currentStateAdditionalFilters: Subject<object> = new Subject<object>();
     public currentStateSelectedCase: Subject<string> = new Subject<string>();
+    public currentStatePageNumber: Subject<number> = new Subject<number>();
     public currentStateScrollPosition: Subject<number> = new Subject<number>();
     public currentStateSelectedTypes: Subject<Set<string>> = new Subject<Set<string>>();
 
@@ -196,6 +197,14 @@ export class StateService {
         this.currentStateSelectedCase.next(this.state.selectedCase);
         this.state.clusters = JSON.parse(localStorage.getItem('clusters'));
         this.currentStateClusters.next(this.state.clusters);
+        this.state.selections = JSON.parse(localStorage.getItem('selections'));
+        this.currentStateSelections.next(this.state.selections);
+        this.state.selectedTypes = JSON.parse(localStorage.getItem('selectedTypes'));
+        this.currentStateSelectedTypes.next(this.state.selectedTypes);
+        this.state.additionalFilters = JSON.parse(localStorage.getItem('additionalFilters'));
+        this.currentStateAdditionalFilters.next(this.state.additionalFilters);
+        this.state.pageNumber = JSON.parse(localStorage.getItem('pageNumber'));
+        this.currentStatePageNumber.next(this.state.pageNumber);
         this.state.scrollPosition = JSON.parse(localStorage.getItem('scrollPosition'));
         this.currentStateScrollPosition.next(this.state.scrollPosition);
     }

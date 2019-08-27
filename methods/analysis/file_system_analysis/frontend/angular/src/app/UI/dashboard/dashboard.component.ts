@@ -75,6 +75,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 private _hotkeysService: HotkeysService,
                 private stateService: StateService) {
         this.advancedMode = userSettingsService.advancedMode.getValue();
+        this.subscriptions.push(this.stateService.currentStateSelectedCase.subscribe((value) => this.setCase(value)));
         this._hotkeysService.add(new Hotkey(['ctrl+s', 'command+s'], (event: KeyboardEvent): boolean => {
             this.saveApplicationState();
             return false; // Prevent bubbling
@@ -140,6 +141,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.initPreLoadedClusters().then(() => this.clusterSelectionChanged(null));
         // this.loadStoredClusters();
         this.listViewComponent.init();
+    }
+
+    setCase(caseName) {
+        this.selectedCase = caseName;
+        this.setupWindowOpen = false;
+        this.listViewComponent.case = this.selectedCase;
+        this.graphComponent._case = this.selectedCase;
     }
 
     /**
@@ -467,22 +475,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * Save application state to local storage
      */
     saveApplicationState() {
-        localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
-        localStorage.setItem('selectedCase', JSON.stringify(this.selectedCase));
-        localStorage.setItem('clusters', JSON.stringify(this.clusters));
-        localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
-        localStorage.setItem('manualClusters', JSON.stringify(this.manualClusters));
-        localStorage.setItem('savedClusters', JSON.stringify(this.savedClusters));
-        localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
-        localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
-        localStorage.setItem('additionalFilters', JSON.stringify(this.listViewComponent.additionalFilters));
-        localStorage.setItem('searchString', JSON.stringify(this.listViewComponent.searchString));
-        localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
-        localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
-        localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
-        localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
-        localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
-        localStorage.setItem('selections', JSON.stringify(this.graphComponent.d3Histogram.selections));
+        this.stateService.saveStateToLocalStorage();
+        // localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
+        // localStorage.setItem('selectedCase', JSON.stringify(this.selectedCase));
+        // localStorage.setItem('clusters', JSON.stringify(this.clusterComponent.clusters));
+        // localStorage.setItem('preloadedClusters', JSON.stringify(this.preloadedClusters));
+        // localStorage.setItem('manualClusters', JSON.stringify(this.manualClusters));
+        // localStorage.setItem('savedClusters', JSON.stringify(this.savedClusters));
+        // localStorage.setItem('fromDate', JSON.stringify(this.graphComponent.pickedFromDate));
+        // localStorage.setItem('toDate', JSON.stringify(this.graphComponent.pickedToDate));
+        // localStorage.setItem('additionalFilters', JSON.stringify(this.listViewComponent.additionalFilters));
+        // localStorage.setItem('searchString', JSON.stringify(this.listViewComponent.searchString));
+        // localStorage.setItem('scrollPosition', JSON.stringify(this.listViewComponent.virtualScroller.viewPortInfo.startIndex));
+        // localStorage.setItem('pageNumber', JSON.stringify(this.listViewComponent.page_number));
+        // localStorage.setItem('showAllTypes', JSON.stringify(this.graphComponent.showAllTypes));
+        // localStorage.setItem('selectedTypes', JSON.stringify(Array.from(this.graphComponent.selectedTypes)));
+        // localStorage.setItem('selectedTableColumns', JSON.stringify(Array.from(this.listViewComponent.displayedTableColumns)));
+        // localStorage.setItem('selections', JSON.stringify(this.graphComponent.d3Histogram.selections));
         this.toaster.info('', 'Application state saved');
     }
 
@@ -490,40 +499,43 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * Restore application state from local storage
      */
     restoreApplicationState() {
-        this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
-        this.clusters = JSON.parse(localStorage.getItem('clusters'));
-        this.preloadedClusters = JSON.parse(localStorage.getItem('preloadedClusters'));
-        this.manualClusters = JSON.parse(localStorage.getItem('manualClusters'));
-        this.savedClusters = JSON.parse(localStorage.getItem('savedClusters'));
-        this.setupWindowOpen = false;
-        this.listViewComponent.case = this.selectedCase;
-        this.graphComponent._case = this.selectedCase;
-        this.listViewComponent.clusters = this.getClusters();
-        this.graphComponent._clusters = this.getClusters();
-        this.listViewComponent.additionalFilters = JSON.parse(localStorage.getItem('additionalFilters'));
-        this.listViewComponent.searchString = JSON.parse(localStorage.getItem('searchString'));
-        this.listViewComponent.displayedTableColumns = JSON.parse(localStorage.getItem('selectedTableColumns'));
-        this.listViewComponent.init().then(() => {
-            this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
-            this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
-        });
-        this.graphComponent.showAllTypes = JSON.parse(localStorage.getItem('showAllTypes'));
-        this.graphComponent.selectedTypes.clear();
-        for (const item of JSON.parse(localStorage.getItem('selectedTypes'))) {
-            this.graphComponent.selectedTypes.add(item);
-        }
-        this.graphComponent.allTypesTrigger();
-        this.graphComponent.init();
-        this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
-        this.graphComponent.pickedFromDate = JSON.parse(localStorage.getItem('fromDate'));
-        this.graphComponent.pickedToDate = JSON.parse(localStorage.getItem('toDate'));
-        this.graphComponent.updateBoundary();
-        const selections = JSON.parse(localStorage.getItem('selections'));
-        const transformSelections = [];
-        for (const sel of selections) {
-            transformSelections.push([new Date(sel[0]), new Date(sel[1])]);
-        }
-        this.graphComponent.d3Histogram.setSelections(transformSelections);
+        this.stateService.restoreStateFromLocalStorage();
+        // this.selectedCase = JSON.parse(localStorage.getItem('selectedCase'));
+        // this.clusters = JSON.parse(localStorage.getItem('clusters'));
+        // this.preloadedClusters = JSON.parse(localStorage.getItem('preloadedClusters'));
+        // this.manualClusters = JSON.parse(localStorage.getItem('manualClusters'));
+        // this.savedClusters = JSON.parse(localStorage.getItem('savedClusters'));
+        // this.stateService.clusters = JSON.parse(localStorage.getItem('clusters'));
+        // this.setupWindowOpen = false;
+        // this.listViewComponent.case = this.selectedCase;
+        // this.graphComponent._case = this.selectedCase;
+        // this.listViewComponent.clusters = this.getClusters();
+        // this.graphComponent._clusters = this.getClusters();
+        // this.listViewComponent.additionalFilters = JSON.parse(localStorage.getItem('additionalFilters'));
+        // this.listViewComponent.searchString = JSON.parse(localStorage.getItem('searchString'));
+        // this.listViewComponent.displayedTableColumns = JSON.parse(localStorage.getItem('selectedTableColumns'));
+        // this.listViewComponent.init().then(() => {
+        //     this.listViewComponent.changePage(JSON.parse(localStorage.getItem('pageNumber')));
+        //     this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
+        // });
+        // this.graphComponent.showAllTypes = JSON.parse(localStorage.getItem('showAllTypes'));
+        // this.graphComponent.selectedTypes.clear();
+        // for (const item of JSON.parse(localStorage.getItem('selectedTypes'))) {
+        //     this.graphComponent.selectedTypes.add(item);
+        // }
+        // this.graphComponent.allTypesTrigger();
+        // this.graphComponent.init();
+        // this.listViewComponent.scrollToIndex(JSON.parse(localStorage.getItem('scrollPosition')));
+        // this.graphComponent.pickedFromDate = JSON.parse(localStorage.getItem('fromDate'));
+        // this.graphComponent.pickedToDate = JSON.parse(localStorage.getItem('toDate'));
+        // this.graphComponent.updateBoundary();
+        // const selections = JSON.parse(localStorage.getItem('selections'));
+        // const transformSelections = [];
+        // for (const sel of selections) {
+        //     transformSelections.push([new Date(sel[0]), new Date(sel[1])]);
+        // }
+        // this.graphComponent.d3Histogram.setSelections(transformSelections);
+        this.toaster.info('', 'Application state restored');
     }
 
     /**
