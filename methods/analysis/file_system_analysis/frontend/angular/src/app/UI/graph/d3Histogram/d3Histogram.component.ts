@@ -289,7 +289,6 @@ export class D3HistogramComponent implements OnDestroy {
 
         let actualX = x;
         const actualY = y;
-        console.log();
 
 
         const g = svg.append('g')
@@ -1251,6 +1250,7 @@ export class D3HistogramComponent implements OnDestroy {
                     dragStartX = d3.event.x - margin.left;
                     for (let j = 0; j < thisClass.selections.length; j++) {
                         if (dragStartX > actualX(thisClass.selections[j][0]) && dragStartX < actualX(thisClass.selections[j][1])) {
+                            dragStartX = null;
                             return;
                         }
                     }
