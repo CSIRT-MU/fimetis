@@ -142,7 +142,6 @@ export class D3HistogramComponent implements OnDestroy {
                 for (let index = 0; index < thisClass.selections.length; index++) {
                     if (xAxisPos > (actualX(thisClass.selections[index][0]) - hoverAreaOffset.left) &&
                         xAxisPos < (actualX(thisClass.selections[index][1]) + hoverAreaOffset.right)) {
-                        console.log('Hover on selection', thisClass.selections[index]);
                         d3.selectAll('.selectionHoverArea-' + index).style('visibility', 'visible');
                     }
                 }
@@ -350,7 +349,8 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function zoomed() {
-            console.log('zoom');
+            // console.log('zoom');
+
             // if (shiftKey) {
             //     shift(50);
             //     return;
@@ -400,7 +400,6 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function zoomIn(zoomRange) {
-            console.log('zooming in');
             const area = (zoomRange[1].getTime() - zoomRange[0].getTime());
             zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
                 (zoomRange[1].getTime() - zoomRange[0].getTime() + (0.2 * area)))
@@ -882,7 +881,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('fill', '#ffffff')
                 // hidden after init
                 .style('visibility', 'hidden')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     thisClass.selections.splice(i, 1);
                     drawSelections();
                     thisClass.selectionsDebouncer.next(thisClass.selections);
@@ -902,7 +901,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .style('cursor', 'pointer')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     thisClass.selections.splice(i, 1);
                     drawSelections();
                     thisClass.selectionsDebouncer.next(thisClass.selections);
@@ -928,7 +927,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     zoomIn(d);
                 })
                 .append('title').text('Zoom into selection');
@@ -946,7 +945,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .style('cursor', 'pointer')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     zoomIn(d);
                 })
                 .append('xhtml:span')
@@ -971,7 +970,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     moveSelectionByDay(i, 'right');
                     thisClass.toaster.success(
                         'Selection was moved by one day to future'
@@ -992,7 +991,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .style('cursor', 'pointer')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     moveSelectionByDay(i, 'right');
                     thisClass.toaster.success(
                         'Selection was moved by one day to future'
@@ -1019,7 +1018,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     moveSelectionByDay(i, 'left');
                     thisClass.toaster.success(
                         'Selection was moved by one day to past'
@@ -1040,7 +1039,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .style('cursor', 'pointer')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     moveSelectionByDay(i, 'left');
                     thisClass.toaster.success(
                         'Selection was moved by one day to past'
@@ -1069,7 +1068,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     extendSelectionToRightByDay(i);
                     thisClass.toaster.success(
                         'Selection was extended one day to future'
@@ -1090,7 +1089,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .style('cursor', 'pointer')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     extendSelectionToRightByDay(i);
                     thisClass.toaster.success(
                         'Selection was extended one day to future'
@@ -1117,7 +1116,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .style('cursor', 'pointer')
                 // hidden after init
                 .style('visibility', 'hidden')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     extendSelectionToLeftByDay(i);
                     thisClass.toaster.success(
                         'Selection was extended one day to past'
@@ -1138,7 +1137,7 @@ export class D3HistogramComponent implements OnDestroy {
                 // hidden after init
                 .style('visibility', 'hidden')
                 .style('cursor', 'pointer')
-                .on('click', function(d, i) {
+                .on('mousedown', function(d, i) {
                     extendSelectionToLeftByDay(i);
                     thisClass.toaster.success(
                         'Selection was extended one day to past'
