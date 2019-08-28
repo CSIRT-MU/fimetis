@@ -327,8 +327,9 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
 
+
         // Loading mactimes - modified
-        this.graphService.getData(this._case, this._clusters, null, 'm', null)
+        this.graphService.getData(this._case, this._clusters, null, 'm', 'day')
             .then(response => {
                 // this.graphPlot.data[0].x = response.x;
                 // this.graphPlot.data[0].y = response.y;
@@ -351,122 +352,129 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.chartOverview.series[0].setData(data, false, false,  false);
                 // console.log('Graph data loaded async! - m', response);
                 this.loadingMTimes = false;
-                this.d3Histogram.data[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.d3Histogram.data_days[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
                 // console.log(data);
 
             });
 
-        // Loading mactimes - access
-        this.graphService.getData(this._case, this._clusters, null, 'a', null)
-            .then(response => {
-                // this.graphPlot.data[1].x = response.x;
-                // this.graphPlot.data[1].y = response.y;
-                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+        this.loadGraphMonthData();
+        this.loadGraphWeekData();
+        this.loadGraphDayData();
+        this.loadGraphHourData();
 
-                // Making small values visible
-                const data = response.x.map(function (x, i) {
-
-                    if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null];
-                    } else {
-                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                    }
-                });
-
-                // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
-                // this.chart.series[1].setData(data, false, false,  false);
-                // this.chartOverview.series[1].setData(data, false, false,  false);
-                // console.log('Graph data loaded async! - a', response);
-                this.loadingATimes = false;
-                this.d3Histogram.data[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
-                this.chartDataLoaded();
-            });
-
-        // Loading mactimes - changed
-        this.graphService.getData(this._case, this._clusters, null, 'c', null)
-            .then(response => {
-                // this.graphPlot.data[2].x = response.x;
-                // this.graphPlot.data[2].y = response.y;
-                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
-
-                // Making small values visible
-                const data = response.x.map(function (x, i) {
-
-                    if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null];
-                    } else {
-                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                    }
-                });
-
-                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
-                // this.chart.series[2].setData(data, false, false,  false);
-                // this.chartOverview.series[2].setData(data, false, false,  false);
-                // console.log('Graph data loaded async! - c', response);
-                this.loadingCTimes = false;
-                this.d3Histogram.data[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
-                this.chartDataLoaded();
-            });
-
-        // Loading mactimes - birth
-        this.graphService.getData(this._case, this._clusters, null, 'b', null)
-            .then(response => {
-                // this.graphPlot.data[3].x = response.x;
-                // this.graphPlot.data[3].y = response.y;
-                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
-
-                // Making small values visible
-                const data = response.x.map(function (x, i) {
-
-                    if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null];
-                    } else {
-                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                    }
-                });
-
-                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
-                // this.chart.series[3].setData(data, false, false,  false);
-                // this.chartOverview.series[3].setData(data, false, false,  false);
-                // console.log('Graph data loaded async! - b', response);
-
-                this.loadingBTimes = false;
-                this.d3Histogram.data[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
-                this.chartDataLoaded();
-            });
-
-        // Load counts of all timestamps
-        this.graphService.getData(this._case, this._clusters, null, null, null)
-            .then(response => {
-                // this.graphPlot.data[3].x = response.x;
-                // this.graphPlot.data[3].y = response.y;
-                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
-
-                // Making small values visible
-                const data = response.x.map(function (x, i) {
-
-                    if (parseInt(response.y[i], 10) === 0) {
-                        return [new Date(x).getTime(), null];
-                    } else {
-                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
-                    }
-                });
-
-                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
-                // this.chart.series[4].setData(data, false, false,  false);
-                // this.chartOverview.series[4].setData(data, false, false,  false);
-                // console.log('Graph data loaded async! - all', response);
-
-                this.loadingAllTimes = false;
-                // this.chartDataLoaded();
-            });
+        // // Loading mactimes - access
+        // this.graphService.getData(this._case, this._clusters, null, 'a', 'day')
+        //     .then(response => {
+        //         // this.graphPlot.data[1].x = response.x;
+        //         // this.graphPlot.data[1].y = response.y;
+        //         // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+        //
+        //         // Making small values visible
+        //         const data = response.x.map(function (x, i) {
+        //
+        //             if (parseInt(response.y[i], 10) === 0) {
+        //                 return [new Date(x).getTime(), null];
+        //             } else {
+        //                 return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+        //             }
+        //         });
+        //
+        //         // this.charter.addSerie({name: 'a', color: this.aTypeColor, data: data});
+        //         // this.chart.series[1].setData(data, false, false,  false);
+        //         // this.chartOverview.series[1].setData(data, false, false,  false);
+        //         // console.log('Graph data loaded async! - a', response);
+        //         this.loadingATimes = false;
+        //         this.d3Histogram.data_days[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+        //         this.chartDataLoaded();
+        //     });
+        //
+        // // Loading mactimes - changed
+        // this.graphService.getData(this._case, this._clusters, null, 'c', 'day')
+        //     .then(response => {
+        //         // this.graphPlot.data[2].x = response.x;
+        //         // this.graphPlot.data[2].y = response.y;
+        //         // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+        //
+        //         // Making small values visible
+        //         const data = response.x.map(function (x, i) {
+        //
+        //             if (parseInt(response.y[i], 10) === 0) {
+        //                 return [new Date(x).getTime(), null];
+        //             } else {
+        //                 return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+        //             }
+        //         });
+        //
+        //         // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+        //         // this.chart.series[2].setData(data, false, false,  false);
+        //         // this.chartOverview.series[2].setData(data, false, false,  false);
+        //         // console.log('Graph data loaded async! - c', response);
+        //         this.loadingCTimes = false;
+        //         this.d3Histogram.data_days[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+        //         this.chartDataLoaded();
+        //     });
+        //
+        // // Loading mactimes - birth
+        // this.graphService.getData(this._case, this._clusters, null, 'b', 'day')
+        //     .then(response => {
+        //         // this.graphPlot.data[3].x = response.x;
+        //         // this.graphPlot.data[3].y = response.y;
+        //         // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+        //
+        //         // Making small values visible
+        //         const data = response.x.map(function (x, i) {
+        //
+        //             if (parseInt(response.y[i], 10) === 0) {
+        //                 return [new Date(x).getTime(), null];
+        //             } else {
+        //                 return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+        //             }
+        //         });
+        //
+        //         // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+        //         // this.chart.series[3].setData(data, false, false,  false);
+        //         // this.chartOverview.series[3].setData(data, false, false,  false);
+        //         // console.log('Graph data loaded async! - b', response);
+        //
+        //         this.loadingBTimes = false;
+        //         this.d3Histogram.data_days[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+        //         this.chartDataLoaded();
+        //     });
+        //
+        // // Load counts of all timestamps
+        // this.graphService.getData(this._case, this._clusters, null, null, null)
+        //     .then(response => {
+        //         // this.graphPlot.data[3].x = response.x;
+        //         // this.graphPlot.data[3].y = response.y;
+        //         // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+        //
+        //         // Making small values visible
+        //         const data = response.x.map(function (x, i) {
+        //
+        //             if (parseInt(response.y[i], 10) === 0) {
+        //                 return [new Date(x).getTime(), null];
+        //             } else {
+        //                 return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+        //             }
+        //         });
+        //
+        //         // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+        //         // this.chart.series[4].setData(data, false, false,  false);
+        //         // this.chartOverview.series[4].setData(data, false, false,  false);
+        //         // console.log('Graph data loaded async! - all', response);
+        //
+        //         this.loadingAllTimes = false;
+        //         // this.chartDataLoaded();
+        //     });
 
         if (this.additionalFilters !== undefined) {
             this.loadFilteredData();
         }
 
     }
+
+
 
     chartDataLoaded() {
         if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes
@@ -831,4 +839,390 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         this._clusters = clusters;
         this.init();
     }
+
+
+    loadGraphMonthData() {
+        // Loading mactimes - modified
+        this.graphService.getData(this._case, this._clusters, null, 'm', 'month')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingMTimes = false;
+                this.d3Histogram.data_months[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+                // console.log(data);
+
+            });
+
+        // Loading mactimes - access
+        this.graphService.getData(this._case, this._clusters, null, 'a', 'month')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingATimes = false;
+                this.d3Histogram.data_months[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - changed
+        this.graphService.getData(this._case, this._clusters, null, 'c', 'month')
+            .then(response => {
+                // this.graphPlot.data[2].x = response.x;
+                // this.graphPlot.data[2].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+                // this.chart.series[2].setData(data, false, false,  false);
+                // this.chartOverview.series[2].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - c', response);
+                this.loadingCTimes = false;
+                this.d3Histogram.data_months[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - birth
+        this.graphService.getData(this._case, this._clusters, null, 'b', 'month')
+            .then(response => {
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                // this.chart.series[3].setData(data, false, false,  false);
+                // this.chartOverview.series[3].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - b', response);
+
+                this.loadingBTimes = false;
+                this.d3Histogram.data_months[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+    }
+
+    loadGraphWeekData() {
+        // Loading mactimes - modified
+        this.graphService.getData(this._case, this._clusters, null, 'm', 'week')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingMTimes = false;
+                this.d3Histogram.data_weeks[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+                // console.log(data);
+
+            });
+
+        // Loading mactimes - access
+        this.graphService.getData(this._case, this._clusters, null, 'a', 'week')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingATimes = false;
+                this.d3Histogram.data_weeks[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - changed
+        this.graphService.getData(this._case, this._clusters, null, 'c', 'week')
+            .then(response => {
+                // this.graphPlot.data[2].x = response.x;
+                // this.graphPlot.data[2].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+                // this.chart.series[2].setData(data, false, false,  false);
+                // this.chartOverview.series[2].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - c', response);
+                this.loadingCTimes = false;
+                this.d3Histogram.data_weeks[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - birth
+        this.graphService.getData(this._case, this._clusters, null, 'b', 'week')
+            .then(response => {
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                // this.chart.series[3].setData(data, false, false,  false);
+                // this.chartOverview.series[3].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - b', response);
+
+                this.loadingBTimes = false;
+                this.d3Histogram.data_weeks[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+    }
+
+    loadGraphDayData() {
+        // Loading mactimes - modified
+        this.graphService.getData(this._case, this._clusters, null, 'm', 'day')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingMTimes = false;
+                this.d3Histogram.data_days[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+                // console.log(data);
+
+            });
+
+        // Loading mactimes - access
+        this.graphService.getData(this._case, this._clusters, null, 'a', 'day')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingATimes = false;
+                this.d3Histogram.data_days[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - changed
+        this.graphService.getData(this._case, this._clusters, null, 'c', 'day')
+            .then(response => {
+                // this.graphPlot.data[2].x = response.x;
+                // this.graphPlot.data[2].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+                // this.chart.series[2].setData(data, false, false,  false);
+                // this.chartOverview.series[2].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - c', response);
+                this.loadingCTimes = false;
+                this.d3Histogram.data_days[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - birth
+        this.graphService.getData(this._case, this._clusters, null, 'b', 'day')
+            .then(response => {
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                // this.chart.series[3].setData(data, false, false,  false);
+                // this.chartOverview.series[3].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - b', response);
+
+                this.loadingBTimes = false;
+                this.d3Histogram.data_days[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+    }
+
+    loadGraphHourData() {
+        // Loading mactimes - modified
+        this.graphService.getData(this._case, this._clusters, null, 'm', 'hour')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingMTimes = false;
+                this.d3Histogram.data_hours[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+                // console.log(data);
+
+            });
+
+        // Loading mactimes - access
+        this.graphService.getData(this._case, this._clusters, null, 'a', 'hour')
+            .then(response => {
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                this.loadingATimes = false;
+                this.d3Histogram.data_hours[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - changed
+        this.graphService.getData(this._case, this._clusters, null, 'c', 'hour')
+            .then(response => {
+                // this.graphPlot.data[2].x = response.x;
+                // this.graphPlot.data[2].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'c', color: this.cTypeColor, data: data});
+                // this.chart.series[2].setData(data, false, false,  false);
+                // this.chartOverview.series[2].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - c', response);
+                this.loadingCTimes = false;
+                this.d3Histogram.data_hours[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+        // Loading mactimes - birth
+        this.graphService.getData(this._case, this._clusters, null, 'b', 'hour')
+            .then(response => {
+                // this.graphPlot.data[3].x = response.x;
+                // this.graphPlot.data[3].y = response.y;
+                // const data = response.x.map(function (x, i) { return [new Date(x).getTime(), parseInt(response.y[i], 10)]; });
+
+                // Making small values visible
+                const data = response.x.map(function (x, i) {
+
+                    if (parseInt(response.y[i], 10) === 0) {
+                        return [new Date(x).getTime(), null];
+                    } else {
+                        return [new Date(x).getTime(), parseInt(response.y[i], 10)];
+                    }
+                });
+
+                // this.charter.addSerie({name: 'b', color: this.bTypeColor, data: data});
+                // this.chart.series[3].setData(data, false, false,  false);
+                // this.chartOverview.series[3].setData(data, false, false,  false);
+                // console.log('Graph data loaded async! - b', response);
+
+                this.loadingBTimes = false;
+                this.d3Histogram.data_hours[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
+                this.chartDataLoaded();
+            });
+
+    }
+
 }

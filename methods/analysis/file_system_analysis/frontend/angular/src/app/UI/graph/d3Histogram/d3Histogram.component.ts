@@ -28,7 +28,16 @@ export class D3HistogramComponent implements OnDestroy {
     private chartContainer: ElementRef;
 
     @Input()
-    data: HistogramData[] = [];
+    data_months: HistogramData[] = [];
+    @Input()
+    data_weeks: HistogramData[] = [];
+    @Input()
+    data_days: HistogramData[] = [];
+    @Input()
+    data_hours: HistogramData[] = [];
+
+
+
     @Input()
     filteredData: HistogramData[] = [];
 
@@ -106,7 +115,11 @@ export class D3HistogramComponent implements OnDestroy {
 
         const thisClass = this;
         const element = this.chartContainer.nativeElement;
-        const data = this.data;
+        const data_months = this.data_months;
+        const data_weeks = this.data_weeks;
+        const data_days = this.data_days;
+        const data_hours = this.data_hours;
+
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
         const zoomFactor = 0.9;
@@ -248,7 +261,7 @@ export class D3HistogramComponent implements OnDestroy {
         const firstDate = new Date(this.min_date_boundary - (24 * 3600 * 1000));
         const lastDate = new Date(this.max_date_boundary + (24 * 3600 * 1000));
 
-        for (const dataItem of data) {
+        for (const dataItem of data_days) {
             dataItem.maxValue = d3.max(dataItem.data, d => d[1]);
         }
 
@@ -265,7 +278,7 @@ export class D3HistogramComponent implements OnDestroy {
 
         // Returns ticks in ascending order, last one is also maximum of Y axis
         function countTickValues() {
-            const maximum = d3.max(data, d => d.maxValue);
+            const maximum = d3.max(data_days, d => d.maxValue);
 
             if (maximum === undefined) {
                 // no ticks if no data loaded
@@ -336,7 +349,7 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('clip-path', 'url(#offsetClip)');
 
         drawActualPositionWindow();
-        drawBars();
+        drawBars(data_weeks);
         drawFilteredBars();
         // drawZoomNavigation();
         drawSelections();
@@ -384,7 +397,20 @@ export class D3HistogramComponent implements OnDestroy {
                 .call(d3.axisBottom(actualX));
 
             drawActualPositionWindow();
-            updateBars();
+            const graph_range = (new Date(domain[1]).getTime() - new Date(domain[0]).getTime()) / (1000 * 60 * 60 * 24);
+
+            if (graph_range < 30) {
+                drawBars(thisClass.data_hours);
+            } else if (graph_range >= 30 && graph_range < 2 * 365) {
+                drawBars(thisClass.data_days);
+            } else if (graph_range >= 2 * 365 && graph_range < 5 * 365) {
+                drawBars(thisClass.data_weeks);
+            } else {
+                drawBars(thisClass.data_months);
+            }
+
+            //updateBars();
+            //drawBars();
             drawZoomNavigation();
             drawSelections();
             // save zoom for responsive redraw
@@ -598,13 +624,20 @@ export class D3HistogramComponent implements OnDestroy {
             }
         }
 
-        function drawBars() {
+        function drawBars(data_frequented) {
             g.selectAll('.bar').remove();
-            for (let i = 0; i < data.length; i++) {
-                g.selectAll('.bar' + data[i].name)
-                    .data(data[i].data)
-                    .enter().append('rect')
-                    .attr('class', 'bar bar' + data[i].name)
+            for (let i = 0; i < data_frequented.length; i++) {
+                g.selectAll('.bar' + data_days[i].name)
+                    .data(data_frequented[i].data)
+                    .enter()
+                    .filter(function(d) {
+                        if ((actualX(d[0]) < 0) || (actualX(d[0]) > contentWidth)) {
+                            return false;
+                        }
+                        return true;
+                    })
+                    .append('rect')
+                    .attr('class', 'bar bar' + data_days[i].name)
                     // .attr('class', 'bar' + data[i].name)
                     .attr('x', d => actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))))
                     // .attr('y', d => actualY(d[1]))
@@ -631,7 +664,7 @@ export class D3HistogramComponent implements OnDestroy {
                             return actualY(1) - actualY(d[1]);
                         }
                     })
-                    .attr('fill', data[i].color)
+                    .attr('fill', data_frequented[i].color)
                     .on('mouseover', function(d) {
                         d3.select(this)
                             .style('filter', 'brightness(3)');
@@ -652,9 +685,9 @@ export class D3HistogramComponent implements OnDestroy {
                                     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
                                 + '</p>' +
                                 '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-                                data[i].name + ': ' + d[1] + '</p>')
+                                data_days[i].name + ': ' + d[1] + '</p>')
                             .style('left', actualX(d[0]) + 5 + 'px')
-                            .style('border-color', data[i].color)
+                            .style('border-color', data_frequented[i].color)
                             .style('margin-top', -25 + 'px');
                             // .style('top', 0 + 'px');
                     }).on('click', function (d) {
@@ -673,7 +706,7 @@ export class D3HistogramComponent implements OnDestroy {
                     g.selectAll('.filteredBar' + thisClass.filteredData[i].name)
                         .data(thisClass.filteredData[i].data)
                         .enter().append('rect')
-                        .attr('class', 'filteredBar filteredBar' + data[i].name)
+                        .attr('class', 'filteredBar filteredBar' + data_days[i].name)
                         // .attr('class', 'bar' + data[i].name)
                         .attr('x', d => actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))))
                         // .attr('y', d => actualY(d[1]))
@@ -700,7 +733,7 @@ export class D3HistogramComponent implements OnDestroy {
                                 return actualY(1) - actualY(d[1]);
                             }
                         })
-                        .attr('fill', data[i].color)
+                        .attr('fill', data_days[i].color)
                         .on('mouseover', function(d) {
                             d3.select(this)
                                 .style('filter', 'brightness(3)');
@@ -721,9 +754,9 @@ export class D3HistogramComponent implements OnDestroy {
                                         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
                                     + '</p>' +
                                     '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-                                    data[i].name + ': ' + d[1] + '</p>')
+                                    data_days[i].name + ': ' + d[1] + '</p>')
                                 .style('left', actualX(d[0]) + 5 + 'px')
-                                .style('border-color', data[i].color)
+                                .style('border-color', data_days[i].color)
                                 .style('margin-top', -25 + 'px');
                             // .style('top', 0 + 'px');
                         });
