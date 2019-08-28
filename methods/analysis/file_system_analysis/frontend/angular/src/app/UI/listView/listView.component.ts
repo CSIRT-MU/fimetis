@@ -1218,4 +1218,22 @@ export class ListViewComponent {
         this.clusters = clusters;
         this.init();
     }
+
+    async scrollToBar(date: Date) {
+        const item = this.visibleData[0]._source['@timestamp'];
+        const firstIndex = this.virtualScroller.viewPortInfo.startIndex;
+        const beforeBar = await this.clusterService.numberOfEntries(
+            this.case,
+            this.clusters,
+            {},
+            date.toISOString());
+        const beforeFirstEntry = await this.clusterService.numberOfEntries(
+            this.case,
+            this.clusters,
+            {},
+            item);
+        const shift = beforeBar - beforeFirstEntry;
+        this.scrollToIndex(firstIndex + shift - 1);
+        this.toaster.success(date.toDateString(), 'View has scrolled to date:');
+    }
 }

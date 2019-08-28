@@ -28,6 +28,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     @Output() typesChanged = new EventEmitter<Set<string>>();
     typesChangedDebouncer: Subject<Set<string>> = new Subject();
     // @Input() fromDate: Date;
+    @Output() scrollToBar = new EventEmitter<Date>();
 
     @ViewChild('graph', {static: false}) private chartElement: ElementRef;
     @ViewChild('plot_div', {static: false}) private plotElement: ElementRef;

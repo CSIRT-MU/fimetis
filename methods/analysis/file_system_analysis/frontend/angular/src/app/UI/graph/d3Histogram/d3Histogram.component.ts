@@ -45,6 +45,8 @@ export class D3HistogramComponent implements OnDestroy {
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
     selectionsDebouncer: Subject<any[]> = new Subject();
 
+    @Output() scrollToBar = new EventEmitter<Date>();
+
     margin = { top: 30, right: 40, bottom: 40, left: 50 };
     savedZoomProperties = null;
 
@@ -655,7 +657,9 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('border-color', data[i].color)
                             .style('margin-top', -25 + 'px');
                             // .style('top', 0 + 'px');
-                    });
+                    }).on('click', function (d) {
+                        thisClass.scrollToBar.emit(new Date(d[0]));
+                });
                     // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
             }
         }
