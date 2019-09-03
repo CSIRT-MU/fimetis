@@ -36,6 +36,10 @@ export class D3HistogramComponent implements OnDestroy {
     @Input()
     data_hours: HistogramData[] = [];
 
+    @Input()
+    data: HistogramData[] = [];
+
+
 
 
     @Input()
@@ -58,6 +62,8 @@ export class D3HistogramComponent implements OnDestroy {
 
     margin = { top: 30, right: 40, bottom: 40, left: 50 };
     savedZoomProperties = null;
+
+    granularity_level = '';
 
     private subscriptions: Subscription[] = [];
 
@@ -113,12 +119,22 @@ export class D3HistogramComponent implements OnDestroy {
     createChart() {
         // console.log('create graph');
 
+
         const thisClass = this;
         const element = this.chartContainer.nativeElement;
+
         const data_months = this.data_months;
         const data_weeks = this.data_weeks;
         const data_days = this.data_days;
         const data_hours = this.data_hours;
+        const data = this.data;
+
+
+        let month_width = 1;
+        let week_width = 1;
+        let day_width = 1;
+        let hour_width = 1;
+        let bar_width = 1;
 
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
@@ -349,7 +365,12 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('clip-path', 'url(#offsetClip)');
 
         drawActualPositionWindow();
-        drawBars(data_weeks);
+
+        // TO DO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // debug count_width
+        count_width(this.min_date_boundary);
+        count_granularity(this.max_date_boundary - this.min_date_boundary);
+        drawBars();
         drawFilteredBars();
         // drawZoomNavigation();
         drawSelections();
@@ -361,6 +382,57 @@ export class D3HistogramComponent implements OnDestroy {
             const translateBy = (newX - this.savedZoomProperties.zoom.x) / this.savedZoomProperties.zoom.k;
             d3.select(svg.node()).call(zoom.transform, this.savedZoomProperties.zoom.translate(translateBy, 0));
             // bug: not zooming to the center of view
+        }
+
+        // graph_range in days
+        function count_granularity(graph_range) {
+            console.log('recalculating granularity');
+            if (graph_range < 7) {
+                if (thisClass.granularity_level !== 'hour') {
+                    thisClass.toaster.success(
+                        'Changed graph granularity level to HOURS'
+                    );
+                }
+                thisClass.granularity_level = 'hour';
+                thisClass.data = thisClass.data_hours;
+                bar_width = hour_width;
+            } else if (graph_range >= 7 && graph_range < 1 * 365) {
+                if (thisClass.granularity_level !== 'day') {
+                    thisClass.toaster.success(
+                        'Changed graph granularity level to DAYS'
+                    );
+                }
+                thisClass.granularity_level = 'day';
+                thisClass.data = thisClass.data_days;
+                bar_width = day_width;
+            } else if (graph_range >= 1 * 365 && graph_range < 4 * 365) {
+                if (thisClass.granularity_level !== 'week') {
+                    thisClass.toaster.success(
+                        'Changed graph granularity level to weeks'
+                    );
+                }
+                thisClass.granularity_level = 'week';
+                thisClass.data = thisClass.data_weeks;
+                bar_width = week_width;
+            } else {
+                if (thisClass.granularity_level !== 'month') {
+                    if (thisClass.granularity_level !== '') {
+                        thisClass.toaster.success(
+                            'Changed graph granularity level to months'
+                        );
+                    }
+                    thisClass.granularity_level = 'month';
+                }
+                thisClass.data = thisClass.data_months;
+                bar_width = month_width;
+            }
+        }
+
+        function count_width(param) {
+            month_width = actualX(new Date(param).getTime() + 1000 * 30 * 24 * 3600) - actualX(new Date(param).getTime());
+            week_width = actualX(new Date(param).getTime() + 1000 * 7 * 24 * 3600) - actualX(new Date(param).getTime());
+            day_width = actualX(new Date(param).getTime() + 1000 * 1 * 24 * 3600) - actualX(new Date(param).getTime());
+            hour_width = actualX(new Date(param).getTime() + 1000 * 1 * 1 * 3600) - actualX(new Date(param).getTime());
         }
 
         function zoomed() {
@@ -397,17 +469,30 @@ export class D3HistogramComponent implements OnDestroy {
                 .call(d3.axisBottom(actualX));
 
             drawActualPositionWindow();
-            const graph_range = (new Date(domain[1]).getTime() - new Date(domain[0]).getTime()) / (1000 * 60 * 60 * 24);
 
-            if (graph_range < 30) {
-                drawBars(thisClass.data_hours);
-            } else if (graph_range >= 30 && graph_range < 2 * 365) {
-                drawBars(thisClass.data_days);
-            } else if (graph_range >= 2 * 365 && graph_range < 5 * 365) {
-                drawBars(thisClass.data_weeks);
-            } else {
-                drawBars(thisClass.data_months);
-            }
+            const graph_range = (new Date(domain[1]).getTime() - new Date(domain[0]).getTime()) / (1000 * 60 * 60 * 24);
+            count_width(thisClass.min_date_boundary);
+            count_granularity(graph_range);
+            drawBars();
+
+            // if (graph_range < 30) {
+            //     //drawBars(thisClass.data_hours, hour_width);
+            //     drawBars(thisClass.data_days, day_width, 'day');
+            //     thisClass.granularity_level = 'day';
+            //
+            // } else if (graph_range >= 30 && graph_range < 2 * 365) {
+            //     drawBars(thisClass.data_days, day_width, 'day');
+            //     thisClass.granularity_level = 'days';
+            //
+            // } else if (graph_range >= 2 * 365 && graph_range < 5 * 365) {
+            //     drawBars(thisClass.data_weeks, week_width, 'week');
+            //     thisClass.granularity_level = 'weeks';
+            //
+            // } else {
+            //     drawBars(thisClass.data_months, month_width, 'month');
+            //     thisClass.granularity_level = 'months';
+            //
+            // }
 
             //updateBars();
             //drawBars();
@@ -439,6 +524,7 @@ export class D3HistogramComponent implements OnDestroy {
 
         function zoomOut() {
             zoom.transform(svg, d3.zoomIdentity);
+            thisClass.createChart();
         }
 
         function zoomPlus() {
@@ -624,11 +710,11 @@ export class D3HistogramComponent implements OnDestroy {
             }
         }
 
-        function drawBars(data_frequented) {
+        function drawBars() {
             g.selectAll('.bar').remove();
-            for (let i = 0; i < data_frequented.length; i++) {
-                g.selectAll('.bar' + data_days[i].name)
-                    .data(data_frequented[i].data)
+            for (let i = 0; i < data.length; i++) {
+                g.selectAll('.bar' + thisClass.data[i].name)
+                    .data(thisClass.data[i].data)
                     .enter()
                     .filter(function(d) {
                         if ((actualX(d[0]) < 0) || (actualX(d[0]) > contentWidth)) {
@@ -637,9 +723,16 @@ export class D3HistogramComponent implements OnDestroy {
                         return true;
                     })
                     .append('rect')
-                    .attr('class', 'bar bar' + data_days[i].name)
+                    .attr('class', 'bar bar' + data[i].name)
                     // .attr('class', 'bar' + data[i].name)
-                    .attr('x', d => actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))))
+                    .attr('x', function(d) {
+                        if (thisClass.granularity_level === 'day') {
+                            const x_position = new Date(d[0]).setHours(0);
+
+                            return actualX(x_position);
+                        }
+                        return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0])));
+                    })
                     // .attr('y', d => actualY(d[1]))
                     .attr('y', function(d) {
                         if (d[1] < 1) {
@@ -651,10 +744,11 @@ export class D3HistogramComponent implements OnDestroy {
                         }
                     })
                     // .attr('width', contentWidth / data[i].data.length)
-                    .attr('width',
-                        Math.max(
-                            0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
-                            / (24 * 3600 * 1000))), 1))
+                    // .attr('width',
+                    //     Math.max(
+                    //         0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
+                    //         / (24 * 3600 * 1000))), 1))
+                    .attr('width', bar_width * 1)
                     .attr('height', function(d) {
                         if (d[1] < 1) {
                             return 0;
@@ -664,7 +758,7 @@ export class D3HistogramComponent implements OnDestroy {
                             return actualY(1) - actualY(d[1]);
                         }
                     })
-                    .attr('fill', data_frequented[i].color)
+                    .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
                         d3.select(this)
                             .style('filter', 'brightness(3)');
@@ -679,15 +773,31 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('display', 'none');
                     })
                     .on('mousemove', function(d) {
+                        let dateString = '';
+                        if (thisClass.granularity_level === 'month') {
+                            dateString = new Date(d[0]).toLocaleString('en-US',
+                                { year: 'numeric', month: 'long'});
+                        } else if (thisClass.granularity_level === 'week') {
+                            dateString = new Date(d[0]).toLocaleString('en-US',
+                                { year: 'numeric', month: 'long', day: 'numeric'}) + ' - ' +
+                            new Date(d[0] + 1000 * 7 * 24 * 3600).toLocaleString('en-US',
+                                { year: 'numeric', month: 'long', day: 'numeric'});
+                        } else if (thisClass.granularity_level === 'day') {
+                            dateString = new Date(d[0]).toLocaleString('en-US',
+                                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+                        } else {
+                            dateString = new Date(d[0]).toLocaleString('en-US',
+                                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'});
+                        }
+
                         tooltip
                             .html('<p style="display: block; margin: 0; font-size: x-small">' +
-                                new Date(d[0]).toLocaleString('en-US',
-                                    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                                dateString
                                 + '</p>' +
                                 '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-                                data_days[i].name + ': ' + d[1] + '</p>')
+                                data[i].name + ': ' + d[1] + '</p>')
                             .style('left', actualX(d[0]) + 5 + 'px')
-                            .style('border-color', data_frequented[i].color)
+                            .style('border-color', thisClass.data[i].color)
                             .style('margin-top', -25 + 'px');
                             // .style('top', 0 + 'px');
                     }).on('click', function (d) {
