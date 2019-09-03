@@ -366,8 +366,6 @@ export class D3HistogramComponent implements OnDestroy {
 
         drawActualPositionWindow();
 
-        // TO DO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // debug count_width
         count_width(this.min_date_boundary);
         count_granularity(this.max_date_boundary - this.min_date_boundary);
         drawBars();
@@ -726,12 +724,11 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('class', 'bar bar' + data[i].name)
                     // .attr('class', 'bar' + data[i].name)
                     .attr('x', function(d) {
-                        if (thisClass.granularity_level === 'day') {
+                        if (thisClass.granularity_level !== 'month') {
                             const x_position = new Date(d[0]).setHours(0);
 
-                            return actualX(x_position);
-                        }
-                        return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0])));
+                            return actualX(x_position) + bar_width * 0.05;                        }
+                        return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))) + bar_width * 0.05;
                     })
                     // .attr('y', d => actualY(d[1]))
                     .attr('y', function(d) {
@@ -748,7 +745,7 @@ export class D3HistogramComponent implements OnDestroy {
                     //     Math.max(
                     //         0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
                     //         / (24 * 3600 * 1000))), 1))
-                    .attr('width', bar_width * 1)
+                    .attr('width', bar_width * 0.9)
                     .attr('height', function(d) {
                         if (d[1] < 1) {
                             return 0;
