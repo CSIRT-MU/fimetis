@@ -423,18 +423,20 @@ virtual-scroll {
 
 .list-selection-line {
     position: relative;
-    border-bottom: 10px solid var(--selectionBorderColor);
+    border-bottom: 12px solid var(--selectionBorderColor);
 }
 
 .list-selection-line::after {
     position: absolute;
     width: 0;
     left: 5px;
-    margin-top: 17px;
+    margin-top: 18px;
     color: white;
     content: 'NEXT SELECTION';
     font-size: 10px;
     font-weight: bold;
+    letter-spacing: 1px;
+
     /*text-shadow: 10px 0 0px 0px #EDC330, -10px 0 0px 0px #EDC330;*/
 
 }
