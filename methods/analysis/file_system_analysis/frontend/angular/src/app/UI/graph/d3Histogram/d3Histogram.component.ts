@@ -53,6 +53,16 @@ export class D3HistogramComponent implements OnDestroy {
     selectedTypes = ['m', 'a', 'c', 'b'];
     windowPosition = {from: null, to: null};
 
+    selectedSelectionIndex = -1;
+
+    selectedExtendOption = 'day';
+    extendOptions = ['day', 'hour', 'week', 'month'];
+    // options: Array<Object> = [
+    //     {id: 0, name: 'day'},
+    //     {id: 1, name: 'week'},
+    //     {id: 2, name: 'month'}
+    // ];
+
     selections = [];
     @Output() selectionsEmitter = new EventEmitter<any[]>();
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
@@ -166,6 +176,8 @@ export class D3HistogramComponent implements OnDestroy {
         const svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
             .attr('height', element.offsetHeight)
+            .style('margin-top', '-10px')
+            // .attr('margin-top', '-40px')
             // .on('wheel', wheeled)
             .on('mousemove', function () {
                 const xAxisPos = d3.mouse(this)[0] - margin.left;
@@ -180,6 +192,7 @@ export class D3HistogramComponent implements OnDestroy {
             .on('mouseleave', function () {
                 d3.selectAll('.selectionHoverArea').style('visibility', 'hidden');
             })
+            .on('click', selectSelection)
             .call(drag)
             .call(zoom);
 
@@ -188,6 +201,14 @@ export class D3HistogramComponent implements OnDestroy {
         d3.select('.zoomMinusButton').on('click', zoomMinus);
         d3.select('.resetZoomButton').on('click', zoomOut);
         d3.select('.removeAllSelectionsButton').on('click', removeAllSelections);
+        d3.select('.zoomIntoSelectionButton').on('click', zoomInNew);
+        d3.select('.extendSelectionBack').on('click', extendSelectionBack);
+        d3.select('.extendSelectionForth').on('click', extendSelectionForth);
+        d3.select('.removeSelectionButton').on('click', removeSelection);
+
+        //svg.selectAll('.removeSelectionButton').on('mousedown', removeSelection);
+
+        //const a = this.selections[this.selectedSelectionIndex];
         // svg.selectAll('.removeAllSelectionsButton').remove();
         // svg.append('rect')
         //     .attr('class', 'removeAllSelectionsButton')
@@ -324,7 +345,9 @@ export class D3HistogramComponent implements OnDestroy {
 
         const g = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
-            .attr('clip-path', 'url(#clip)');
+            .attr('clip-path', 'url(#clip)')
+        ;
+
         // const mask = svg.append('mask').attr('id', 'maskurl');
 
         const xAxis = svg.append('g')
@@ -365,7 +388,6 @@ export class D3HistogramComponent implements OnDestroy {
             .attr('clip-path', 'url(#offsetClip)');
 
         drawActualPositionWindow();
-
         count_width(this.min_date_boundary);
         count_granularity(this.max_date_boundary - this.min_date_boundary);
         drawBars();
@@ -384,7 +406,6 @@ export class D3HistogramComponent implements OnDestroy {
 
         // graph_range in days
         function count_granularity(graph_range) {
-            console.log('recalculating granularity');
             if (graph_range < 7) {
                 if (thisClass.granularity_level !== 'hour') {
                     thisClass.toaster.success(
@@ -425,6 +446,8 @@ export class D3HistogramComponent implements OnDestroy {
                 bar_width = month_width;
             }
         }
+
+
 
         function count_width(param) {
             month_width = actualX(new Date(param).getTime() + 1000 * 30 * 24 * 3600) - actualX(new Date(param).getTime());
@@ -520,6 +543,21 @@ export class D3HistogramComponent implements OnDestroy {
             // console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
         }
 
+        function zoomInNew() {
+            const selectionStart = thisClass.selections[thisClass.selectedSelectionIndex][0];
+            const selectionEnd = thisClass.selections[thisClass.selectedSelectionIndex][1];
+
+            const area = selectionEnd.getTime() - selectionStart.getTime();
+
+            zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
+                (selectionEnd.getTime() - selectionStart.getTime() + (0.2 * area)))
+            );
+
+            shift(-actualX(new Date(selectionStart.getTime() - 0.1 * area)));
+
+
+        }
+
         function zoomOut() {
             zoom.transform(svg, d3.zoomIdentity);
             thisClass.createChart();
@@ -535,6 +573,7 @@ export class D3HistogramComponent implements OnDestroy {
 
         function removeAllSelections() {
             thisClass.selections = [];
+            thisClass.selectedSelectionIndex = -1;
             selectionsReset();
             thisClass.selectionsDebouncer.next(thisClass.selections);
         }
@@ -591,6 +630,58 @@ export class D3HistogramComponent implements OnDestroy {
 
             if (actualX(new_selection_start) >= getClosestLeftSelectionEnd(actualX(thisClass.selections[index][0]))) {
                 thisClass.selections[index][0] = new_selection_start;
+            }
+
+            drawSelections();
+            drawActualPositionWindow();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
+        }
+
+        function countExtensionShift() {
+            const millisecondsInDay = 24 * 3600 * 1000;
+            let extensionShift = millisecondsInDay;
+            switch (thisClass.selectedExtendOption) {
+                case 'month':
+                    extensionShift *= 30;
+                    break;
+                case 'week':
+                    extensionShift *= 7;
+                    break;
+                case 'hour':
+                    extensionShift /= 24;
+                    break;
+                case 'day':
+                    extensionShift = millisecondsInDay;
+                    break;
+                default:
+                    extensionShift = millisecondsInDay;
+                    break;
+
+            }
+
+            return extensionShift;
+        }
+
+        function extendSelectionForth() {
+            const extensionShift = countExtensionShift();
+            const new_selection_end = new Date(thisClass.selections[thisClass.selectedSelectionIndex][1].getTime() + extensionShift);
+
+            if (actualX(new_selection_end) <= getClosestRightSelectionStart(actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]))) {
+                thisClass.selections[thisClass.selectedSelectionIndex][1] = new_selection_end;
+            }
+
+            drawSelections();
+            drawActualPositionWindow();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
+            console.log(thisClass.selectedExtendOption);
+        }
+
+        function extendSelectionBack() {
+            const extensionShift = countExtensionShift();
+            const new_selection_start = new Date(thisClass.selections[thisClass.selectedSelectionIndex][0].getTime() - extensionShift);
+
+            if (actualX(new_selection_start) >= getClosestLeftSelectionEnd(actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]))) {
+                thisClass.selections[thisClass.selectedSelectionIndex][0] = new_selection_start;
             }
 
             drawSelections();
@@ -745,7 +836,29 @@ export class D3HistogramComponent implements OnDestroy {
                     //     Math.max(
                     //         0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
                     //         / (24 * 3600 * 1000))), 1))
-                    .attr('width', bar_width * 0.9)
+                    .attr('width', function(d) {
+                        // console.log(new Date(d[0]), new Date(d[0]).getMon
+
+                            switch (new Date(d[0]).getMonth()) {
+                            // 31 - Jan, March, May, July, August, October, December
+                                case 0:
+                                case 2:
+                                case 4:
+                                case 6:
+                                case 7:
+                                case 9:
+                                case 11:
+                                    return 0.9 * bar_width * 31 / 30;
+                                case 1:
+                                    const year = new Date(d[0]).getFullYear();
+                                    if (new Date(year, 1, 29).getDate() === 29) {
+                                        return 0.9 * bar_width * 29 / 30;
+                                    }
+                                    return 0.9 * bar_width * 28 / 30;
+                                default:
+                                 return 0.9 * bar_width;
+                            }
+                    })
                     .attr('height', function(d) {
                         if (d[1] < 1) {
                             return 0;
@@ -878,6 +991,27 @@ export class D3HistogramComponent implements OnDestroy {
             thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
+        function selectSelection() {
+            const click_x = d3.mouse(this)[0] - margin.left;
+
+            for (let j = 0; j < thisClass.selections.length; j++) {
+                if (click_x >= actualX(thisClass.selections[j][0]) && click_x <= actualX(thisClass.selections[j][1])) {
+                    thisClass.selectedSelectionIndex = j;
+                    drawSelections();
+                    break;
+                }
+            }
+        }
+
+        function removeSelection() {
+            console.log('removing selection');
+            thisClass.selections.splice(thisClass.selectedSelectionIndex, 1);
+            thisClass.selectedSelectionIndex = -1;
+            drawSelections();
+            thisClass.selectionsDebouncer.next(thisClass.selections);
+
+        }
+
         function drawSelections() {
             // shadow over whole chart
             g.selectAll('.shadowBar').remove();
@@ -900,7 +1034,17 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('width', function(d) {return actualX(d[1]) - actualX(d[0]); })
                     .attr('y', 0)
                     .attr('height', contentHeight)
-                    .attr('fill', '#333333');
+                    // .attr('fill', function (d, i) {
+                    //     if (i !== thisClass.selectedSelectionIndex) {
+                    //         return '#ffff00';
+                    //     }
+                    //     console.log(d);
+                    //     console.log(i);
+                    //     return 'red';
+                    // })
+                    .attr('fill', '#333333')
+
+                    ;
                 // .attr('fill', 'rgba(120, 120, 120, 0.1)');
 
                 g.append('rect')
@@ -911,6 +1055,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('height', contentHeight)
                     .attr('mask', 'url(#shadowMask)')
                     .attr('fill', 'rgba(165, 165, 165, 0.3)')
+                    //.attr('fill', 'red')
                     // to enable hover we need to change order of elements (mask to the background)
                     .lower();
                     // .on('mouseover', function() {
@@ -939,7 +1084,13 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('x2', d => actualX(d[0]) + margin.left)
                 .attr('y2', contentHeight + margin.top)
                 .attr('stroke-width', 2)
-                .style('stroke', '#666666')
+                // .style('stroke', '#666666')
+                .style('stroke', function(d, i) {
+                    if (i === thisClass.selectedSelectionIndex) {
+                        return 'blue';
+                    }
+                    return  '#666666';
+                })
                 .on('mouseover', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
                 })
@@ -978,7 +1129,12 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('x2', d => actualX(d[1]) + margin.left)
                 .attr('y2', contentHeight + margin.top)
                 .attr('stroke-width', 2)
-                .style('stroke', '#666666')
+                .style('stroke', function(d, i) {
+                    if (i === thisClass.selectedSelectionIndex) {
+                        return 'blue';
+                    }
+                    return  '#666666';
+                })
                 .on('mouseover', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
                 })
@@ -1010,361 +1166,363 @@ export class D3HistogramComponent implements OnDestroy {
                 );
 
             // selection buttons
-            svg.selectAll('.selectionRemoveButton').remove();
-            svg.selectAll('.selectionRemoveButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButton'; })
-                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 12 + margin.top)
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
-                .style('cursor', 'pointer')
-                .style('fill', '#ffffff')
-                // hidden after init
-                .style('visibility', 'hidden')
-                .on('mousedown', function(d, i) {
-                    thisClass.selections.splice(i, 1);
-                    drawSelections();
-                    thisClass.selectionsDebouncer.next(thisClass.selections);
-                })
-                .append('title').text('Remove this selection');
+            // svg.selectAll('.selectionRemoveButton').remove();
+            // svg.selectAll('.selectionRemoveButton')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('circle')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButton'; })
+            //     .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+            //     .attr('r', 10)
+            //     .attr('cy', 12 + margin.top)
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', 2)
+            //     .style('cursor', 'pointer')
+            //     .style('fill', '#ffffff')
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .on('mousedown', function(d, i) {
+            //         thisClass.selections.splice(i, 1);
+            //         drawSelections();
+            //         thisClass.selectionsDebouncer.next(thisClass.selections);
+            //     })
+            //     .append('title').text('Remove this selection');
+            //
+            // svg.selectAll('.selectionRemoveButtonIcon').remove();
+            // svg.selectAll('.selectionRemoveButtonIcon')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButtonIcon'; })
+            //     .attr('x', d => actualX(d[1]) + 8 + margin.left)
+            //     .attr('y', 3 + margin.top)
+            //     .attr('width', 20)
+            //     .attr('height', 20)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .style('cursor', 'pointer')
+            //     .on('mousedown', function(d, i) {
+            //         thisClass.selections.splice(i, 1);
+            //         drawSelections();
+            //         thisClass.selectionsDebouncer.next(thisClass.selections);
+            //     })
+            //     .append('xhtml:span')
+            //     .attr('class', 'glyphicon glyphicon-remove');
 
-            svg.selectAll('.selectionRemoveButtonIcon').remove();
-            svg.selectAll('.selectionRemoveButtonIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionRemoveButtonIcon'; })
-                .attr('x', d => actualX(d[1]) + 8 + margin.left)
-                .attr('y', 3 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .style('cursor', 'pointer')
-                .on('mousedown', function(d, i) {
-                    thisClass.selections.splice(i, 1);
-                    drawSelections();
-                    thisClass.selectionsDebouncer.next(thisClass.selections);
-                })
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon-remove');
-
-            svg.selectAll('.selectionRemoveButtonIcon')
-                .append('title').text('Remove this selection');
-
-            svg.selectAll('.selectionZoomInButton').remove();
-            svg.selectAll('.selectionZoomInButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButton'; })
-                .attr('cx', d => actualX(d[1]) + 40 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 12 + margin.top)
-                .style('fill', '#ffffff')
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
-                .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
-                .on('mousedown', function(d, i) {
-                    zoomIn(d);
-                })
-                .append('title').text('Zoom into selection');
-
-            svg.selectAll('.selectionZoomInButtonIcon').remove();
-            svg.selectAll('.selectionZoomInButtonIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButtonIcon'; })
-                .attr('x', d => actualX(d[1]) + 33 + margin.left)
-                .attr('y', 3 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .style('cursor', 'pointer')
-                .on('mousedown', function(d, i) {
-                    zoomIn(d);
-                })
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon-resize-small');
-
-            svg.selectAll('.selectionZoomInButtonIcon')
-                .append('title').text('Zoom into selection');
-
-
-            svg.selectAll('.selectionMoveRightByDayButton').remove();
-            svg.selectAll('.selectionMoveRightByDayButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveRightByDayButton'; })
-                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 39 + margin.top)
-                .style('fill', '#ffffff')
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
-                .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
-                .on('mousedown', function(d, i) {
-                    moveSelectionByDay(i, 'right');
-                    thisClass.toaster.success(
-                        'Selection was moved by one day to future'
-                    );
-                })
-                .append('title').text('Move Selection to right by Day');
-
-            svg.selectAll('.selectionMoveRightByDayIcon').remove();
-            svg.selectAll('.selectionMoveRightByDayIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveRightByDayIcon'; })
-                .attr('x', d => actualX(d[1]) + 8 + margin.left)
-                .attr('y', 30 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .style('cursor', 'pointer')
-                .on('mousedown', function(d, i) {
-                    moveSelectionByDay(i, 'right');
-                    thisClass.toaster.success(
-                        'Selection was moved by one day to future'
-                    );
-                })
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon-resize-horizontal');
-
-            svg.selectAll('.selectionMoveRightByDayIcon')
-                .append('title').text('Move Selection to right by Day');
-
-            svg.selectAll('.selectionLeftMoveByDayButton').remove();
-            svg.selectAll('.selectionLeftMoveByDayButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionLeftMoveByDayButton'; })
-                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 39 + margin.top)
-                .style('fill', '#ffffff')
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
-                .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
-                .on('mousedown', function(d, i) {
-                    moveSelectionByDay(i, 'left');
-                    thisClass.toaster.success(
-                        'Selection was moved by one day to past'
-                    );
-                })
-                .append('title').text('Move Selection by Day to left');
-
-            svg.selectAll('.selectionMoveLeftByDayIcon').remove();
-            svg.selectAll('.selectionMoveLeftByDayIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveLeftByDayIcon'; })
-                .attr('x', d => actualX(d[0]) - 22 + margin.left)
-                .attr('y', 30 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .style('cursor', 'pointer')
-                .on('mousedown', function(d, i) {
-                    moveSelectionByDay(i, 'left');
-                    thisClass.toaster.success(
-                        'Selection was moved by one day to past'
-                    );
-                })
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon-resize-horizontal');
-
-            svg.selectAll('.selectionMoveLeftByDayIcon')
-                .append('title').text('Move Selection by Day to left');
-
-            svg.selectAll('.selectionExtendToRightByDayButton').remove();
-            svg.selectAll('.selectionExtendTORightByDayButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {
-                    return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayButton';
-                })
-                .attr('cx', d => actualX(d[1]) + 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 65 + margin.top)
-                .style('fill', '#ffffff')
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
-                .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
-                .on('mousedown', function(d, i) {
-                    extendSelectionToRightByDay(i);
-                    thisClass.toaster.success(
-                        'Selection was extended one day to future'
-                    );
-                })
-                .append('title').text('Extend Selection to right by Day');
-
-            svg.selectAll('.selectionExtendToRightByDayIcon').remove();
-            svg.selectAll('.selectionExtendToRightByDayIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayIcon'; })
-                .attr('x', d => actualX(d[1]) + 8 + margin.left)
-                .attr('y', 56 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .style('cursor', 'pointer')
-                .on('mousedown', function(d, i) {
-                    extendSelectionToRightByDay(i);
-                    thisClass.toaster.success(
-                        'Selection was extended one day to future'
-                    );
-                })
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon glyphicon-arrow-right');
-
-            svg.selectAll('.selectionExtendToRightByDayIcon')
-                .append('title').text('Extend Selection to right by Day');
-
-            svg.selectAll('.selectionExtendToLeftByDayButton').remove();
-            svg.selectAll('.selectionExtendToLeftByDayButton')
-                .data(thisClass.selections)
-                .enter()
-                .append('circle')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayButton'; })
-                .attr('cx', d => actualX(d[0]) - 15 + margin.left)
-                .attr('r', 10)
-                .attr('cy', 65 + margin.top)
-                .style('fill', '#ffffff')
-                .style('stroke', '#333333')
-                .style('stroke-width', 2)
-                .style('cursor', 'pointer')
-                // hidden after init
-                .style('visibility', 'hidden')
-                .on('mousedown', function(d, i) {
-                    extendSelectionToLeftByDay(i);
-                    thisClass.toaster.success(
-                        'Selection was extended one day to past'
-                    );
-                })
-                .append('title').text('Extend Selection by Day to left');
-
-            svg.selectAll('.selectionExtendToLeftByDayIcon').remove();
-            svg.selectAll('.selectionExtendToLeftByDayIcon')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayIcon'; })
-                .attr('x', d => actualX(d[0]) - 22 + margin.left)
-                .attr('y', 56 + margin.top)
-                .attr('width', 20)
-                .attr('height', 20)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .style('cursor', 'pointer')
-                .on('mousedown', function(d, i) {
-                    extendSelectionToLeftByDay(i);
-                    thisClass.toaster.success(
-                        'Selection was extended one day to past'
-                    );
-                })
-                .append('xhtml:span')
-                .attr('class', 'glyphicon glyphicon glyphicon-arrow-left');
-
-            svg.selectAll('.selectionExtendToLeftByDayIcon')
-                .append('title').text('Extend Selection by Day to left');
+            // svg.selectAll('.selectionRemoveButtonIcon')
+            //     .append('title').text('Remove this selection');
+            //
+            // svg.selectAll('.selectionZoomInButton').remove();
+            // svg.selectAll('.selectionZoomInButton')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('circle')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButton'; })
+            //     .attr('cx', d => actualX(d[1]) + 40 + margin.left)
+            //     .attr('r', 10)
+            //     .attr('cy', 12 + margin.top)
+            //     .style('fill', '#ffffff')
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', 2)
+            //     .style('cursor', 'pointer')
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .on('mousedown', function(d, i) {
+            //         console.log(d);
+            //         zoomIn(d);
+            //     })
+            //     .append('title').text('Zoom into selection');
+            //
+            // svg.selectAll('.selectionZoomInButtonIcon').remove();
+            // svg.selectAll('.selectionZoomInButtonIcon')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionZoomInButtonIcon'; })
+            //     .attr('x', d => actualX(d[1]) + 33 + margin.left)
+            //     .attr('y', 3 + margin.top)
+            //     .attr('width', 20)
+            //     .attr('height', 20)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .style('cursor', 'pointer')
+            //     .on('mousedown', function(d, i) {
+            //         console.log(d);
+            //         zoomIn(d);
+            //     })
+            //     .append('xhtml:span')
+            //     .attr('class', 'glyphicon glyphicon-resize-small');
+            //
+            // svg.selectAll('.selectionZoomInButtonIcon')
+            //     .append('title').text('Zoom into selection');
+            //
+            //
+            // svg.selectAll('.selectionMoveRightByDayButton').remove();
+            // svg.selectAll('.selectionMoveRightByDayButton')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('circle')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveRightByDayButton'; })
+            //     .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+            //     .attr('r', 10)
+            //     .attr('cy', 39 + margin.top)
+            //     .style('fill', '#ffffff')
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', 2)
+            //     .style('cursor', 'pointer')
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .on('mousedown', function(d, i) {
+            //         moveSelectionByDay(i, 'right');
+            //         thisClass.toaster.success(
+            //             'Selection was moved by one day to future'
+            //         );
+            //     })
+            //     .append('title').text('Move Selection to right by Day');
+            //
+            // svg.selectAll('.selectionMoveRightByDayIcon').remove();
+            // svg.selectAll('.selectionMoveRightByDayIcon')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveRightByDayIcon'; })
+            //     .attr('x', d => actualX(d[1]) + 8 + margin.left)
+            //     .attr('y', 30 + margin.top)
+            //     .attr('width', 20)
+            //     .attr('height', 20)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .style('cursor', 'pointer')
+            //     .on('mousedown', function(d, i) {
+            //         moveSelectionByDay(i, 'right');
+            //         thisClass.toaster.success(
+            //             'Selection was moved by one day to future'
+            //         );
+            //     })
+            //     .append('xhtml:span')
+            //     .attr('class', 'glyphicon glyphicon-resize-horizontal');
+            //
+            // svg.selectAll('.selectionMoveRightByDayIcon')
+            //     .append('title').text('Move Selection to right by Day');
+            //
+            // svg.selectAll('.selectionLeftMoveByDayButton').remove();
+            // svg.selectAll('.selectionLeftMoveByDayButton')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('circle')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionLeftMoveByDayButton'; })
+            //     .attr('cx', d => actualX(d[0]) - 15 + margin.left)
+            //     .attr('r', 10)
+            //     .attr('cy', 39 + margin.top)
+            //     .style('fill', '#ffffff')
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', 2)
+            //     .style('cursor', 'pointer')
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .on('mousedown', function(d, i) {
+            //         moveSelectionByDay(i, 'left');
+            //         thisClass.toaster.success(
+            //             'Selection was moved by one day to past'
+            //         );
+            //     })
+            //     .append('title').text('Move Selection by Day to left');
+            //
+            // svg.selectAll('.selectionMoveLeftByDayIcon').remove();
+            // svg.selectAll('.selectionMoveLeftByDayIcon')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionMoveLeftByDayIcon'; })
+            //     .attr('x', d => actualX(d[0]) - 22 + margin.left)
+            //     .attr('y', 30 + margin.top)
+            //     .attr('width', 20)
+            //     .attr('height', 20)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .style('cursor', 'pointer')
+            //     .on('mousedown', function(d, i) {
+            //         moveSelectionByDay(i, 'left');
+            //         thisClass.toaster.success(
+            //             'Selection was moved by one day to past'
+            //         );
+            //     })
+            //     .append('xhtml:span')
+            //     .attr('class', 'glyphicon glyphicon-resize-horizontal');
+            //
+            // svg.selectAll('.selectionMoveLeftByDayIcon')
+            //     .append('title').text('Move Selection by Day to left');
+            //
+            // svg.selectAll('.selectionExtendToRightByDayButton').remove();
+            // svg.selectAll('.selectionExtendTORightByDayButton')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('circle')
+            //     .attr('class', function(d, i) {
+            //         return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayButton';
+            //     })
+            //     .attr('cx', d => actualX(d[1]) + 15 + margin.left)
+            //     .attr('r', 10)
+            //     .attr('cy', 65 + margin.top)
+            //     .style('fill', '#ffffff')
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', 2)
+            //     .style('cursor', 'pointer')
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .on('mousedown', function(d, i) {
+            //         extendSelectionToRightByDay(i);
+            //         thisClass.toaster.success(
+            //             'Selection was extended one day to future'
+            //         );
+            //     })
+            //     .append('title').text('Extend Selection to right by Day');
+            //
+            // svg.selectAll('.selectionExtendToRightByDayIcon').remove();
+            // svg.selectAll('.selectionExtendToRightByDayIcon')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToRightByDayIcon'; })
+            //     .attr('x', d => actualX(d[1]) + 8 + margin.left)
+            //     .attr('y', 56 + margin.top)
+            //     .attr('width', 20)
+            //     .attr('height', 20)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .style('cursor', 'pointer')
+            //     .on('mousedown', function(d, i) {
+            //         extendSelectionToRightByDay(i);
+            //         thisClass.toaster.success(
+            //             'Selection was extended one day to future'
+            //         );
+            //     })
+            //     .append('xhtml:span')
+            //     .attr('class', 'glyphicon glyphicon glyphicon-arrow-right');
+            //
+            // svg.selectAll('.selectionExtendToRightByDayIcon')
+            //     .append('title').text('Extend Selection to right by Day');
+            //
+            // svg.selectAll('.selectionExtendToLeftByDayButton').remove();
+            // svg.selectAll('.selectionExtendToLeftByDayButton')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('circle')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayButton'; })
+            //     .attr('cx', d => actualX(d[0]) - 15 + margin.left)
+            //     .attr('r', 10)
+            //     .attr('cy', 65 + margin.top)
+            //     .style('fill', '#ffffff')
+            //     .style('stroke', '#333333')
+            //     .style('stroke-width', 2)
+            //     .style('cursor', 'pointer')
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .on('mousedown', function(d, i) {
+            //         extendSelectionToLeftByDay(i);
+            //         thisClass.toaster.success(
+            //             'Selection was extended one day to past'
+            //         );
+            //     })
+            //     .append('title').text('Extend Selection by Day to left');
+            //
+            // svg.selectAll('.selectionExtendToLeftByDayIcon').remove();
+            // svg.selectAll('.selectionExtendToLeftByDayIcon')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionExtendToLeftByDayIcon'; })
+            //     .attr('x', d => actualX(d[0]) - 22 + margin.left)
+            //     .attr('y', 56 + margin.top)
+            //     .attr('width', 20)
+            //     .attr('height', 20)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .style('cursor', 'pointer')
+            //     .on('mousedown', function(d, i) {
+            //         extendSelectionToLeftByDay(i);
+            //         thisClass.toaster.success(
+            //             'Selection was extended one day to past'
+            //         );
+            //     })
+            //     .append('xhtml:span')
+            //     .attr('class', 'glyphicon glyphicon glyphicon-arrow-left');
+            //
+            // svg.selectAll('.selectionExtendToLeftByDayIcon')
+            //     .append('title').text('Extend Selection by Day to left');
 
             // selection border text
-            svg.selectAll('.selectionTextL').remove();
-            svg.selectAll('.selectionTextL')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionTextL'; })
-                .attr('x', function(d) {
-                    const position = actualX(d[0]) - 100 + margin.left;
-                    if (position > 0 || actualX(d[0]) < 0 || actualX(d[0]) > contentWidth) {
-                        return position;
-                    } else {
-                        return 0;
-                    }
-                })
-                .attr('y', 0)
-                .attr('width', 100)
-                .attr('height', margin.top)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .append('xhtml:span')
-                // .style('position', 'relative')
-                // .style('border', '2px solid blue')
-                .html(function(d) {
-                    const date = thisClass.baseService.getDateWithoutOffset(new Date(d[0]));
-                    return '<p style="display: block; margin: 0; text-align: right; font-size: small">' +
-                        date.getUTCFullYear() + '-' +
-                        (date.getUTCMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                        '-' + date.getUTCDate().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                        '</p><p style="display: block; margin: 0; font-size: x-small; text-align: right;">' +
-                        date.getUTCHours().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                        ':' + date.getUTCMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
-                        ':' + date.getUTCSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2}) + '</p>';
-                });
-            svg.selectAll('.selectionTextR').remove();
-            svg.selectAll('.selectionTextR')
-                .data(thisClass.selections)
-                .enter()
-                .append('svg:foreignObject')
-                .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionTextR'; })
-                .attr('x', function(d) {
-                    const position = actualX(d[1]) + margin.left;
-                    if (position + 145 < contentWidth + margin.left + margin.right || actualX(d[1]) < 0 || actualX(d[1]) > contentWidth) {
-                        return position;
-                    } else {
-                        return contentWidth + margin.left + margin.right - 145;
-                    }
-                })
-                .attr('y', 0)
-                .attr('width', 145)
-                .attr('height', margin.top)
-                // hidden after init
-                .style('visibility', 'hidden')
-                .append('xhtml:input')
-                .attr('type', 'datetime-local')
-                // .attr('(keydown.enter)', '\"$event.target.blur();submit();false\"')
-                .style('border', 'none')
-                .style('word-wrap', 'normal')
-                .property('value', function(d) {
-                    return new Date(d[1]).toISOString().split('.')[0];
-                })
-                .on('blur', function(d, i) {
-                    const thisElement = this as HTMLInputElement;
-                    d[1] = thisClass.baseService.getDateWithoutOffset(new Date(thisElement.value));
-                    drawSelections();
-                    thisClass.selectionsDebouncer.next(thisClass.selections);
-                }).on('keypress', function() {
-                if (d3.event.keyCode === 13) {
-                    // if enter is pressed
-                    d3.event.target.blur();
-                }
-            });
+            // svg.selectAll('.selectionTextL').remove();
+            // svg.selectAll('.selectionTextL')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionTextL'; })
+            //     .attr('x', function(d) {
+            //         const position = actualX(d[0]) - 100 + margin.left;
+            //         if (position > 0 || actualX(d[0]) < 0 || actualX(d[0]) > contentWidth) {
+            //             return position;
+            //         } else {
+            //             return 0;
+            //         }
+            //     })
+            //     .attr('y', 0)
+            //     .attr('width', 100)
+            //     .attr('height', margin.top)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .append('xhtml:span')
+            //     // .style('position', 'relative')
+            //     // .style('border', '2px solid blue')
+            //     .html(function(d) {
+            //         const date = thisClass.baseService.getDateWithoutOffset(new Date(d[0]));
+            //         return '<p style="display: block; margin: 0; text-align: right; font-size: small">' +
+            //             date.getUTCFullYear() + '-' +
+            //             (date.getUTCMonth() + 1).toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //             '-' + date.getUTCDate().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //             '</p><p style="display: block; margin: 0; font-size: x-small; text-align: right;">' +
+            //             date.getUTCHours().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //             ':' + date.getUTCMinutes().toLocaleString('en-US', {minimumIntegerDigits: 2}) +
+            //             ':' + date.getUTCSeconds().toLocaleString('en-US', {minimumIntegerDigits: 2}) + '</p>';
+            //     });
+            // svg.selectAll('.selectionTextR').remove();
+            // svg.selectAll('.selectionTextR')
+            //     .data(thisClass.selections)
+            //     .enter()
+            //     .append('svg:foreignObject')
+            //     .attr('class', function(d, i) {return 'selectionHoverArea-' + i + ' selectionHoverArea selectionTextR'; })
+            //     .attr('x', function(d) {
+            //         const position = actualX(d[1]) + margin.left;
+            //         if (position + 145 < contentWidth + margin.left + margin.right || actualX(d[1]) < 0 || actualX(d[1]) > contentWidth) {
+            //             return position;
+            //         } else {
+            //             return contentWidth + margin.left + margin.right - 145;
+            //         }
+            //     })
+            //     .attr('y', 0)
+            //     .attr('width', 145)
+            //     .attr('height', margin.top)
+            //     // hidden after init
+            //     .style('visibility', 'hidden')
+            //     .append('xhtml:input')
+            //     .attr('type', 'datetime-local')
+            //     // .attr('(keydown.enter)', '\"$event.target.blur();submit();false\"')
+            //     .style('border', 'none')
+            //     .style('word-wrap', 'normal')
+            //     .property('value', function(d) {
+            //         return new Date(d[1]).toISOString().split('.')[0];
+            //     })
+            //     .on('blur', function(d, i) {
+            //         const thisElement = this as HTMLInputElement;
+            //         d[1] = thisClass.baseService.getDateWithoutOffset(new Date(thisElement.value));
+            //         drawSelections();
+            //         thisClass.selectionsDebouncer.next(thisClass.selections);
+            //     }).on('keypress', function() {
+            //     if (d3.event.keyCode === 13) {
+            //         // if enter is pressed
+            //         d3.event.target.blur();
+            //     }
+            // });
             // .append('xhtml:span')
             // .html(function(d) {
             //     const date = new Date(d[1]);
@@ -1639,5 +1797,18 @@ export class D3HistogramComponent implements OnDestroy {
     private setSelectionsWithoutEmit(selections) {
         this.selections = selections.map(function(val) {return [new Date(val[0]), new Date(val[1])]; });
         d3.selectAll('.resetSelectionsButton').dispatch('click');
+    }
+
+    selectedSelectionToString() {
+        return [
+            // new Date(this.selections[this.selectedSelectionIndex][0]).toISOString().split('.')[0],
+
+            new Date(this.selections[this.selectedSelectionIndex][0]).toLocaleString(),
+            new Date(this.selections[this.selectedSelectionIndex][1]).toLocaleString()
+        ];
+    }
+
+    selected() {
+        console.log(this.selectedExtendOption);
     }
 }

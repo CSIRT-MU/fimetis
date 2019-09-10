@@ -48,6 +48,9 @@ import {LoginComponent} from './UI/user/login/login.component';
 import { FilterComponent } from './UI/filter/filter.component';
 import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confirmation-dialog.component';
 import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component';
+import {MatIconModule} from '@angular/material/icon';
+
+
 
 @NgModule({
     declarations: [
@@ -103,7 +106,8 @@ import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component
         HttpClientModule,
         MatButtonToggleModule,
         HotkeyModule.forRoot({cheatSheetCloseEsc: true}),
-        MatProgressBarModule
+        MatProgressBarModule,
+        MatIconModule
     ],
     entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
     providers: [

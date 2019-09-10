@@ -3,6 +3,8 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
 @import '~ngx-toastr/toastr.css';
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
 
 @font-face {
     font-family: "Source Code Pro";
@@ -148,6 +150,36 @@ body {
     font-weight: bold;
     border-color: #cccccc !important;
 }
+
+
+.zoomNavigationButton {
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    border-width: 0px;
+    padding: 0;
+    background: white;
+    /*transform: scale(1.3);*/
+    border-color: #52AE58 !important;
+    height: 24px;
+    width: 24px;
+    margin: 0px 5px;
+
+}
+
+.zoomNavigationButton:hover {
+    background: #F2F2F2;
+}
+
+.zoomNavigationIcon {
+    padding: 0;
+    margin: 0;
+    transform: scale(1.5);
+}
+
+.zoomPlusButton {
+}
+
 
 virtual-scroller.vertical.selfScroll::-webkit-scrollbar {
     width: 12px;

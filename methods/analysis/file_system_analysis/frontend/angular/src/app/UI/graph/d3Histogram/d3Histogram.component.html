@@ -1,6 +1,53 @@
-Granularity level: {{ granularity_level}}s
-<div #chart id="chart" (window:resize)="onResize()"></div>
-<button class="mat-stroked-button fimetis-button resetZoomButton" style="float: right"><span class="glyphicon glyphicon-resize-full"></span> RESET ZOOM</button>
-<button class="mat-stroked-button fimetis-button zoomMinusButton" style="float: right"><span class="glyphicon glyphicon-minus"></span></button>
-<button class="mat-stroked-button fimetis-button zoomPlusButton" style="float: right"><span class="glyphicon glyphicon-plus"></span></button>
-<button class="mat-stroked-button fimetis-button removeAllSelectionsButton" [disabled]="selections.length < 1" style="float: right"><span class="glyphicon glyphicon-remove"></span> REMOVE SELECTIONS</button>
+<span class="text-gray" *ngIf="selectedSelectionIndex !== -1" [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="width: 400px; ; float: left; vertical-align: middle; margin-left: 50px; margin-right: 5px">
+        <b>SELECTION:</b> {{ selectedSelectionToString()[0] }} - {{ selectedSelectionToString()[1] }}
+    </span>
+    <!--<button class="zoomNavigationButton removeAllSelectionsButton" [disabled]="selections.length < 1" style="float: left;" [ngStyle]="{ 'background' : selections.length < 1 ? 'lightgrey' : 'white'}" title="delete all selections">-->
+    <!--    <mat-icon class="zoomNavigationIcon" svgIcon="delete"></mat-icon>-->
+    <!--</button>-->
+    <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" class="zoomNavigationButton removeSelectionButton" style="float: left;" title="remove">
+        <mat-icon class="zoomNavigationIcon" svgIcon="delete"></mat-icon>
+    </button>
+    <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" class="zoomNavigationButton zoomIntoSelectionButton"  style="float: left;" title="zoom into selection">
+        <mat-icon class="zoomNavigationIcon" svgIcon="zoom-into-selection"></mat-icon>
+    </button>
+    <span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; ; margin-right: 5px">
+        extend by
+    </span>
+    <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}"  class="zoomNavigationButton extendSelectionBack" style="float: left;" title="extend back">
+        <mat-icon class="zoomNavigationIcon" svgIcon="extend-back"></mat-icon>
+    </button>
+    <span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px;">
+        <select [(ngModel)]="selectedExtendOption" (change)="selected()">
+            <option *ngFor="let item of extendOptions" [ngValue]="item">{{ item }}</option>
+        </select>
+    </span>
+    <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" class="zoomNavigationButton extendSelectionForth" style="float: left;" title="extend forth">
+        <mat-icon class="zoomNavigationIcon" svgIcon="extend-forth"></mat-icon>
+    </button>
+<!--<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px">-->
+<!--    Selected selection: {{ selectedSelectionIndex }}-->
+<!--</span>-->
+<!--<span *ngIf="selectedSelectionIndex !== -1" [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px">-->
+<!--    {{ selectedSelectionToString()[0] }}-->
+<!--</span>-->
+<!--<span *ngIf="selectedSelectionIndex !== -1" [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px">-->
+<!--    {{ selectedSelectionToString()[1] }}-->
+<!--</span>-->
+<button class="zoomNavigationButton resetZoomButton" style="float: right; margin-right: 40px;" title="reset zoom">
+    <mat-icon class="zoomNavigationIcon" svgIcon="zoom-reset"></mat-icon>
+</button>
+<button class="zoomNavigationButton zoomMinusButton" style="float: right" title="zoom out">
+    <mat-icon class="zoomNavigationIcon" svgIcon="zoom-out"></mat-icon>
+</button>
+<button class="zoomNavigationButton zoomPlusButton" style="float: right">
+    <mat-icon class="zoomNavigationIcon" svgIcon="zoom-in" title="zoom-in"></mat-icon>
+</button>
+<span class="text-gray" style="float: right; margin: 0px 5px; width: 100px;">
+    <b>Level:</b> {{ granularity_level}}s
+</span>
+<div #chart style="" id="chart" (window:resize)="onResize()"></div>
+<br>
+
+<!--<button class="mat-stroked-button fimetis-button removeAllSelectionsButton" [disabled]="selections.length < 1" style="float: right">-->
+<!--    <span class="glyphicon glyphicon-remove"></span> REMOVE SELECTIONS</button>-->
+
