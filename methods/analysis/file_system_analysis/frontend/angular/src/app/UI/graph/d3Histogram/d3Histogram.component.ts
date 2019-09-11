@@ -1564,7 +1564,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .append('rect')
                     .attr('class', 'mark-stick')
                     .attr('x', d => margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp))))
-                    .attr('y', 23)
+                    .attr('y', 18)
                     .attr('width', 1)
                     .attr('height', 20)
                     .style('fill', 	'#808080');
@@ -1578,7 +1578,7 @@ export class D3HistogramComponent implements OnDestroy {
                         return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp)));
                     })
                     .attr('r', 5)
-                    .attr('cy', 23)
+                    .attr('cy', 18)
                     .style('fill', 'red')
                     .style('stroke', 'black')
                     .on('mouseover', function(d) {
