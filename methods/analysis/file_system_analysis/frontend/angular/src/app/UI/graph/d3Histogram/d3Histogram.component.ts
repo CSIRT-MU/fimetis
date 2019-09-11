@@ -146,7 +146,7 @@ export class D3HistogramComponent implements OnDestroy {
         let week_width = 1;
         let day_width = 1;
         let hour_width = 1;
-        let bar_width = 1;
+        let barWidth = 1;
 
         const margin = this.margin;
         const zoomSideShadowWidth = 70;
@@ -417,7 +417,7 @@ export class D3HistogramComponent implements OnDestroy {
                 }
                 thisClass.granularity_level = 'hour';
                 thisClass.data = thisClass.data_hours;
-                bar_width = hour_width;
+                barWidth = hour_width;
             } else if (graph_range >= 7 && graph_range < 1 * 365) {
                 if (thisClass.granularity_level !== 'day') {
                     thisClass.toaster.success(
@@ -426,7 +426,7 @@ export class D3HistogramComponent implements OnDestroy {
                 }
                 thisClass.granularity_level = 'day';
                 thisClass.data = thisClass.data_days;
-                bar_width = day_width;
+                barWidth = day_width;
             } else if (graph_range >= 1 * 365 && graph_range < 4 * 365) {
                 if (thisClass.granularity_level !== 'week') {
                     thisClass.toaster.success(
@@ -435,7 +435,7 @@ export class D3HistogramComponent implements OnDestroy {
                 }
                 thisClass.granularity_level = 'week';
                 thisClass.data = thisClass.data_weeks;
-                bar_width = week_width;
+                barWidth = week_width;
             } else {
                 if (thisClass.granularity_level !== 'month') {
                     if (thisClass.granularity_level !== '') {
@@ -446,7 +446,7 @@ export class D3HistogramComponent implements OnDestroy {
                     thisClass.granularity_level = 'month';
                 }
                 thisClass.data = thisClass.data_months;
-                bar_width = month_width;
+                barWidth = month_width;
             }
         }
 
@@ -813,7 +813,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .data(thisClass.data[i].data)
                     .enter()
                     .filter(function(d) {
-                        if ((actualX(d[0]) < 0) || (actualX(d[0]) > contentWidth)) {
+                        if ((actualX(d[0]) + barWidth < 0) || (actualX(d[0]) - barWidth > contentWidth)) {
                             return false;
                         }
                         return true;
@@ -825,8 +825,8 @@ export class D3HistogramComponent implements OnDestroy {
                         if (thisClass.granularity_level !== 'hour') {
                             const x_position = new Date(d[0]).setHours(0);
 
-                            return actualX(x_position) + bar_width * 0.05;                        }
-                        return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + bar_width * 0.05;
+                            return actualX(x_position) + barWidth * 0.05;                        }
+                        return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + barWidth * 0.05;
                     })
                     // .attr('y', d => actualY(d[1]))
                     .attr('y', function(d) {
@@ -855,15 +855,15 @@ export class D3HistogramComponent implements OnDestroy {
                                 case 7:
                                 case 9:
                                 case 11:
-                                    return 0.9 * bar_width * 31 / 30;
+                                    return 0.9 * barWidth * 31 / 30;
                                 case 1:
                                     const year = new Date(d[0]).getFullYear();
                                     if (new Date(year, 1, 29).getDate() === 29) {
-                                        return 0.9 * bar_width * 29 / 30;
+                                        return 0.9 * barWidth * 29 / 30;
                                     }
-                                    return 0.9 * bar_width * 28 / 30;
+                                    return 0.9 * barWidth * 28 / 30;
                                 default:
-                                 return 0.9 * bar_width;
+                                 return 0.9 * barWidth;
                             }
                     })
                     .attr('height', function(d) {
