@@ -72,7 +72,7 @@
                         <td *ngFor="let tableItem of displayedTableColumns">
                             <div class="table-select" *ngIf="tableItem == 'select'"
                             [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}"
-                            (click)="tableSelect(element._id)"></div>
+                            (click)="tableSelect(element._id); emitMark(element._id, visibleData[i]._source['@timestamp'], selected_rows_id.has(element._id), visibleData[i]._source['File Name'], visibleData[i]._source['Type'])"></div>
                             <!--<div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">-->
                             <!--<span [ngSwitch]="element._source['Mode'][2]">-->
                             <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
@@ -168,8 +168,10 @@
           [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(true)"></span>
     <span class="glyphicon glyphicon-open clickable highlighted-icon" matTooltip="Skip to the start of the block"
           [matTooltipPosition]="'above'" (click)="skipTheBlockByDate(false)"></span>
-    <span class="glyphicon glyphicon-circle-arrow-left clickable highlighted-icon" matTooltip="Set as beginning Date restriction"
-          [matTooltipPosition]="'above'" (click)="setDateAsFromField()"></span>
-    <span class="glyphicon glyphicon-circle-arrow-right clickable highlighted-icon" matTooltip="Set as ending Date restriction"
-          [matTooltipPosition]="'above'" (click)="setDateAsToField()"></span>
+<!--    <span class="glyphicon glyphicon-pushpin clickable highlighted-icon" matTooltip="Add mark"-->
+<!--          [matTooltipPosition]="'above'" (click)="emitMark()"></span>-->
+<!--    <span class="glyphicon glyphicon-circle-arrow-left clickable highlighted-icon" matTooltip="Set as beginning Date restriction"-->
+<!--          [matTooltipPosition]="'above'" (click)="setDateAsFromField()"></span>-->
+<!--    <span class="glyphicon glyphicon-circle-arrow-right clickable highlighted-icon" matTooltip="Set as ending Date restriction"-->
+<!--          [matTooltipPosition]="'above'" (click)="setDateAsToField()"></span>-->
 </div>

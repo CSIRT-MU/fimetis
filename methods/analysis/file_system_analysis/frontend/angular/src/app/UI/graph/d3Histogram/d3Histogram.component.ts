@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Ou
 import * as d3 from 'd3';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {bisect, select} from 'd3';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime, map} from 'rxjs/operators';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {transformAll} from '@angular/compiler/src/render3/r3_ast';
 import {BaseService} from '../../../services/base.service';
@@ -69,6 +69,8 @@ export class D3HistogramComponent implements OnDestroy {
     selectionsDebouncer: Subject<any[]> = new Subject();
 
     @Output() scrollToBar = new EventEmitter<Date>();
+
+    marks = new Map();
 
     margin = { top: 30, right: 40, bottom: 40, left: 50 };
     savedZoomProperties = null;
@@ -394,6 +396,7 @@ export class D3HistogramComponent implements OnDestroy {
         drawFilteredBars();
         // drawZoomNavigation();
         drawSelections();
+        //drawMarks();
         this.showAndHideTraces(this.selectedTypes);
 
         // responsive - keep zoom
@@ -519,6 +522,7 @@ export class D3HistogramComponent implements OnDestroy {
             //drawBars();
             drawZoomNavigation();
             drawSelections();
+            //drawMarks();
             // save zoom for responsive redraw
             thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()),
                 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
@@ -671,9 +675,12 @@ export class D3HistogramComponent implements OnDestroy {
             }
 
             drawSelections();
+            //drawMarks();
             drawActualPositionWindow();
             thisClass.selectionsDebouncer.next(thisClass.selections);
             console.log(thisClass.selectedExtendOption);
+            console.log(thisClass.marks);
+            //drawMarks();
         }
 
         function extendSelectionBack() {
@@ -815,11 +822,11 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('class', 'bar bar' + data[i].name)
                     // .attr('class', 'bar' + data[i].name)
                     .attr('x', function(d) {
-                        if (thisClass.granularity_level !== 'month') {
+                        if (thisClass.granularity_level !== 'hour') {
                             const x_position = new Date(d[0]).setHours(0);
 
                             return actualX(x_position) + bar_width * 0.05;                        }
-                        return actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))) + bar_width * 0.05;
+                        return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + bar_width * 0.05;
                     })
                     // .attr('y', d => actualY(d[1]))
                     .attr('y', function(d) {
@@ -885,18 +892,18 @@ export class D3HistogramComponent implements OnDestroy {
                     .on('mousemove', function(d) {
                         let dateString = '';
                         if (thisClass.granularity_level === 'month') {
-                            dateString = new Date(d[0]).toLocaleString('en-US',
+                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
                                 { year: 'numeric', month: 'long'});
                         } else if (thisClass.granularity_level === 'week') {
-                            dateString = new Date(d[0]).toLocaleString('en-US',
+                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
                                 { year: 'numeric', month: 'long', day: 'numeric'}) + ' - ' +
-                            new Date(d[0] + 1000 * 7 * 24 * 3600).toLocaleString('en-US',
+                            thisClass.getDateWithoutOffset(new Date(d[0] + 1000 * 7 * 24 * 3600)).toLocaleString('en-US',
                                 { year: 'numeric', month: 'long', day: 'numeric'});
                         } else if (thisClass.granularity_level === 'day') {
-                            dateString = new Date(d[0]).toLocaleString('en-US',
+                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
                                 { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
                         } else {
-                            dateString = new Date(d[0]).toLocaleString('en-US',
+                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
                                 { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'});
                         }
 
@@ -913,8 +920,11 @@ export class D3HistogramComponent implements OnDestroy {
                     }).on('click', function (d) {
                         thisClass.scrollToBar.emit(new Date(d[0]));
                 });
+
+
                     // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
             }
+            drawMarks();
         }
 
         function drawFilteredBars() {
@@ -970,8 +980,7 @@ export class D3HistogramComponent implements OnDestroy {
                         .on('mousemove', function(d) {
                             tooltip
                                 .html('<p style="display: block; margin: 0; font-size: x-small">' +
-                                    new Date(d[0]).toLocaleString('en-US',
-                                        { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+                                    thisClass.getDateWithoutOffset(d[0]).toLocaleString()
                                     + '</p>' +
                                     '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
                                     data_days[i].name + ': ' + d[1] + '</p>')
@@ -990,6 +999,7 @@ export class D3HistogramComponent implements OnDestroy {
             drawSelections();
             thisClass.selectionsDebouncer.next(thisClass.selections);
         }
+
 
         function selectSelection() {
             const click_x = d3.mouse(this)[0] - margin.left;
@@ -1544,6 +1554,67 @@ export class D3HistogramComponent implements OnDestroy {
             drawActualPositionWindow();
         }
 
+        function drawMarks() {
+            svg.selectAll('.mark').remove();
+            svg.selectAll('.mark-stick').remove();
+            if (thisClass.marks.size > 0) {
+                svg.selectAll('.mark-stick')
+                    .data(Array.from(thisClass.marks))
+                    .enter()
+                    .append('rect')
+                    .attr('class', 'mark-stick')
+                    .attr('x', d => margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp))))
+                    .attr('y', 23)
+                    .attr('width', 1)
+                    .attr('height', 20)
+                    .style('fill', 	'#808080');
+
+                svg.selectAll('.mark')
+                    .data(Array.from(thisClass.marks))
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'mark')
+                    .attr('cx', function (d) {
+                        return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp)));
+                    })
+                    .attr('r', 5)
+                    .attr('cy', 23)
+                    .style('fill', 'red')
+                    .style('stroke', 'black')
+                    .on('mouseover', function(d) {
+                        d3.select(this)
+                            .style('filter', 'brightness(3)');
+                        tooltip
+                        // .style('opacity', 1);
+                            .style('display', 'inline-block');
+                    })
+                    .on('mouseout', function() {
+                        d3.select(this).style('filter', 'brightness(1)');
+                        tooltip
+                        // .style('opacity', 0);
+                            .style('display', 'none');
+                    })
+                    .on('mousemove', function(d) {
+                        tooltip
+                            .html('<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
+                                thisClass.getDateWithoutOffset(new Date(d[1].timestamp)).toLocaleString('en-us')
+                        // 'en-US',
+                        // { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'}
+                                + '</p>' +
+                                '<p style="display: block; margin: 0; font-size: small">' +
+                                d[1].filename + '</p>')
+                            .style('left', actualX(new Date(d[1].timestamp)) + 'px')
+                            .style('border-color', 'black')
+                            .style('margin-top', -60 + 'px');
+                        // .style('top', 0 + 'px');
+
+
+                    });
+
+            }
+        }
+
+
         let dragStartX = null;
         let dragShiftStartX = null;
         function dragStart() {
@@ -1803,12 +1874,39 @@ export class D3HistogramComponent implements OnDestroy {
         return [
             // new Date(this.selections[this.selectedSelectionIndex][0]).toISOString().split('.')[0],
 
-            new Date(this.selections[this.selectedSelectionIndex][0]).toLocaleString(),
-            new Date(this.selections[this.selectedSelectionIndex][1]).toLocaleString()
+            new Date(this.selections[this.selectedSelectionIndex][0]).toLocaleString('en-us'),
+            new Date(this.selections[this.selectedSelectionIndex][1]).toLocaleString('en-us')
         ];
     }
 
     selected() {
         console.log(this.selectedExtendOption);
+    }
+
+    addMark(mark) {
+        if (mark.add) {
+            this.marks.set(mark.id, mark);
+        } else {
+            this.marks.delete(mark.id);
+        }
+
+        console.log(this.marks);
+        this.selectionsEmitter.emit(this.selections);
+
+
+    }
+
+    getDateWithoutOffset(date) {
+        return new Date(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate(),
+            date.getUTCHours(),
+            date.getUTCMinutes(),
+            date.getUTCSeconds(),
+            0
+        );
+
+
     }
 }

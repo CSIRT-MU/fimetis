@@ -41,6 +41,15 @@ export class ListViewComponent {
     setFromBoundary: EventEmitter<Date> = new EventEmitter<Date>();
     @Output('setToBoundary')
     setToBoundary: EventEmitter<Date> = new EventEmitter<Date>();
+    @Output('addMark')
+    addMark: EventEmitter<Object> = new EventEmitter<Object>();
+    // options: Array<Object> = [
+    //     {id: 0, name: 'day'},
+    //     {id: 1, name: 'week'},
+    //     {id: 2, name: 'month'}
+    // ];
+
+
     tablePanelOpenState = true;
     searchString = '';
     searchMode = '';
@@ -1235,5 +1244,10 @@ export class ListViewComponent {
         const shift = beforeBar - beforeFirstEntry;
         this.scrollToIndex(firstIndex + shift - 1);
         this.toaster.success(date.toDateString(), 'View has scrolled to date:');
+    }
+
+    // adding - boolean true if adding, false if removing
+    emitMark(id, timestamp, adding, filename, type) {
+        this.addMark.emit({'id': id, 'timestamp': timestamp, 'filename': filename, 'type': type, 'note': 'empty', 'add': adding});
     }
 }
