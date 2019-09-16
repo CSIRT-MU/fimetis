@@ -40,10 +40,20 @@ export class D3HistogramComponent implements OnDestroy {
     data: HistogramData[] = [];
 
 
-
+    @Input()
+    filteredDataMonths: HistogramData[] = [];
+    @Input()
+    filteredDataWeeks: HistogramData[] = [];
+    @Input()
+    filteredDataDays: HistogramData[] = [];
+    @Input()
+    filteredDataHours: HistogramData [] =  [];
 
     @Input()
     filteredData: HistogramData[] = [];
+
+    @Input()
+    searchString: string;
 
     @Input()
     min_date_boundary: any;
@@ -140,6 +150,8 @@ export class D3HistogramComponent implements OnDestroy {
         const data_days = this.data_days;
         const data_hours = this.data_hours;
         const data = this.data;
+
+        const filteredData = this.filteredData;
 
 
         let month_width = 1;
@@ -417,6 +429,7 @@ export class D3HistogramComponent implements OnDestroy {
                 }
                 thisClass.granularity_level = 'hour';
                 thisClass.data = thisClass.data_hours;
+                thisClass.filteredData = thisClass.filteredDataHours;
                 barWidth = hour_width;
             } else if (graph_range >= 7 && graph_range < 1 * 365) {
                 if (thisClass.granularity_level !== 'day') {
@@ -426,6 +439,7 @@ export class D3HistogramComponent implements OnDestroy {
                 }
                 thisClass.granularity_level = 'day';
                 thisClass.data = thisClass.data_days;
+                thisClass.filteredData = thisClass.filteredDataDays;
                 barWidth = day_width;
             } else if (graph_range >= 1 * 365 && graph_range < 4 * 365) {
                 if (thisClass.granularity_level !== 'week') {
@@ -435,6 +449,7 @@ export class D3HistogramComponent implements OnDestroy {
                 }
                 thisClass.granularity_level = 'week';
                 thisClass.data = thisClass.data_weeks;
+                thisClass.filteredData = thisClass.filteredDataWeeks;
                 barWidth = week_width;
             } else {
                 if (thisClass.granularity_level !== 'month') {
@@ -446,6 +461,7 @@ export class D3HistogramComponent implements OnDestroy {
                     thisClass.granularity_level = 'month';
                 }
                 thisClass.data = thisClass.data_months;
+                thisClass.filteredData = thisClass.filteredDataMonths;
                 barWidth = month_width;
             }
         }
@@ -498,25 +514,7 @@ export class D3HistogramComponent implements OnDestroy {
             count_width(thisClass.min_date_boundary);
             count_granularity(graph_range);
             drawBars();
-
-            // if (graph_range < 30) {
-            //     //drawBars(thisClass.data_hours, hour_width);
-            //     drawBars(thisClass.data_days, day_width, 'day');
-            //     thisClass.granularity_level = 'day';
-            //
-            // } else if (graph_range >= 30 && graph_range < 2 * 365) {
-            //     drawBars(thisClass.data_days, day_width, 'day');
-            //     thisClass.granularity_level = 'days';
-            //
-            // } else if (graph_range >= 2 * 365 && graph_range < 5 * 365) {
-            //     drawBars(thisClass.data_weeks, week_width, 'week');
-            //     thisClass.granularity_level = 'weeks';
-            //
-            // } else {
-            //     drawBars(thisClass.data_months, month_width, 'month');
-            //     thisClass.granularity_level = 'months';
-            //
-            // }
+            drawFilteredBars();
 
             //updateBars();
             //drawBars();
@@ -820,7 +818,6 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .append('rect')
                     .attr('class', 'bar bar' + data[i].name)
-                    // .attr('class', 'bar' + data[i].name)
                     .attr('x', function(d) {
                         if (thisClass.granularity_level !== 'hour') {
                             const x_position = new Date(d[0]).setHours(0);
@@ -844,8 +841,6 @@ export class D3HistogramComponent implements OnDestroy {
                     //         0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
                     //         / (24 * 3600 * 1000))), 1))
                     .attr('width', function(d) {
-                        // console.log(new Date(d[0]), new Date(d[0]).getMon
-
                             switch (new Date(d[0]).getMonth()) {
                             // 31 - Jan, March, May, July, August, October, December
                                 case 0:
@@ -890,23 +885,7 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('display', 'none');
                     })
                     .on('mousemove', function(d) {
-                        let dateString = '';
-                        if (thisClass.granularity_level === 'month') {
-                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
-                                { year: 'numeric', month: 'long'});
-                        } else if (thisClass.granularity_level === 'week') {
-                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
-                                { year: 'numeric', month: 'long', day: 'numeric'}) + ' - ' +
-                            thisClass.getDateWithoutOffset(new Date(d[0] + 1000 * 7 * 24 * 3600)).toLocaleString('en-US',
-                                { year: 'numeric', month: 'long', day: 'numeric'});
-                        } else if (thisClass.granularity_level === 'day') {
-                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
-                                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
-                        } else {
-                            dateString = thisClass.getDateWithoutOffset(new Date(d[0])).toLocaleString('en-US',
-                                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'});
-                        }
-
+                        const dateString = thisClass.getDateStringForBarTooltip(d[0]);
                         tooltip
                             .html('<p style="display: block; margin: 0; font-size: x-small">' +
                                 dateString
@@ -920,25 +899,35 @@ export class D3HistogramComponent implements OnDestroy {
                     }).on('click', function (d) {
                         thisClass.scrollToBar.emit(new Date(d[0]));
                 });
-
-
-                    // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
             }
             drawMarks();
         }
 
         function drawFilteredBars() {
             g.selectAll('.filteredBar').remove();
-            if (thisClass.filteredData.length > 0) {
+            if (thisClass.filteredData.length > 0 && thisClass.searchString !== undefined) {
                 g.selectAll('.bar').attr('fill', '#cccccc');
 
                 for (let i = 0; i < thisClass.filteredData.length; i++) {
                     g.selectAll('.filteredBar' + thisClass.filteredData[i].name)
                         .data(thisClass.filteredData[i].data)
-                        .enter().append('rect')
-                        .attr('class', 'filteredBar filteredBar' + data_days[i].name)
+                        .enter()
+                        .filter(function(d) {
+                            if ((actualX(d[0]) + barWidth < 0) || (actualX(d[0]) - barWidth > contentWidth)) {
+                                return false;
+                            }
+                            return true;
+                        })
+                        .append('rect')
+                        .attr('class', 'filteredBar filteredBar' + thisClass.filteredData[i].name)
                         // .attr('class', 'bar' + data[i].name)
-                        .attr('x', d => actualX(thisClass.baseService.getDateWithoutOffset(new Date(d[0]))))
+                        .attr('x', function(d) {
+                            if (thisClass.granularity_level !== 'hour') {
+                                const x_position = new Date(d[0]).setHours(0);
+
+                                return actualX(x_position) + barWidth * 0.05;                        }
+                            return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + barWidth * 0.05;
+                        })
                         // .attr('y', d => actualY(d[1]))
                         .attr('y', function(d) {
                             if (d[1] < 1) {
@@ -949,11 +938,27 @@ export class D3HistogramComponent implements OnDestroy {
                                 return actualY(d[1]);
                             }
                         })
-                        // .attr('width', contentWidth / data[i].data.length)
-                        .attr('width',
-                            Math.max(
-                                0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
-                                / (24 * 3600 * 1000))), 1))
+                        .attr('width', function(d) {
+                            switch (new Date(d[0]).getMonth()) {
+                                // 31 - Jan, March, May, July, August, October, December
+                                case 0:
+                                case 2:
+                                case 4:
+                                case 6:
+                                case 7:
+                                case 9:
+                                case 11:
+                                    return 0.9 * barWidth * 31 / 30;
+                                case 1:
+                                    const year = new Date(d[0]).getFullYear();
+                                    if (new Date(year, 1, 29).getDate() === 29) {
+                                        return 0.9 * barWidth * 29 / 30;
+                                    }
+                                    return 0.9 * barWidth * 28 / 30;
+                                default:
+                                    return 0.9 * barWidth;
+                            }
+                        })
                         .attr('height', function(d) {
                             if (d[1] < 1) {
                                 return 0;
@@ -963,7 +968,7 @@ export class D3HistogramComponent implements OnDestroy {
                                 return actualY(1) - actualY(d[1]);
                             }
                         })
-                        .attr('fill', data_days[i].color)
+                        .attr('fill', thisClass.filteredData[i].color)
                         .on('mouseover', function(d) {
                             d3.select(this)
                                 .style('filter', 'brightness(3)');
@@ -978,20 +983,26 @@ export class D3HistogramComponent implements OnDestroy {
                                 .style('display', 'none');
                         })
                         .on('mousemove', function(d) {
+                            const dateString = thisClass.getDateStringForBarTooltip(d[0]);
                             tooltip
                                 .html('<p style="display: block; margin: 0; font-size: x-small">' +
-                                    thisClass.getDateWithoutOffset(d[0]).toLocaleString()
+                                   dateString
                                     + '</p>' +
+                                '<p style="display: block; margin: 0; font-size: x-small; font-weight: bold"> FILTERED: '
+                                    + thisClass.searchString + '</p>' +
+
                                     '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-                                    data_days[i].name + ': ' + d[1] + '</p>')
+                                    thisClass.filteredData[i].name + ': ' + d[1] + '</p>')
                                 .style('left', actualX(d[0]) + 5 + 'px')
-                                .style('border-color', data_days[i].color)
+                                .style('border-color', thisClass.filteredData[i].color)
                                 .style('margin-top', -25 + 'px');
-                            // .style('top', 0 + 'px');
                         });
-                    // .append('title').text(d => '' + data[i].name + ' - ' + new Date(d[0]).toISOString() + ' - ' + d[1]);
                 }
             }
+            else {
+                drawBars();
+            }
+            drawMarks();
         }
 
         function selectActualArea() {
@@ -1906,7 +1917,26 @@ export class D3HistogramComponent implements OnDestroy {
             date.getUTCSeconds(),
             0
         );
+    }
 
+    getDateStringForBarTooltip(date) {
+        let dateString = '';
+        if (this.granularity_level === 'month') {
+            dateString = this.getDateWithoutOffset(new Date(date)).toLocaleString('en-US',
+                { year: 'numeric', month: 'long'});
+        } else if (this.granularity_level === 'week') {
+            dateString = this.getDateWithoutOffset(new Date(date)).toLocaleString('en-US',
+                { year: 'numeric', month: 'long', day: 'numeric'}) + ' - ' +
+                this.getDateWithoutOffset(new Date(date + 1000 * 7 * 24 * 3600)).toLocaleString('en-US',
+                    { year: 'numeric', month: 'long', day: 'numeric'});
+        } else if (this.granularity_level === 'day') {
+            dateString = this.getDateWithoutOffset(new Date(date)).toLocaleString('en-US',
+                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+        } else {
+            dateString = this.getDateWithoutOffset(new Date(date)).toLocaleString('en-US',
+                { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'});
+        }
 
+        return dateString;
     }
 }
