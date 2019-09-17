@@ -13,8 +13,9 @@
 <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}"  class="zoomNavigationButton extendSelectionBack" style="float: left;" title="extend back">
     <mat-icon class="zoomNavigationIcon" svgIcon="extend-back"></mat-icon>
 </button>
-<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px;">
-    <select [(ngModel)]="selectedExtendOption" (change)="selected()">
+<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px">
+    <input type="number" min="1" [(ngModel)]="extendValue" style="border: none; background: none; width: 40px; text-align: right">
+    <select [(ngModel)]="selectedExtendOption" style="border: none; background: none">
         <option *ngFor="let item of extendOptions" [ngValue]="item">{{ item }}</option>
     </select>
 </span>

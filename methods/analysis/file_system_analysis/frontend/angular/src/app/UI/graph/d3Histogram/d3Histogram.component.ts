@@ -67,11 +67,9 @@ export class D3HistogramComponent implements OnDestroy {
 
     selectedExtendOption = 'day';
     extendOptions = ['day', 'hour', 'week', 'month'];
-    // options: Array<Object> = [
-    //     {id: 0, name: 'day'},
-    //     {id: 1, name: 'week'},
-    //     {id: 2, name: 'month'}
-    // ];
+
+    extendValue = 1;
+
 
     selections = [];
     @Output() selectionsEmitter = new EventEmitter<any[]>();
@@ -139,9 +137,6 @@ export class D3HistogramComponent implements OnDestroy {
     }
 
     createChart() {
-        // console.log('create graph');
-
-
         const thisClass = this;
         const element = this.chartContainer.nativeElement;
 
@@ -215,7 +210,7 @@ export class D3HistogramComponent implements OnDestroy {
         d3.select('.zoomMinusButton').on('click', zoomMinus);
         d3.select('.resetZoomButton').on('click', zoomOut);
         d3.select('.removeAllSelectionsButton').on('click', removeAllSelections);
-        d3.select('.zoomIntoSelectionButton').on('click', zoomInNew);
+        d3.select('.zoomIntoSelectionButton').on('click', zoomIn);
         d3.select('.extendSelectionBack').on('click', extendSelectionBack);
         d3.select('.extendSelectionForth').on('click', extendSelectionForth);
         d3.select('.removeSelectionButton').on('click', removeSelection);
@@ -516,11 +511,8 @@ export class D3HistogramComponent implements OnDestroy {
             drawBars();
             drawFilteredBars();
 
-            //updateBars();
-            //drawBars();
             drawZoomNavigation();
             drawSelections();
-            //drawMarks();
             // save zoom for responsive redraw
             thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()),
                 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
@@ -535,17 +527,17 @@ export class D3HistogramComponent implements OnDestroy {
             }
         }
 
-        function zoomIn(zoomRange) {
-            const area = (zoomRange[1].getTime() - zoomRange[0].getTime());
-            zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
-                (zoomRange[1].getTime() - zoomRange[0].getTime() + (0.2 * area)))
-            );
+        // function zoomIn(zoomRange) {
+        //     const area = (zoomRange[1].getTime() - zoomRange[0].getTime());
+        //     zoom.scaleTo(svg, (lastDate.getTime() - firstDate.getTime()) / Math.max(1,
+        //         (zoomRange[1].getTime() - zoomRange[0].getTime() + (0.2 * area)))
+        //     );
+        //
+        //     shift(-actualX(new Date(zoomRange[0].getTime() - 0.1 * area)));
+        //     // console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
+        // }
 
-            shift(-actualX(new Date(zoomRange[0].getTime() - 0.1 * area)));
-            // console.log(d3.zoomTransform(svg.node()).x, d3.zoomTransform(svg.node()).k);
-        }
-
-        function zoomInNew() {
+        function zoomIn() {
             const selectionStart = thisClass.selections[thisClass.selectedSelectionIndex][0];
             const selectionEnd = thisClass.selections[thisClass.selectedSelectionIndex][1];
 
@@ -556,8 +548,6 @@ export class D3HistogramComponent implements OnDestroy {
             );
 
             shift(-actualX(new Date(selectionStart.getTime() - 0.1 * area)));
-
-
         }
 
         function zoomOut() {
@@ -611,34 +601,6 @@ export class D3HistogramComponent implements OnDestroy {
             thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
-        function extendSelectionToRightByDay(index) {
-            const millisecondsInDay = 24 * 3600 * 1000;
-
-            const new_selection_end = new Date(thisClass.selections[index][1].getTime() + millisecondsInDay);
-
-            if (actualX(new_selection_end) <= getClosestRightSelectionStart(actualX(thisClass.selections[index][1]))) {
-                thisClass.selections[index][1] = new_selection_end;
-            }
-
-            drawSelections();
-            drawActualPositionWindow();
-            thisClass.selectionsDebouncer.next(thisClass.selections);
-        }
-
-        function extendSelectionToLeftByDay(index) {
-            const millisecondsInDay = 24 * 3600 * 1000;
-
-            const new_selection_start = new Date(thisClass.selections[index][0].getTime() - millisecondsInDay);
-
-            if (actualX(new_selection_start) >= getClosestLeftSelectionEnd(actualX(thisClass.selections[index][0]))) {
-                thisClass.selections[index][0] = new_selection_start;
-            }
-
-            drawSelections();
-            drawActualPositionWindow();
-            thisClass.selectionsDebouncer.next(thisClass.selections);
-        }
-
         function countExtensionShift() {
             const millisecondsInDay = 24 * 3600 * 1000;
             let extensionShift = millisecondsInDay;
@@ -661,7 +623,7 @@ export class D3HistogramComponent implements OnDestroy {
 
             }
 
-            return extensionShift;
+            return thisClass.extendValue * extensionShift;
         }
 
         function extendSelectionForth() {
@@ -673,12 +635,9 @@ export class D3HistogramComponent implements OnDestroy {
             }
 
             drawSelections();
-            //drawMarks();
             drawActualPositionWindow();
             thisClass.selectionsDebouncer.next(thisClass.selections);
-            console.log(thisClass.selectedExtendOption);
-            console.log(thisClass.marks);
-            //drawMarks();
+
         }
 
         function extendSelectionBack() {
@@ -996,10 +955,12 @@ export class D3HistogramComponent implements OnDestroy {
                                 .style('left', actualX(d[0]) + 5 + 'px')
                                 .style('border-color', thisClass.filteredData[i].color)
                                 .style('margin-top', -25 + 'px');
+                        })
+                        .on('click', function (d) {
+                            thisClass.scrollToBar.emit(new Date(d[0]));
                         });
                 }
-            }
-            else {
+            } else {
                 drawBars();
             }
             drawMarks();
@@ -1892,6 +1853,7 @@ export class D3HistogramComponent implements OnDestroy {
 
     selected() {
         console.log(this.selectedExtendOption);
+        console.log(this.extendValue);
     }
 
     addMark(mark) {
