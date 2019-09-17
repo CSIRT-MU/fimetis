@@ -197,6 +197,16 @@ export class D3HistogramComponent implements OnDestroy {
                         d3.selectAll('.selectionHoverArea-' + index).style('visibility', 'visible');
                     }
                 }
+
+                // On mouseover unselected selection change cursor to pointer
+                for (let i = 0; i < thisClass.selections.length; i++ ){
+                    if (xAxisPos > (actualX(thisClass.selections[i][0])) &&
+                        xAxisPos < (actualX(thisClass.selections[i][1])) && i !== thisClass.selectedSelectionIndex) {
+                        d3.select(this).style('cursor', 'pointer');
+                        return;
+                    }
+                }
+                d3.select(this).style('cursor', 'default');
             })
             .on('mouseleave', function () {
                 d3.selectAll('.selectionHoverArea').style('visibility', 'hidden');
