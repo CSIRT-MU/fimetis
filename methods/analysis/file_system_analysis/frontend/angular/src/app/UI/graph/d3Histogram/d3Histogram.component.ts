@@ -167,6 +167,9 @@ export class D3HistogramComponent implements OnDestroy {
         // maximum difference between [ first data | last date ] and the edge of the graph, used for boundaries when
         const maxEdgeMargin = 100;
 
+        // Actual width of bar ratio, = 0.9 bar, 0.05 margin on left, 0.05 margin on right
+        const barWidthWithMarginsRatio = 0.9;
+
 
 
         d3.select(element).select('svg').remove();
@@ -480,6 +483,27 @@ export class D3HistogramComponent implements OnDestroy {
             hour_width = actualX(new Date(param).getTime() + 1000 * 1 * 1 * 3600) - actualX(new Date(param).getTime());
         }
 
+        function countBarWidth(param) {
+            switch (new Date(param).getMonth()) {
+                // 31 - Jan, March, May, July, August, October, December
+                case 0:
+                case 2:
+                case 4:
+                case 6:
+                case 7:
+                case 9:
+                case 11:
+                    return barWidthWithMarginsRatio * barWidth * 31 / 30;
+                case 1:
+                    const year = new Date(param).getFullYear();
+                    if (new Date(year, 1, 29).getDate() === 29) {
+                        return barWidthWithMarginsRatio * barWidth * 29 / 30;
+                    }
+                    return barWidthWithMarginsRatio * barWidth * 28 / 30;
+                default:
+                    return barWidthWithMarginsRatio * barWidth;
+            }
+        }
         function zoomed() {
             // console.log('zoom');
 
@@ -788,11 +812,14 @@ export class D3HistogramComponent implements OnDestroy {
                     .append('rect')
                     .attr('class', 'bar bar' + data[i].name)
                     .attr('x', function(d) {
+                        const localBarWidth = countBarWidth(d[0]);
+                        const marginWidthRatio = (1 - barWidthWithMarginsRatio) / 2.0;
+
                         if (thisClass.granularity_level !== 'hour') {
                             const x_position = new Date(d[0]).setHours(0);
-
-                            return actualX(x_position) + barWidth * 0.05;                        }
-                        return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + barWidth * 0.05;
+                            return actualX(x_position) + localBarWidth * marginWidthRatio;
+                        }
+                            return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + localBarWidth * marginWidthRatio;
                     })
                     // .attr('y', d => actualY(d[1]))
                     .attr('y', function(d) {
@@ -804,32 +831,7 @@ export class D3HistogramComponent implements OnDestroy {
                             return actualY(d[1]);
                         }
                     })
-                    // .attr('width', contentWidth / data[i].data.length)
-                    // .attr('width',
-                    //     Math.max(
-                    //         0.9 * (contentWidth / ((actualX.domain()[1].getTime() - actualX.domain()[0].getTime())
-                    //         / (24 * 3600 * 1000))), 1))
-                    .attr('width', function(d) {
-                            switch (new Date(d[0]).getMonth()) {
-                            // 31 - Jan, March, May, July, August, October, December
-                                case 0:
-                                case 2:
-                                case 4:
-                                case 6:
-                                case 7:
-                                case 9:
-                                case 11:
-                                    return 0.9 * barWidth * 31 / 30;
-                                case 1:
-                                    const year = new Date(d[0]).getFullYear();
-                                    if (new Date(year, 1, 29).getDate() === 29) {
-                                        return 0.9 * barWidth * 29 / 30;
-                                    }
-                                    return 0.9 * barWidth * 28 / 30;
-                                default:
-                                 return 0.9 * barWidth;
-                            }
-                    })
+                    .attr('width', d => countBarWidth(d[0]))
                     .attr('height', function(d) {
                         if (d[1] < 1) {
                             return 0;
@@ -891,11 +893,14 @@ export class D3HistogramComponent implements OnDestroy {
                         .attr('class', 'filteredBar filteredBar' + thisClass.filteredData[i].name)
                         // .attr('class', 'bar' + data[i].name)
                         .attr('x', function(d) {
+                            const localBarWidth = countBarWidth(d[0]);
+                            const marginWidthRatio = (1 - barWidthWithMarginsRatio) / 2.0;
+
                             if (thisClass.granularity_level !== 'hour') {
                                 const x_position = new Date(d[0]).setHours(0);
-
-                                return actualX(x_position) + barWidth * 0.05;                        }
-                            return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + barWidth * 0.05;
+                                return actualX(x_position) + localBarWidth * marginWidthRatio;
+                            }
+                            return actualX(thisClass.getDateWithoutOffset(new Date(d[0]))) + localBarWidth * marginWidthRatio;
                         })
                         // .attr('y', d => actualY(d[1]))
                         .attr('y', function(d) {
@@ -907,27 +912,7 @@ export class D3HistogramComponent implements OnDestroy {
                                 return actualY(d[1]);
                             }
                         })
-                        .attr('width', function(d) {
-                            switch (new Date(d[0]).getMonth()) {
-                                // 31 - Jan, March, May, July, August, October, December
-                                case 0:
-                                case 2:
-                                case 4:
-                                case 6:
-                                case 7:
-                                case 9:
-                                case 11:
-                                    return 0.9 * barWidth * 31 / 30;
-                                case 1:
-                                    const year = new Date(d[0]).getFullYear();
-                                    if (new Date(year, 1, 29).getDate() === 29) {
-                                        return 0.9 * barWidth * 29 / 30;
-                                    }
-                                    return 0.9 * barWidth * 28 / 30;
-                                default:
-                                    return 0.9 * barWidth;
-                            }
-                        })
+                        .attr('width', d => countBarWidth(d[0]))
                         .attr('height', function(d) {
                             if (d[1] < 1) {
                                 return 0;
