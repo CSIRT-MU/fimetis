@@ -1533,7 +1533,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('x', d => margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp))))
                     .attr('y', 18)
                     .attr('width', 1)
-                    .attr('height', 20)
+                    .attr('height', actualY(1) + 10)
                     .style('fill', 	'#808080');
 
                 svg.selectAll('.mark')
@@ -1544,9 +1544,9 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('cx', function (d) {
                         return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp)));
                     })
-                    .attr('r', 5)
+                    .attr('r', 6)
                     .attr('cy', 18)
-                    .style('fill', 'red')
+                    .style('fill', 'white')
                     .style('stroke', 'black')
                     .on('mouseover', function(d) {
                         d3.select(this)
