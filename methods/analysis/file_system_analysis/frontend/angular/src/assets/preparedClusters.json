@@ -1,52 +1,6 @@
 {
     "prepared_clusters": [
         {
-            "name": "files in /usr",
-            "color": "#886644",
-            "description": "files in /usr",
-            "subClusters": [],
-            "tagged": false,
-            "tag": "",
-            "selectMode": 0,
-            "filters": [
-                {
-                    "name": "filename_regex",
-                    "isSelected": "true",
-                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                    "params": [
-                        {
-                            "name": "FILENAME_REGEX",
-                            "type": "REGEX",
-                            "value": "\\/usr\\/.*"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "files in /etc",
-            "color": "#886644",
-            "description": "files in /etc",
-            "subClusters": [],
-            "tagged": false,
-            "tag": "",
-            "selectMode": 0,
-            "filters": [
-                {
-                    "name": "filename_regex",
-                    "isSelected": "true",
-                    "json": "{\"regexp\": { \"File Name.keyword\": \"${{FILENAME_REGEX}}$\" } }",
-                    "params": [
-                        {
-                            "name": "FILENAME_REGEX",
-                            "type": "REGEX",
-                            "value": "\\/etc\\/.*"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "user SSH files",
             "color": "#886644",
             "description": "files according to regex .*.ssh\/(id_rsa|authorized_keys*).",
