@@ -340,8 +340,8 @@ export class D3HistogramComponent implements OnDestroy {
             const maximum = d3.max(data_days, d => d.maxValue);
 
             if (maximum === undefined) {
-                // no ticks if no data loaded
-                return [];
+                // just small basic ticks, if no data loaded
+                return [1, 10];
             }
             const tickvalues = [];
 
@@ -430,42 +430,42 @@ export class D3HistogramComponent implements OnDestroy {
         // graph_range in days
         function count_granularity(graph_range) {
             if (graph_range < 7) {
-                if (thisClass.granularity_level !== 'hour') {
-                    thisClass.toaster.success(
-                        'Changed graph granularity level to HOURS'
-                    );
-                }
+                // if (thisClass.granularity_level !== 'hour') {
+                //     thisClass.toaster.success(
+                //         'Changed graph granularity level to HOURS'
+                //     );
+                // }
                 thisClass.granularity_level = 'hour';
                 thisClass.data = thisClass.data_hours;
                 thisClass.filteredData = thisClass.filteredDataHours;
                 barWidth = hour_width;
             } else if (graph_range >= 7 && graph_range < 1 * 365) {
-                if (thisClass.granularity_level !== 'day') {
-                    thisClass.toaster.success(
-                        'Changed graph granularity level to DAYS'
-                    );
-                }
+                // if (thisClass.granularity_level !== 'day') {
+                //     thisClass.toaster.success(
+                //         'Changed graph granularity level to DAYS'
+                //     );
+                // }
                 thisClass.granularity_level = 'day';
                 thisClass.data = thisClass.data_days;
                 thisClass.filteredData = thisClass.filteredDataDays;
                 barWidth = day_width;
             } else if (graph_range >= 1 * 365 && graph_range < 4 * 365) {
-                if (thisClass.granularity_level !== 'week') {
-                    thisClass.toaster.success(
-                        'Changed graph granularity level to weeks'
-                    );
-                }
+                // if (thisClass.granularity_level !== 'week') {
+                //     thisClass.toaster.success(
+                //         'Changed graph granularity level to weeks'
+                //     );
+                // }
                 thisClass.granularity_level = 'week';
                 thisClass.data = thisClass.data_weeks;
                 thisClass.filteredData = thisClass.filteredDataWeeks;
                 barWidth = week_width;
             } else {
                 if (thisClass.granularity_level !== 'month') {
-                    if (thisClass.granularity_level !== '') {
-                        thisClass.toaster.success(
-                            'Changed graph granularity level to months'
-                        );
-                    }
+                    // if (thisClass.granularity_level !== '') {
+                    //     thisClass.toaster.success(
+                    //         'Changed graph granularity level to months'
+                    //     );
+                    // }
                     thisClass.granularity_level = 'month';
                 }
                 thisClass.data = thisClass.data_months;
@@ -1858,10 +1858,7 @@ export class D3HistogramComponent implements OnDestroy {
             this.marks.delete(mark.id);
         }
 
-        console.log(this.marks);
         this.selectionsEmitter.emit(this.selections);
-
-
     }
 
     getDateWithoutOffset(date) {

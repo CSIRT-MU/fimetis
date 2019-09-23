@@ -45,6 +45,9 @@
                 <thead #header>
                     <th *ngFor="let tableItem of displayedTableColumns">
                         <div class="table-select" *ngIf="tableItem == 'select'"></div>
+                        <div class="table-block table-header" *ngIf="tableItem == 'mark'">
+                            <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
+                        </div>
                         <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
                         <div class="table-block table-header larger-table-block" *ngIf="tableItem == 'timestamp'" mat-sort-header="{{tableItem}}">Timestamp</div>
                         <div class="table-block table-header medium-table-block" *ngIf="tableItem == 'size'" mat-sort-header="{{tableItem}}">Size</div>
@@ -72,7 +75,7 @@
                         <td *ngFor="let tableItem of displayedTableColumns">
                             <div class="table-select" *ngIf="tableItem == 'select'"
                             [ngClass]="{'table-select-selected': selected_rows_id.has(element._id)}"
-                            (click)="tableSelect(element._id); emitMark(element._id, visibleData[i]._source['@timestamp'], selected_rows_id.has(element._id), visibleData[i]._source['File Name'], visibleData[i]._source['Type'])"></div>
+                            (click)="tableSelect(element._id); "></div>
                             <!--<div *ngIf="element._source['Mode'] != null && displayedTableColumns.indexOf('doctype') !== -1" class="table-block small-table-block">-->
                             <!--<span [ngSwitch]="element._source['Mode'][2]">-->
                             <!--<span *ngSwitchCase="'r'" class="glyphicon glyphicon-file"></span>-->
@@ -82,6 +85,13 @@
                             <!--</span>-->
                             <!--</div>-->
                             <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
+                            <div class="table-block" *ngIf="tableItem == 'mark'"
+                                 title="Create/delete mark in graph"
+                                 (click)="
+                                    markLine(element._id);
+                                    emitMark(element._id, element._source['@timestamp'], marked_rows_id.has(element._id), element._source['File Name'], element._source['Type'])">
+                                <span [ngClass]="(marked_rows_id.has(element._id)) ? 'markedMark' : 'unmarkedMark'" class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
+                            </div>
                             <div class="table-block larger-table-block monospace-text" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
                                 (click)="selectDateByClick(i)"
                                 (textSelect)="openHighlightedTextDateMenu($event, i)"

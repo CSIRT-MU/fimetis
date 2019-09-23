@@ -282,6 +282,14 @@ virtual-scroll {
     margin-right: 5px;
 }
 
+.markedMark {
+    color: black;
+}
+
+.unmarkedMark {
+    color: darkgrey;
+}
+
 .table-select-selected::before {
     content: " ";
     /*position: absolute;*/
@@ -436,7 +444,5 @@ virtual-scroll {
     font-size: 10px;
     font-weight: bold;
     letter-spacing: 1px;
-
     /*text-shadow: 10px 0 0px 0px #EDC330, -10px 0 0px 0px #EDC330;*/
-
 }

@@ -57,6 +57,7 @@ export class ListViewComponent {
     //
     additionalFilters = {};
     selected_rows_id: Set<string> = new Set<string>();
+    marked_rows_id: Set<string> = new Set<string>();
     tableSelection = new SelectionModel<any>(true, []);
     availableTableColumns = [
         'select',
@@ -75,7 +76,7 @@ export class ListViewComponent {
         'B-Time',
         'id'
     ];
-    displayedTableColumns = ['select', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
+    displayedTableColumns = ['select', 'mark', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
     pageSortString = 'timestamp';
     pageSortOrder = 'asc';
     // data
@@ -557,6 +558,15 @@ export class ListViewComponent {
             this.selected_rows_id.add(id);
         }
     }
+
+    markLine(id) {
+        if (this.marked_rows_id.has(id)) {
+            this.marked_rows_id.delete(id);
+        } else {
+            this.marked_rows_id.add(id);
+        }
+    }
+
     selectionExists() {
         return window.getSelection().toString();
     }
