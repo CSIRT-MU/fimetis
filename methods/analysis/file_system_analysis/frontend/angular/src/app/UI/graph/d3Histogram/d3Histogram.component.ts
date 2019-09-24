@@ -843,7 +843,6 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
-                        console.log(d3.rgb(thisClass.data[i].color));
                         const color = d3.rgb(thisClass.data[i].color);
                         color.opacity = 1.0;
                         color.r *= 0.7;
@@ -876,6 +875,8 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('margin-top', -25 + 'px');
                             // .style('top', 0 + 'px');
                     }).on('click', function (d) {
+                        d3.selectAll('.bar').style('stroke', 'none');
+                        d3.select(this).style('stroke', 'black');
                         thisClass.scrollToBar.emit(new Date(d[0]));
                 });
             }
@@ -1535,7 +1536,7 @@ export class D3HistogramComponent implements OnDestroy {
             svg.selectAll('.mark-count').remove();
 
             const marksInArray = Array.from(thisClass.marks.values());
-            console.log(marksInArray);
+            //console.log(marksInArray);
             // for (let i = 0; i < thisClass.marks.size; i++) {
             //     marksInArray.push(thisClass.marks[i]);
             // }
@@ -1561,7 +1562,7 @@ export class D3HistogramComponent implements OnDestroy {
                 return 0;
 
             });
-            console.log(marksInArray);
+            //console.log(marksInArray);
 
             const grouppedMarks = [];
 
