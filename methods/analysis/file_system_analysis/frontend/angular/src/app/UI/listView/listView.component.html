@@ -89,7 +89,7 @@
                                  title="Create/delete mark in graph"
                                  (click)="
                                     markLine(element._id);
-                                    emitMark(element._id, element._source['@timestamp'], marked_rows_id.has(element._id), element._source['File Name'], element._source['Type'])">
+                                    emitMark(element._id, element._source['@timestamp'], marked_rows_id.has(element._id), element._source['File Name'], element._source['Type'], visibleDataFirstIndex + i)">
                                 <span [ngClass]="(marked_rows_id.has(element._id)) ? 'markedMark' : 'unmarkedMark'" class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
                             </div>
                             <div class="table-block larger-table-block monospace-text" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"

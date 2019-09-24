@@ -1256,8 +1256,14 @@ export class ListViewComponent {
         this.toaster.success(date.toDateString(), 'View has scrolled to date:');
     }
 
+    async scrollMarkToIndex(index) {
+        console.log('scrool in list view');
+        this.scrollToIndex(index);
+    }
+
     // adding - boolean true if adding, false if removing
-    emitMark(id, timestamp, adding, filename, type) {
-        this.addMark.emit({'id': id, 'timestamp': timestamp, 'filename': filename, 'type': type, 'note': 'empty', 'add': adding});
+    emitMark(id, timestamp, adding, filename, type, i) {
+        console.log(i);
+        this.addMark.emit({'id': id, 'timestamp': timestamp, 'filename': filename, 'type': type, 'note': 'empty', 'add': adding, 'index': i});
     }
 }

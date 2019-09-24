@@ -78,6 +78,8 @@ export class D3HistogramComponent implements OnDestroy {
 
     @Output() scrollToBar = new EventEmitter<Date>();
 
+    @Output() scrollMarkToIndex = new EventEmitter<Number>();
+
     marks = new Map();
 
     margin = { top: 30, right: 40, bottom: 40, left: 50 };
@@ -416,7 +418,6 @@ export class D3HistogramComponent implements OnDestroy {
         drawFilteredBars();
         // drawZoomNavigation();
         drawSelections();
-        //drawMarks();
         this.showAndHideTraces(this.selectedTypes);
 
         // responsive - keep zoom
@@ -1673,7 +1674,12 @@ export class D3HistogramComponent implements OnDestroy {
                         // .style('top', 0 + 'px');
 
 
-                    });
+                    })
+                    .on('click', function (d) {
+                        console.log('click');
+                        thisClass.scrollMarkToIndex.emit(d[0].index);
+                    })
+                    ;
 
                 svg.selectAll('.mark-count')
                     .data(grouppedMarks)

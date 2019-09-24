@@ -111,7 +111,8 @@
             <app-graph class="graph-block" [_case]="selectedCase" [_clusters]="getClusters()"
                        (getDateChange)="changeDateBoundary($event)"
                        (typesChanged)="selectedMetadataTypesChanged($event)"
-                       (scrollToBar)="listViewComponent.scrollToBar($event)">
+                       (scrollToBar)="listViewComponent.scrollToBar($event)"
+                       (scrollMarkToIndex)="listViewComponent.scrollMarkToIndex($event)">
             </app-graph>
             <app-list-view class="list-view-block" (graphChangedBoundary)="changeDateBoundary($event)"
                            (makeManualCluster)="makeManualCluster($event)"
