@@ -843,6 +843,13 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
+                        console.log(d3.rgb(thisClass.data[i].color));
+                        const color = d3.rgb(thisClass.data[i].color);
+                        color.opacity = 1.0;
+                        color.r *= 0.7;
+                        color.g *= 0.7;
+                        color.b *= 0.7;
+                        d3.select(this).style('fill', color.toString());
                         d3.select(this)
                             .style('filter', 'brightness(3)');
                         tooltip
@@ -850,6 +857,7 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('display', 'inline-block');
                     })
                     .on('mouseout', function() {
+                        d3.select(this).style('fill', thisClass.data[i].color);
                         d3.select(this).style('filter', 'brightness(1)');
                         tooltip
                             // .style('opacity', 0);
@@ -1622,7 +1630,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('y', 18)
                     .attr('width', 1)
                     .attr('height', actualY(1) + 10)
-                    .style('fill', '#808080');
+                    .style('fill', 'black');
 
                 svg.selectAll('.mark')
                     .data(grouppedMarks)
