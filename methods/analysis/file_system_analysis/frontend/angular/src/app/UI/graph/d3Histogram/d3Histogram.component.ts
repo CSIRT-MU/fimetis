@@ -187,7 +187,7 @@ export class D3HistogramComponent implements OnDestroy {
 
         const svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
-            .attr('height', element.offsetHeight)
+            .attr('height', element.offsetHeight + 10)
             .style('margin-top', '-10px')
             // .attr('margin-top', '-40px')
             // .on('wheel', wheeled)
