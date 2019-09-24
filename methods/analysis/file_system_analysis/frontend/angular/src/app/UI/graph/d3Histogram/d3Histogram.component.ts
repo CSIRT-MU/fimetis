@@ -1524,6 +1524,7 @@ export class D3HistogramComponent implements OnDestroy {
         function drawMarks() {
             svg.selectAll('.mark').remove();
             svg.selectAll('.mark-stick').remove();
+            svg.selectAll('.mark-count').remove();
 
             const marksInArray = Array.from(thisClass.marks.values());
             console.log(marksInArray);
@@ -1621,7 +1622,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('y', 18)
                     .attr('width', 1)
                     .attr('height', actualY(1) + 10)
-                    .style('fill', 	'#808080');
+                    .style('fill', '#808080');
 
                 svg.selectAll('.mark')
                     .data(grouppedMarks)
@@ -1629,43 +1630,58 @@ export class D3HistogramComponent implements OnDestroy {
                     .append('circle')
                     .attr('class', 'mark')
                     .attr('cx', function (d) {
-                        console.log(d[0]);
-                        console.log(d[1]);
                         return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp)));
                     })
-                    .attr('r', 6)
+                    .attr('r', 8)
                     .attr('cy', 18)
                     .style('fill', 'white')
                     .style('stroke', 'black')
-                    .on('mouseover', function(d) {
+                    .on('mouseover', function (d) {
                         d3.select(this)
                             .style('filter', 'brightness(3)');
                         tooltip
                         // .style('opacity', 1);
                             .style('display', 'inline-block');
                     })
-                    .on('mouseout', function() {
+                    .on('mouseout', function () {
                         d3.select(this).style('filter', 'brightness(1)');
                         tooltip
                         // .style('opacity', 0);
                             .style('display', 'none');
                     })
-                    .on('mousemove', function(d) {
+                    .on('mousemove', function (d) {
                         tooltip
                             .html('<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-                                thisClass.getDateWithoutOffset(new Date(d[1].timestamp)).toLocaleString('en-us')
+                                thisClass.getDateWithoutOffset(new Date(d[0].timestamp)).toLocaleString('en-us')
                                 // 'en-US',
                                 // { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'}
                                 + '</p>' +
                                 '<p style="display: block; margin: 0; font-size: small">' +
-                                d[1].filename + '</p>')
-                            .style('left', actualX(new Date(d[1].timestamp)) + 'px')
+                                d[0].filename + '</p>')
+                            .style('left', actualX(new Date(d[0].timestamp)) + 'px')
                             .style('border-color', 'black')
                             .style('margin-top', -60 + 'px');
                         // .style('top', 0 + 'px');
 
 
                     });
+
+                svg.selectAll('.mark-count')
+                    .data(grouppedMarks)
+                    .enter()
+                    .append('text')
+                    .text(function (d) {
+                        if (d[1] === 1) {
+                            return '';
+                        }
+                        return d[1];
+                    })
+                    .attr('class', 'mark-count')
+                    .attr('x', function (d) {
+                        return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp))) - 3;
+                    })
+                    .attr('y', 21)
+                    .attr('font-size', '10px');
 
             }
 
