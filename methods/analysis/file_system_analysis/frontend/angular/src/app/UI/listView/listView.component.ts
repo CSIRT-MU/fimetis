@@ -76,7 +76,7 @@ export class ListViewComponent {
         'B-Time',
         'id'
     ];
-    displayedTableColumns = ['select', 'mark', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
+    displayedTableColumns = ['mark', 'timestamp', 'size', 'type', 'mode', 'uid', 'gid', 'name'];
     pageSortString = 'timestamp';
     pageSortOrder = 'asc';
     // data
@@ -1263,7 +1263,67 @@ export class ListViewComponent {
 
     // adding - boolean true if adding, false if removing
     emitMark(id, timestamp, adding, filename, type, i) {
-        console.log(i);
-        this.addMark.emit({'id': id, 'timestamp': timestamp, 'filename': filename, 'type': type, 'note': 'empty', 'add': adding, 'index': i});
+        this.addMark.emit({
+                'id': id,
+                'timestamp': timestamp,
+                'filename': filename,
+                'type': type,
+                'note': 'empty',
+                'add': adding,
+                'index': i
+        });
+    }
+
+    emitAllMarks() {
+        const size = this.visibleDataLastIndex - this.visibleDataFirstIndex + 1;
+
+        // marking all marks is allowed only in small clusters
+        if (this.total > size) {
+            return;
+        }
+
+
+        let allMarked = true && this.visibleData.length > 0;
+
+
+        for (let i = 0; i < size; i++) {
+            console.log(this.visibleDataFirstIndex);
+            if (!this.marked_rows_id.has(this.visibleData[i]['_id'])) {
+                allMarked = false;
+                break;
+            }
+        }
+
+        console.log(this.visibleData.length);
+
+        // if ale visible lines are marked, then unmark them
+        // else mark deselect all
+        if (allMarked) {
+            for (let i = 0; i < size; i++) {
+                this.markLine(this.visibleData[i]['_id']);
+                this.emitMark(
+                    this.visibleData[i]['_id'],
+                    this.visibleData[i]['_source']['@timestamp'],
+                    false,
+                    this.visibleData[i]['_source']['File Name'],
+                    this.visibleData[i]['_source']['Type'],
+                    this.visibleDataFirstIndex + i
+                );
+            }
+        } else {
+            for (let i = 0; i < size; i++) {
+                if (!this.marked_rows_id.has(this.visibleData[i]['_id'])) {
+                    this.markLine(this.visibleData[i]['_id']);
+                    this.emitMark(
+                        this.visibleData[i]['_id'],
+                        this.visibleData[i]['_source']['@timestamp'],
+                        true,
+                        this.visibleData[i]['_source']['File Name'],
+                        this.visibleData[i]['_source']['Type'],
+                        this.visibleDataFirstIndex + i
+                    );
+                }
+            }
+        }
     }
 }

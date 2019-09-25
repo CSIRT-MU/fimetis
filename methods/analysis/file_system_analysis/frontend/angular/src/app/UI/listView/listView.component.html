@@ -45,7 +45,7 @@
                 <thead #header>
                     <th *ngFor="let tableItem of displayedTableColumns">
                         <div class="table-select" *ngIf="tableItem == 'select'"></div>
-                        <div class="table-block table-header" *ngIf="tableItem == 'mark'">
+                        <div class="table-block table-header" *ngIf="tableItem == 'mark'" (click)="emitAllMarks()">
                             <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
                         </div>
                         <!--<div class="table-block small-table-block glyphicon glyphicon-file" *ngIf="displayedTableColumns.indexOf('doctype') !== -1"></div>-->
@@ -68,8 +68,7 @@
                 <tbody #container>
 <!--                ,-->
 <!--                'border-bottom': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true ? '1px solid #666666': 'none'    -->
-                    <tr class="table-row-definition" *ngFor="let element of visibleData; index as i"
-                         [ngStyle]="{'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null )}"
+                    <tr [ngStyle]="{'font-weight': marked_rows_id.has(element._id) ? 'bolder' : 'normal', 'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null )}" class="table-row-definition" *ngFor="let element of visibleData; index as i"
                         [ngClass]="{'list-selection-line': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true}"
                     >
                         <td *ngFor="let tableItem of displayedTableColumns">
@@ -85,12 +84,12 @@
                             <!--</span>-->
                             <!--</div>-->
                             <!--matTooltip="{{element['_source']['File Name']}}" [matTooltipPosition]="'above'" [matTooltipClass]="'tooltip-filename'"-->
-                            <div class="table-block" *ngIf="tableItem == 'mark'"
+                            <div style="text-align: center; vertical-align: bottom" class="table-block small-table-block monospace-text" *ngIf="tableItem == 'mark'"
                                  title="Create/delete mark in graph"
                                  (click)="
                                     markLine(element._id);
                                     emitMark(element._id, element._source['@timestamp'], marked_rows_id.has(element._id), element._source['File Name'], element._source['Type'], visibleDataFirstIndex + i)">
-                                <span [ngClass]="(marked_rows_id.has(element._id)) ? 'markedMark' : 'unmarkedMark'" class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
+                                <span [ngClass]="(marked_rows_id.has(element._id)) ? 'markedMark' : 'unmarkedMark'" class="glyphicon-mark glyphicon-pushpin" aria-hidden="true" ></span>
                             </div>
                             <div class="table-block larger-table-block monospace-text" *ngIf="tableItem == 'timestamp'" id="date_{{i}}"
                                 (click)="selectDateByClick(i)"
