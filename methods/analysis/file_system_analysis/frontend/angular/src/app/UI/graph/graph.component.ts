@@ -623,9 +623,18 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.showHideTrace(type);
             // this.typesChanged.emit(this.selectedTypes);
-            this.d3Histogram.showAndHideTraces(Array.from(this.selectedTypes));
+            this.d3Histogram.selectedTypes = this.selectedTypes;
+            this.d3Histogram.showAndHideTraces();
             this.typesChangedDebouncer.next(this.selectedTypes);
             // console.log('selected metadata types changed', this.selectedTypes);
+
+
+            // if (this.selectedTypes.has('m')) {
+            //     this.d3Histogram.mtimeVisible = true;
+            // }
+            // else {
+            //
+            // }
         }
     }
 

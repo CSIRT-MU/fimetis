@@ -41,6 +41,9 @@ export class D3HistogramComponent implements OnDestroy {
 
 
     @Input()
+    selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
+
+    @Input()
     filteredDataMonths: HistogramData[] = [];
     @Input()
     filteredDataWeeks: HistogramData[] = [];
@@ -59,8 +62,8 @@ export class D3HistogramComponent implements OnDestroy {
     min_date_boundary: any;
     @Input()
     max_date_boundary: any;
-    @Input()
-    selectedTypes = ['m', 'a', 'c', 'b'];
+    // @Input()
+    // // selectedTypes = ['m', 'a', 'c', 'b'];
     windowPosition = {from: null, to: null};
 
     selectedSelectionIndex = -1;
@@ -205,9 +208,13 @@ export class D3HistogramComponent implements OnDestroy {
 
                 // On mouseover unselected selection change cursor to pointer
                 for (let i = 0; i < thisClass.selections.length; i++ ) {
+                    // if (xAxisPos > (actualX(thisClass.selections[i][0])) &&
+                    //     xAxisPos < (actualX(thisClass.selections[i][1])) && i !== thisClass.selectedSelectionIndex) {
                     if (xAxisPos > (actualX(thisClass.selections[i][0])) &&
-                        xAxisPos < (actualX(thisClass.selections[i][1])) && i !== thisClass.selectedSelectionIndex) {
-                        d3.select(this).style('cursor', 'pointer');
+                         xAxisPos < (actualX(thisClass.selections[i][1]))) {
+
+                          d3.select(this).style('cursor', 'pointer');
+                        //d3.select(this).style('cursor', 'url("https://cdn4.iconfinder.com/data/icons/podcast-collection/100/delete-512.png"), auto');
                         return;
                     }
                 }
@@ -353,6 +360,7 @@ export class D3HistogramComponent implements OnDestroy {
                 tick *= 10;
             }
             tickvalues.push(tick);
+            tickvalues.push(tick * 10);
 
             return tickvalues;
         }
@@ -418,7 +426,7 @@ export class D3HistogramComponent implements OnDestroy {
         drawFilteredBars();
         // drawZoomNavigation();
         drawSelections();
-        this.showAndHideTraces(this.selectedTypes);
+        this.showAndHideTraces();
 
         // responsive - keep zoom
         if (this.savedZoomProperties != null) {
@@ -548,6 +556,8 @@ export class D3HistogramComponent implements OnDestroy {
 
             drawZoomNavigation();
             drawSelections();
+            thisClass.showAndHideTraces();
+
             // save zoom for responsive redraw
             thisClass.savedZoomProperties = {'zoom': d3.zoomTransform(svg.node()),
                 'oldWidth': element.offsetWidth, 'oldHeight': element.offsetHeight};
@@ -977,13 +987,15 @@ export class D3HistogramComponent implements OnDestroy {
             thisClass.selectionsDebouncer.next(thisClass.selections);
         }
 
-
         function selectSelection() {
             const click_x = d3.mouse(this)[0] - margin.left;
-
             for (let j = 0; j < thisClass.selections.length; j++) {
-                if (click_x >= actualX(thisClass.selections[j][0]) && click_x <= actualX(thisClass.selections[j][1])) {
-                    thisClass.selectedSelectionIndex = j;
+                if (click_x > actualX(thisClass.selections[j][0]) && click_x < actualX(thisClass.selections[j][1])) {
+                    if (thisClass.selectedSelectionIndex === j) {
+                        thisClass.selectedSelectionIndex = -1;
+                    } else {
+                        thisClass.selectedSelectionIndex = j;
+                    }
                     drawSelections();
                     break;
                 }
@@ -1988,10 +2000,9 @@ export class D3HistogramComponent implements OnDestroy {
         this.createChart();
     }
 
-    showAndHideTraces(types: string[]) {
-        this.selectedTypes = types;
+    showAndHideTraces() {
         d3.selectAll('.bar').style('visibility', 'hidden');
-        for (const typeName of types) {
+        for (const typeName of Array.from(this.selectedTypes)) {
             d3.selectAll('.bar' + typeName).style('visibility', 'visible');
         }
     }
