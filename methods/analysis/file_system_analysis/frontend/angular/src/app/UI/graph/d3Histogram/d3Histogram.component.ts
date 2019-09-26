@@ -862,13 +862,15 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
+                        const text_color = d3.color(thisClass.data[i].color);
+                        const colour = text_color.rgb();
                         // const color = d3.rgb(thisClass.data[i].color);
-                        // color.opacity = 1.0;
-                        // color.r *= 0.7;
-                        // color.g *= 0.7;
-                        // color.b *= 0.7;
-                        const color = 'grey';
-                        d3.select(this).style('fill', color.toString());
+                        colour.opacity = 1.0;
+                        colour.r *= 0.7;
+                        colour.g *= 0.7;
+                        colour.b *= 0.7;
+                        //const colour = 'grey';
+                        d3.select(this).style('fill', colour.toString());
                         d3.select(this)
                             .style('filter', 'brightness(3)');
                         tooltip
