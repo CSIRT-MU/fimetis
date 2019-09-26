@@ -298,7 +298,8 @@ virtual-scroll {
     font-weight:400;
     line-height:1;
     -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale
+    -moz-osx-font-smoothing:grayscale;
+    font-size: 11px;
 }
 
 .table-select-selected::before {
@@ -449,7 +450,7 @@ virtual-scroll {
     position: absolute;
     width: 0;
     left: 5px;
-    margin-top: 18px;
+    margin-top: 19px;
     color: white;
     content: 'NEXT SELECTION';
     font-size: 10px;

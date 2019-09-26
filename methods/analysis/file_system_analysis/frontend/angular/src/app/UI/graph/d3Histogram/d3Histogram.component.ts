@@ -193,11 +193,19 @@ export class D3HistogramComponent implements OnDestroy {
         const svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
             .attr('height', element.offsetHeight + 10)
-            .style('margin-top', '-10px')
+            .style('margin-top', '10px')
+            // .style('margin-bottom', '100px')
             // .attr('margin-top', '-40px')
             // .on('wheel', wheeled)
             .on('mousemove', function () {
                 const xAxisPos = d3.mouse(this)[0] - margin.left;
+                const yAxisPos = d3.mouse(this)[1] - margin.top;
+
+                if (yAxisPos < 0) {
+                    d3.select(this).style('cursor', 'default');
+                    return;
+                }
+
                 d3.selectAll('.selectionHoverArea').style('visibility', 'hidden');
                 for (let index = 0; index < thisClass.selections.length; index++) {
                     if (xAxisPos > (actualX(thisClass.selections[index][0]) - hoverAreaOffset.left) &&
@@ -260,7 +268,7 @@ export class D3HistogramComponent implements OnDestroy {
             .on('click', selectActualArea);
 
         const contentWidth = element.offsetWidth - this.margin.left - this.margin.right;
-        const contentHeight = element.offsetHeight - this.margin.top - this.margin.bottom;
+        const contentHeight = element.offsetHeight - this.margin.top - this.margin.bottom - 20;
 
         const mask = svg.append('defs').append('mask').attr('id', 'shadowMask');
         const leftMask = svg.append('defs').append('mask').attr('id', 'leftShadowMask');
@@ -1566,10 +1574,10 @@ export class D3HistogramComponent implements OnDestroy {
             //
             // console.log(marksInArray);
             marksInArray.sort(function(a, b) {
-                if (a.id < b.id) {
+                if (a.timestamp < b.timestamp) {
                     return -1;
                 }
-                if (a.id > b.id) {
+                if (a.timestamp > b.timestamp) {
                     return 1;
                 }
                 return 0;
@@ -1588,7 +1596,7 @@ export class D3HistogramComponent implements OnDestroy {
                     if (i + 1 >= marksInArray.length) {
                         break;
                     }
-                    if ((actualX(new Date(marksInArray[i + 1].timestamp))) - (actualX(new Date(marksInArray[i].timestamp))) < 12) {
+                    if ((actualX(new Date(marksInArray[i + 1].timestamp))) - (actualX(new Date(marksInArray[i].timestamp))) < 15) {
                         currentMark[1]++;
                         i++;
                     } else {
@@ -1654,11 +1662,14 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('cx', function (d) {
                         return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp)));
                     })
-                    .attr('r', 8)
+                    .attr('r', 9)
                     .attr('cy', 18)
                     .style('fill', 'white')
                     .style('stroke', 'black')
                     .on('mouseover', function (d) {
+                        if (d[1] > 1) {
+                            return;
+                        }
                         d3.select(this)
                             .style('filter', 'brightness(3)');
                         tooltip
@@ -1672,6 +1683,9 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('display', 'none');
                     })
                     .on('mousemove', function (d) {
+                        if (d[1] > 1) {
+                            return;
+                        }
                         tooltip
                             .html('<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
                                 thisClass.getDateWithoutOffset(new Date(d[0].timestamp)).toLocaleString('en-us')
@@ -1688,7 +1702,9 @@ export class D3HistogramComponent implements OnDestroy {
 
                     })
                     .on('click', function (d) {
-                        console.log('click');
+                        if (d[1] > 1) {
+                            return;
+                        }
                         thisClass.scrollMarkToIndex.emit(d[0].index);
                     })
                     ;
@@ -1705,7 +1721,11 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('class', 'mark-count')
                     .attr('x', function (d) {
-                        return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp))) - 3;
+                        if (d[1] < 10) {
+                            return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp))) - 3;
+                        } else {
+                            return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp))) - 5;
+                        }
                     })
                     .attr('y', 21)
                     .attr('font-size', '10px');
