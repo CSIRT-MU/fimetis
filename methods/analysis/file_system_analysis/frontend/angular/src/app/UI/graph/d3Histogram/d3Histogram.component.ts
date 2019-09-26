@@ -1013,6 +1013,10 @@ export class D3HistogramComponent implements OnDestroy {
 
         function selectSelection() {
             const click_x = d3.mouse(this)[0] - margin.left;
+            const click_y = d3.mouse(this)[1] - margin.top;
+            if (click_y < 0) {
+                return;
+            }
             for (let j = 0; j < thisClass.selections.length; j++) {
                 if (click_x > actualX(thisClass.selections[j][0]) && click_x < actualX(thisClass.selections[j][1])) {
                     if (thisClass.selectedSelectionIndex === j) {
