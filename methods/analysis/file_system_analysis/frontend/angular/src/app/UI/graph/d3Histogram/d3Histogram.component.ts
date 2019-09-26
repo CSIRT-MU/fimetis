@@ -8,7 +8,7 @@ import {transformAll} from '@angular/compiler/src/render3/r3_ast';
 import {BaseService} from '../../../services/base.service';
 import {ToastrService} from 'ngx-toastr';
 import {StateService} from '../../../services/state.service';
-
+import Color from 'color';
 
 export interface HistogramData {
     data: number[][];
@@ -862,15 +862,28 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
-                        const text_color = d3.color(thisClass.data[i].color);
-                        const colour = text_color.rgb();
-                        // const color = d3.rgb(thisClass.data[i].color);
-                        colour.opacity = 1.0;
-                        colour.r *= 0.7;
-                        colour.g *= 0.7;
-                        colour.b *= 0.7;
+                        const colour = Color(thisClass.data[i].color).rgb();
+
+                        console.log(colour);
+
+                        const new_r = colour.red() * 0.7;
+                        const new_g = colour.green() * 0.7;
+                        const new_b = colour.blue() * 0.7;
+
+                        const new_color = Color.rgb(new_r, new_g, new_b);
+
+
+
+
+                        // const text_color = d3.color(thisClass.data[i].color);
+                        // const colour = text_color.rgb();
+                        // // const color = d3.rgb(thisClass.data[i].color);
+                        //colour.opacity = 1.0;
+                        // colour.r *= 0.7;
+                        // colour.g *= 0.7;
+                        // colour.b *= 0.7;
                         //const colour = 'grey';
-                        d3.select(this).style('fill', colour.toString());
+                        d3.select(this).style('fill', new_color.toString());
                         d3.select(this)
                             .style('filter', 'brightness(3)');
                         tooltip
