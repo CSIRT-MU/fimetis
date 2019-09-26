@@ -862,11 +862,12 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
-                        const color = d3.rgb(thisClass.data[i].color);
-                        color.opacity = 1.0;
-                        color.r *= 0.7;
-                        color.g *= 0.7;
-                        color.b *= 0.7;
+                        // const color = d3.rgb(thisClass.data[i].color);
+                        // color.opacity = 1.0;
+                        // color.r *= 0.7;
+                        // color.g *= 0.7;
+                        // color.b *= 0.7;
+                        const color = 'grey';
                         d3.select(this).style('fill', color.toString());
                         d3.select(this)
                             .style('filter', 'brightness(3)');
