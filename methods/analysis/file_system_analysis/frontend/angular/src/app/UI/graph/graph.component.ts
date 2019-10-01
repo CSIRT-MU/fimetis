@@ -283,6 +283,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
      * Graph initialization
      */
     init() {
+
         this.loadingMTimes = true;
         this.loadingATimes = true;
         this.loadingCTimes = true;
@@ -472,6 +473,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.additionalFilters !== undefined) {
             this.loadFilteredData();
         }
+
+
+
+        this.countPresenceOfMarksInCurrentCluster();
 
     }
 
@@ -869,6 +874,15 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         this.init();
     }
 
+    async countPresenceOfMarksInCurrentCluster() {
+        const marksInArray = Array.from(this.d3Histogram.marks.values());
+        for (let i = 0; i < marksInArray.length; i++ ) {
+            this.d3Histogram.marks.get(marksInArray[i].id).inCurrentCluster =
+                await this.graphService.isMarkInCurrentCluster(this._case, this._clusters, marksInArray[i].id);
+        }
+        this.typesChangedDebouncer.next(this.selectedTypes);
+       //this.d3Histogram.createChart();
+    }
 
     loadGraphMonthData() {
         // Loading mactimes - modified

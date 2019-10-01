@@ -380,5 +380,21 @@ def graph_get_data(current_user, case):
     return jsonify(res)
 
 
+@app.route('/graph/is_mark_in_cluster/<string:case>', methods=['POST'])
+@token_required
+def is_mark_in_cluster(current_user, case):
+    clusters = request.json.get('clusters')
+    id = request.json.get('id')
+
+    query = fsa.build_id_presence_query(case, clusters, id)
+    logging.info('QUERY is mark in cluster: ' + '\n' + json.dumps(query))
+
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
+
+    return jsonify(res)
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000, threaded=True)

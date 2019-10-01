@@ -334,8 +334,8 @@ export class D3HistogramComponent implements OnDestroy {
             .style('border-radius', '5px')
             .style('padding', '3px');
 
-        const firstDate = new Date(this.min_date_boundary - (24 * 3600 * 1000));
-        const lastDate = new Date(this.max_date_boundary + (24 * 3600 * 1000));
+        const firstDate = new Date(this.min_date_boundary - (30 * 24 * 3600 * 1000));
+        const lastDate = new Date(this.max_date_boundary + (30 * 24 * 3600 * 1000));
 
         for (const dataItem of data_days) {
             dataItem.maxValue = d3.max(dataItem.data, d => d[1]);
@@ -863,8 +863,6 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
                         const colour = Color(thisClass.data[i].color).rgb();
-
-                        console.log(colour);
 
                         const new_r = colour.red() * 0.7;
                         const new_g = colour.green() * 0.7;
@@ -1577,22 +1575,7 @@ export class D3HistogramComponent implements OnDestroy {
             svg.selectAll('.mark-count').remove();
 
             const marksInArray = Array.from(thisClass.marks.values());
-            //console.log(marksInArray);
-            // for (let i = 0; i < thisClass.marks.size; i++) {
-            //     marksInArray.push(thisClass.marks[i]);
-            // }
-            // for (const [key, value] of Object.entries(thisClass.marks)) {
-            //     console.log('here');
-            //     marksInArray.push(value);
-            // }
-            // for (let m in thisClass.marks){
-            //     console.log(m);
-            //     console.log(m[1]);
-            // }
 
-            // marksInArray =
-            //
-            // console.log(marksInArray);
             marksInArray.sort(function(a, b) {
                 if (a.timestamp < b.timestamp) {
                     return -1;
@@ -1603,21 +1586,22 @@ export class D3HistogramComponent implements OnDestroy {
                 return 0;
 
             });
-            //console.log(marksInArray);
 
             const grouppedMarks = [];
 
             let i = 0;
 
             while (i < marksInArray.length) {
-                const currentMark = [marksInArray[i], 1];
-
+                const currentMark = [marksInArray[i], 1, marksInArray[i].inCurrentCluster, []];
+                currentMark[3].push(marksInArray[i]);
                 while (true) {
                     if (i + 1 >= marksInArray.length) {
                         break;
                     }
                     if ((actualX(new Date(marksInArray[i + 1].timestamp))) - (actualX(new Date(marksInArray[i].timestamp))) < 15) {
                         currentMark[1]++;
+                        currentMark[2] = marksInArray[i + 1].inCurrentCluster || currentMark[2];
+                        currentMark[3].push(marksInArray[i + 1]);
                         i++;
                     } else {
                         break;
@@ -1627,40 +1611,6 @@ export class D3HistogramComponent implements OnDestroy {
                 i++;
 
             }
-            //     while (i + 1 < marksInArray.length) {
-            //         while()
-            //     }
-            // }
-            //
-            // for (let i = 0; i < marksInArray.length; i++) {
-            //     let count = 1;
-            //
-            //
-            //     while (true) {
-            //         const currentMark = [marksInArray[i], count];
-            //
-            //         if (i + 1 >= marksInArray.length) {
-            //             break;
-            //         }
-            //         if ((actualX(new Date(marksInArray[i + 1].timestamp))) - (actualX(new Date(marksInArray[i].timestamp))) < 12) {
-            //             currentMark[1]++;
-            //         }
-            //         else {
-            //             grouppedMarks.push()
-            //         }
-            //         i++;
-            //     }
-            //
-            //     // if (i + 1 < marksInArray.length) {
-            //     //     while ((actualX(new Date(marksInArray[i + 1].timestamp))) - (actualX(new Date(marksInArray[i].timestamp))) < 15 && i < marksInArray.length - 1) {
-            //     //         count++;
-            //     //         i++;
-            //     //     }
-            //     // }
-            //
-            //
-            //     grouppedMarks.push(currentMark);
-            // }
 
             if (grouppedMarks.length > 0) {
                 svg.selectAll('.mark-stick')
@@ -1669,10 +1619,16 @@ export class D3HistogramComponent implements OnDestroy {
                     .append('rect')
                     .attr('class', 'mark-stick')
                     .attr('x', d => margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[0].timestamp))))
-                    .attr('y', 18)
+                    .attr('y', 26)
                     .attr('width', 1)
-                    .attr('height', actualY(1) + 10)
-                    .style('fill', 'black');
+                    .attr('height', actualY(1) + 5)
+                    .style('fill', function (d) {
+                        if (d[2]) {
+                            return 'black';
+                        } else {
+                            return '#b3b3b3';
+                        }
+                    });
 
                 svg.selectAll('.mark')
                     .data(grouppedMarks)
@@ -1685,11 +1641,15 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('r', 9)
                     .attr('cy', 18)
                     .style('fill', 'white')
-                    .style('stroke', 'black')
-                    .on('mouseover', function (d) {
-                        if (d[1] > 1) {
-                            return;
+                    .style('fill-opacity', 0.1)
+                    .style('stroke', function (d) {
+                        if (d[2]) {
+                            return 'black';
+                        } else {
+                            return '#b3b3b3';
                         }
+                    })
+                    .on('mouseover', function (d) {
                         d3.select(this)
                             .style('filter', 'brightness(3)');
                         tooltip
@@ -1699,27 +1659,19 @@ export class D3HistogramComponent implements OnDestroy {
                     .on('mouseout', function () {
                         d3.select(this).style('filter', 'brightness(1)');
                         tooltip
-                        // .style('opacity', 0);
                             .style('display', 'none');
                     })
                     .on('mousemove', function (d) {
-                        if (d[1] > 1) {
-                            return;
-                        }
                         tooltip
-                            .html('<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-                                thisClass.getDateWithoutOffset(new Date(d[0].timestamp)).toLocaleString('en-us')
-                                // 'en-US',
-                                // { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'}
-                                + '</p>' +
-                                '<p style="display: block; margin: 0; font-size: small">' +
-                                d[0].filename + '</p>')
-                            .style('left', actualX(new Date(d[0].timestamp)) + 'px')
+                            .html(generateMarkTooltip(d))
+                            .style('left', function () {
+                                if (actualX(new Date(d[0].timestamp)) + 200 > contentWidth) {
+                                    return actualX(new Date(d[0].timestamp)) - 200 + 'px';
+                                }
+                                return actualX(new Date(d[0].timestamp)) + 'px';
+                            })
                             .style('border-color', 'black')
                             .style('margin-top', -60 + 'px');
-                        // .style('top', 0 + 'px');
-
-
                     })
                     .on('click', function (d) {
                         if (d[1] > 1) {
@@ -1748,65 +1700,40 @@ export class D3HistogramComponent implements OnDestroy {
                         }
                     })
                     .attr('y', 21)
-                    .attr('font-size', '10px');
-
+                    .attr('font-size', '10px')
+                    .style('fill', function (d) {
+                        if (d[2]) {
+                            return 'black';
+                        } else {
+                            return '#b3b3b3';
+                        }
+                    })
+                    .on('mouseover', function (d) {
+                        d3.select(this)
+                            .style('filter', 'brightness(3)');
+                        tooltip
+                            .style('display', 'inline-block');
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this).style('filter', 'brightness(1)');
+                        tooltip
+                            .style('display', 'none');
+                    })
+                    .on('mousemove', function (d) {
+                        tooltip
+                            .html(generateMarkTooltip(d))
+                            .style('left', function () {
+                                if (actualX(new Date(d[0].timestamp)) + 200 > contentWidth){
+                                    return actualX(new Date(d[0].timestamp)) - 200 + 'px';
+                                }
+                                return actualX(new Date(d[0].timestamp)) + 'px';
+                            })
+                            .style('border-color', 'black')
+                            .style('margin-top', -60 + 'px')
+                        ;
+                    })
+                ;
             }
-
-            // if (thisClass.marks.size > 0) {
-            //     svg.selectAll('.mark-stick')
-            //         .data(Array.from(thisClass.marks))
-            //         .enter()
-            //         .append('rect')
-            //         .attr('class', 'mark-stick')
-            //         .attr('x', d => margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp))))
-            //         .attr('y', 18)
-            //         .attr('width', 1)
-            //         .attr('height', actualY(1) + 10)
-            //         .style('fill', 	'#808080');
-            //
-            //     svg.selectAll('.mark')
-            //         .data(Array.from(thisClass.marks))
-            //         .enter()
-            //         .append('circle')
-            //         .attr('class', 'mark')
-            //         .attr('cx', function (d) {
-            //             return margin.left + actualX(thisClass.getDateWithoutOffset(new Date(d[1].timestamp)));
-            //         })
-            //         .attr('r', 6)
-            //         .attr('cy', 18)
-            //         .style('fill', 'white')
-            //         .style('stroke', 'black')
-            //         .on('mouseover', function(d) {
-            //             d3.select(this)
-            //                 .style('filter', 'brightness(3)');
-            //             tooltip
-            //             // .style('opacity', 1);
-            //                 .style('display', 'inline-block');
-            //         })
-            //         .on('mouseout', function() {
-            //             d3.select(this).style('filter', 'brightness(1)');
-            //             tooltip
-            //             // .style('opacity', 0);
-            //                 .style('display', 'none');
-            //         })
-            //         .on('mousemove', function(d) {
-            //             tooltip
-            //                 .html('<p style="display: block; margin: 0; font-size: small; font-weight: bold">' +
-            //                     thisClass.getDateWithoutOffset(new Date(d[1].timestamp)).toLocaleString('en-us')
-            //             // 'en-US',
-            //             // { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric'}
-            //                     + '</p>' +
-            //                     '<p style="display: block; margin: 0; font-size: small">' +
-            //                     d[1].filename + '</p>')
-            //                 .style('left', actualX(new Date(d[1].timestamp)) + 'px')
-            //                 .style('border-color', 'black')
-            //                 .style('margin-top', -60 + 'px');
-            //             // .style('top', 0 + 'px');
-            //
-            //
-            //         });
-            //
-            // }
         }
 
 
@@ -2033,6 +1960,33 @@ export class D3HistogramComponent implements OnDestroy {
                 }
             }
             return closestRightSelectionStart;
+        }
+
+        function generateMarkTooltip(d) {
+            let tooltipString = '';
+
+            let timeRange = '';
+
+            if (d[3][0].timestamp === d[3][d[3].length - 1].timestamp) {
+                timeRange = thisClass.getDateWithoutOffset(new Date(d[3][0].timestamp)).toLocaleString('en-us');
+            } else {
+                timeRange = thisClass.getDateWithoutOffset(new Date(d[3][0].timestamp)).toLocaleString('en-us') +
+                    ' - ' +
+                    thisClass.getDateWithoutOffset(new Date(d[3][d[3].length - 1].timestamp)).toLocaleString('en-us');
+            }
+
+            tooltipString += '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' + timeRange + '</p>';
+            for (let j = 0; j < d[3].length; j++ ) {
+                let color = 'black';
+                if (!d[3][j].inCurrentCluster) {
+                    color = '#b3b3b3';
+                }
+                tooltipString += ('<p style="display: block; margin: 0; font-size: small; color: ' +
+                    color + '" >' + d[3][j].filename + '</p>');
+            }
+
+            return tooltipString;
+
         }
     }
 

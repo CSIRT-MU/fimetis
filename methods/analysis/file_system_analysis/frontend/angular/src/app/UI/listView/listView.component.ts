@@ -1270,7 +1270,8 @@ export class ListViewComponent {
                 'type': type,
                 'note': 'empty',
                 'add': adding,
-                'index': i
+                'index': i,
+                'inCurrentCluster': true
         });
     }
 

@@ -364,3 +364,52 @@ def parse_additional_filters(additional_filters):
         processed_additional_filters.append(build_additional_types_filter(additional_filters_obj['typeFilter']))
 
     return processed_additional_filters
+
+
+def build_id_presence_query(case_name, clusters, id):
+    body = {}
+
+    must_tags = []
+    must_filters = []
+    must_not_tags = []
+    must_not_filters = []
+    if clusters is not None:
+        sub_clusters = get_base_clusters(clusters)
+        for cluster in sub_clusters:
+            if cluster.selectMode != ClusterSelectMode.notSelected.value:
+                if cluster.selectMode == ClusterSelectMode.added.value:
+                    if cluster.tagged:
+                        must_tags.append(cluster.tag)
+                    else:
+                        filter_model = get_filter_string(cluster)
+                        if filter_model is not None:
+                            must_filters.append(filter_model)
+                if cluster.selectMode == ClusterSelectMode.deducted.value:
+                    if cluster.tagged:
+                        must_not_tags.append(cluster.tag)
+                    else:
+                        filter_model = get_filter_string(cluster)
+                        if filter_model is not None:
+                            must_not_filters.append(filter_model)
+    must_clusters = []
+    must_clusters.extend(get_match_string_from_tags(must_tags))
+    must_clusters.extend(must_filters)
+
+    must_not_clusters = []
+    must_not_clusters.extend(get_match_string_from_tags(must_not_tags))
+    must_not_clusters.extend(must_not_filters)
+
+    must_params = []
+    must_params.append(get_match_string_from_case(case_name))
+
+    if len(must_clusters) == 0:
+        must_not_clusters.append({'match_all': {}})
+
+    query_must_params = {'bool': {'must': must_params}}
+    query_should_clusters = {'bool': {'should': must_clusters}}
+    query_must_not_clusters = {'bool': {'must_not': must_not_clusters}}
+    query = {'bool': {'must': [query_must_params, query_should_clusters, query_must_not_clusters]}}
+
+    must_params.append({'ids': {'values': [id]}})
+    body['query'] = query
+    return body
