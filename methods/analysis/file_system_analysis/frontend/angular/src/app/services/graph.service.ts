@@ -78,4 +78,19 @@ export class GraphService {
 
         return frequency;
     }
+
+    async isMarkInCurrentCluster(_case: string, _clusters: ClusterModel[], id: string) {
+        return this.http.post<any>(environment.backendUrl + '/graph/is_mark_in_cluster/' + _case, {
+            'clusters': _clusters,
+            'id': id
+        }).toPromise().then(
+            response => {
+                console.log(response);
+               return response.hits.hits.length === 1;
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
 }
