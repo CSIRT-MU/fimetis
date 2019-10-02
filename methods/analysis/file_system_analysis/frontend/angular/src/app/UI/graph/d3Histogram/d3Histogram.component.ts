@@ -908,8 +908,12 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('margin-top', -25 + 'px');
                             // .style('top', 0 + 'px');
                     }).on('click', function (d) {
-                        d3.select(this).transition().style('stroke', 'black');
+                        d3.select(this).style('stroke', 'black');
                         d3.select(this).transition().style('stroke', 'none').delay(2000);
+
+                    // d3.select(this).transition().style('stroke', 'black');
+                    //     d3.select(this).transition().style('stroke', 'none').delay(2000).duration(2000);
+                        // d3.select(this).style('stroke', 'black');
                         thisClass.scrollToBar.emit(new Date(d[0]));
                 });
             }
