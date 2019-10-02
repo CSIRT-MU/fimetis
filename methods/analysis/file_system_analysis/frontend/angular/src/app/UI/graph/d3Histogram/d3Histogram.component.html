@@ -2,25 +2,25 @@
     <b>SELECTION:</b> {{ selectedSelectionToString()[0] }} - {{ selectedSelectionToString()[1] }}
 </span>
 <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" class="zoomNavigationButton removeSelectionButton" style="float: left;" title="remove">
-    <mat-icon class="zoomNavigationIcon" svgIcon="delete"></mat-icon>
+    <mat-icon class="zoomNavigationIcon" svgIcon="delete" style="margin-top: -2px;"></mat-icon>
 </button>
 <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" class="zoomNavigationButton zoomIntoSelectionButton"  style="float: left;" title="zoom into selection">
-    <mat-icon class="zoomNavigationIcon" svgIcon="zoom-into-selection"></mat-icon>
+    <mat-icon class="zoomNavigationIcon" svgIcon="zoom-into-selection" style="margin-top: -2px;"></mat-icon>
 </button>
-<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; ; margin-right: 5px">
-    extend by
+<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-left: 20px; margin-right: 2px;">
+    extend by:
 </span>
 <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}"  class="zoomNavigationButton extendSelectionBack" style="float: left;" title="extend back">
-    <mat-icon class="zoomNavigationIcon" svgIcon="extend-back"></mat-icon>
+    <mat-icon class="zoomNavigationIcon" svgIcon="extend-back" style="margin-top: -2px;"></mat-icon>
 </button>
-<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 5px">
-    <input type="number" min="1" [(ngModel)]="extendValue" style="border: none; background: none; width: 40px; text-align: right">
-    <select [(ngModel)]="selectedExtendOption" style="border: none; background: none">
+<span [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" style="float: left; margin-right: 2px">
+    <input type="number" min="1" [(ngModel)]="extendValue" style="border: none; background: none; width: 35px; text-align: right; text-decoration: underline">
+    <select [(ngModel)]="selectedExtendOption" style="border: none; background: none; text-decoration: underline">
         <option *ngFor="let item of extendOptions" [ngValue]="item">{{ item }}</option>
     </select>
 </span>
 <button [ngStyle]="{'visibility':(selectedSelectionIndex === -1) ? 'hidden' : 'visible'}" class="zoomNavigationButton extendSelectionForth" style="float: left;" title="extend forth">
-    <mat-icon class="zoomNavigationIcon" svgIcon="extend-forth"></mat-icon>
+    <mat-icon class="zoomNavigationIcon" svgIcon="extend-forth" style="margin-top: -2px;"></mat-icon>
 </button>
 <button class="zoomNavigationButton resetZoomButton" style="float: right; margin-right: 40px;" title="reset zoom">
     <mat-icon class="zoomNavigationIcon" svgIcon="zoom-reset"></mat-icon>
