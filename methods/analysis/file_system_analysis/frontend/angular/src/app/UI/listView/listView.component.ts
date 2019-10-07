@@ -61,6 +61,7 @@ export class ListViewComponent {
     tableSelection = new SelectionModel<any>(true, []);
     availableTableColumns = [
         'select',
+        'mark',
         'doctype',
         'timestamp',
         'size',
