@@ -334,8 +334,8 @@ export class D3HistogramComponent implements OnDestroy {
             .style('border-radius', '5px')
             .style('padding', '3px');
 
-        const firstDate = new Date(this.min_date_boundary - (30 * 24 * 3600 * 1000));
-        const lastDate = new Date(this.max_date_boundary + (30 * 24 * 3600 * 1000));
+        const firstDate = new Date(this.min_date_boundary - (10 * 24 * 3600 * 1000));
+        const lastDate = new Date(this.max_date_boundary + (10 * 24 * 3600 * 1000));
 
         for (const dataItem of data_days) {
             dataItem.maxValue = d3.max(dataItem.data, d => d[1]);
