@@ -248,13 +248,19 @@ def filter_by_name(current_user):
 @token_required
 def clusters_get_data(current_user, case):
     clusters = request.json.get('clusters')
+    marks_ids = request.json.get('marks_ids')
     additional_filters = request.json.get('additional_filters')
     begin = request.json.get('begin')
     page_size = request.json.get('page_size')
     sort = request.json.get('sort')
     sort_order = request.json.get('sort_order')
 
+    mark_query = {}
+    mark_query['ids'] = { 'values' : marks_ids}
+
     query = fsa.build_data_query(case, clusters, additional_filters, begin, page_size, sort, sort_order)
+    query['query']['bool']['must'][1]['bool']['should'].append(mark_query)
+
     logging.info('QUERY cluster get data: ' + '\n' + json.dumps(query))
     res = es.search(index=app.config['elastic_metadata_index'],
                     doc_type=app.config['elastic_metadata_type'],

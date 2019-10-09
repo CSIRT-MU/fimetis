@@ -68,7 +68,7 @@
                 <tbody #container>
 <!--                ,-->
 <!--                'border-bottom': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true ? '1px solid #666666': 'none'    -->
-                    <tr [ngStyle]="{'font-weight': marked_rows_id.has(element._id) ? 'bolder' : 'normal', 'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null )}" class="table-row-definition" *ngFor="let element of visibleData; index as i"
+                    <tr [ngStyle]="{'font-weight': getLineFontWeight(element._id), 'color': getLineColor(element._id), 'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null )}" class="table-row-definition" *ngFor="let element of visibleData; index as i"
                         [ngClass]="{'list-selection-line': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true}"
                     >
                         <td *ngFor="let tableItem of displayedTableColumns">

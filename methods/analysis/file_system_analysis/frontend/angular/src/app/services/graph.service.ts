@@ -85,7 +85,6 @@ export class GraphService {
             'id': id
         }).toPromise().then(
             response => {
-                console.log(response);
                return response.hits.hits.length === 1;
             }, error => {
                 console.error(error);

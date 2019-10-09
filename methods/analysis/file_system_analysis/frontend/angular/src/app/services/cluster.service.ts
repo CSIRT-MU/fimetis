@@ -10,6 +10,7 @@ export class ClusterService {
 
     getData(_case: string,
             _clusters: ClusterModel[],
+            marks_ids: string[],
             _additional_filters: object,
             begin: number,
             page_size: number,
@@ -17,6 +18,7 @@ export class ClusterService {
             sort_order: string) {
         return this.http.post<any>(environment.backendUrl + '/clusters/data/' + _case, {
             'clusters': _clusters,
+            'marks_ids': marks_ids,
             'additional_filters': JSON.stringify(_additional_filters),
             // 'begin': my_begin,
             'begin': begin,

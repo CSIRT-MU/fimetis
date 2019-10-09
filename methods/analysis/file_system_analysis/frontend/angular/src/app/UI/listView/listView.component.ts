@@ -17,6 +17,8 @@ import {DataModel} from '../../models/data.model';
 import {BaseService} from '../../services/base.service';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {StateService} from '../../services/state.service';
+import {GraphService} from '../../services/graph.service';
+import {rgb} from 'd3-color';
 
 @Component({
     selector: 'app-list-view',
@@ -58,6 +60,7 @@ export class ListViewComponent {
     additionalFilters = {};
     selected_rows_id: Set<string> = new Set<string>();
     marked_rows_id: Set<string> = new Set<string>();
+    marked_rows_id_in_current_cluster: Set<string> = new Set<string>();
     tableSelection = new SelectionModel<any>(true, []);
     availableTableColumns = [
         'select',
@@ -121,6 +124,7 @@ export class ListViewComponent {
     private subscriptions: Subscription[] = [];
 
     constructor(private clusterService: ClusterService,
+                private graphService: GraphService,
                 private baseService: BaseService,
                 public dialog: MatDialog,
                 private toaster: ToastrService,
@@ -255,6 +259,7 @@ export class ListViewComponent {
         // Load init data to list
         const resp = await this.clusterService.getData(this.case,
             this.clusters,
+            Array.from(this.marked_rows_id),
             this.additionalFilters,
             this.visibleDataFirstIndex,
             initSize,
@@ -289,6 +294,9 @@ export class ListViewComponent {
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
         }
         this.oldClusters = lodash.cloneDeep(this.clusters);
+
+        // Count marks that are in current cluster
+        this.getMarksIdsPresentInCurrentCluster();
     }
     isAllSelected() {
         const numSelected = this.tableSelection.selected.length;
@@ -516,6 +524,7 @@ export class ListViewComponent {
         this.clusterService.getData(
             this.case,
             this.clusters,
+            Array.from(this.marked_rows_id),
             this.additionalFilters,
             begin_with_page,
             size,
@@ -723,6 +732,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
+                        Array.from(this.marked_rows_id),
                         this.additionalFilters,
                         bufferOffset,
                         bufferSize,
@@ -737,6 +747,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
+                        Array.from(this.marked_rows_id),
                         this.additionalFilters,
                         bufferOffset,
                         bufferSize,
@@ -875,6 +886,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
+                        Array.from(this.marked_rows_id),
                         this.additionalFilters,
                         bufferOffset,
                         bufferSize,
@@ -889,6 +901,7 @@ export class ListViewComponent {
                     const res = await this.clusterService.getData(
                         this.case,
                         this.clusters,
+                        Array.from(this.marked_rows_id),
                         this.additionalFilters,
                         bufferOffset,
                         bufferSize,
@@ -1325,6 +1338,34 @@ export class ListViewComponent {
                         this.visibleDataFirstIndex + i
                     );
                 }
+            }
+        }
+    }
+
+    // Function that returns grey color of font, if line is mark and at the same time is not in current cluster
+    getLineColor(id) {
+        if (!this.marked_rows_id_in_current_cluster.has(id) && this.marked_rows_id.has(id)) {
+            return '#b3b3b3';
+        }
+
+        return rgb(51, 51, 51);
+    }
+
+    // Function that returns bolder font-weight for lines that are marked
+    getLineFontWeight(id) {
+        if (this.marked_rows_id.has(id)) {
+            return 'bolder';
+        }
+        return 'normal';
+    }
+
+    async getMarksIdsPresentInCurrentCluster() {
+        this.marked_rows_id_in_current_cluster.clear();
+        const marksInArray = Array.from(this.marked_rows_id);
+
+        for (let i = 0; i < marksInArray.length; i++) {
+            if (await this.graphService.isMarkInCurrentCluster(this.case, this.clusters, marksInArray[i])) {
+                this.marked_rows_id_in_current_cluster.add(marksInArray[i]);
             }
         }
     }
