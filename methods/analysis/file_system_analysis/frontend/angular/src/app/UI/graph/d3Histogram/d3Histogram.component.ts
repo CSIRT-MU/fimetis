@@ -75,6 +75,9 @@ export class D3HistogramComponent implements OnDestroy {
 
 
     selections = [];
+    selectionLineColor = '#666666';
+    selectedSelectionLineColor = 'blue';
+
     @Output() selectionsEmitter = new EventEmitter<any[]>();
     // debouncer is used to emit values once in a time. Solves the problem with a lot of calls to db
     selectionsDebouncer: Subject<any[]> = new Subject();
@@ -1101,11 +1104,14 @@ export class D3HistogramComponent implements OnDestroy {
                     // });
             }
 
-            // selection lines
+            // selection lines of unselected selection - left
             svgSel.selectAll('.selectionLineLeft').remove();
             svgSel.selectAll('.selectionLineLeft')
                 .data(thisClass.selections)
                 .enter()
+                .filter(function (i) {
+                    return i !== thisClass.selectedSelectionIndex;
+                })
                 .append('line')
                 .attr('class', 'selectionLineLeft')
                 .attr('x1', d => actualX(d[0]) + margin.left)
@@ -1114,12 +1120,7 @@ export class D3HistogramComponent implements OnDestroy {
                 .attr('y2', contentHeight + margin.top)
                 .attr('stroke-width', 2)
                 // .style('stroke', '#666666')
-                .style('stroke', function(d, i) {
-                    if (i === thisClass.selectedSelectionIndex) {
-                        return 'blue';
-                    }
-                    return  '#666666';
-                })
+                .style('stroke', thisClass.selectionLineColor)
                 .on('mouseover', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
                 })
@@ -1148,22 +1149,22 @@ export class D3HistogramComponent implements OnDestroy {
                         thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
+            // selection lines of unselected selection - right
             svgSel.selectAll('.selectionLineRight').remove();
             svgSel.selectAll('.selectionLineRight')
                 .data(thisClass.selections)
-                .enter().append('line')
+                .enter()
+                .filter(function (i) {
+                    return i !== thisClass.selectedSelectionIndex;
+                })
+                .append('line')
                 .attr('class', 'selectionLineRight')
                 .attr('x1', d => actualX(d[1]) + margin.left)
                 .attr('y1', margin.top)
                 .attr('x2', d => actualX(d[1]) + margin.left)
                 .attr('y2', contentHeight + margin.top)
                 .attr('stroke-width', 2)
-                .style('stroke', function(d, i) {
-                    if (i === thisClass.selectedSelectionIndex) {
-                        return 'blue';
-                    }
-                    return  '#666666';
-                })
+                .style('stroke', thisClass.selectionLineColor)
                 .on('mouseover', function(d) {
                     d3.select(this).style('cursor', 'col-resize');
                 })
@@ -1193,6 +1194,92 @@ export class D3HistogramComponent implements OnDestroy {
                         thisClass.selectionsDebouncer.next(thisClass.selections);
                     })
                 );
+
+            // selections lines of selected selection, if exists, note: Selected selection must be drawn last, to be on top
+            svgSel.select('.selectedSelectionLineLeft').remove();
+            svgSel.selectAll('.selectedSelectionLineRight').remove();
+            if (thisClass.selectedSelectionIndex !== -1) {
+                svgSel.append('line')
+                    .attr('class', 'selectedSelectionLineLeft')
+                    .attr('x1', actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]) + margin.left)
+                    .attr('y1', margin.top)
+                    .attr('x2', actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]) + margin.left)
+                    .attr('y2', contentHeight + margin.top)
+                    .attr('stroke-width', 2)
+                    // .style('stroke', '#666666')
+                    .style('stroke', thisClass.selectedSelectionLineColor)
+                    .on('mouseover', function (d) {
+                        d3.select(this).style('cursor', 'col-resize');
+                    })
+                    .on('mouseout', function (d) {
+                        d3.select(this).style('cursor', 'col-resize');
+                    })
+                    .call(d3.drag()
+                        .on('start', function (d, i) {
+                            console.log('start drag line');
+                            d3.event.sourceEvent.stopPropagation();
+                        })
+                        .on('drag', function (d, i) {
+                            d3.event.sourceEvent.stopPropagation();
+                            const dragX = d3.event.x - margin.left;
+                            if (actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]) > dragX) {
+                                const closestLeftSelectionEnd = getClosestLeftSelectionEnd(actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]));
+                                if (actualX(actualX.invert(dragX)) > closestLeftSelectionEnd) {
+                                    thisClass.selections[thisClass.selectedSelectionIndex][0] = actualX.invert(dragX);
+                                    drawSelections();
+                                }
+                            } else {
+                                // Find start of the closest selection on the right
+                                const closestRightSelectionStart = getClosestRightSelectionStart(actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]));
+                                if (actualX(actualX.invert(dragX)) < closestRightSelectionStart) {
+                                    thisClass.selections[thisClass.selectedSelectionIndex][1] = actualX.invert(dragX);
+                                    drawSelections();
+                                }
+                            }
+                            thisClass.selectionsDebouncer.next(thisClass.selections);
+                        })
+                    );
+
+                svgSel.append('line')
+                    .attr('class', 'selectedSelectionLineRight')
+                    .attr('x1', actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]) + margin.left)
+                    .attr('y1', margin.top)
+                    .attr('x2', actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]) + margin.left)
+                    .attr('y2', contentHeight + margin.top)
+                    .attr('stroke-width', 2)
+                    .style('stroke', thisClass.selectedSelectionLineColor)
+                    .on('mouseover', function(d) {
+                        d3.select(this).style('cursor', 'col-resize');
+                    })
+                    .on('mouseout', function(d) {
+                        d3.select(this).style('cursor', 'col-resize');
+                    })
+                    .call(d3.drag()
+                        .on('start', function(d, i) {console.log('start drag line'); d3.event.sourceEvent.stopPropagation(); })
+                        .on('drag', function(d, i) {
+                            d3.event.sourceEvent.stopPropagation();
+                            const dragX = d3.event.x - margin.left;
+                            if (actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]) < dragX) {
+                                // Find start of the closest selection on the right
+                                const closestRightSelectionStart = getClosestRightSelectionStart(actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]));
+                                if (actualX(actualX.invert(dragX)) < closestRightSelectionStart) {
+                                    thisClass.selections[thisClass.selectedSelectionIndex][1] = actualX.invert(dragX);
+                                    drawSelections();
+                                }
+                            } else {
+                                // Find end of the closest selection on the left
+                                const closestLeftSelectionEnd = getClosestLeftSelectionEnd(actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]));
+                                if (actualX(actualX.invert(dragX)) > closestLeftSelectionEnd) {
+                                    thisClass.selections[thisClass.selectedSelectionIndex][0] = actualX.invert(dragX);
+                                    drawSelections();
+                                }
+                            }
+                            thisClass.selectionsDebouncer.next(thisClass.selections);
+                        })
+                    );
+            }
+
+
 
             // selection buttons
             // svg.selectAll('.selectionRemoveButton').remove();
@@ -1727,7 +1814,7 @@ export class D3HistogramComponent implements OnDestroy {
                         tooltip
                             .html(generateMarkTooltip(d))
                             .style('left', function () {
-                                if (actualX(new Date(d[0].timestamp)) + 200 > contentWidth){
+                                if (actualX(new Date(d[0].timestamp)) + 200 > contentWidth) {
                                     return actualX(new Date(d[0].timestamp)) - 200 + 'px';
                                 }
                                 return actualX(new Date(d[0].timestamp)) + 'px';
