@@ -1104,6 +1104,18 @@ export class D3HistogramComponent implements OnDestroy {
                     // });
             }
 
+            svgSel.select('.selectedSelectionBar').remove();
+
+            if (thisClass.selectedSelectionIndex !== -1) {
+                svgSel.append('rect')
+                    .attr('class', 'selectedSelectionBar')
+                    .attr('x', actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]) + margin.left)
+                    .attr('width', actualX(thisClass.selections[thisClass.selectedSelectionIndex][1]) - actualX(thisClass.selections[thisClass.selectedSelectionIndex][0]))
+                    .attr('y', 29)
+                    .attr('height', 3)
+                    .attr('fill', 'blue');
+            }
+
             // selection lines of unselected selection - left
             svgSel.selectAll('.selectionLineLeft').remove();
             svgSel.selectAll('.selectionLineLeft')
