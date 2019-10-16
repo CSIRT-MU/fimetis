@@ -269,6 +269,40 @@ def clusters_get_data(current_user, case):
     return jsonify(res)
 
 
+@app.route('/clusters/get_rank_of_mark/<string:case>', methods=['POST'])
+@token_required
+def get_rank_of_case(current_user, case):
+    clusters = request.json.get('clusters')
+    marks_ids = request.json.get('marks_ids')
+    additional_filters = request.json.get('additional_filters')
+    begin = 0
+    size = request.json.get('size')
+    sort = request.json.get('sort')
+    sort_order = request.json.get('sort_order')
+    mark_id = request.json.get('mark_id')
+
+    mark_query = {}
+    mark_query['ids'] = { 'values' : marks_ids}
+
+    query = fsa.build_data_query(case, clusters, additional_filters, begin, size, sort, sort_order)
+    query['query']['bool']['must'][1]['bool']['should'].append(mark_query)
+
+    query['_source'] = False
+
+    logging.info('QUERY cluster get data: ' + '\n' + json.dumps(query))
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
+
+    rank = 0
+    for entry in res['hits']['hits']:
+        if mark_id == entry['_id']:
+            break
+        rank += 1
+
+    return {'rank': rank}
+
+
 @app.route('/clusters/entries_border/<string:case>', methods=['POST'])
 @token_required
 def clusters_entries_border(current_user, case):

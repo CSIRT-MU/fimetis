@@ -19,6 +19,7 @@ import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {StateService} from '../../services/state.service';
 import {GraphService} from '../../services/graph.service';
 import {rgb} from 'd3-color';
+import {ScrollDialogComponent} from '../dialog/scroll-dialog/scroll-dialog.component';
 
 @Component({
     selector: 'app-list-view',
@@ -1270,9 +1271,38 @@ export class ListViewComponent {
         this.toaster.success(date.toDateString(), 'View has scrolled to date:');
     }
 
-    async scrollMarkToIndex(index) {
-        console.log('scrool in list view');
+    async delay(ms: number) {
+        await new Promise(resolve => setTimeout(() => resolve(), ms)).then(() => console.log('waiting'));
+    }
+
+    async scrollToMarkById(id) {
+        const start = new Date();
+        const dialogRef = this.dialog.open(ScrollDialogComponent, {
+
+            width: '350px',
+            data: {
+                title: 'Scrolling to mark',
+                message: 'Scrolling may take some time',
+            }
+        });
+        console.log(dialogRef);
+        const index = await this.clusterService.getRankOfMark(
+            this.case,
+            this.clusters,
+            Array.from(this.marked_rows_id),
+            this.additionalFilters,
+            this.total,
+            this.pageSortString,
+            this.pageSortOrder,
+            id);
+
+
+        const end = new Date();
         this.scrollToIndex(index);
+        if (end.getTime() - start.getTime() < 1000) {
+            await this.delay(2000);
+        }
+        dialogRef.close();
     }
 
     // adding - boolean true if adding, false if removing
@@ -1284,7 +1314,6 @@ export class ListViewComponent {
                 'type': type,
                 'note': 'empty',
                 'add': adding,
-                'index': i,
                 'inCurrentCluster': true
         });
     }

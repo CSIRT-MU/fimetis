@@ -29,7 +29,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     typesChangedDebouncer: Subject<Set<string>> = new Subject();
     // @Input() fromDate: Date;
     @Output() scrollToBar = new EventEmitter<Date>();
-    @Output() scrollMarkToIndex = new EventEmitter<Number>();
+    @Output() scrollToMarkById = new EventEmitter<Number>();
 
     @ViewChild('graph', {static: false}) private chartElement: ElementRef;
     @ViewChild('plot_div', {static: false}) private plotElement: ElementRef;

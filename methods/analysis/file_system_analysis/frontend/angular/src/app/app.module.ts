@@ -41,6 +41,7 @@ import {ClusterComponent} from './UI/cluster/cluster.component';
 import {NameDialogComponent} from './UI/dialog/name-dialog/name-dialog.component';
 import {SelectDialogComponent} from './UI/dialog/select-dialog/select-dialog.component';
 import {ComputationDialogComponent} from './UI/dialog/computation-dialog/computation-dialog.component';
+import {ScrollDialogComponent} from './UI/dialog/scroll-dialog/scroll-dialog.component';
 import {TextSelectDirective} from './UI/text-select.directive';
 import {HighlightPipe} from './UI/highlight.directive';
 import {UploadComponent} from './UI/upload/upload.component';
@@ -63,6 +64,7 @@ import {MatIconModule} from '@angular/material/icon';
         SelectDialogComponent,
         ComputationDialogComponent,
         ConfirmationDialogComponent,
+        ScrollDialogComponent,
         TextSelectDirective,
         HighlightPipe,
         UploadComponent,
@@ -109,7 +111,7 @@ import {MatIconModule} from '@angular/material/icon';
         MatProgressBarModule,
         MatIconModule
     ],
-    entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent],
+    entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent, ScrollDialogComponent],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],

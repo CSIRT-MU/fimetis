@@ -35,6 +35,30 @@ export class ClusterService {
         );
     }
 
+    getRankOfMark(_case: string,
+                  _clusters: ClusterModel[],
+                  marks_ids: string[],
+                  _additional_filters: object,
+                  size: number,
+                  sort: string,
+                  sort_order: string,
+                  mark_id: string
+                  ) {
+        return this.http.post<any>(environment.backendUrl + '/clusters/get_rank_of_mark/' + _case, {
+            'clusters': _clusters,
+            'marks_ids': marks_ids,
+            'additional_filters': JSON.stringify(_additional_filters),
+            'size': size,
+            'sort': sort,
+            'sort_order': sort_order,
+            'mark_id': mark_id
+        }).toPromise().then(
+            response => {
+                return response.rank;
+            }
+        );
+    }
+
     countAllDataTotal(_case: string,
               _clusters: ClusterModel[],
               _additional_filters: object) {

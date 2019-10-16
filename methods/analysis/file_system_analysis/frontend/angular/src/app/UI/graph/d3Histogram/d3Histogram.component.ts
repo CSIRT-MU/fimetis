@@ -9,6 +9,7 @@ import {BaseService} from '../../../services/base.service';
 import {ToastrService} from 'ngx-toastr';
 import {StateService} from '../../../services/state.service';
 import Color from 'color';
+import {ClusterService} from '../../../services/cluster.service';
 
 export interface HistogramData {
     data: number[][];
@@ -84,7 +85,7 @@ export class D3HistogramComponent implements OnDestroy {
 
     @Output() scrollToBar = new EventEmitter<Date>();
 
-    @Output() scrollMarkToIndex = new EventEmitter<Number>();
+    @Output() scrollToMarkById = new EventEmitter<Number>();
 
     marks = new Map();
 
@@ -98,6 +99,7 @@ export class D3HistogramComponent implements OnDestroy {
     constructor(private _hotkeysService: HotkeysService,
                 private toaster: ToastrService,
                 private baseService: BaseService,
+                private clusterService: ClusterService,
                 private stateService: StateService) {
         // this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => this.selectionsEmitter.emit(value)));
         this.subscriptions.push(this.selectionsDebouncer.pipe(debounceTime(500)).subscribe((value) => stateService.selections = value));
@@ -1780,7 +1782,7 @@ export class D3HistogramComponent implements OnDestroy {
                         if (d[1] > 1) {
                             return;
                         }
-                        thisClass.scrollMarkToIndex.emit(d[0].index);
+                        thisClass.scrollToMarkById.emit(d[0].id);
                     })
                     ;
 
