@@ -50,6 +50,7 @@ import { FilterComponent } from './UI/filter/filter.component';
 import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confirmation-dialog.component';
 import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component';
 import {MatIconModule} from '@angular/material/icon';
+import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
 
 
 
@@ -65,6 +66,7 @@ import {MatIconModule} from '@angular/material/icon';
         ComputationDialogComponent,
         ConfirmationDialogComponent,
         ScrollDialogComponent,
+        MarkForbidenDialogComponent,
         TextSelectDirective,
         HighlightPipe,
         UploadComponent,
@@ -111,7 +113,13 @@ import {MatIconModule} from '@angular/material/icon';
         MatProgressBarModule,
         MatIconModule
     ],
-    entryComponents: [NameDialogComponent, SelectDialogComponent, ComputationDialogComponent, ConfirmationDialogComponent, ScrollDialogComponent],
+    entryComponents: [
+        NameDialogComponent,
+        SelectDialogComponent,
+        ComputationDialogComponent,
+        ConfirmationDialogComponent,
+        ScrollDialogComponent,
+        MarkForbidenDialogComponent],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],

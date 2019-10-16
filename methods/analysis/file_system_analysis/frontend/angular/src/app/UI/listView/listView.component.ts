@@ -20,6 +20,7 @@ import {StateService} from '../../services/state.service';
 import {GraphService} from '../../services/graph.service';
 import {rgb} from 'd3-color';
 import {ScrollDialogComponent} from '../dialog/scroll-dialog/scroll-dialog.component';
+import {MarkForbidenDialogComponent} from '../dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
 
 @Component({
     selector: 'app-list-view',
@@ -1318,11 +1319,20 @@ export class ListViewComponent {
         });
     }
 
-    emitAllMarks() {
+    async emitAllMarks() {
         const size = this.visibleDataLastIndex - this.visibleDataFirstIndex + 1;
 
         // marking all marks is allowed only in small clusters
         if (this.total > size) {
+            const dialogRef = this.dialog.open(MarkForbidenDialogComponent, {
+                width: '350px',
+                data: {
+                    title: 'Marking is forbiden',
+                    message: 'Marking all lines is allowed only for clusters their size is lower than page size',
+                }
+            });
+            await this.delay(5000);
+            dialogRef.close();
             return;
         }
 
