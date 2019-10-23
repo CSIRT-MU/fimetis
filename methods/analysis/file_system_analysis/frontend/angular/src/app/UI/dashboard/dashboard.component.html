@@ -53,17 +53,17 @@
     <div [ngClass]="{'container-all-opened': clusterPanelOpenState, 'container-all-closed': !clusterPanelOpenState}">
         <div class="grid-sidebar fimetis-panel">
             <div class="panel-header buttons-block" *ngIf="clusterPanelOpenState">
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        (click)="setupWindowOpen = !setupWindowOpen">
-                    <span class="glyphicon glyphicon-refresh"></span> CHANGE DATASET</button>
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        *ngIf="authService.isAdmin()"
-                        (click)="removeSelectedCase()">
-                    <span class="glyphicon glyphicon-remove"></span> DELETE DATASET</button>
-                <button mat-stroked-button class="fimetis-button settings-button"
-                        *ngIf="authService.isAdmin()"
-                        (click)="uploadWindowOpen = !uploadWindowOpen">
-                    <span class="glyphicon glyphicon-upload"></span> EXTEND DATASET</button>
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        (click)="setupWindowOpen = !setupWindowOpen">-->
+<!--                    <span class="glyphicon glyphicon-refresh"></span> CHANGE DATASET</button>-->
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        *ngIf="authService.isAdmin()"-->
+<!--                        (click)="removeSelectedCase()">-->
+<!--                    <span class="glyphicon glyphicon-remove"></span> DELETE DATASET</button>-->
+<!--                <button mat-stroked-button class="fimetis-button settings-button"-->
+<!--                        *ngIf="authService.isAdmin()"-->
+<!--                        (click)="uploadWindowOpen = !uploadWindowOpen">-->
+<!--                    <span class="glyphicon glyphicon-upload"></span> EXTEND DATASET</button>-->
 <!--                <button mat-stroked-button class="fimetis-button settings-button"-->
 <!--                        (click)="saveApplicationState()">-->
 <!--                    <span class="glyphicon glyphicon-save"></span> SAVE APP STATE</button>-->

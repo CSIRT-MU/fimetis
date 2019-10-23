@@ -6,6 +6,7 @@ import {UserSettingsService} from './services/userSettings.service';
 import {HotkeysService} from 'angular2-hotkeys';
 import {DomSanitizer} from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material';
+import {CaseService} from './services/case.service';
 
 @Component({
     selector: 'app-root',
@@ -25,7 +26,8 @@ export class AppComponent {
         private userSettingsService: UserSettingsService,
         private matIconRegistry: MatIconRegistry,
         private domSanitizer: DomSanitizer,
-        private _hotkeysService: HotkeysService
+        private _hotkeysService: HotkeysService,
+        private caseService: CaseService
 
     ) {
         this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
@@ -60,5 +62,9 @@ export class AppComponent {
 
     toggleCheatsheet() {
         this._hotkeysService.cheatSheetToggle.next();
+    }
+
+    printSelectedCase() {
+        console.log(this.caseService.selectedCase);
     }
 }

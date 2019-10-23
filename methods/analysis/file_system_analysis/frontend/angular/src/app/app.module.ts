@@ -51,6 +51,7 @@ import {ConfirmationDialogComponent} from './UI/dialog/confirmation-dialog/confi
 import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
+import { CaseManagementComponent } from './UI/case-management/case-management.component';
 
 
 
@@ -72,7 +73,8 @@ import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/
         UploadComponent,
         LoginComponent,
         FilterComponent,
-        D3HistogramComponent
+        D3HistogramComponent,
+        CaseManagementComponent
     ],
     imports: [
         BrowserModule,

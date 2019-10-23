@@ -4,6 +4,8 @@ import {ngf} from 'angular-file';
 import {Subscription} from 'rxjs';
 import {UploadService} from '../../services/upload.service';
 import {ToastrService} from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-upload',
@@ -23,9 +25,13 @@ export class UploadComponent implements OnInit {
     removeDeleted = true;
     removeDeletedRealloc = true;
 
-    constructor(private uploadService: UploadService, private toaster: ToastrService) {}
+    constructor(private uploadService: UploadService, private toaster: ToastrService, private route: ActivatedRoute) {}
 
     ngOnInit() {
+        const case_name = this.route.snapshot.paramMap.get('case');
+        if (case_name !== 'empty') {
+            this._case = case_name;
+        }
     }
 
     uploadFiles(files: File[]): Subscription {

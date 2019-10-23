@@ -17,6 +17,7 @@ import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import * as d3 from 'd3';
 import {Subscription} from 'rxjs';
 import {StateService} from '../../services/state.service';
+import {CaseService} from '../../services/case.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -66,7 +67,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     chipList: MatChipList;
 
     private subscriptions: Subscription[] = [];
-    constructor(private baseService: BaseService,
+    constructor(
+                private caseService: CaseService,
+                private baseService: BaseService,
                 private clusterService: ClusterService,
                 public authService: AuthenticationService,
                 private toaster: ToastrService,
@@ -89,6 +92,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.loadAllCases();
         this.loadAllFilters();
+
+        this.selectedCase = this.caseService.selectedCase;
+        // console.log(this);
+        // console.log(this.listViewComponent);
+        // if (this.stateService.selectedCase !== undefined) {
+        //     this.setupWindowOpen = false;
+        //     this.selectedCase = this.stateService.selectedCase;
+        //     console.log(this.listViewComponent);
+        //     // while (this.listViewComponent === undefined) {
+        //     //
+        //     // }
+        //     // while  (this.listViewComponent == null){ }
+        //     console.log('listview setted');
+        //     //this.listViewComponent.case = this.selectedCase;
+        //
+        //     //this.selectedCaseChanged();
+        // }
+        // this.caseService.selectedCase = this.selectedCase;
+        // console.log(this.selectedCase);
     }
 
     ngAfterViewInit() {
@@ -141,6 +163,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.initPreLoadedClusters().then(() => this.clusterSelectionChanged(null));
         // this.loadStoredClusters();
         this.listViewComponent.init();
+        this.caseService.selectedCase = this.selectedCase;
+        this.stateService.selectedCase = this.selectedCase;
+
+
     }
 
     setCase(caseName) {
@@ -148,6 +174,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.setupWindowOpen = false;
         this.listViewComponent.case = this.selectedCase;
         this.graphComponent._case = this.selectedCase;
+        this.caseService.selectedCase = this.selectedCase;
     }
 
     /**
@@ -607,5 +634,4 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             return this.stateService.stateIndex < (this.stateService.stateHistory.length - 1);
         }
     }
-
 }

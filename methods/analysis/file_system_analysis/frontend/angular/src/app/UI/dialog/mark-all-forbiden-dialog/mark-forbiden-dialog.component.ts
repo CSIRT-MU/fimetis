@@ -8,7 +8,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 })
 export class MarkForbidenDialogComponent implements OnInit {
 
-    constructor(public dialogRef: MatDialogRef<ScrollDialogComponent>,
+    constructor(public dialogRef: MatDialogRef<MarkForbidenDialogComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any) {
     }
 
