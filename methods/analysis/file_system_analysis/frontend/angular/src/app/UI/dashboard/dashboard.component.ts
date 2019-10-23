@@ -92,8 +92,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.loadAllCases();
         this.loadAllFilters();
+        console.log(this.stateService.getState().selectedCase);
 
         this.selectedCase = this.caseService.selectedCase;
+        if (this.stateService.getState().selectedCase !== undefined) {
+            this.selectedCaseChanged();
+        }
         // console.log(this);
         // console.log(this.listViewComponent);
         // if (this.stateService.selectedCase !== undefined) {
@@ -119,6 +123,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }));
         this.graphComponent._clusters = this.getClusters();
         this.listViewComponent.clusters = this.getClusters();
+        console.log(this.stateService.getState().selectedCase);
+        if (this.stateService.getState().selectedCase !== undefined) {
+            this.selectedCaseChanged();
+        };
     }
 
     ngOnDestroy() {

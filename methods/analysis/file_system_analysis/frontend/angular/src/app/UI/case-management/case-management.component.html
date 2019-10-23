@@ -1,17 +1,21 @@
 
 <table class="table table-hover table-responsive" style="width: 70%; margin: auto; margin-top: 20px;">
-    <thead><th>CASE</th><th>mactimes count</th><th>Extend</th><th>Remove</th></thead>
+    <thead><th>SELECT</th><th>CASE</th><th>COUNT</th><th>EXTEND</th><th>REMOVE</th></thead>
     <tbody *ngFor="let case of cases.keys()">
     <tr [ngStyle]="{'font-weight': getTrFontWeightForCase(case)}">
+        <td>
+            <button class="btn btn-default btn-sm" *ngIf="authService.isAdmin()" (click)="selectCase(case)">
+                <span [ngStyle]="{'color': getColorForSelectButton(case)}" class="glyphicon glyphicon-ok-sign"></span>
+            </button>
         <td>{{case}}</td>
         <td>{{cases.get(case)}}</td>
         <td>
-            <button mat-stroked-button routerLink="/upload/{{case}}"  routerLinkActive="active">
+            <button type="button" class="btn btn-default btn-sm" routerLink="/upload/{{case}}"  routerLinkActive="active">
                 <span class="glyphicon glyphicon-upload"></span>
             </button>
         </td>
         <td>
-            <button mat-stroked-button class="btn-sm" *ngIf="authService.isAdmin()" (click)="removeSelectedCase(case);">
+            <button class="btn btn-default btn-sm" *ngIf="authService.isAdmin()" (click)="removeSelectedCase(case);">
                 <span class="glyphicon glyphicon-remove"></span>
             </button>
         </td>

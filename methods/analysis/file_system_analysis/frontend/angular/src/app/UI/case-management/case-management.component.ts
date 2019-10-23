@@ -70,6 +70,17 @@ export class CaseManagementComponent implements OnInit {
       // window.location.reload();
   }
 
+  getColorForSelectButton(caseName) {
+      if (this.caseService.selectedCase === caseName) {
+          return 'black';
+      }
+      return '#d9d9d9';
+  }
+
+  selectCase(caseName) {
+      this.caseService.selectedCase = caseName;
+  }
+
 
 
   // getFontWeightForCase(case) {
