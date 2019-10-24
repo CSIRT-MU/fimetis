@@ -269,9 +269,9 @@ def clusters_get_data(current_user, case):
     return jsonify(res)
 
 
-@app.route('/clusters/get_rank_of_mark/<string:case>', methods=['POST'])
+@app.route('/clusters/get_rank_of_marked_mactime_by_id/<string:case>', methods=['POST'])
 @token_required
-def get_rank_of_case(current_user, case):
+def get_rank_of_marked_mactime_by_id(current_user, case):
     clusters = request.json.get('clusters')
     marks_ids = request.json.get('marks_ids')
     additional_filters = request.json.get('additional_filters')
@@ -282,7 +282,7 @@ def get_rank_of_case(current_user, case):
     mark_id = request.json.get('mark_id')
 
     mark_query = {}
-    mark_query['ids'] = { 'values' : marks_ids}
+    mark_query['ids'] = {'values' : marks_ids}
 
     query = fsa.build_data_query(case, clusters, additional_filters, begin, size, sort, sort_order)
     query['query']['bool']['must'][1]['bool']['should'].append(mark_query)
@@ -299,6 +299,42 @@ def get_rank_of_case(current_user, case):
         if mark_id == entry['_id']:
             break
         rank += 1
+
+    return {'rank': rank}
+
+
+@app.route('/clusters/get_rank_of_mactime_by_timestamp/<string:case>', methods=['POST'])
+@token_required
+def get_rank_of_mactime_by_timestamp(current_user, case):
+    clusters = request.json.get('clusters')
+    marks_ids = request.json.get('marks_ids')
+    additional_filters = request.json.get('additional_filters')
+    begin = 0
+    size = request.json.get('size')
+    sort = request.json.get('sort')
+    sort_order = request.json.get('sort_order')
+
+    timestamp = request.json.get('timestamp')
+
+    mark_query = {}
+    mark_query['ids'] = {'values': marks_ids}
+
+    query = fsa.build_data_query(case, clusters, additional_filters, begin, size, sort, sort_order)
+    query['query']['bool']['must'][1]['bool']['should'].append(mark_query)
+
+    query['_source'] = ['@timestamp']
+
+    logging.info('QUERY cluster get data: ' + '\n' + json.dumps(query))
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(query))
+
+    rank = 0
+    for entry in res['hits']['hits']:
+        if entry['_source']['@timestamp'] < timestamp:
+            rank += 1
+        else:
+            break
 
     return {'rank': rank}
 

@@ -35,7 +35,7 @@ export class ClusterService {
         );
     }
 
-    getRankOfMark(_case: string,
+    getRankOfMarkedMactimeById(_case: string,
                   _clusters: ClusterModel[],
                   marks_ids: string[],
                   _additional_filters: object,
@@ -44,7 +44,7 @@ export class ClusterService {
                   sort_order: string,
                   mark_id: string
                   ) {
-        return this.http.post<any>(environment.backendUrl + '/clusters/get_rank_of_mark/' + _case, {
+        return this.http.post<any>(environment.backendUrl + '/clusters/get_rank_of_marked_mactime_by_id/' + _case, {
             'clusters': _clusters,
             'marks_ids': marks_ids,
             'additional_filters': JSON.stringify(_additional_filters),
@@ -52,6 +52,30 @@ export class ClusterService {
             'sort': sort,
             'sort_order': sort_order,
             'mark_id': mark_id
+        }).toPromise().then(
+            response => {
+                return response.rank;
+            }
+        );
+    }
+
+    getRankOfMactimeByTimestamp(_case: string,
+                  _clusters: ClusterModel[],
+                  marks_ids: string[],
+                  _additional_filters: object,
+                  size: number,
+                  sort: string,
+                  sort_order: string,
+                  date: Date
+    ) {
+        return this.http.post<any>(environment.backendUrl + '/clusters/get_rank_of_mactime_by_timestamp/' + _case, {
+            'clusters': _clusters,
+            'marks_ids': marks_ids,
+            'additional_filters': JSON.stringify(_additional_filters),
+            'size': size,
+            'sort': sort,
+            'sort_order': sort_order,
+            'timestamp': date
         }).toPromise().then(
             response => {
                 return response.rank;

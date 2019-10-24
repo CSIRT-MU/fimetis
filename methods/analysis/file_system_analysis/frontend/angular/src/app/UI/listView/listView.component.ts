@@ -1255,21 +1255,46 @@ export class ListViewComponent {
     }
 
     async scrollToBar(date: Date) {
-        const item = this.visibleData[0]._source['@timestamp'];
-        const firstIndex = this.virtualScroller.viewPortInfo.startIndex;
-        const beforeBar = await this.clusterService.numberOfEntries(
+        // const item = this.visibleData[0]._source['@timestamp'];
+        // const firstIndex = this.virtualScroller.viewPortInfo.startIndex;
+        // const beforeBar = await this.clusterService.numberOfEntries(
+        //     this.case,
+        //     this.clusters,
+        //     {},
+        //     date.toISOString());
+        // const beforeFirstEntry = await this.clusterService.numberOfEntries(
+        //     this.case,
+        //     this.clusters,
+        //     {},
+        //     item);
+        // const shift = beforeBar - beforeFirstEntry;
+        // this.scrollToIndex(firstIndex + shift - 1);
+        // this.toaster.success(date.toDateString(), 'View has scrolled to date:');
+        const start = new Date();
+        const dialogRef = this.dialog.open(ScrollDialogComponent, {
+            minWidth: '350px',
+            data: {
+                title: 'Scrolling to timestamp in list',
+                message: 'Scrolling may take some time',
+            }
+        });
+
+        const index = await this.clusterService.getRankOfMactimeByTimestamp(
             this.case,
             this.clusters,
-            {},
-            date.toISOString());
-        const beforeFirstEntry = await this.clusterService.numberOfEntries(
-            this.case,
-            this.clusters,
-            {},
-            item);
-        const shift = beforeBar - beforeFirstEntry;
-        this.scrollToIndex(firstIndex + shift - 1);
-        this.toaster.success(date.toDateString(), 'View has scrolled to date:');
+            Array.from(this.marked_rows_id),
+            this.additionalFilters,
+            this.total,
+            this.pageSortString,
+            this.pageSortOrder,
+            date);
+
+        const end = new Date();
+        this.scrollToIndex(index);
+        if (end.getTime() - start.getTime() < 1000) {
+            await this.delay(2000);
+        }
+        dialogRef.close();
     }
 
     async delay(ms: number) {
@@ -1279,15 +1304,14 @@ export class ListViewComponent {
     async scrollToMarkById(id) {
         const start = new Date();
         const dialogRef = this.dialog.open(ScrollDialogComponent, {
-
-            width: '350px',
+            minWidth: '350px',
             data: {
-                title: 'Scrolling to mark',
+                title: 'Scrolling to marked timestamp in list',
                 message: 'Scrolling may take some time',
             }
         });
         console.log(dialogRef);
-        const index = await this.clusterService.getRankOfMark(
+        const index = await this.clusterService.getRankOfMarkedMactimeById(
             this.case,
             this.clusters,
             Array.from(this.marked_rows_id),
@@ -1341,14 +1365,11 @@ export class ListViewComponent {
 
 
         for (let i = 0; i < size; i++) {
-            console.log(this.visibleDataFirstIndex);
             if (!this.marked_rows_id.has(this.visibleData[i]['_id'])) {
                 allMarked = false;
                 break;
             }
         }
-
-        console.log(this.visibleData.length);
 
         // if ale visible lines are marked, then unmark them
         // else mark deselect all
