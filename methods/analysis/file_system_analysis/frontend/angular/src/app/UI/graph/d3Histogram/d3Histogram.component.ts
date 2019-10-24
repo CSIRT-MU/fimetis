@@ -1779,9 +1779,9 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('margin-top', -60 + 'px');
                     })
                     .on('click', function (d) {
-                        if (d[1] > 1) {
-                            return;
-                        }
+                        // if (d[1] > 1) {
+                        //     return;
+                        // }
                         thisClass.scrollToMarkById.emit(d[0].id);
                     })
                     ;
@@ -1836,6 +1836,12 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('border-color', 'black')
                             .style('margin-top', -60 + 'px')
                         ;
+                    })
+                    .on('click', function (d) {
+                        // if (d[1] > 1) {
+                        //     return;
+                        // }
+                        thisClass.scrollToMarkById.emit(d[0].id);
                     })
                 ;
             }
