@@ -10,12 +10,15 @@ import {D3HistogramComponent} from './d3Histogram/d3Histogram.component';
 import * as d3 from 'd3';
 import {Hotkey, HotkeysService} from 'angular2-hotkeys';
 import {StateService} from '../../services/state.service';
+import {LoadingStatus} from './loading-status';
 
 @Component({
     selector: 'app-graph',
     templateUrl: './graph.component.html',
     styleUrls: ['./graph.component.css']
 })
+
+
 export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @Input() _case: string;
@@ -47,15 +50,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     supportedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
     selectedTypes: Set<string> = new Set<string>(['m', 'a', 'c', 'b']);
 
-    loadingMTimes = false;
-    loadingATimes = false;
-    loadingCTimes = false;
-    loadingBTimes = false;
-    loadingAllTimes = false;
-    loadingFilteredMTimes = false;
-    loadingFilteredATimes = false;
-    loadingFilteredCTimes = false;
-    loadingFilteredBTimes = false;
+    monthsLoadingStatus = new LoadingStatus();
+    weeksLoadingStatus = new LoadingStatus();
+    daysLoadingStatus = new LoadingStatus();
+    hoursLoadingStatus = new LoadingStatus();
 
     min_date_boundary = null;
     max_date_boundary = null;
@@ -283,12 +281,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
      * Graph initialization
      */
     init() {
-
-        this.loadingMTimes = true;
-        this.loadingATimes = true;
-        this.loadingCTimes = true;
-        this.loadingBTimes = true;
-        this.loadingAllTimes = true;
+        this.setLoadingIndicatorsToTrue();
 
         // console.log('compute graph');
         this.graphService.getFirstAndLastTimestamp(this._case, this._clusters, null, null).then((res) => {
@@ -473,20 +466,15 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.additionalFilters !== undefined) {
             this.loadFilteredData();
         }
-
-
-
         this.countPresenceOfMarksInCurrentCluster();
-
     }
 
 
 
     chartDataLoaded() {
-        if (!this.loadingMTimes && !this.loadingATimes && !this.loadingCTimes && !this.loadingBTimes
-            && !this.loadingFilteredMTimes && !this.loadingATimes && !this.loadingFilteredCTimes && !this.loadingFilteredBTimes) {
-            // this.chart.redraw(false);
-            // this.chartOverview.redraw(false);
+        const relevantDataLoaded = this.areRelevantDataLoaded();
+
+        if (relevantDataLoaded) {
             this.d3Histogram.createChart();
         }
     }
@@ -852,10 +840,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.additionalFilters !== undefined) {
             if (this.additionalFilters['searchString'] !== undefined) {
                 this.d3Histogram.searchString = this.additionalFilters['searchString'];
-                this.loadingFilteredMTimes = true;
-                this.loadingFilteredATimes = true;
-                this.loadingFilteredCTimes = true;
-                this.loadingFilteredBTimes = true;
+                this.setLoadingIndicatorsToTrueForFiltered();
 
                 this.loadGraphFilteredMonthData();
                 this.loadGraphFilteredWeekData();
@@ -897,7 +882,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingMTimes = false;
+                this.monthsLoadingStatus.mtimes = false;
                 this.d3Histogram.data_months[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -914,7 +899,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingATimes = false;
+                this.monthsLoadingStatus.atimes = false;
                 this.d3Histogram.data_months[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -931,7 +916,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingCTimes = false;
+                this.monthsLoadingStatus.ctimes = false;
                 this.d3Histogram.data_months[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -948,7 +933,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingBTimes = false;
+                this.monthsLoadingStatus.btimes = false;
                 this.d3Histogram.data_months[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -968,7 +953,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingMTimes = false;
+                this.weeksLoadingStatus.mtimes = false;
                 this.d3Histogram.data_weeks[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -985,7 +970,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingATimes = false;
+                this.weeksLoadingStatus.atimes = false;
                 this.d3Histogram.data_weeks[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1002,7 +987,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingCTimes = false;
+                this.weeksLoadingStatus.ctimes = false;
                 this.d3Histogram.data_weeks[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1020,7 +1005,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingBTimes = false;
+                this.weeksLoadingStatus.btimes = false;
                 this.d3Histogram.data_weeks[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1040,7 +1025,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingMTimes = false;
+                this.daysLoadingStatus.mtimes = false;
                 this.d3Histogram.data_days[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1057,7 +1042,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingATimes = false;
+                this.daysLoadingStatus.atimes = false;
                 this.d3Histogram.data_days[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1075,7 +1060,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingCTimes = false;
+                this.daysLoadingStatus.ctimes = false;
                 this.d3Histogram.data_days[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1092,7 +1077,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingBTimes = false;
+                this.daysLoadingStatus.btimes = false;
                 this.d3Histogram.data_days[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1112,7 +1097,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingMTimes = false;
+                this.hoursLoadingStatus.mtimes = false;
                 this.d3Histogram.data_hours[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1129,7 +1114,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingATimes = false;
+                this.hoursLoadingStatus.atimes = false;
                 this.d3Histogram.data_hours[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1146,7 +1131,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingCTimes = false;
+                this.hoursLoadingStatus.ctimes = false;
                 this.d3Histogram.data_hours[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1163,7 +1148,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingBTimes = false;
+                this.hoursLoadingStatus.btimes = false;
                 this.d3Histogram.data_hours[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1183,7 +1168,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredMTimes = false;
+                this.monthsLoadingStatus.mtimesFiltered = false;
                 this.d3Histogram.filteredDataMonths[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1200,7 +1185,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredATimes = false;
+                this.monthsLoadingStatus.atimesFiltered = false;
                 this.d3Histogram.filteredDataMonths[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1217,7 +1202,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredCTimes = false;
+                this.monthsLoadingStatus.ctimesFiltered = false;
                 this.d3Histogram.filteredDataMonths[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1234,7 +1219,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredBTimes = false;
+                this.monthsLoadingStatus.btimesFiltered = false;
                 this.d3Histogram.filteredDataMonths[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1254,7 +1239,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredMTimes = false;
+                this.weeksLoadingStatus.mtimesFiltered = false;
                 this.d3Histogram.filteredDataWeeks[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1271,7 +1256,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredATimes = false;
+                this.weeksLoadingStatus.atimesFiltered = false;
                 this.d3Histogram.filteredDataWeeks[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1288,7 +1273,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredCTimes = false;
+                this.weeksLoadingStatus.ctimesFiltered = false;
                 this.d3Histogram.filteredDataWeeks[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1305,7 +1290,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredBTimes = false;
+                this.weeksLoadingStatus.btimesFiltered = false;
                 this.d3Histogram.filteredDataWeeks[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1325,7 +1310,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredMTimes = false;
+                this.daysLoadingStatus.mtimesFiltered = false;
                 this.d3Histogram.filteredDataDays[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1342,7 +1327,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredATimes = false;
+                this.daysLoadingStatus.atimesFiltered = false;
                 this.d3Histogram.filteredDataDays[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1360,7 +1345,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredCTimes = false;
+                this.daysLoadingStatus.ctimesFiltered = false;
                 this.d3Histogram.filteredDataDays[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1377,7 +1362,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredBTimes = false;
+                this.daysLoadingStatus.btimesFiltered = false;
                 this.d3Histogram.filteredDataDays[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1397,7 +1382,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredMTimes = false;
+                this.hoursLoadingStatus.mtimesFiltered = false;
                 this.d3Histogram.filteredDataHours[0] = {name: 'm', color: this.mTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1414,7 +1399,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredATimes = false;
+                this.hoursLoadingStatus.atimesFiltered = false;
                 this.d3Histogram.filteredDataHours[1] = {name: 'a', color: this.aTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1431,7 +1416,7 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredCTimes = false;
+                this.hoursLoadingStatus.ctimesFiltered = false;
                 this.d3Histogram.filteredDataHours[2] = {name: 'c', color: this.cTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
@@ -1448,11 +1433,95 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 });
 
-                this.loadingFilteredBTimes = false;
+                this.hoursLoadingStatus.btimesFiltered = false;
                 this.d3Histogram.filteredDataHours[3] = {name: 'b', color: this.bTypeColor, data: data, maxValue: 0};
                 this.chartDataLoaded();
             });
 
+    }
+
+    setLoadingIndicatorsToTrue() {
+        this.monthsLoadingStatus.mtimes = true;
+        this.monthsLoadingStatus.atimes = true;
+        this.monthsLoadingStatus.ctimes = true;
+        this.monthsLoadingStatus.btimes = true;
+
+        this.weeksLoadingStatus.mtimes = true;
+        this.weeksLoadingStatus.atimes = true;
+        this.weeksLoadingStatus.ctimes = true;
+        this.weeksLoadingStatus.btimes = true;
+
+        this.daysLoadingStatus.mtimes = true;
+        this.daysLoadingStatus.atimes = true;
+        this.daysLoadingStatus.ctimes = true;
+        this.daysLoadingStatus.btimes = true;
+
+        this.hoursLoadingStatus.mtimes = true;
+        this.hoursLoadingStatus.atimes = true;
+        this.hoursLoadingStatus.ctimes = true;
+        this.hoursLoadingStatus.btimes = true;
+    }
+
+    setLoadingIndicatorsToTrueForFiltered() {
+        this.monthsLoadingStatus.mtimesFiltered = true;
+        this.monthsLoadingStatus.atimesFiltered = true;
+        this.monthsLoadingStatus.ctimesFiltered = true;
+        this.monthsLoadingStatus.btimesFiltered = true;
+
+        this.weeksLoadingStatus.mtimesFiltered = true;
+        this.weeksLoadingStatus.atimesFiltered = true;
+        this.weeksLoadingStatus.ctimesFiltered = true;
+        this.weeksLoadingStatus.btimesFiltered = true;
+
+        this.daysLoadingStatus.mtimesFiltered = true;
+        this.daysLoadingStatus.atimesFiltered = true;
+        this.daysLoadingStatus.ctimesFiltered = true;
+        this.daysLoadingStatus.btimesFiltered = true;
+
+        this.hoursLoadingStatus.mtimesFiltered = true;
+        this.hoursLoadingStatus.atimesFiltered = true;
+        this.hoursLoadingStatus.ctimesFiltered = true;
+        this.hoursLoadingStatus.btimesFiltered = true;
+    }
+
+    areRelevantDataLoaded() {
+        if (this.d3Histogram === undefined) {
+            return true;
+        }
+        let relevantLoadingStatus  = this.monthsLoadingStatus;
+
+        switch (this.d3Histogram.granularity_level) {
+            case 'month': {
+                relevantLoadingStatus = this.monthsLoadingStatus;
+                break;
+            }
+            case 'week': {
+                relevantLoadingStatus = this.weeksLoadingStatus;
+                break;
+            }
+            case 'day': {
+                relevantLoadingStatus = this.daysLoadingStatus;
+                break;
+            }
+            case 'hour': {
+                relevantLoadingStatus = this.hoursLoadingStatus;
+                break;
+            }
+            default: {
+                relevantLoadingStatus = this.monthsLoadingStatus;
+                break;
+            }
+        }
+
+        let dataLoaded = true;
+        for (const key in relevantLoadingStatus) {
+            if (this.monthsLoadingStatus[key] === true) {
+                dataLoaded = false;
+                break;
+            }
+        }
+
+        return dataLoaded;
     }
 
 }

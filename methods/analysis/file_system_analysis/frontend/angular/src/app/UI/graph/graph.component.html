@@ -37,7 +37,7 @@
     <!--</div>-->
     <div class="col-md-12" [ngClass]="{'panel-hidden': !graphPanelOpenState, 'panel-visible': graphPanelOpenState}">
         <div class="graph-container">
-            <div class="chart-loader" *ngIf="loadingMTimes || loadingATimes || loadingBTimes || loadingCTimes">
+            <div class="chart-loader" *ngIf="!areRelevantDataLoaded()">
                 <div class="loader-stat loader-7">
                     <div class="line line1"></div>
                     <div class="line line2"></div>

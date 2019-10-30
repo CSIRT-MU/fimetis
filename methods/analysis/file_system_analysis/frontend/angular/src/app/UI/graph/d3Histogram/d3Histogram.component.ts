@@ -343,6 +343,9 @@ export class D3HistogramComponent implements OnDestroy {
         const lastDate = new Date(this.max_date_boundary + (10 * 24 * 3600 * 1000));
 
         for (const dataItem of data_days) {
+            if (dataItem === undefined) {
+                continue;
+            }
             dataItem.maxValue = d3.max(dataItem.data, d => d[1]);
         }
 
@@ -359,7 +362,16 @@ export class D3HistogramComponent implements OnDestroy {
 
         // Returns ticks in ascending order, last one is also maximum of Y axis
         function countTickValues() {
-            const maximum = d3.max(data_days, d => d.maxValue);
+            let maximum = 1;
+            if (data_days === undefined) {
+                maximum = 1;
+            } else {
+                for (const item in data_days) {
+                    if (data_days[item].maxValue !== undefined) {
+                        maximum = Math.max(maximum, data_days[item].maxValue);
+                    }
+                }
+            }
 
             if (maximum === undefined) {
                 // just small basic ticks, if no data loaded
@@ -867,6 +879,9 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .attr('fill', thisClass.data[i].color)
                     .on('mouseover', function(d) {
+                        if (thisClass.areBarsFiltered()) {
+                            return;
+                        }
                         const colour = Color(thisClass.data[i].color).rgb();
 
                         const new_r = colour.red() * 0.7;
@@ -875,17 +890,6 @@ export class D3HistogramComponent implements OnDestroy {
 
                         const new_color = Color.rgb(new_r, new_g, new_b);
 
-
-
-
-                        // const text_color = d3.color(thisClass.data[i].color);
-                        // const colour = text_color.rgb();
-                        // // const color = d3.rgb(thisClass.data[i].color);
-                        //colour.opacity = 1.0;
-                        // colour.r *= 0.7;
-                        // colour.g *= 0.7;
-                        // colour.b *= 0.7;
-                        //const colour = 'grey';
                         d3.select(this).style('fill', new_color.toString());
                         d3.select(this)
                             .style('filter', 'brightness(3)');
@@ -894,6 +898,9 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('display', 'inline-block');
                     })
                     .on('mouseout', function() {
+                        if (thisClass.areBarsFiltered()) {
+                            return;
+                        }
                         d3.select(this).style('fill', thisClass.data[i].color);
                         d3.select(this).style('filter', 'brightness(1)');
                         tooltip
@@ -975,6 +982,15 @@ export class D3HistogramComponent implements OnDestroy {
                         })
                         .attr('fill', thisClass.filteredData[i].color)
                         .on('mouseover', function(d) {
+                            const colour = Color(thisClass.data[i].color).rgb();
+
+                            const new_r = colour.red() * 0.7;
+                            const new_g = colour.green() * 0.7;
+                            const new_b = colour.blue() * 0.7;
+
+                            const new_color = Color.rgb(new_r, new_g, new_b);
+
+                            d3.select(this).style('fill', new_color.toString());
                             d3.select(this)
                                 .style('filter', 'brightness(3)');
                             tooltip
@@ -982,6 +998,7 @@ export class D3HistogramComponent implements OnDestroy {
                                 .style('display', 'inline-block');
                         })
                         .on('mouseout', function() {
+                            d3.select(this).style('fill', thisClass.data[i].color);
                             d3.select(this).style('filter', 'brightness(1)');
                             tooltip
                             // .style('opacity', 0);
@@ -2184,5 +2201,9 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         return dateString;
+    }
+
+    areBarsFiltered() {
+        return this.searchString !== undefined && this.searchString !== '';
     }
 }
