@@ -687,6 +687,13 @@ export class ListViewComponent {
             this.openHighlightedTextMenu(hideEvent, 0);
             return;
         }
+        const dialogRef = this.dialog.open(ScrollDialogComponent, {
+            minWidth: '350px',
+            data: {
+                title: 'Skipping the filename block',
+                message: 'Skipping may take some time',
+            }
+        });
         // console.log('skip File Name from', this.highlightedTextId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
         const skipFrom = this.highlightedTextId;
@@ -848,6 +855,14 @@ export class ListViewComponent {
             this.openHighlightedTextDateMenu(hideEvent, 0);
             return;
         }
+        const dialogRef = this.dialog.open(ScrollDialogComponent, {
+            minWidth: '350px',
+            data: {
+                title: 'Skipping the date block',
+                message: 'Skipping may take some time',
+            }
+        });
+
         // console.log('skip date from', this.highlightedTextDateId, this.visibleDataFirstIndex, this.preloadedBegin);
         let skipIndex = null;
         const skipFrom = this.highlightedTextDateId;
@@ -926,6 +941,9 @@ export class ListViewComponent {
         }
         this.toaster.success(skippedItems.toString(10) + (skippedItems > 1 ? ' items' : ' item'), 'You skipped');
         this.openHighlightedTextDateMenu(hideEvent, 0);
+        if (!this.loadingData) {
+            dialogRef.close();
+        }
     }
     /**
      * Skips Date in given buffer
