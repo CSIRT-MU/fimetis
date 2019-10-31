@@ -5,6 +5,7 @@ import {CaseService} from '../../services/case.service';
 import {StateService} from '../../services/state.service';
 import {AuthenticationService} from '../../auth/authentication.service';
 import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirmation-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-case-management',
@@ -15,6 +16,7 @@ export class CaseManagementComponent implements OnInit {
 
   cases: Map<string, number> = new Map<string, number>();
   constructor(
+      public dialog: MatDialog,
       private baseService: BaseService,
       private caseService: CaseService,
       private stateService: StateService,
@@ -51,23 +53,30 @@ export class CaseManagementComponent implements OnInit {
   }
 
   removeSelectedCase(caseName) {
-          this.baseService.deleteCase(caseName).then(
-              response => {
-                console.log('Dataset deleted', response);
-                // this.ngOnInit();
-              }, error => {
-                console.error(error);
-              }).then(() => {
-            console.log('Delete completed!');
-          });
-          if (caseName === this.caseService.selectedCase) {
-              this.caseService.selectedCase = null;
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          width: '350px',
+          data: {
+              title: 'Are you sure ?',
+              message: 'You want to delete whole dataset',
           }
+      });
 
-          this.cases.delete(caseName);
-
-        // this.loadAllCases();
-      // window.location.reload();
+      dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+              this.baseService.deleteCase(caseName).then(
+                  response => {
+                      console.log('Dataset deleted', response);
+                  }, error => {
+                      console.error(error);
+                  }).then(() => {
+                  console.log('Delete completed!');
+              });
+              if (caseName === this.caseService.selectedCase) {
+                  this.caseService.selectedCase = null;
+              }
+              this.cases.delete(caseName);
+          }
+      });
   }
 
   getColorForSelectButton(caseName) {
@@ -80,14 +89,5 @@ export class CaseManagementComponent implements OnInit {
   selectCase(caseName) {
       this.caseService.selectedCase = caseName;
   }
-
-
-
-  // getFontWeightForCase(case) {
-  //   if (this.caseService.selectedCase === case) {
-  //     return 'bolder';
-  //   }
-  //   return 'normal';
-  // }
 
 }
