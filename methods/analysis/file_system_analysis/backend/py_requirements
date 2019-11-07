@@ -5,3 +5,4 @@ pyjwt
 wheel
 uwsgi
 python-dateutil
+werkzeug

@@ -2,6 +2,18 @@
 
 # Tasks for nginx settings
   
+  - name: Installing setuptools
+    apt: 
+      name: python-setuptools
+
+  - name: Install passlib
+    apt:
+      name: python3-passlib
+
+  - name: install passlib
+    apt: 
+      name: python-passlib
+
   - name: Installing nginx
     apt:
       name: nginx
@@ -57,10 +69,10 @@
       name: python3-pip
       state: present
 
-  - name: Installing passlib
-    pip:
-      name: passlib
-      executable: pip3
+#  - name: Installing passlib
+#    pip:
+#      name: passlib
+#      executable: pip3
 
 #  - name: Creating passwd file for elastic
 #    htpasswd:

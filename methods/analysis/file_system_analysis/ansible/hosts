@@ -1,5 +1,8 @@
-#78.128.250.225 ansible_user=root
-#78.128.250.207 ansible_user=root
-#78.128.250.232 ansible_user=root
-#78.128.250.226 ansible_user=root
-78.128.250.242 ansible_user=root
+# Production
+#147.251.21.123 ansible_user=root
+
+# Development
+#147.251.21.120 ansible_user=root
+
+# Presentation
+#147.251.21.16 ansible_user=root

@@ -10,7 +10,8 @@
   - { role: angular }
   - { role: kibana }
   - { role: nginx }
-#  - { role: logstash }
+  - { role: logstash }
   - { role: flask }
+  - { role: postgres }
   - { role: upload-data }
   - { role: upload-users }
