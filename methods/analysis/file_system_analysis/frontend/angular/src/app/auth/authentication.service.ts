@@ -40,7 +40,8 @@ export class AuthenticationService {
     }
 
     isAdmin() {
-        return this.currentUserValue.groups.indexOf('admin') !== -1;
+        return this.currentUserValue.is_super_admin;
+        //return this.currentUserValue.groups.indexOf('admin') !== -1;
     }
 
     reset() {

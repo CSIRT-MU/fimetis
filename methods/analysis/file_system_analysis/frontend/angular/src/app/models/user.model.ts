@@ -1,6 +1,7 @@
 export class User {
     id: number;
     username: string;
-    groups = [];
+    // groups = [];
+    is_super_admin: boolean;
     token?: string;
 }

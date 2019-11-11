@@ -11,6 +11,7 @@ import json
 import subprocess
 import fsa_lib as fsa
 import import_metadata
+import postgres_lib as pg
 import tempfile
 import logging
 
@@ -29,6 +30,8 @@ app.config['elastic_user_type'] = None
 app.config['TOKEN_EXPIRATION'] = datetime.timedelta(days=1)
 app.config['elastic_host'] = 'localhost'
 app.config['elastic_port'] = 9200
+app.config['pg_user'] = 'fimetis'
+app.config['pg_db'] = 'fimetis'
 es = Elasticsearch([{'host': app.config['elastic_host'], 'port': app.config['elastic_port']}])
 
 
@@ -46,8 +49,9 @@ def token_required(f):
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
             current_user = {'username': data['username'],
-                            'groups': data['groups']}
+                            'is_super_admin': data['is_super_admin']}
         except:
+            print('fail')
             return jsonify({'message': 'Token is invalid!'}), 401
         return f(current_user, *args, **kwargs)
 
@@ -62,15 +66,22 @@ def admin_required(f):
         except:
             return jsonify({'message': 'This user is not authorized'}), 403
         authorized = False
-        for group in current_user['groups']:
-            if group == 'admin':
-                authorized = True
-                break
+        if current_user['is_super_admin']:
+            authorized = True
+        # for group in current_user['groups']:
+        #     if group == 'admin':
+        #         authorized = True
+        #         break
         if not authorized:
             return jsonify({'message': 'This user is not authorized'}), 403
         return f(*args, **kwargs)
     return decorated
 
+
+def owner_required(f):
+    @wraps(f)
+    def decorate(*args, **kwargs):
+        print(args[1])
 
 # def authorization_required(f):
 #     @wraps(f)
@@ -95,26 +106,67 @@ def admin_required(f):
 
 @app.route('/login', methods=['POST'])
 def login():
+    print('Login:')
+    # conn = psycopg2.connect(database=app.config['pg_db'], user=app.config['pg_user'], password=None)
+    # print(conn)
+    #
+    # cursor = conn.cursor()
+    #
+    # cursor.execute('SELECT password FROM "user" WHERE login=%s', ('admin',))
+    # result = cursor.fetchone()[0]
+    #
+    # hash = generate_password_hash('timesix-elk')
+    # print(generate_password_hash('timesix-elk'))
+    # print(hash)
+    # print(result)
+    # print(check_password_hash(hash, 'timesix-elk'))
+    # print(check_password_hash(result, 'timesix-elk'))
+
     if not request.get_json() or not request.get_json()['username'] or not request.get_json()['password']:
         logging.warning('LOGIN - Wrong username or password')
         return jsonify({'message': 'Wrong username or password'}), 400
-    body = {'query': {'term': {'username': request.get_json()['username']}}}
-    res = es.search(index=app.config['elastic_user_index'], doc_type=app.config['elastic_user_type'], body=body)
-    for user in res['hits']['hits']:
-        username = user['_source']['username']
-        password = user['_source']['password']
-        groups = user['_source']['groups']
-        if request.get_json()['username'] == username:
-            if check_password_hash(password, request.get_json()['password']):
-                token = jwt.encode(
-                    {'username': username,
-                     'groups': groups,
-                     'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
-                    app.config['SECRET_KEY'])
-                logging.warning('LOGIN - successful for user: ' + str(username + ' from ' + str(request.remote_addr)))
-                return jsonify({'username': username, 'groups': groups, 'token': token.decode('UTF-8')})
+    # body = {'query': {'term': {'username': request.get_json()['username']}}}
+    # res = es.search(index=app.config['elastic_user_index'], doc_type=app.config['elastic_user_type'], body=body)
+
+    username = request.get_json()['username']
+    # conn = psycopg2.connect(database=app.config['pg_db'], user=app.config['pg_user'], password=None)
+    # cursor = conn.cursor()
+    # cursor.execute('SELECT password, is_super_admin FROM "user" WHERE login=%s', (username,))
+    # result = cursor.fetchone()
+    user = pg.get_user_by_login(username)
+    password_hash = user[0]
+    is_super_admin = user[1]
+
+    if check_password_hash(password_hash, request.get_json()['password']):
+        token = jwt.encode(
+            {
+                'username': username,
+                'is_super_admin': is_super_admin,
+                'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']
+            }, app.config['SECRET_KEY']
+        )
+        logging.warning('LOGIN - successful for user: ' + str(username) + ' from ' + str(request.remote_addr))
+        return jsonify({'username': username, 'is_super_admin': is_super_admin, 'token': token.decode('UTF-8')})
+
     logging.warning('LOGIN - Wrong username or password')
     return jsonify({'message': 'Wrong username or password'}), 400
+
+
+    # for user in res['hits']['hits']:
+    #     username = user['_source']['username']
+    #     password = user['_source']['password']
+    #     groups = user['_source']['groups']
+    #     if request.get_json()['username'] == username:
+    #         if check_password_hash(password, request.get_json()['password']):
+    #             token = jwt.encode(
+    #                 {'username': username,
+    #                  'groups': groups,
+    #                  'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
+    #                 app.config['SECRET_KEY'])
+    #             logging.warning('LOGIN - successful for user: ' + str(username + ' from ' + str(request.remote_addr)))
+    #             return jsonify({'username': username, 'groups': groups, 'token': token.decode('UTF-8')})
+    # logging.warning('LOGIN - Wrong username or password')
+    # return jsonify({'message': 'Wrong username or password'}), 400
 
 
 @app.route('/authenticated', methods=['GET', 'POST'])
@@ -131,7 +183,7 @@ def es_info():
 
 @app.route('/upload', methods=['POST'])
 @token_required
-@admin_required
+#@admin_required
 def upload(current_user):
     if 'case' not in request.form:
         return jsonify({'status': 'failed', 'message': 'Case name is missing in form'})
@@ -163,14 +215,23 @@ def upload(current_user):
                                        case_name,
                                        remove_deleted=remove_deleted,
                                        remove_deleted_realloc=remove_deleted_realloc)
-            # subprocess.Popen(['python3', './metadata-uploader.py', '-c', case, '-f', sys_path, '-ds', 'true'])
+
+            pg.insert_case(case_name)
+            pg.insert_user_case_role(current_user['username'], case_name, 'admin')
+
     return jsonify({'status': 'OK', 'message': 'uploading files'})
 
 
 @app.route('/case/delete/<string:case>', methods=['DELETE'])
 @token_required
 @admin_required
+# @owner_required
 def delete_case(current_user, case):
+    if not pg.has_user_admin_access(current_user['username'], case):
+        return jsonify({'status': 'failed', 'message': 'User has not admin access for this case'})
+
+    pg.delete_case(case)
+
     query = {
       'query': {
         'match_phrase': {
@@ -188,6 +249,7 @@ def delete_case(current_user, case):
 @app.route('/case/all', methods=['GET'])
 @token_required
 def cases(current_user):
+
     query = {
         'aggs': {
             'cases': {
