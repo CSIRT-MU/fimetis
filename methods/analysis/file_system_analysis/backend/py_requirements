@@ -6,3 +6,4 @@ wheel
 uwsgi
 python-dateutil
 werkzeug
+psycopg2
