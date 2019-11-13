@@ -13,6 +13,7 @@
       - libffi-dev
       - python3-setuptools
       - python-setuptools
+      - libpq-dev
 
   - name: Installing python3-venv
     apt:
@@ -31,6 +32,19 @@
 
   - name: Moving angular app code to /tmp
     shell: mv /tmp/kypo2-analytical-node/methods/analysis/file_system_analysis/backend /opt --backup=numbered
+
+  - name: Setting fimetis user and db for postgres
+    lineinfile:
+      dest: /opt/backend/postgres_lib.py
+      regexp: "^PG_DB =.*"
+      line: "PG_DB = '{{ pg_db }}'"
+
+  - name: Setting fimetis user for postgres
+    lineinfile:
+      dest: /opt/backend/postgres_lib.py
+      regexp: "^PG_USER =.*"
+      line: "PG_USER = '{{ pg_user }}'"
+    
 
   - name: Cleaning nonused source codes from downloaded repo
     file:

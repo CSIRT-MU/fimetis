@@ -50,7 +50,7 @@
     shell: chmod +x /opt/backend/import_super_admin.py
 
   - name: Init fimetis tables
-    shell: "sudo -u fimetis psql {{ pg_user }} {{ pg_db }} -f init.sql"
+    shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f init.sql"
     args:
       chdir: /tmp/
 
