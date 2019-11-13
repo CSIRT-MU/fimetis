@@ -2,6 +2,9 @@
     <mat-form-field class="col-md-12">
         Dataset name: <input matInput [(ngModel)]="_case" required>
     </mat-form-field>
+    <mat-form-field class="col-md-12">
+        Dataset description (optional): <input matInput [(ngModel)]="_description">
+    </mat-form-field>
 
     <ngfUploadStatus
             [(percent)] = "progress"

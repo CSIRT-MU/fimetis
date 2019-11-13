@@ -17,6 +17,7 @@ export class UploadComponent implements OnInit {
     files: File[] = [];
     @Input('_case')
     _case = '';
+    _description = '';
     progress: number;
     httpEmitter: Subscription;
     httpEvent: HttpEvent<{}>;
@@ -40,6 +41,7 @@ export class UploadComponent implements OnInit {
 
         files.forEach(file => formData.append('file', file, file.name));
         formData.append('case', this._case);
+        formData.append('description', this._description);
         formData.append('removeDeleted', this.removeDeleted.toString());
         formData.append('removeDeletedRealloc', this.removeDeletedRealloc.toString());
         const dataset_name = this._case;

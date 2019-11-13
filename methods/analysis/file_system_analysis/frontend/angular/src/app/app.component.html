@@ -20,6 +20,10 @@
                 *ngIf="getRouter().url !== '/case-management'">
                     CASE MANAGEMENT
                 </button>
+                <button mat-menu-item routerLink="/access-management" routerLinkActive="active"
+                        *ngIf="getRouter().url !== '/access-management'">
+                    ACCESS MANAGEMENT
+                </button>
                 <button mat-menu-item routerLink="/upload/empty" routerLinkActive="active"
                         *ngIf="getRouter().url !== '/upload'">
                     <span>UPLOAD FILE TO DATASET</span>

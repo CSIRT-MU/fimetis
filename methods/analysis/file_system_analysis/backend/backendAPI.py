@@ -51,7 +51,6 @@ def token_required(f):
             current_user = {'username': data['username'],
                             'is_super_admin': data['is_super_admin']}
         except:
-            print('fail')
             return jsonify({'message': 'Token is invalid!'}), 401
         return f(current_user, *args, **kwargs)
 
@@ -78,11 +77,6 @@ def admin_required(f):
     return decorated
 
 
-def owner_required(f):
-    @wraps(f)
-    def decorate(*args, **kwargs):
-        print(args[1])
-
 # def authorization_required(f):
 #     @wraps(f)
 #     def decorated(*args, **kwargs):
@@ -106,33 +100,11 @@ def owner_required(f):
 
 @app.route('/login', methods=['POST'])
 def login():
-    print('Login:')
-    # conn = psycopg2.connect(database=app.config['pg_db'], user=app.config['pg_user'], password=None)
-    # print(conn)
-    #
-    # cursor = conn.cursor()
-    #
-    # cursor.execute('SELECT password FROM "user" WHERE login=%s', ('admin',))
-    # result = cursor.fetchone()[0]
-    #
-    # hash = generate_password_hash('timesix-elk')
-    # print(generate_password_hash('timesix-elk'))
-    # print(hash)
-    # print(result)
-    # print(check_password_hash(hash, 'timesix-elk'))
-    # print(check_password_hash(result, 'timesix-elk'))
-
     if not request.get_json() or not request.get_json()['username'] or not request.get_json()['password']:
         logging.warning('LOGIN - Wrong username or password')
         return jsonify({'message': 'Wrong username or password'}), 400
-    # body = {'query': {'term': {'username': request.get_json()['username']}}}
-    # res = es.search(index=app.config['elastic_user_index'], doc_type=app.config['elastic_user_type'], body=body)
 
     username = request.get_json()['username']
-    # conn = psycopg2.connect(database=app.config['pg_db'], user=app.config['pg_user'], password=None)
-    # cursor = conn.cursor()
-    # cursor.execute('SELECT password, is_super_admin FROM "user" WHERE login=%s', (username,))
-    # result = cursor.fetchone()
     user = pg.get_user_by_login(username)
     password_hash = user[0]
     is_super_admin = user[1]
@@ -152,23 +124,6 @@ def login():
     return jsonify({'message': 'Wrong username or password'}), 400
 
 
-    # for user in res['hits']['hits']:
-    #     username = user['_source']['username']
-    #     password = user['_source']['password']
-    #     groups = user['_source']['groups']
-    #     if request.get_json()['username'] == username:
-    #         if check_password_hash(password, request.get_json()['password']):
-    #             token = jwt.encode(
-    #                 {'username': username,
-    #                  'groups': groups,
-    #                  'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']},
-    #                 app.config['SECRET_KEY'])
-    #             logging.warning('LOGIN - successful for user: ' + str(username + ' from ' + str(request.remote_addr)))
-    #             return jsonify({'username': username, 'groups': groups, 'token': token.decode('UTF-8')})
-    # logging.warning('LOGIN - Wrong username or password')
-    # return jsonify({'message': 'Wrong username or password'}), 400
-
-
 @app.route('/authenticated', methods=['GET', 'POST'])
 @token_required
 def authenticated():
@@ -183,22 +138,30 @@ def es_info():
 
 @app.route('/upload', methods=['POST'])
 @token_required
-#@admin_required
 def upload(current_user):
     if 'case' not in request.form:
         return jsonify({'status': 'failed', 'message': 'Case name is missing in form'})
     else:
         case_name = request.form['case']
+
+    if 'description' not in request.form:
+        description = ''
+    else:
+        description = request.form['description']
+
     if 'removeDeleted' not in request.form:
         remove_deleted = True
     else:
         remove_deleted = request.form['removeDeleted'] in ('true', '1')
+
     if 'removeDeletedRealloc' not in request.form:
         remove_deleted_realloc = True
     else:
         remove_deleted_realloc = request.form['removeDeletedRealloc'] in ('true', '1')
+
     if 'file' not in request.files:
         return jsonify({'status': 'failed', 'message': 'No file to upload'})
+
     for file in request.files.getlist('file'):
         logging.info('upload file: ' + str(file) + ' to case: ' + str(case_name))
         if file.filename == '':
@@ -216,7 +179,7 @@ def upload(current_user):
                                        remove_deleted=remove_deleted,
                                        remove_deleted_realloc=remove_deleted_realloc)
 
-            pg.insert_case(case_name)
+            pg.insert_case(case_name, description)
             pg.insert_user_case_role(current_user['username'], case_name, 'admin')
 
     return jsonify({'status': 'OK', 'message': 'uploading files'})
@@ -225,7 +188,6 @@ def upload(current_user):
 @app.route('/case/delete/<string:case>', methods=['DELETE'])
 @token_required
 @admin_required
-# @owner_required
 def delete_case(current_user, case):
     if not pg.has_user_admin_access(current_user['username'], case):
         return jsonify({'status': 'failed', 'message': 'User has not admin access for this case'})
@@ -246,25 +208,64 @@ def delete_case(current_user, case):
     return jsonify(res)
 
 
-@app.route('/case/all', methods=['GET'])
+@app.route('/case/accessible', methods=['GET'])
 @token_required
-def cases(current_user):
+def accessible_cases(current_user):
+    logging.info('Listed accessible cases for user %s', (current_user['username']))
+    return jsonify(cases=pg.get_accessible_cases(current_user['username']))
 
-    query = {
-        'aggs': {
-            'cases': {
-                'terms': {
-                    'field': 'case.keyword',
-                    'size': 2147483647
-                }
-            }
-        }
-    }
-    logging.info('QUERY get all cases: ' + '\n' + json.dumps(query))
-    res = es.search(index=app.config['elastic_metadata_index'],
-                    doc_type=app.config['elastic_metadata_type'],
-                    body=query)
-    return jsonify(cases=res['aggregations']['cases']['buckets'])
+
+@app.route('/case/administrated', methods=['GET'])
+@token_required
+def administrated_cases(current_user):
+    logging.info('Listed administrated cases for user %s', (current_user['username']))
+    return jsonify(cases=pg.get_administrated_cases(current_user['username']))
+
+
+@app.route('/user/available', methods=['POST'])
+@token_required
+def get_available_users_to_add(current_user):
+    case_id = request.json.get('case_id')
+
+    logging.info('Listed available users to add access to case %s', (case_id))
+    return jsonify(cases=pg.get_available_users_to_add(case_id))
+
+
+@app.route('/case/add-user', methods=['POST'])
+@token_required
+def add_user_access_to_case(current_user):
+    case_id = request.json.get('case_id')
+    user_login = request.json.get('user_login')
+    role = request.json.get('role')
+
+    pg.add_user_access_to_case(case_id, user_login, role)
+
+    logging.info('User %s access to case %s added', (user_login, case_id))
+    return jsonify({'user access to case added': 'OK'}), 200
+
+
+@app.route('/case/delete-user', methods=['POST'])
+@token_required
+def delete_user_access_to_case(current_user):
+    case_id = request.json.get('case_id')
+    user_login = request.json.get('user_login')
+
+    pg.delete_user_access_to_case(case_id, user_login)
+
+    logging.info('User %s access to case %s deleted', (user_login, case_id))
+    return jsonify({'user access to case deleted': 'OK'}), 200
+
+
+@app.route('/case/update-description', methods=['POST'])
+@token_required
+def update_case_description(current_user):
+    case_id = request.json.get('case_id')
+    description = request.json.get('description')
+
+    pg.update_case_description(case_id, description)
+
+    logging.info('Case %s description updated', (case_id))
+    return jsonify({'case description updated': 'OK'}), 200
 
 
 @app.route('/filter/all', methods=['GET'])

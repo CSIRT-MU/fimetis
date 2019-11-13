@@ -1,23 +1,24 @@
-
-<table class="table table-hover table-responsive" style="width: 70%; margin: auto; margin-top: 20px;">
-    <thead><th>SELECT</th><th>CASE</th><th>COUNT</th><th>EXTEND</th><th>REMOVE</th></thead>
-    <tbody *ngFor="let case of cases.keys()">
+<table class="table table-hover table-responsive " style="width: 70%; margin: auto; margin-top: 20px;">
+    <thead><th>SELECT</th><th>CASE</th><th>EXTEND</th><th>REMOVE</th></thead>
+    <tbody *ngFor="let case of cases">
     <tr [ngStyle]="{'font-weight': getTrFontWeightForCase(case)}">
-        <td>
-            <button class="btn btn-default btn-sm" *ngIf="authService.isAdmin()" (click)="selectCase(case)">
+        <td style="width: 20%">
+            <button class="btn btn-default btn-sm" (click)="selectCase(case)">
                 <span [ngStyle]="{'color': getColorForSelectButton(case)}" class="glyphicon glyphicon-ok-sign"></span>
             </button>
-        <td>{{case}}</td>
-        <td>{{cases.get(case)}}</td>
-        <td>
-            <button type="button" class="btn btn-default btn-sm" routerLink="/upload/{{case}}"  routerLinkActive="active">
+        </td>
+        <td style="width: 20%">{{case}}</td>
+        <td style="width: 20%">
+            <button *ngIf="authService.isAdmin()" type="button" class="btn btn-default btn-sm" routerLink="/upload/{{case}}"  routerLinkActive="active">
                 <span class="glyphicon glyphicon-upload"></span>
             </button>
+            <span *ngIf="!authService.isAdmin()">NOT AUTHORIZED</span>
         </td>
-        <td>
-            <button class="btn btn-default btn-sm" *ngIf="authService.isAdmin()" (click)="removeSelectedCase(case);">
+        <td style="width: 20%">
+            <button *ngIf="authService.isAdmin() "class="btn btn-default btn-sm" (click)="removeSelectedCase(case);">
                 <span class="glyphicon glyphicon-remove"></span>
             </button>
+            <span *ngIf="!authService.isAdmin()">NOT AUTHORIZED</span>
         </td>
     </tr>
     </tbody>

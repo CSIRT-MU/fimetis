@@ -52,6 +52,7 @@ import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component
 import {MatIconModule} from '@angular/material/icon';
 import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
 import { CaseManagementComponent } from './UI/case-management/case-management.component';
+import { AccessManagementComponent } from './UI/access-management/access-management.component';
 
 
 
@@ -74,7 +75,8 @@ import { CaseManagementComponent } from './UI/case-management/case-management.co
         LoginComponent,
         FilterComponent,
         D3HistogramComponent,
-        CaseManagementComponent
+        CaseManagementComponent,
+        AccessManagementComponent
     ],
     imports: [
         BrowserModule,

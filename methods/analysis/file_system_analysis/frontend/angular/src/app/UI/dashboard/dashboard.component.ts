@@ -134,7 +134,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     loadAllCases() {
-        this.baseService.getCases().then(
+        this.baseService.getAccessibleCases().then(
             response => {
                 this.cases = response.cases;
             }, error => {

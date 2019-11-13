@@ -5,12 +5,41 @@ import {FilterModel} from '../models/filter.model';
 @Injectable({ providedIn: 'root' })
 export class BaseService {
     constructor(private http: HttpClient) { }
-    getCases() {
-        return this.http.get<any>(environment.backendUrl + '/case/all').toPromise();
+
+    getAccessibleCases() {
+        return this.http.get<any>(environment.backendUrl + '/case/accessible').toPromise();
     }
+
+    getAdministratedCases() {
+        return this.http.get<any>(environment.backendUrl + '/case/administrated').toPromise();
+    }
+
+    getAvailableUsersToAdd(case_id) {
+        return this.http.post<any>(environment.backendUrl + '/user/available', {'case_id': case_id}).toPromise();
+    }
+
+    addUserAccessToCase(case_id, login, role) {
+        return this.http.post<any>(
+            environment.backendUrl + '/case/add-user', {'case_id': case_id, 'user_login': login, 'role': role}
+            ).toPromise();
+    }
+
+    deleteUserAccessToCase(case_id, login) {
+        return this.http.post<any>(
+            environment.backendUrl + '/case/delete-user', {'case_id': case_id, 'user_login': login}
+            ).toPromise();
+    }
+
+    updateCaseDescription(case_id, description) {
+        return this.http.post<any>(
+            environment.backendUrl + '/case/update-description', {'case_id': case_id, 'description': description}
+            ).toPromise();
+    }
+
     getFilters() {
         return this.http.get<any>(environment.backendUrl + '/filter/all').toPromise();
     }
+
     getFilterByName(name: string) {
         return this.http.post<any>(environment.backendUrl + '/filter/name', {'name': name}).toPromise().then(response => {
             const filter = new FilterModel();
@@ -24,9 +53,11 @@ export class BaseService {
             return filter;
         });
     }
+
     deleteCase(_case: string) {
         return this.http.delete(environment.backendUrl + '/case/delete/' + _case).toPromise();
     }
+
     buildAdditionSearchFilter(searchString: string) {
         let search = searchString
             .replace('/', '\\\\/')
@@ -52,6 +83,7 @@ export class BaseService {
             '"File Name.keyword": "' + search + '"' +
             '}}';
     }
+
     buildAdditionModeFilter(searchString: string) {
         let search = searchString
             .replace('/', '\\\\/')
@@ -78,6 +110,7 @@ export class BaseService {
             '"Mode.keyword": "' + search + '"' +
             '}}';
     }
+
     buildAdditionRangeFilter(from: string, to: string) {
         let filter = '{"range": {' +
             '"@timestamp": {';
@@ -93,6 +126,7 @@ export class BaseService {
             '}';
         return filter;
     }
+
     buildAdditionMactimeTypeFilter(mactimes: string[]) {
         let filter = '{"bool": {' +
             '"should": [';
