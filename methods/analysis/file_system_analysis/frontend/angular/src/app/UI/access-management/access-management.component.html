@@ -1,7 +1,7 @@
-<div *ngIf="!authService.isAdmin()" style="text-align: center">
+<div *ngIf="!this.isAdmin()" style="text-align: center">
     <h3>Insufficient rights to manage any case</h3>
 </div>
-<table *ngIf="authService.isAdmin()" class="table table-hover table-responsive" style="width: 90%; margin: auto; margin-top: 20px;">
+<table *ngIf="this.isAdmin()" class="table table-hover table-responsive" style="width: 90%; margin: auto; margin-top: 20px;">
     <thead><th>NAME</th><th>DESCRIPTION</th><th>CREATED</th><th>ADMINS</th><th>USERS</th></thead>
     <tbody *ngFor="let case of cases">
     <tr >

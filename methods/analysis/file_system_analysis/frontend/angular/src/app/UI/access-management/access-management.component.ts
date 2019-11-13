@@ -134,4 +134,8 @@ export class AccessManagementComponent implements OnInit {
         );
     }
 
+    isAdmin() {
+        return this.authService.isAdmin();
+    }
+
 }

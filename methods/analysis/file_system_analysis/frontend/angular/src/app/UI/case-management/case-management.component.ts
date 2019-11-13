@@ -19,7 +19,7 @@ export class CaseManagementComponent implements OnInit {
         private baseService: BaseService,
         private caseService: CaseService,
         private stateService: StateService,
-      private authService: AuthenticationService
+        private authService: AuthenticationService
     ) { }
 
     ngOnInit() {
