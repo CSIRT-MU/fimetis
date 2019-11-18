@@ -26,3 +26,11 @@ CREATE TABLE "access" (
   role fimetis_role NOT NULL default 'user'
 );
 
+CREATE SEQUENCE note_id_seq;
+
+CREATE TABLE "note" (
+  id int NOT NULL PRIMARY KEY default nextval('note_id_seq'),
+  text varchar(2048),
+  user_id int REFERENCES "user"(id),
+  case_id int REFERENCES "case"(id)
+);
