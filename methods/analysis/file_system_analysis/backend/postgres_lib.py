@@ -53,6 +53,8 @@ def delete_case(case_name):
         cur.execute('DELETE FROM "access" WHERE case_id=%s', (case_id,))
 
         cur.execute('DELETE FROM "case" WHERE id=%s', (case_id,))
+
+        cur.execute('DELETE FROM "note" WHERE case_id=%s', (case_id,))
         conn.commit()
     conn.close()
 
@@ -201,8 +203,6 @@ def delete_user_access_to_case(case_id, login):
 
 
 def update_case_description(case_id, description):
-    print(case_id)
-    print(description)
     conn = get_db_connection()
 
     with closing(conn.cursor()) as cur:
@@ -210,4 +210,53 @@ def update_case_description(case_id, description):
         conn.commit()
 
     conn.close()
+
+
+def insert_init_note_for_case(case_name, login):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        cur.execute('INSERT INTO "note" (text, case_id, user_id) VALUES (%s, %s, %s)', ('Initial note', case_id, user_id))
+        conn.commit()
+
+    conn.close()
+
+def get_note_for_case(case_name, login):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        cur.execute('SELECT text FROM "note" WHERE user_id=%s AND case_id=%s', (user_id, case_id))
+        text = cur.fetchone()[0]
+
+    conn.close()
+    return text
+
+
+def update_note_for_case(updated_note, case_name, login):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        cur.execute('UPDATE "note" SET text=%s WHERE user_id=%s AND case_id=%s', (updated_note, user_id, case_id))
+        conn.commit()
+
+    conn.close()
+
 

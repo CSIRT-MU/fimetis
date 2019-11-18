@@ -181,6 +181,7 @@ def upload(current_user):
 
             pg.insert_case(case_name, description)
             pg.insert_user_case_role(current_user['username'], case_name, 'admin')
+            pg.insert_init_note_for_case(case_name, current_user['username'])
 
     return jsonify({'status': 'OK', 'message': 'uploading files'})
 
@@ -266,6 +267,28 @@ def update_case_description(current_user):
 
     logging.info('Case %s description updated', (case_id))
     return jsonify({'case description updated': 'OK'}), 200
+
+
+@app.route('/case/note', methods=['POST'])
+@token_required
+def get_note_for_case(current_user):
+    case_name = request.json.get('case_name')
+
+    note = pg.get_note_for_case(case_name, current_user['username'])
+    #logging.info('Getting note for user %s and case %s', (current_user['username'], case_name,))
+    return jsonify(note=note)
+
+
+@app.route('/case/note/update', methods=['POST'])
+@token_required
+def update_note_for_case(current_user):
+    case_name = request.json.get('case_name')
+    updated_note = request.json.get('updated_note')
+
+    pg.update_note_for_case(updated_note, case_name, current_user['username'])
+
+    #logging.info('Updating note for user %s and case %s', (current_user['username'], case_name,))
+    return jsonify({'note for case was updated': 'OK'}), 200
 
 
 @app.route('/filter/all', methods=['GET'])

@@ -36,6 +36,17 @@ export class BaseService {
             ).toPromise();
     }
 
+    async getNoteForCase(case_name) {
+        return this.http.post<any>(
+            environment.backendUrl + '/case/note', {'case_name': case_name}
+        ).toPromise();
+    }
+
+    updateNoteForCase(case_name, updated_note) {
+        return this.http.post<any>(
+            environment.backendUrl + '/case/note/update', {'case_name': case_name, 'updated_note': updated_note}
+        ).toPromise();
+    }
     getFilters() {
         return this.http.get<any>(environment.backendUrl + '/filter/all').toPromise();
     }

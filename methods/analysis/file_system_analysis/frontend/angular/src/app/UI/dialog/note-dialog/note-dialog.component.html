@@ -1,0 +1,12 @@
+<h3>Notepad:</h3>
+<mat-form-field style="width: 100%">
+    <textarea [value]="data.note" maxlength="2048" (change)="update($event.currentTarget.value)" matInput style="height: 100%; margin-top: 0px; background: #ebf2f9"></textarea>
+</mat-form-field>
+<div style="text-align: center">
+    <button class="btn btn-default btn-s" (click)="onSaveClick()">
+    <span>
+        SAVE
+    </span>
+    </button>
+</div>
+

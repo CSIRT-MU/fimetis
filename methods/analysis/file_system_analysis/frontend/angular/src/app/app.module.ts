@@ -53,6 +53,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
 import { CaseManagementComponent } from './UI/case-management/case-management.component';
 import { AccessManagementComponent } from './UI/access-management/access-management.component';
+import { NoteDialogComponent } from './UI/dialog/note-dialog/note-dialog.component';
 
 
 
@@ -76,7 +77,8 @@ import { AccessManagementComponent } from './UI/access-management/access-managem
         FilterComponent,
         D3HistogramComponent,
         CaseManagementComponent,
-        AccessManagementComponent
+        AccessManagementComponent,
+        NoteDialogComponent
     ],
     imports: [
         BrowserModule,
@@ -123,7 +125,8 @@ import { AccessManagementComponent } from './UI/access-management/access-managem
         ComputationDialogComponent,
         ConfirmationDialogComponent,
         ScrollDialogComponent,
-        MarkForbidenDialogComponent],
+        MarkForbidenDialogComponent,
+        NoteDialogComponent],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],

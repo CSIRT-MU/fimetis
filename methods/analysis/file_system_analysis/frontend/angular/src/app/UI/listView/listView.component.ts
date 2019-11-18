@@ -21,6 +21,7 @@ import {GraphService} from '../../services/graph.service';
 import {rgb} from 'd3-color';
 import {ScrollDialogComponent} from '../dialog/scroll-dialog/scroll-dialog.component';
 import {MarkForbidenDialogComponent} from '../dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
+import {NoteDialogComponent} from '../dialog/note-dialog/note-dialog.component';
 
 @Component({
     selector: 'app-list-view',
@@ -193,6 +194,14 @@ export class ListViewComponent {
             this.searchField.nativeElement.focus();
             return false; // Prevent bubbling
         }, undefined, 'Search by File name'));
+        this._hotkeysService.add(new Hotkey(['ctrl+n', 'n'], (event: KeyboardEvent): boolean => {
+            this.note();
+
+
+            //dialogRef.close();
+
+            return false; // Prevent bubbling
+        }, undefined, 'Notepad'))
         // this._hotkeysService.add(new Hotkey(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], (event: KeyboardEvent, combo: string): boolean => {
         //     this.pressedNumbers.push(parseInt(combo, 10));
         //     return true;
@@ -1446,5 +1455,39 @@ export class ListViewComponent {
                 this.marked_rows_id_in_current_cluster.add(marksInArray[i]);
             }
         }
+    }
+
+    async note() {
+        // const text = this.baseService.getNoteForCase(this.case);
+        let note = '';
+        this.baseService.getNoteForCase(this.case).then(
+            response => {
+                console.log('note', note);
+                    note = response.note;
+
+            }, error => {
+                console.error(error);
+            }).then(() => {
+            console.log('Show Cases completed!');
+        });
+
+        const test = await this.baseService.getNoteForCase(this.case);
+        console.log(test);
+        const dialogRef = this.dialog.open(NoteDialogComponent, {
+            width: '50%',
+            height: '70%',
+            data: {
+                note: note
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('cluster dialog closed', result);
+            if (result != null) {
+                console.log(result);
+                this.baseService.updateNoteForCase(this.case, result);
+
+            }
+        });
     }
 }
