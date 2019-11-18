@@ -59,8 +59,9 @@
                 <tbody #container>
 <!--                ,-->
 <!--                'border-bottom': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true ? '1px solid #666666': 'none'    -->
-                    <tr [ngStyle]="{'font-weight': getLineFontWeight(element._id), 'color': getLineColor(element._id), 'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null )}" class="table-row-definition" *ngFor="let element of visibleData; index as i"
+                    <tr [ngStyle]="{'font-weight': getLineFontWeight(element._id), 'font-style': getFontStyle(element._id), 'color': getLineColor(element._id), 'background-color': getTableTimestampColor(visibleData[i]._source['@timestamp'], visibleData[i-1] != null ? visibleData[i-1]._source['@timestamp'] : null, visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null )}" class="table-row-definition" *ngFor="let element of visibleData; index as i"
                         [ngClass]="{'list-selection-line': isDateOnSelectionBorder(visibleData[i]._source['@timestamp'], visibleData[i+1] != null ? visibleData[i+1]._source['@timestamp'] : null) == true}"
+                        [matTooltip]="getTrTooltip(element._id)" matTooltipPosition="above"
                     >
                         <td *ngFor="let tableItem of displayedTableColumns">
                             <div class="table-select" *ngIf="tableItem == 'select'"
@@ -98,7 +99,7 @@
                                 id="file_{{i}}"
                                 (click)="selectByClick(i)"
                                 (textSelect)="openHighlightedTextMenu( $event, i )"
-                                [innerHTML]="element['_source']['File Name'] | highlight: searchString">
+                                [innerHTML]="element['_source']['File Name'] + '     ' +  getTrTooltip(element._id)  | highlight: searchString">
                                 <!--{{element['_source']['File Name'].length > 73 ? element['_source']['File Name'].substr(0, 15) + '...' + element['_source']['File Name'].substr(-55, 55)  : element['_source']['File Name'] }}-->
                                 <!--{{element['_source']['File Name']}}-->
                                 <!--<div class="timesix-tooltip-wrapper">-->

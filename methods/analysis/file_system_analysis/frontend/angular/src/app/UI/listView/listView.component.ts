@@ -201,7 +201,7 @@ export class ListViewComponent {
             //dialogRef.close();
 
             return false; // Prevent bubbling
-        }, undefined, 'Notepad'))
+        }, undefined, 'Notepad'));
         // this._hotkeysService.add(new Hotkey(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], (event: KeyboardEvent, combo: string): boolean => {
         //     this.pressedNumbers.push(parseInt(combo, 10));
         //     return true;
@@ -1436,6 +1436,25 @@ export class ListViewComponent {
         }
 
         return rgb(51, 51, 51);
+    }
+
+    // Function that returns normal font style if line is mark and at the same time in current cluster, otherwise italic font style
+    getFontStyle(id) {
+        if (!this.marked_rows_id_in_current_cluster.has(id) && this.marked_rows_id.has(id)) {
+            return 'italic';
+        }
+
+        return 'normal';
+    }
+
+    // Function that returns tooltip if line is mark but not in the current cluster
+    getTrTooltip(id) {
+        if (!this.marked_rows_id_in_current_cluster.has(id) && this.marked_rows_id.has(id)) {
+            return '(NOT IN SELECTED CLUSTER)';
+        }
+
+        return '';
+
     }
 
     // Function that returns bolder font-weight for lines that are marked
