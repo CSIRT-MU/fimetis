@@ -1745,7 +1745,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('width', 1)
                     .attr('height', actualY(1) + 5)
                     .style('fill', function (d) {
-                        if (d[2]) {
+                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
                             return 'black';
                         } else {
                             return '#b3b3b3';
@@ -1765,7 +1765,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .style('fill', 'white')
                     .style('fill-opacity', 0.1)
                     .style('stroke', function (d) {
-                        if (d[2]) {
+                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
                             return 'black';
                         } else {
                             return '#b3b3b3';
@@ -1796,10 +1796,10 @@ export class D3HistogramComponent implements OnDestroy {
                             .style('margin-top', -60 + 'px');
                     })
                     .on('click', function (d) {
-                        // if (d[1] > 1) {
-                        //     return;
-                        // }
-                        thisClass.scrollToMarkById.emit(d[0].id);
+                        // if mark not in curent cluster then not clickable
+                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
+                            thisClass.scrollToMarkById.emit(d[0].id);
+                        }
                     })
                     ;
 
@@ -1824,7 +1824,7 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('y', 21)
                     .attr('font-size', '10px')
                     .style('fill', function (d) {
-                        if (d[2]) {
+                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
                             return 'black';
                         } else {
                             return '#b3b3b3';
@@ -1855,10 +1855,9 @@ export class D3HistogramComponent implements OnDestroy {
                         ;
                     })
                     .on('click', function (d) {
-                        // if (d[1] > 1) {
-                        //     return;
-                        // }
-                        thisClass.scrollToMarkById.emit(d[0].id);
+                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
+                            thisClass.scrollToMarkById.emit(d[0].id);
+                        }
                     })
                 ;
             }
@@ -2106,7 +2105,7 @@ export class D3HistogramComponent implements OnDestroy {
             tooltipString += '<p style="display: block; margin: 0; font-size: small; font-weight: bold">' + timeRange + '</p>';
             for (let j = 0; j < d[3].length; j++ ) {
                 let color = 'black';
-                if (!d[3][j].inCurrentCluster) {
+                if (!d[3][j].inCurrentCluster || !thisClass.isMarkInCurrentSelections(new Date(d[3][j].timestamp))) {
                     color = '#b3b3b3';
                 }
                 tooltipString += ('<p style="display: block; margin: 0; font-size: small; color: ' +
@@ -2205,5 +2204,18 @@ export class D3HistogramComponent implements OnDestroy {
 
     areBarsFiltered() {
         return this.searchString !== undefined && this.searchString !== '';
+    }
+
+    isMarkInCurrentSelections(mark_timestamp) {
+        if (this.selections.length === 0) {
+            return true;
+        }
+
+        for (let i = 0; i < this.selections.length; i++) {
+            if (mark_timestamp >= this.selections[i][0] && mark_timestamp <= this.selections[i][1]) {
+                return true;
+            }
+        }
+        return false;
     }
 }
