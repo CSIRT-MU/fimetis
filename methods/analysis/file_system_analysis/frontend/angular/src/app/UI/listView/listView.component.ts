@@ -288,14 +288,14 @@ export class ListViewComponent {
         this.preloadedBegin = this.visibleDataFirstIndex;
         this.preloadedEnd = this.visibleDataFirstIndex + initSize;
         // compute number of pages and length of virtual array
-        if (this.total > this.page_size) {
-            if (this.page_number * this.page_size > this.total) {
-                this.virtualArray.length = this.total - ((this.page_number - 1) * this.page_size);
+        if (this.total + this.marked_rows_id.size > this.page_size) {
+            if (this.page_number * this.page_size > this.total + this.marked_rows_id.size) {
+                this.virtualArray.length = this.total + this.marked_rows_id.size - ((this.page_number - 1) * this.page_size);
             } else {
                 this.virtualArray.length = this.page_size;
             }
         } else {
-            this.virtualArray.length = this.total;
+            this.virtualArray.length = this.total + this.marked_rows_id.size;
         }
         this.loadingData = false;
         this.visibleData = this.data;
@@ -454,7 +454,7 @@ export class ListViewComponent {
     loadVisibleData($event) {
         // console.log($event);
         const start = $event['startIndex'];
-        const end = $event['endIndex'];
+        const end = $event['endIndex'] + this.marked_rows_id.size;
         // console.log('visible start index:',  start, this.visibleDataFirstIndex);
         this.visibleDataFirstIndex = start < 0 ? 0 : start;
         this.visibleDataLastIndex = end < 0 ? 0 : end;
@@ -476,7 +476,7 @@ export class ListViewComponent {
                     const begVal = start - this.preloadBufferOffset < 0 ? 0 : start - this.preloadBufferOffset;
                     this.preloadData(begVal, this.preloadedBufferSize, null, null, false, true);
                 }
-                if (this.preloadedEnd - end < this.preloadBufferBorder && this.preloadedEnd < this.total) {
+                if (this.preloadedEnd - end < this.preloadBufferBorder && this.preloadedEnd < this.total + this.marked_rows_id.size) {
                     // console.log('end border triggered',
                     //     'end:', end,
                     //     'preload end:', this.preloadedEnd,
