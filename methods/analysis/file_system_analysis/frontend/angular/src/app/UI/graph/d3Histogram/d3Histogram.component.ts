@@ -1797,7 +1797,7 @@ export class D3HistogramComponent implements OnDestroy {
                     })
                     .on('click', function (d) {
                         // if mark not in curent cluster then not clickable
-                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
+                        if (thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
                             thisClass.scrollToMarkById.emit(d[0].id);
                         }
                     })
@@ -1855,7 +1855,8 @@ export class D3HistogramComponent implements OnDestroy {
                         ;
                     })
                     .on('click', function (d) {
-                        if (d[2] && thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
+                        // if mark not in curent cluster then not clickable
+                        if (thisClass.isMarkInCurrentSelections(new Date(d[0].timestamp))) {
                             thisClass.scrollToMarkById.emit(d[0].id);
                         }
                     })
@@ -2206,6 +2207,7 @@ export class D3HistogramComponent implements OnDestroy {
         return this.searchString !== undefined && this.searchString !== '';
     }
 
+    // Returns true if mark is in any selection, if there are no selections return true, otherwise false
     isMarkInCurrentSelections(mark_timestamp) {
         if (this.selections.length === 0) {
             return true;
