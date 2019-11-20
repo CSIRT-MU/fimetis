@@ -34,3 +34,9 @@ CREATE TABLE "note" (
   user_id int REFERENCES "user"(id),
   case_id int REFERENCES "case"(id)
 );
+
+CREATE TABLE "mark" (
+  id varchar(64) NOT NULL,
+  user_id int REFERENCES "user"(id),
+  case_id int REFERENCES "case"(id)
+);
