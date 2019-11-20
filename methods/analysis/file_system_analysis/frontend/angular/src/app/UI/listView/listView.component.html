@@ -91,8 +91,8 @@
                             <div class="table-block medium-table-block text-align-right timestamp-field monospace-text" *ngIf="tableItem == 'size'">{{element._source.Size}}</div>
                             <div class="table-block medium-small-table-block monospace-text" *ngIf="tableItem == 'type'">{{element._source.Type}}</div>
                             <div class="table-block medium-table-block monospace-text" *ngIf="tableItem == 'mode'">{{element._source.Mode}}</div>
-                            <div class="table-block medium-small-table-block text-align-right monospace-text" *ngIf="tableItem == 'uid'">{{element._source.UID}}</div>
-                            <div class="table-block medium-small-table-block text-align-right monospace-text" *ngIf="tableItem == 'gid'">{{element._source.GID}}</div>
+                            <div class="table-block medium-small-table-block text-align-right monospace-text" *ngIf="tableItem == 'uid'">{{element._source.UID}}&nbsp;</div>
+                            <div class="table-block medium-small-table-block text-align-right monospace-text" *ngIf="tableItem == 'gid'">{{element._source.GID}}&nbsp;</div>
                             <div class="table-block medium-table-block text-align-right monospace-text" *ngIf="tableItem == 'inode'">{{element._source.Meta}}</div>
                             <div class="table-block large-table-block file-name-table-block monospace-text" *ngIf="tableItem == 'name'"
                                 id="file_{{i}}"
