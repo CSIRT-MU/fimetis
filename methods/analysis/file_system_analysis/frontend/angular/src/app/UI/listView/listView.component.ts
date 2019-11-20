@@ -306,6 +306,7 @@ export class ListViewComponent {
         }
         this.oldClusters = lodash.cloneDeep(this.clusters);
 
+        this.getMarksFromDatabase();
         // Count marks that are in current cluster
         this.getMarksIdsPresentInCurrentCluster();
     }
@@ -583,8 +584,12 @@ export class ListViewComponent {
     markLine(id) {
         if (this.marked_rows_id.has(id)) {
             this.marked_rows_id.delete(id);
+            // remove from db
+            this.graphService.deleteMark(id, this.case);
         } else {
             this.marked_rows_id.add(id);
+            // add to db
+            this.graphService.insertMark(id, this.case);
         }
     }
 
@@ -1358,7 +1363,7 @@ export class ListViewComponent {
     }
 
     // adding - boolean true if adding, false if removing
-    emitMark(id, timestamp, adding, filename, type, i) {
+    emitMark(id, timestamp, adding, filename, type) {
         this.addMark.emit({
                 'id': id,
                 'timestamp': timestamp,
@@ -1408,8 +1413,7 @@ export class ListViewComponent {
                     this.visibleData[i]['_source']['@timestamp'],
                     false,
                     this.visibleData[i]['_source']['File Name'],
-                    this.visibleData[i]['_source']['Type'],
-                    this.visibleDataFirstIndex + i
+                    this.visibleData[i]['_source']['Type']
                 );
             }
         } else {
@@ -1422,7 +1426,6 @@ export class ListViewComponent {
                         true,
                         this.visibleData[i]['_source']['File Name'],
                         this.visibleData[i]['_source']['Type'],
-                        this.visibleDataFirstIndex + i
                     );
                 }
             }
@@ -1508,5 +1511,33 @@ export class ListViewComponent {
 
             }
         });
+    }
+
+    async getMarksFromDatabase() {
+        const loaded_marks = Array.from(await this.graphService.getAllMarks(this.case));
+        console.log(loaded_marks);
+        for (let i = 0; i < loaded_marks.length; i++) {
+            if (!this.marked_rows_id.has(loaded_marks[i].toString())) {
+                this.marked_rows_id.add(loaded_marks[i].toString());
+                // this.markLine(loaded_marks[i]);
+                const mark_info = await this.graphService.getMarkInfo(loaded_marks[i].toString());
+
+                this.emitMark(
+                    loaded_marks[i],
+                    mark_info['_source']['@timestamp'],
+                    true,
+                    // this.marked_rows_id_in_current_cluster.has(loaded_marks[i].toString()),
+                    mark_info['_source']['File Name'],
+                    mark_info['_source']['Type'],
+                    );
+            }
+        }
+        await this.getMarksIdsPresentInCurrentCluster();
+
+
+
+
+
+
     }
 }

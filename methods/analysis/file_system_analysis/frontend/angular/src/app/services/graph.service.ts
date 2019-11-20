@@ -92,4 +92,48 @@ export class GraphService {
             }
         );
     }
+
+    getAllMarks(_case: string) {
+        return this.http.get<any>(environment.backendUrl + '/mark/all/' + _case).toPromise().then(
+            response => {
+                return response.marks;
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
+
+    getMarkInfo(_id: string) {
+        return this.http.get<any>(environment.backendUrl + '/mark/get/' + _id).toPromise().then(
+            response => {
+                return response.hits.hits[0];
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
+
+    insertMark(_id: string, _case: string) {
+        return this.http.post<any>(environment.backendUrl + '/mark/insert/', {'id': _id, 'case': _case}).toPromise().then(
+            response => {
+                return response;
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
+
+    deleteMark(_id: string, _case: string) {
+        return this.http.post<any>(environment.backendUrl + '/mark/delete/', {'id': _id, 'case': _case}).toPromise().then(
+            response => {
+                return response;
+            }, error => {
+                console.error(error);
+                return error;
+            }
+        );
+    }
 }

@@ -558,5 +558,46 @@ def is_mark_in_cluster(current_user, case):
     return jsonify(res)
 
 
+@app.route('/mark/all/<string:case>', methods=['GET'])
+@token_required
+def get_all_marks_for_case_and_user(current_user, case):
+
+    return jsonify(marks=pg.get_all_marks_for_case_and_user(case, current_user['username']))
+
+
+@app.route('/mark/get/<string:id>', methods=['GET'])
+@token_required
+def get_mark_info_by_id(current_user, id):
+    id_query = {'_id':[id]}
+    mark_query = {'query': {'terms': id_query}}
+
+    res = es.search(index=app.config['elastic_metadata_index'],
+                    doc_type=app.config['elastic_metadata_type'],
+                    body=json.dumps(mark_query))
+
+    return jsonify(res)
+
+
+@app.route('/mark/insert/', methods=['POST'])
+@token_required
+def insert_mark(current_user):
+    id = request.json.get('id')
+    case = request.json.get('case')
+
+    pg.insert_mark(case, current_user['username'], id)
+
+    return jsonify({'mark inserted': 'OK'}), 200
+
+
+@app.route('/mark/delete/', methods=['POST'])
+@token_required
+def delete_mark(current_user):
+    id = request.json.get('id')
+    case = request.json.get('case')
+    pg.delete_mark(case, current_user['username'], id)
+
+    return jsonify({'mark inserted': 'OK'}), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000, threaded=True)

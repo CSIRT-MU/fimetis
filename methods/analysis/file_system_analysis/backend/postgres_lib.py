@@ -259,4 +259,60 @@ def update_note_for_case(updated_note, case_name, login):
 
     conn.close()
 
+def get_all_marks_for_case_and_user(case_name, login):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "mark" WHERE user_id=%s AND case_id=%s', (user_id, case_id))
+
+        marks = cur.fetchall()
+        result = []
+
+        for mark in marks:
+            result.append(mark[0])
+
+        return result
+
+
+def insert_mark(case_name, login, id):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        print(id, case_id, user_id)
+        cur.execute('INSERT INTO "mark" (id, case_id, user_id) VALUES (%s, %s, %s)', (id, case_id, user_id))
+        conn.commit()
+
+    conn.close()
+
+
+def delete_mark(case_name, login, id):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        cur.execute('DELETE FROM "mark" WHERE id=%s AND case_id=%s AND user_id=%s', (id, case_id, user_id))
+
+        conn.commit()
+
+    conn.close()
+
+
+
 
