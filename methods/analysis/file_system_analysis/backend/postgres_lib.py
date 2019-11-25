@@ -186,6 +186,12 @@ def add_user_access_to_case(case_id, login, role):
         user_id = cur.fetchone()[0]
 
         cur.execute('INSERT INTO "access" (case_id, user_id, role) VALUES (%s, %s, %s)', (case_id, user_id, role))
+
+        cur.execute('SELECT text FROM "note" WHERE case_id=%s AND user_id=%s', (case_id, user_id))
+        note = cur.fetchone()
+
+        if note is None:
+            cur.execute('INSERT INTO "note" (text, case_id, user_id) VALUES (%s, %s, %s)', ('Initial note', case_id, user_id))
         conn.commit()
 
     conn.close()
