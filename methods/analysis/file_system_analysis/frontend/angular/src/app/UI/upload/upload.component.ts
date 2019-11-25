@@ -44,6 +44,9 @@ export class UploadComponent implements OnInit {
         formData.append('description', this._description);
         formData.append('removeDeleted', this.removeDeleted.toString());
         formData.append('removeDeletedRealloc', this.removeDeletedRealloc.toString());
+        formData.append('datasetExtend', this.datasetExtended().toString());
+        const case_name = this.route.snapshot.paramMap.get('case');
+
         const dataset_name = this._case;
         return this.httpEmitter = this.uploadService.upload(formData)
             .subscribe(
@@ -61,6 +64,10 @@ export class UploadComponent implements OnInit {
                     this.toaster.error('Error: ' + error['message'], 'Upload failed');
                 }
             );
+    }
+
+    datasetExtended() {
+        return this.route.snapshot.paramMap.get('case') !== 'empty';
     }
 
 }

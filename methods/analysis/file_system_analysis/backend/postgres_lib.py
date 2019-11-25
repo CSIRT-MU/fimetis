@@ -51,10 +51,12 @@ def delete_case(case_name):
         cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
         case_id = cur.fetchone()[0]
         cur.execute('DELETE FROM "access" WHERE case_id=%s', (case_id,))
+        cur.execute('DELETE FROM "note" WHERE case_id=%s', (case_id,))
+        cur.execute('DELETE FROM "mark" WHERE case_id=%s', (case_id,))
+
 
         cur.execute('DELETE FROM "case" WHERE id=%s', (case_id,))
 
-        cur.execute('DELETE FROM "note" WHERE case_id=%s', (case_id,))
         conn.commit()
     conn.close()
 

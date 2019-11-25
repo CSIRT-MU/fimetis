@@ -179,9 +179,10 @@ def upload(current_user):
                                        remove_deleted=remove_deleted,
                                        remove_deleted_realloc=remove_deleted_realloc)
 
-            pg.insert_case(case_name, description)
-            pg.insert_user_case_role(current_user['username'], case_name, 'admin')
-            pg.insert_init_note_for_case(case_name, current_user['username'])
+            if request.form['datasetExtend'] == 'false':
+                pg.insert_case(case_name, description)
+                pg.insert_user_case_role(current_user['username'], case_name, 'admin')
+                pg.insert_init_note_for_case(case_name, current_user['username'])
 
     return jsonify({'status': 'OK', 'message': 'uploading files'})
 

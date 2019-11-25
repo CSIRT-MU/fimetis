@@ -1,9 +1,9 @@
 <div class="main-container col-md-12">
     <mat-form-field class="col-md-12">
-        Dataset name: <input matInput [(ngModel)]="_case" required>
+        Dataset name: <input matInput [(ngModel)]="_case" required [disabled]="datasetExtended()">
     </mat-form-field>
     <mat-form-field class="col-md-12">
-        Dataset description (optional): <input matInput [(ngModel)]="_description">
+        Dataset description (optional): <input matInput [(ngModel)]="_description" [disabled]="datasetExtended()">
     </mat-form-field>
 
     <ngfUploadStatus
