@@ -11,6 +11,7 @@ import json
 import subprocess
 import fsa_lib as fsa
 import import_metadata
+import type_recognizer
 import postgres_lib as pg
 import tempfile
 import logging
@@ -171,7 +172,33 @@ def upload(current_user):
                                              dir=app.config['UPLOAD_FOLDER'],
                                              delete=False)
             file.save(tf.name)
-            import_metadata.import_csv(tf.name,
+
+            file_type = type_recognizer.recognize_type(tf.name)
+
+            if file_type == 'fls':
+                normalized_file = tf.name + '.norm'
+                os.system('mactime -b %s -d > %s' % (tf.name, normalized_file))
+                os.system('rm %s' % (tf.name))
+            elif file_type == 'find':
+                normalized_file = tf.name + '.norm'
+                fls_file = tf.name + '.fls'
+                os.system('python3 find2fls.py --input_file %s --output_file %s' % (tf.name, fls_file))
+                os.system('rm %s' % (tf.name))
+                os.system('mactime -b %s -d > %s' % (fls_file, normalized_file))
+                os.system('rm %s' % fls_file)
+            elif file_type == 'mactime_noheader':
+                normalized_file = tf.name
+                with open(tf.name, "r+") as f:
+                    content = f.read()
+                    f.seek(0, 0)
+                    f.write('Date,Size,Type,Mode,UID,GID,Meta,File Name\n')
+                    f.write(content)
+            else:
+                normalized_file = tf.name
+
+
+
+            import_metadata.import_csv(normalized_file,
                                        es,
                                        app.config['elastic_metadata_index'],
                                        app.config['elastic_metadata_type'],

@@ -48,6 +48,8 @@ def document_stream(csv_file_path, case_name, remove_deleted=True, remove_delete
         for line in reader:
             try:
                 line['case'] = case_name
+                if line['Date'].startswith('Xxx'):
+                    line['Date'] = "Thu Jan 01 1970 01:00:00"
                 line['@timestamp'] = parser.parse(line['Date']).strftime('%Y-%m-%dT%H:%M:%S.000Z')
                 del line['Date']
                 line['Meta'] = int(line['Meta'])
