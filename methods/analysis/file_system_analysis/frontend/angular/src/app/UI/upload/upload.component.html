@@ -5,7 +5,6 @@
     <mat-form-field class="col-md-12">
         Dataset description (optional): <input matInput [(ngModel)]="_description" [disabled]="datasetExtended()">
     </mat-form-field>
-
     <ngfUploadStatus
             [(percent)] = "progress"
             [httpEvent] = "httpEvent"
@@ -23,7 +22,8 @@
                 [(invalidDrag)]="invalidComboDrag"
                 [ngClass]="{'valid-drag':validComboDrag, 'invalid-drag':invalidComboDrag}"
         >
-            <span class="clickable"><strong>drop</strong> or <strong>select</strong> files here</span>
+            <span class="clickable"><strong>Drop</strong> or <strong>select</strong> files here</span><br><br>
+            <strong>Supported types:</strong> mactime with header, mactime with no header, fls, find
         </div>
     </div>
 
