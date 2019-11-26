@@ -9,8 +9,8 @@
             {{case.name}}
         </td>
         <td style="width: 40%;">
-            <mat-form-field style="width: 100%">
-                <textarea maxlength="120" [value]="case.description" matInput style="height: 100%; margin-top: -20px; background: #ebf2f9" (change)="updateCaseDescription(case.id, $event.currentTarget.value)"></textarea>
+            <mat-form-field style="width: 100%" appearance="outline">
+                <textarea maxlength="120" [value]="case.description" matInput style="height: 100%; margin-top: -20px;" (change)="updateCaseDescription(case.id, $event.currentTarget.value)"></textarea>
             </mat-form-field>
         </td>
         <td style="width: 20%">
