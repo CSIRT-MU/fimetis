@@ -1,25 +1,25 @@
-<div *ngIf="!this.isAdmin()" style="text-align: center">
+<div *ngIf="this.cases.length === 0" style="text-align: center">
     <h3>Insufficient rights to manage any case</h3>
 </div>
-<table *ngIf="this.isAdmin()" class="table table-hover table-responsive" style="width: 90%; margin: auto; margin-top: 20px;">
-    <thead><th>NAME</th><th>DESCRIPTION</th><th>CREATED</th><th>ADMINS</th><th>USERS</th></thead>
+<table *ngIf="this.cases.length !== 0" class="table table-hover table-responsive" style="width: 90%; margin: auto; margin-top: 20px;">
+    <thead><th>NAME</th><th>FULL ACCESS</th><th>ADD FULL ACCESS</th><th>READ ONLY ACCESS</th><th>ADD READ ONLY ACCESS</th></thead>
     <tbody *ngFor="let case of cases">
     <tr >
         <td style="width: 20%;">
             {{case.name}}
         </td>
-        <td style="width: 40%;">
-            <mat-form-field style="width: 100%" appearance="outline">
-                <textarea maxlength="120" [value]="case.description" matInput style="height: 100%; margin-top: -20px;" (change)="updateCaseDescription(case.id, $event.currentTarget.value)"></textarea>
-            </mat-form-field>
+        <td style="width: 20%">
+            <div *ngFor="let admin of case.admins">
+                <button class="btn btn-default btn-xs" (click)="deleteAccessToCase(case.id, admin)">
+                    <span>{{admin}} </span>
+                    <span style="color: red" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+            </div>
         </td>
         <td style="width: 20%">
-            {{case.created}}
-        </td>
-        <td style="width: 10%">
             <div style="text-align: left; width: 100%">
                 <button *ngIf="!(adminAddFormVisible && caseIdToEdit === case.id)" class="btn btn-default btn-xs" (click)="displayAdminAddForm(case.id);getAvailableUsersToAdd(case.id)">
-                    <span>add admin </span>
+                    <span>add full access to user </span>
                     <span style="color: green; align-self: center" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
                 <span *ngIf="this.availableUsers.length === 0 && adminAddFormVisible && caseIdToEdit === case.id">No user to add</span>
@@ -30,18 +30,19 @@
                 </mat-form-field>
                 <br>
             </div>
-            <div *ngFor="let admin of case.admins">
-
-                <button class="btn btn-default btn-xs" (click)="deleteAccessToCase(case.id, admin)">
-                    <span>{{admin}} </span>
+        </td>
+        <td style="width: 20%">
+            <div *ngFor="let user of case.users">
+                <button class="btn btn-default btn-xs" (click)="deleteAccessToCase(case.id, user)">
+                    <span>{{user}} </span>
                     <span style="color: red" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                 </button>
             </div>
         </td>
-        <td style="width: 10%">
+        <td style="width: 20%;">
             <div style="text-align: left; width: 100%">
                 <button *ngIf="!(userAddFormVisible && caseIdToEdit === case.id)" class="btn btn-default btn-xs" (click)="displayUserAddForm(case.id);getAvailableUsersToAdd(case.id)">
-                    <span>add user </span>
+                    <span>add read only access to user </span>
                     <span style="color: green; align-self: center" class="glyphicon glyphicon-plus" aria-hidden="true"> </span>
                 </button>
                 <span *ngIf="this.availableUsers.length === 0 && userAddFormVisible && caseIdToEdit === case.id">No user to add</span>
@@ -51,12 +52,6 @@
                     </mat-select>
                 </mat-form-field>
                 <br>
-            </div>
-            <div *ngFor="let user of case.users">
-                <button class="btn btn-default btn-xs" (click)="deleteAccessToCase(case.id, user)">
-                    <span>{{user}} </span>
-                    <span style="color: red" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
             </div>
         </td>
     </tr>

@@ -1,24 +1,34 @@
-<table class="table table-hover table-responsive " style="width: 70%; margin: auto; margin-top: 20px;">
-    <thead><th>SELECT</th><th>CASE</th><th>EXTEND</th><th>REMOVE</th></thead>
+<table class="table table-hover table-responsive " style="width: 90%; margin: auto; margin-top: 20px;">
+    <thead><th>SELECT</th><th>CASE</th><th>RIGHTS</th><th>DESCRIPTION</th><th>CREATED</th><th>EXTEND</th><th>REMOVE</th></thead>
     <tbody *ngFor="let case of cases">
-    <tr [ngStyle]="{'font-weight': getTrFontWeightForCase(case)}">
-        <td style="width: 20%">
-            <button class="btn btn-default btn-sm" (click)="selectCase(case)">
-                <span [ngStyle]="{'color': getColorForSelectButton(case)}" class="glyphicon glyphicon-ok-sign"></span>
+    <tr [ngStyle]="{'font-weight': getTrFontWeightForCase(case.name)}">
+        <td style="width: 5%">
+            <button class="btn btn-default btn-sm" (click)="selectCase(case.name)">
+                <span [ngStyle]="{'color': getColorForSelectButton(case.name)}" class="glyphicon glyphicon-ok-sign"></span>
             </button>
         </td>
-        <td style="width: 20%">{{case}}</td>
-        <td style="width: 20%">
-            <button *ngIf="authService.isAdmin()" type="button" class="btn btn-default btn-sm" routerLink="/upload/{{case}}"  routerLinkActive="active">
+        <td style="width: 20%">{{case.name}}</td>
+        <td style="width: 15%">
+            <span *ngIf="case.isAdmin">FULL ACCESS</span>
+            <span *ngIf="!case.isAdmin">READ ONLY</span>
+        </td>
+        <td style="width: 35%">
+            <mat-form-field style="width: 100%" appearance="outline">
+                <textarea maxlength="120" [disabled]="!case.isAdmin" [value]="case.description" matInput style="height: 100%; margin-top: -20px;" (change)="updateCaseDescription(case.id, $event.currentTarget.value)"></textarea>
+            </mat-form-field>
+        </td>
+        <td style="width: 15%">
+            {{case.created}}
+        </td>
+        <td style="width: 5%">
+            <button [disabled]="!case.isAdmin" type="button" class="btn btn-default btn-sm" routerLink="/upload/{{case.name}}"  routerLinkActive="active">
                 <span class="glyphicon glyphicon-upload"></span>
             </button>
-            <span *ngIf="!authService.isAdmin()">NOT AUTHORIZED</span>
         </td>
-        <td style="width: 20%">
-            <button *ngIf="authService.isAdmin() "class="btn btn-default btn-sm" (click)="removeSelectedCase(case);">
+        <td style="width: 5%">
+            <button [disabled]="!case.isAdmin" class="btn btn-default btn-sm" (click)="removeSelectedCase(case.name);">
                 <span class="glyphicon glyphicon-remove"></span>
             </button>
-            <span *ngIf="!authService.isAdmin()">NOT AUTHORIZED</span>
         </td>
     </tr>
     </tbody>

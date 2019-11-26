@@ -87,10 +87,10 @@ def get_accessible_cases(user_name):
         is_super_admin = cur.fetchone()[0]
 
         if is_super_admin:
-            cur.execute('SELECT name FROM "case" ORDER BY name')
+            cur.execute('SELECT "case".id,name,description,created FROM "case" ORDER BY name')
             cases = cur.fetchall()
         else:
-            cur.execute('SELECT "case".name FROM "case" INNER JOIN "access" ON "case".id="access".case_id '
+            cur.execute('SELECT "case".id,"case".name,description,created,role FROM "case" INNER JOIN "access" ON "case".id="access".case_id '
                         'INNER JOIN "user" ON "user".id="access".user_id WHERE login=%s ORDER BY name', (user_name,))
             cases = cur.fetchall()
 
@@ -98,7 +98,18 @@ def get_accessible_cases(user_name):
 
     normalized_result = []
     for case in cases:
-        normalized_result.append(case[0])
+        normalized_case = {
+            'id': case[0],
+            'name': case[1],
+            'description': case[2],
+            'created': case[3]
+        }
+        if is_super_admin:
+            normalized_case['isAdmin'] = True
+        else:
+            normalized_case['isAdmin'] = case[4] == 'admin'
+
+        normalized_result.append(normalized_case)
 
     return normalized_result
 
@@ -115,7 +126,7 @@ def get_administrated_cases(user_name):
             cases = cur.fetchall()
         else:
             cur.execute(
-                'SELECT "case".id,name,description,created '
+                'SELECT "case".id,"case".name,description,created,role '
                 'FROM "case" INNER JOIN "access" ON "case".id="access".case_id '
                 'INNER JOIN "user" ON "user".id="access".user_id WHERE login=%s AND role=%s ORDER BY name',
                 (user_name, 'admin')

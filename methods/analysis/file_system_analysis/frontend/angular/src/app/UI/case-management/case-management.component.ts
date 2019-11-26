@@ -13,7 +13,7 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class CaseManagementComponent implements OnInit {
 
-    cases: Set<string> = new Set<string>();
+    cases = [];
     constructor(
         public dialog: MatDialog,
         private baseService: BaseService,
@@ -27,11 +27,18 @@ export class CaseManagementComponent implements OnInit {
     }
 
     loadAllCases() {
-        this.cases = new Set<string>();
+        this.cases = [];
         this.baseService.getAccessibleCases().then(
             response => {
                 for (let i = 0; i < response.cases.length; i++ ) {
-                    this.cases.add(response.cases[i]);
+                    const tmpCase = {
+                        'id': response.cases[i]['id'],
+                        'name': response.cases[i]['name'],
+                        'description': response.cases[i]['description'],
+                        'created': response.cases[i]['created'],
+                        'isAdmin': response.cases[i]['isAdmin']
+                    };
+                    this.cases.push(tmpCase);
                 }
             }, error => {
                 console.error(error);
@@ -80,6 +87,16 @@ export class CaseManagementComponent implements OnInit {
 
     selectCase(caseName) {
         this.caseService.selectedCase = caseName;
+    }
+
+    updateCaseDescription(case_id, description) {
+        this.baseService.updateCaseDescription(case_id, description).then(
+            response => {
+                this.loadAllCases();
+            }, error => {
+                console.error(error);
+            }
+        );
     }
 
 }

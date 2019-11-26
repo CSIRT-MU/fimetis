@@ -14,7 +14,7 @@
                 <mat-form-field>
                     <mat-select [(value)]="selectedCase" (click)="loadAllCases()" placeholder="Click to select dataset">
                         <mat-option>None</mat-option>
-                        <mat-option *ngFor="let case of cases" [value]="case">{{case}}</mat-option>
+                        <mat-option *ngFor="let case of cases" [value]="case.name">{{case.name}}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>

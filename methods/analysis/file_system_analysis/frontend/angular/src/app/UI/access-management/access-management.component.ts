@@ -124,15 +124,6 @@ export class AccessManagementComponent implements OnInit {
         });
     }
 
-    updateCaseDescription(case_id, description) {
-        this.baseService.updateCaseDescription(case_id, description).then(
-            response => {
-                this.loadAllCases();
-            }, error => {
-                console.error(error);
-            }
-        );
-    }
 
     isAdmin() {
         return this.authService.isAdmin();
