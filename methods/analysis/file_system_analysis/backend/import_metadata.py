@@ -149,12 +149,12 @@ if __name__ == '__main__':
     es_index = 'metadata'
     es_type = 'mactimes'
 
-    parser = argparse.ArgumentParser(description='Import timestamps into elastic')
-    parser.add_argument('--input_file', required=True, help='Path to input file')
-    parser.add_argument('--case', required=True, help='Name of the case')
-    parser.add_argument('--format', required=True, help='mactime or l2tcsv')
+    arg_parser = argparse.ArgumentParser(description='Import timestamps into elastic')
+    arg_parser.add_argument('--input_file', required=True, help='Path to input file')
+    arg_parser.add_argument('--case', required=True, help='Name of the case')
+    arg_parser.add_argument('--format', required=True, help='mactime or l2tcsv')
 
-    args = parser.parse_args()
+    args = args_parser.parse_args()
     es = Elasticsearch()    
     if args.format not in ['mactime', 'l2tcsv']:
         print('Unsupported format')
