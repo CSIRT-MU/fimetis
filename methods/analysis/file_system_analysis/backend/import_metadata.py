@@ -154,7 +154,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--case', required=True, help='Name of the case')
     arg_parser.add_argument('--format', required=True, help='mactime or l2tcsv')
 
-    args = args_parser.parse_args()
+    args = arg_parser.parse_args()
     es = Elasticsearch()    
     if args.format not in ['mactime', 'l2tcsv']:
         print('Unsupported format')
