@@ -10,6 +10,7 @@ from elasticsearch.exceptions import TransportError
 from elasticsearch.helpers import streaming_bulk
 # import chardet
 import logging
+import argparse
 
 # logging.basicConfig(format='%(asctime)s %(levelname)-8s %(name)s %(message)s', level=logging.INFO)
 
@@ -147,17 +148,16 @@ def send_mail(mail_address, case_name):
 if __name__ == '__main__':
     es_index = 'metadata'
     es_type = 'mactimes'
-    if len(sys.argv) == 3:
-        es = Elasticsearch()
-        _case = sys.argv[1]
-        _file = sys.argv[2]
-        import_csv(_file, es, es_index, es_type, _case, delete_source=False)
-    elif len(sys.argv) == 5:
-        es = Elasticsearch([{'host': sys.argv[1], 'port': sys.argv[2]}])
-        _case = sys.argv[3]
-        _file = sys.argv[4]
-        import_csv(_file, es, es_index, es_type, _case, delete_source=False)
-    else:
-        print('usage:')
-        print('1: case_name file_path')
-        print('2: elasticsearch_address elasticsearch_port case_name file_path')
+
+    parser = argparse.ArgumentParser(description='Import timestamps into elastic')
+    parser.add_argument('--input_file', required=True, help='Path to input file')
+    parser.add_argument('--case', required=True, help='Name of the case')
+    parser.add_argument('--format', required=True, help='mactime or l2tcsv')
+
+    args = parser.parse_args()
+    es = Elasticsearch()    
+    if args.format not in ['mactime', 'l2tcsv']:
+        print('Unsupported format')
+        sys.exit()
+    
+    import_csv(args.input_file, args.format, es, es_index, es_type, args.case, delete_source=False)
