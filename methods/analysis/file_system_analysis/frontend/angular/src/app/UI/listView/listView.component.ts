@@ -22,6 +22,7 @@ import {rgb} from 'd3-color';
 import {ScrollDialogComponent} from '../dialog/scroll-dialog/scroll-dialog.component';
 import {MarkForbidenDialogComponent} from '../dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
 import {NoteDialogComponent} from '../dialog/note-dialog/note-dialog.component';
+import {MarkListDialogComponent} from '../dialog/mark-list-dialog/mark-list-dialog.component';
 
 @Component({
     selector: 'app-list-view',
@@ -206,6 +207,11 @@ export class ListViewComponent {
         //     this.pressedNumbers.push(parseInt(combo, 10));
         //     return true;
         // });
+        this._hotkeysService.add(new Hotkey(['ctrl+m', 'm'], (event: KeyboardEvent): boolean => {
+            console.log('test');
+            this.mark();
+            return false;
+        }, undefined, 'Marks'));
         this.dataLoaderDebouncer.pipe(
             debounceTime(300))
             .subscribe((value) => this.dataLoader(
@@ -1513,6 +1519,43 @@ export class ListViewComponent {
         });
     }
 
+    async mark() {
+        const loaded_marks = Array.from(await this.graphService.getAllMarks(this.case));
+
+        const marks = [];
+        for (let i = 0; i < loaded_marks.length; i++) {
+            const mark_info = await this.graphService.getMarkInfo(loaded_marks[i].toString());
+
+            const tmpMark = {
+                'id': loaded_marks[i],
+                'filename': mark_info['_source']['File Name'],
+                'type': mark_info['_source']['Type'],
+                'timestamp': mark_info['_source']['@timestamp']
+            };
+            marks.push(tmpMark);
+
+        }
+        const dialogRef = this.dialog.open(MarkListDialogComponent, {
+            width: '80%',
+            height: '70%',
+            data: {
+                marks: marks,
+                case: this.case
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result != null) {
+                const marksToDel = Array.from(result);
+                for (let i = 0; i < marksToDel.length; i++) {
+                    this.markLine(marksToDel[i]);
+                    this.emitMark(marksToDel[i], null, false, null, false);
+                }
+            }
+        });
+
+   }
+
     async getMarksFromDatabase() {
         const loaded_marks = Array.from(await this.graphService.getAllMarks(this.case));
         console.log(loaded_marks);
@@ -1533,11 +1576,5 @@ export class ListViewComponent {
             }
         }
         await this.getMarksIdsPresentInCurrentCluster();
-
-
-
-
-
-
     }
 }

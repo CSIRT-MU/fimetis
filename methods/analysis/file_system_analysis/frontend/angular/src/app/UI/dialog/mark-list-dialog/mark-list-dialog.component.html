@@ -1,0 +1,27 @@
+<h2>Marks</h2>
+<table class="table table-hover table-responsive">
+    <thead><th>TIMESTAMP</th><th>TYPE</th><th>FILE NAME</th><th></th></thead>
+    <tbody *ngFor="let mark of data.marks">
+    <tr>
+        <td>{{mark.timestamp}}</td>
+        <td>{{mark.type}}</td>
+        <td>{{mark.filename}}</td>
+        <td>
+            <mat-checkbox (click)="select(mark.id)">
+
+            </mat-checkbox>
+<!--            <button class="btn btn-default btn-sm" (click)="deleteMark(mark.id);">-->
+<!--                <span class="glyphicon glyphicon-remove"></span>-->
+<!--            </button>-->
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div style="text-align: center">
+    <button class="btn btn-default btn-s" (click)="onDeleteClick()">
+    <span>
+        DELETE
+    </span>
+    </button>
+</div>
+

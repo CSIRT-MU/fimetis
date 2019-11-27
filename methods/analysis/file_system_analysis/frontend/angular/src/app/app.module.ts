@@ -54,6 +54,7 @@ import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/
 import { CaseManagementComponent } from './UI/case-management/case-management.component';
 import { AccessManagementComponent } from './UI/access-management/access-management.component';
 import { NoteDialogComponent } from './UI/dialog/note-dialog/note-dialog.component';
+import { MarkListDialogComponent } from './UI/dialog/mark-list-dialog/mark-list-dialog.component';
 
 
 
@@ -78,7 +79,8 @@ import { NoteDialogComponent } from './UI/dialog/note-dialog/note-dialog.compone
         D3HistogramComponent,
         CaseManagementComponent,
         AccessManagementComponent,
-        NoteDialogComponent
+        NoteDialogComponent,
+        MarkListDialogComponent
     ],
     imports: [
         BrowserModule,
@@ -126,7 +128,9 @@ import { NoteDialogComponent } from './UI/dialog/note-dialog/note-dialog.compone
         ConfirmationDialogComponent,
         ScrollDialogComponent,
         MarkForbidenDialogComponent,
-        NoteDialogComponent],
+        NoteDialogComponent,
+        MarkListDialogComponent
+    ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],
