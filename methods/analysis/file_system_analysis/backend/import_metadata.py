@@ -38,11 +38,50 @@ def create_index(client, index):
             raise
 
 
-def document_stream(csv_file_path, case_name, remove_deleted=True, remove_deleted_realloc=True):
-    # with open(csv_file_path, 'rb') as raw_data:
-    #     encoding_detection = chardet.detect(raw_data.read())
-    # logging.info('Detected encoding: ' + encoding_detection['encoding'])
-    # with open(csv_file_path, mode='r', encoding=encoding_detection['encoding'], errors='surrogateescape') as file:
+def l2tcsv_stream(csv_file_path, case_name, remove_deleted=True, remove_deleted_realloc=True):
+    with open(csv_file_path, mode='r', errors='ignore') as file:
+        reader = csv.DictReader(file)
+        for line in reader:
+            try:
+                # date,time,timezone,MACB,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra
+                timestamp = '%s %s' %(line['date'], line['time'])
+                line['case'] = case_name
+                line['@timestamp'] = parser.parse(timestamp).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+                del line['date']
+                del line['time']
+                del line['timezone']
+                line['Type'] = line['MACB'].lower()
+                line['Meta'] = int(line['inode'])
+                line['Size'] = int(0)
+                line['UID'] = int(-1)
+                line['GID'] = int(-1)
+                line['File Name'] = line['filename']
+
+                # discarded columns
+                del line['source']
+                del line['sourcetype']
+                del line['type']
+                del line['user']
+                del line['host']
+                del line['short']
+                del line['desc']
+                del line['version']
+                del line['notes']
+                del line['format']
+                del line['extra']
+
+                if remove_deleted and '(deleted)' in line['File Name']:
+                    pass
+                elif remove_deleted_realloc and '(deleted-realloc)' in line['File Name']:
+                    pass
+                else:
+                    yield line
+            except ValueError as valueException:
+                logging.error('ERROR ValueError: ' + str(valueException))
+                pass
+
+
+def mactime_stream(csv_file_path, case_name, remove_deleted=True, remove_deleted_realloc=True):
     with open(csv_file_path, mode='r', errors='ignore') as file:
         reader = csv.DictReader(file)
         for line in reader:
@@ -65,16 +104,21 @@ def document_stream(csv_file_path, case_name, remove_deleted=True, remove_delete
                 pass
 
 
-def import_csv(csv_file_path, es_client, es_index, es_type, case_name, remove_deleted=True, remove_deleted_realloc=True,
+def import_csv(csv_file_path, file_type, es_client, es_index, es_type, case_name, remove_deleted=True, remove_deleted_realloc=True,
                delete_source=True):
     create_index(es_client, es_index)
     logging.info('Import file %s to case: %s' % (csv_file_path, case_name))
     if es_type is None:
         es_type = ''
 
+    if file_type == 'l2tcsv':
+        stream = l2tcsv_stream
+    else:
+        stream = mactime_stream
+
     for ok, result in streaming_bulk(
             es_client,
-            document_stream(csv_file_path, case_name, remove_deleted, remove_deleted_realloc),
+            stream(csv_file_path, case_name, remove_deleted, remove_deleted_realloc),
             index=es_index,
             doc_type=es_type,
             chunk_size=5000  # keep the batch sizes small for appearances only

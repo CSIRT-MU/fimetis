@@ -174,7 +174,6 @@ def upload(current_user):
             file.save(tf.name)
 
             file_type = type_recognizer.recognize_type(tf.name)
-
             if file_type == 'fls':
                 normalized_file = tf.name + '.norm'
                 os.system('mactime -b %s -d > %s' % (tf.name, normalized_file))
@@ -193,12 +192,13 @@ def upload(current_user):
                     f.seek(0, 0)
                     f.write('Date,Size,Type,Mode,UID,GID,Meta,File Name\n')
                     f.write(content)
+            elif file_type == 'l2tcsv':
+                normalized_file = tf.name
             else:
                 normalized_file = tf.name
 
-
-
             import_metadata.import_csv(normalized_file,
+                                       file_type,
                                        es,
                                        app.config['elastic_metadata_index'],
                                        app.config['elastic_metadata_type'],
