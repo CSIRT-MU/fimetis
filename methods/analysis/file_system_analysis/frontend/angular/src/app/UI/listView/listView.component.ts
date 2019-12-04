@@ -196,7 +196,7 @@ export class ListViewComponent {
             return false; // Prevent bubbling
         }, undefined, 'Search by File name'));
         this._hotkeysService.add(new Hotkey(['ctrl+n', 'n'], (event: KeyboardEvent): boolean => {
-            this.note();
+            this.displayNotepad();
 
 
             //dialogRef.close();
@@ -209,7 +209,7 @@ export class ListViewComponent {
         // });
         this._hotkeysService.add(new Hotkey(['ctrl+m', 'm'], (event: KeyboardEvent): boolean => {
             console.log('test');
-            this.mark();
+            this.displayMarkList();
             return false;
         }, undefined, 'Marks'));
         this.dataLoaderDebouncer.pipe(
@@ -1485,22 +1485,8 @@ export class ListViewComponent {
         }
     }
 
-    async note() {
-        // const text = this.baseService.getNoteForCase(this.case);
-        let note = '';
-        this.baseService.getNoteForCase(this.case).then(
-            response => {
-                console.log('note', note);
-                    note = response.note;
-
-            }, error => {
-                console.error(error);
-            }).then(() => {
-            console.log('Show Cases completed!');
-        });
-
-        const test = await this.baseService.getNoteForCase(this.case);
-        console.log(test);
+    async displayNotepad() {
+        const note = (await this.baseService.getNoteForCase(this.case)).note;
         const dialogRef = this.dialog.open(NoteDialogComponent, {
             width: '50%',
             height: '70%',
@@ -1510,7 +1496,6 @@ export class ListViewComponent {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            console.log('cluster dialog closed', result);
             if (result != null) {
                 console.log(result);
                 this.baseService.updateNoteForCase(this.case, result);
@@ -1519,7 +1504,7 @@ export class ListViewComponent {
         });
     }
 
-    async mark() {
+    async displayMarkList() {
         const loaded_marks = Array.from(await this.graphService.getAllMarks(this.case));
 
         const marks = [];

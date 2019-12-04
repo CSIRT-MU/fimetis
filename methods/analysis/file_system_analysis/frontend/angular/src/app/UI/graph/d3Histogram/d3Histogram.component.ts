@@ -2155,10 +2155,6 @@ export class D3HistogramComponent implements OnDestroy {
         ];
     }
 
-    selected() {
-        console.log(this.selectedExtendOption);
-        console.log(this.extendValue);
-    }
 
     addMark(mark) {
         if (mark.add) {
