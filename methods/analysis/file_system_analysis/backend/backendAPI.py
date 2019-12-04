@@ -396,7 +396,7 @@ def get_rank_of_marked_mactime_by_id(current_user, case):
     mark_id = request.json.get('mark_id')
 
     mark_query = {}
-    mark_query['ids'] = {'values' : marks_ids}
+    mark_query['ids'] = {'values': marks_ids}
 
     query = fsa.build_data_query(case, clusters, additional_filters, begin, size, sort, sort_order)
     query['query']['bool']['must'][1]['bool']['should'].append(mark_query)
@@ -574,9 +574,9 @@ def graph_get_data(current_user, case):
 @token_required
 def is_mark_in_cluster(current_user, case):
     clusters = request.json.get('clusters')
-    id = request.json.get('id')
+    timestamp_id = request.json.get('id')
 
-    query = fsa.build_id_presence_query(case, clusters, id)
+    query = fsa.build_id_presence_query(case, clusters, timestamp_id)
     logging.info('QUERY is mark in cluster: ' + '\n' + json.dumps(query))
 
     res = es.search(index=app.config['elastic_metadata_index'],
@@ -596,7 +596,7 @@ def get_all_marks_for_case_and_user(current_user, case):
 @app.route('/mark/get/<string:id>', methods=['GET'])
 @token_required
 def get_mark_info_by_id(current_user, id):
-    id_query = {'_id':[id]}
+    id_query = {'_id': [id]}
     mark_query = {'query': {'terms': id_query}}
 
     res = es.search(index=app.config['elastic_metadata_index'],
@@ -609,10 +609,10 @@ def get_mark_info_by_id(current_user, id):
 @app.route('/mark/insert/', methods=['POST'])
 @token_required
 def insert_mark(current_user):
-    id = request.json.get('id')
+    timestamp_id = request.json.get('id')
     case = request.json.get('case')
 
-    pg.insert_mark(case, current_user['username'], id)
+    pg.insert_mark(case, current_user['username'], timestamp_id)
 
     return jsonify({'mark inserted': 'OK'}), 200
 
