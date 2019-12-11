@@ -1,0 +1,23 @@
+<table class="table table-hover table-responsive " style="width: 90%; margin: auto; margin-top: 20px;">
+    <thead><th>CLUSTER NAME</th><th>DEFINITION</th><th>DESCRIPTION</th><th>FILTER</th><th>DELETE</th></thead>
+    <tbody *ngFor="let clusterDefinition of clusterDefinitions">
+        <tr>
+            <td>{{ clusterDefinition.name }}</td>
+            <td>{{ clusterDefinition.definition }}</td>
+            <td>{{ clusterDefinition.description}}</td>
+            <td>{{ clusterDefinition.filter_name}}</td>
+            <td>
+                <button class="btn btn-default btn-sm" (click)="removeSelectedClusterDefinition(clusterDefinition.id);">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="text-align: center">
+    <button type="button" class="btn btn-default " (click)="addClusterDefinition()">
+        <span>add cluster definition</span>
+    </button>
+</div>
+

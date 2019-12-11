@@ -1,6 +1,7 @@
 import {FilterModel} from './filter.model';
 
 export class ClusterModel {
+    id: number;
     name: string;
     color: string;
     count: number;

@@ -14,6 +14,10 @@ export class BaseService {
         return this.http.get<any>(environment.backendUrl + '/case/administrated').toPromise();
     }
 
+    getAllUsers() {
+        return this.http.get<any>(environment.backendUrl + '/user/all').toPromise();
+    }
+
     getAvailableUsersToAdd(case_id) {
         return this.http.post<any>(environment.backendUrl + '/user/available', {'case_id': case_id}).toPromise();
     }
@@ -63,6 +67,16 @@ export class BaseService {
             } catch (e) {}
             return filter;
         });
+    }
+
+    loadFiltersFromDatabase() {
+        return this.http.get<any>(environment.backendUrl + '/filter-db/all').toPromise().then(
+            response => {
+                return response;
+            }, error => {
+                console.error(error);
+                return error;
+            });
     }
 
     deleteCase(_case: string) {

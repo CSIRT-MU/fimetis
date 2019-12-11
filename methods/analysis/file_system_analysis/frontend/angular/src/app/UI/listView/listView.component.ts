@@ -677,6 +677,7 @@ export class ListViewComponent {
         // computation.filters.add(filter);
         this.makeManualCluster.emit(cluster);
         this.stateService.addCluster(cluster);
+
     }
 
     /**
@@ -1562,4 +1563,5 @@ export class ListViewComponent {
         }
         await this.getMarksIdsPresentInCurrentCluster();
     }
+
 }

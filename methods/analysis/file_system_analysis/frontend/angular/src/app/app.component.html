@@ -24,6 +24,10 @@
                         *ngIf="getRouter().url !== '/access-management'">
                     ACCESS MANAGEMENT
                 </button>
+                <button mat-menu-item routerLink="/cluster-management" routerLinkActive="active"
+                        *ngIf="getRouter().url !== '/cluster-management'">
+                    CLUSTER MANAGEMENT
+                </button>
                 <button mat-menu-item routerLink="/upload/empty" routerLinkActive="active"
                         *ngIf="getRouter().url !== '/upload'">
                     <span>UPLOAD FILE TO DATASET</span>

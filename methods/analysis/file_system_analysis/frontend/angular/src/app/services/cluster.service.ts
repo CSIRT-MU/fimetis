@@ -155,4 +155,45 @@ export class ClusterService {
         const new_number = await this.numberOfEntries(_case, newClusters, {}, firstEntry._source['@timestamp']);
         return new_number - old_number;
     }
+
+    loadClustersFromDatabase() {
+        return this.http.get<any>(environment.backendUrl + '/cluster-definition/all').toPromise().then(
+            response => {
+                return response;
+            }, error => {
+                console.error(error);
+                return error;
+            });
+    }
+
+    loadClustersForUserAndCase(case_name) {
+        return this.http.get<any>(environment.backendUrl + '/cluster-definition/case/' + case_name).toPromise().then(
+            response => {
+                return response;
+            }, error => {
+                console.error(error);
+                return error;
+            });
+    }
+
+    addClusterDefinition(name, definition, description, filter_name) {
+        return this.http.post<any>(environment.backendUrl + '/cluster-definition/add',
+            {'name': name, 'definition': definition, 'description': description, 'filter_name': filter_name}).toPromise();
+
+    }
+
+    deleteClusterDefinition(id) {
+        return this.http.get<any>(environment.backendUrl + '/cluster-definition/delete/' + id).toPromise();
+    }
+
+    addUserClustersForCase(case_name, cluster_ids) {
+        return this.http.post<any>(environment.backendUrl + '/cluster-definition/case/' + case_name + '/add-user-clusters',
+            {'cluster_ids' : cluster_ids}).toPromise();
+    }
+
+    deleteUserClustersForCase(case_name, cluster_ids) {
+        return this.http.post<any>(environment.backendUrl + '/cluster-definition/case/' + case_name + '/delete-user-clusters',
+            {'cluster_ids' : cluster_ids}).toPromise();
+    }
+
 }

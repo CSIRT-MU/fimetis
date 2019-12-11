@@ -71,6 +71,11 @@
             <div *ngIf="advancedMode" style="text-align: center">
                 <span class="clickable addClusterButton glyphicon glyphicon-plus-sign" [matTooltip]="'Add new cluster'" matTooltipPosition="above" (click)="addCluster()"></span>
             </div>
+            <div style="text-align: center">
+                <button type="button" class="btn btn-default" (click)="manageClusters()">
+                    <span class="glyphicon glyphicon-list" aria-hidden="true"> MANAGE CLUSTERS</span>
+                </button>
+            </div>
         </div>
 
     </div>

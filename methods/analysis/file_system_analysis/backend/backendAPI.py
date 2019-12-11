@@ -160,6 +160,8 @@ def upload(current_user):
     else:
         remove_deleted_realloc = request.form['removeDeletedRealloc'] in ('true', '1')
 
+
+
     if 'file' not in request.files:
         return jsonify({'status': 'failed', 'message': 'No file to upload'})
 
@@ -210,6 +212,15 @@ def upload(current_user):
                 pg.insert_case(case_name, description)
                 pg.insert_user_case_role(current_user['username'], case_name, 'admin')
                 pg.insert_init_note_for_case(case_name, current_user['username'])
+                cluster_ids = json.loads(request.form['cluster_ids'])
+                pg.add_user_clusters_for_case(current_user['username'], case_name, cluster_ids)
+
+
+                full_access_ids = json.loads(request.form['full_access_ids'])
+                read_access_ids = json.loads(request.form['read_access_ids'])
+                print(full_access_ids, read_access_ids)
+
+                pg.add_access_for_many_users_to_case(case_name, full_access_ids, read_access_ids, cluster_ids)
 
     return jsonify({'status': 'OK', 'message': 'uploading files'})
 
@@ -258,6 +269,13 @@ def get_available_users_to_add(current_user):
 
     logging.info('Listed available users to add access to case %s', (case_id))
     return jsonify(cases=pg.get_available_users_to_add(case_id))
+
+
+@app.route('/user/all', methods=['GET'])
+@token_required
+def get_all_users(current_user):
+
+    return jsonify(users=pg.get_all_users(current_user['username']))
 
 
 @app.route('/case/add-user', methods=['POST'])
@@ -625,6 +643,67 @@ def delete_mark(current_user):
     pg.delete_mark(case, current_user['username'], id)
 
     return jsonify({'mark inserted': 'OK'}), 200
+
+
+@app.route('/cluster-definition/all', methods=['GET'])
+@token_required
+def get_all_cluster_definitions(current_user):
+    return jsonify(cluster_definitions=pg.get_all_cluster_definitons())
+
+
+@app.route('/cluster-definition/add', methods=['POST'])
+@token_required
+def insert_cluster_definition(current_user):
+    name = request.json.get('name')
+    description = request.json.get('description')
+    definition = request.json.get('definition')
+    filter_name = request.json.get('filter_name')
+
+    pg.insert_cluster_definition(name, definition, description, filter_name)
+
+    return jsonify({'cluster definition inserted': 'OK'}), 200
+
+
+@app.route('/cluster-definition/delete/<string:id>', methods=['GET'])
+@token_required
+def delete_cluster_definition(current_user, id):
+    pg.delete_cluster_definition(id)
+
+    return jsonify({'cluster definition deleted': 'OK'}), 200
+
+
+@app.route('/filter-db/all', methods=['GET'])
+@token_required
+def get_filters(current_user):
+
+    return jsonify(filters=pg.get_filters())
+
+
+@app.route('/cluster-definition/case/<string:case>', methods=['GET'])
+@token_required
+def get_clusters_for_user_and_case(current_user, case):
+
+    return jsonify(cluster_definitions=pg.get_clusters_for_user_and_case(current_user['username'], case))
+
+
+@app.route('/cluster-definition/case/<string:case>/add-user-clusters', methods=['POST'])
+@token_required
+def add_user_clusters_for_case(current_user, case):
+    cluster_ids = request.json.get('cluster_ids')
+
+    pg.add_user_clusters_for_case(current_user['username'], case, cluster_ids)
+
+    return jsonify({'user clusters added to case': 'OK'}), 200
+
+
+@app.route('/cluster-definition/case/<string:case>/delete-user-clusters', methods=['POST'])
+@token_required
+def delete_user_clusters_for_case(current_user, case):
+    cluster_ids = request.json.get('cluster_ids')
+
+    pg.delete_user_clusters_from_case(current_user['username'], case, cluster_ids)
+
+    return jsonify({'user clusters deleted from case': 'OK'}), 200
 
 
 if __name__ == '__main__':

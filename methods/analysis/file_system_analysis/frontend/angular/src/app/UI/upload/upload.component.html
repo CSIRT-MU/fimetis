@@ -5,6 +5,20 @@
     <mat-form-field class="col-md-12">
         Dataset description (optional): <input matInput [(ngModel)]="_description" [disabled]="datasetExtended()">
     </mat-form-field>
+    <div class="inline-block col-md-12">
+        <button style="margin-right: 5px;" type="button" class="btn btn-default" (click)="selectClusters()" [disabled]="datasetExtended()">
+            <span>Specify suitable clusters</span>
+        </button>
+        &nbsp;
+        <button type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectAccess('full-access')">
+            <span>Specify full access</span>
+        </button>
+        &nbsp;
+        <button type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectAccess('read')">
+            <span>Specify read access</span>
+        </button>
+    </div>
+
     <ngfUploadStatus
             [(percent)] = "progress"
             [httpEvent] = "httpEvent"

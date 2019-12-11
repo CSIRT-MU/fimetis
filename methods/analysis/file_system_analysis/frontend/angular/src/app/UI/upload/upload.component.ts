@@ -5,6 +5,12 @@ import {Subscription} from 'rxjs';
 import {UploadService} from '../../services/upload.service';
 import {ToastrService} from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {MarkListDialogComponent} from '../dialog/mark-list-dialog/mark-list-dialog.component';
+import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters.component';
+import {ClusterService} from '../../services/cluster.service';
+import {BaseService} from '../../services/base.service';
+import {SelectUsersComponent} from '../dialog/select-users/select-users.component';
 
 
 @Component({
@@ -25,14 +31,29 @@ export class UploadComponent implements OnInit {
     invalidComboDrag = false;
     removeDeleted = true;
     removeDeletedRealloc = true;
+    cluster_ids = [];
+    users = [];
+    readAccessIds = [];
+    fullAccessIds = [];
 
-    constructor(private uploadService: UploadService, private toaster: ToastrService, private route: ActivatedRoute) {}
+    constructor(
+        private uploadService: UploadService,
+        private clusterService: ClusterService,
+        private baseService: BaseService,
+        private toaster: ToastrService,
+        public dialog: MatDialog,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit() {
         const case_name = this.route.snapshot.paramMap.get('case');
         if (case_name !== 'empty') {
             this._case = case_name;
+        } else {
+            this.getAllUsers();
         }
+
+
     }
 
     uploadFiles(files: File[]): Subscription {
@@ -45,6 +66,9 @@ export class UploadComponent implements OnInit {
         formData.append('removeDeleted', this.removeDeleted.toString());
         formData.append('removeDeletedRealloc', this.removeDeletedRealloc.toString());
         formData.append('datasetExtend', this.datasetExtended().toString());
+        formData.append('cluster_ids', JSON.stringify(this.cluster_ids));
+        formData.append('full_access_ids', JSON.stringify(this.fullAccessIds));
+        formData.append('read_access_ids', JSON.stringify(this.readAccessIds));
         const case_name = this.route.snapshot.paramMap.get('case');
 
         const dataset_name = this._case;
@@ -70,4 +94,54 @@ export class UploadComponent implements OnInit {
         return this.route.snapshot.paramMap.get('case') !== 'empty';
     }
 
+    async selectClusters() {
+        const clusters = await this.getAllClusters();
+
+        const selected_ids = new Set();
+        for (let i = 0; i < clusters.length; i++) {
+            selected_ids.add(clusters[i].id);
+        }
+
+        const dialogRef = this.dialog.open(SelectClustersComponent, {
+            data: {
+                currentClustersIds: selected_ids,
+                allClusters: clusters
+            },
+            minWidth: '350px',
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.cluster_ids = Array.from(result);
+            }
+        });
+    }
+
+    async getAllClusters() {
+        return (await this.clusterService.loadClustersFromDatabase()).cluster_definitions;
+    }
+
+    async getAllUsers() {
+        this.users = (await this.baseService.getAllUsers()).users;
+    }
+
+    selectAccess(access_type) {
+        const dialogRef = this.dialog.open(SelectUsersComponent, {
+            data: {
+                allUsers: this.users
+            },
+            minWidth: '550px',
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                if (access_type === 'full-access') {
+                    this.fullAccessIds = Array.from(result);
+                } else {
+                    this.readAccessIds = Array.from(result);
+                }
+            }
+        });
+
+    }
 }

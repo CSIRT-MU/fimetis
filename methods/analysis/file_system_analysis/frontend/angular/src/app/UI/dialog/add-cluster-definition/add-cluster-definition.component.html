@@ -1,0 +1,26 @@
+<h3>
+    {{ data.title }}
+</h3>
+<mat-form-field style="width: 100%;" appearance="outline">
+    <input [value]="name" (change)="updateName($event.currentTarget.value)" matInput placeholder="Name">
+</mat-form-field>
+
+<mat-form-field style="width: 100%;" appearance="outline">
+    <input [value]="description" (change)="updateDescription($event.currentTarget.value)" matInput placeholder="Description">
+</mat-form-field>
+
+<mat-form-field style="width: 100%;" appearance="outline">
+    <input [value]="definition" (change)="updateDefinition($event.currentTarget.value)" matInput placeholder="Regex Definition">
+</mat-form-field>
+<mat-form-field appearance="outline" style="width: 100%">
+    <mat-select placeholder="SELECT filter" [(value)]="filter_name" required>
+        <mat-option *ngFor="let filter of this.data.filters" [value]="filter">{{filter}}</mat-option>
+    </mat-select>
+</mat-form-field>
+<div style="text-align: center">
+    <button class="btn btn-default btn-s" (click)="onSaveClick()">
+    <span>
+        SAVE
+    </span>
+    </button>
+</div>

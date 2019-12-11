@@ -53,6 +53,7 @@ def delete_case(case_name):
         cur.execute('DELETE FROM "access" WHERE case_id=%s', (case_id,))
         cur.execute('DELETE FROM "note" WHERE case_id=%s', (case_id,))
         cur.execute('DELETE FROM "mark" WHERE case_id=%s', (case_id,))
+        cur.execute('DELETE FROM "user-cluster-case" WHERE case_id=%s', (case_id,))
 
 
         cur.execute('DELETE FROM "case" WHERE id=%s', (case_id,))
@@ -90,27 +91,31 @@ def get_accessible_cases(user_name):
             cur.execute('SELECT "case".id,name,description,created FROM "case" ORDER BY name')
             cases = cur.fetchall()
         else:
-            cur.execute('SELECT "case".id,"case".name,description,created,role FROM "case" INNER JOIN "access" ON "case".id="access".case_id '
+            cur.execute('SELECT DISTINCT "case".id,"case".name,description,created FROM "case" INNER JOIN "access" ON "case".id="access".case_id '
                         'INNER JOIN "user" ON "user".id="access".user_id WHERE login=%s ORDER BY name', (user_name,))
             cases = cur.fetchall()
 
+
+        normalized_result = []
+        for case in cases:
+            normalized_case = {
+                'id': case[0],
+                'name': case[1],
+                'description': case[2],
+                'created': case[3]
+            }
+            if is_super_admin:
+                normalized_case['isAdmin'] = True
+            else:
+                cur.execute('SELECT id FROM "user" WHERE login=%s', (user_name,))
+                user_id = cur.fetchone()[0]
+                cur.execute('SELECT role FROM "access" WHERE user_id=%s and case_id=%s', (user_id, case[0]))
+                normalized_case['isAdmin'] = cur.fetchone()[0] == 'admin'
+
+            normalized_result.append(normalized_case)
+
     conn.close()
-
-    normalized_result = []
-    for case in cases:
-        normalized_case = {
-            'id': case[0],
-            'name': case[1],
-            'description': case[2],
-            'created': case[3]
-        }
-        if is_super_admin:
-            normalized_case['isAdmin'] = True
-        else:
-            normalized_case['isAdmin'] = case[4] == 'admin'
-
-        normalized_result.append(normalized_case)
-
+    
     return normalized_result
 
 
@@ -176,9 +181,43 @@ def get_available_users_to_add(case_id):
 
     with closing(conn.cursor()) as cur:
         cur.execute('SELECT login FROM "user" WHERE login not in '
-                    '(SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id WHERE case_id=%s)'
+                    '(SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id WHERE case_id=%s AND role=%s)'
                     ' ORDER BY login',
-                    (case_id,))
+                    (case_id, 'user'))
+
+        users = cur.fetchall()
+        result = []
+        for user in users:
+            result.append(user[0])
+
+    conn.close()
+    return result
+
+
+def get_all_users(login):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id, login FROM "user" WHERE login!=%s', (login,))
+        users = cur.fetchall()
+
+        result = []
+        for user in users:
+            result.append({'id': user[0], 'login': user[1]})
+
+    conn.close()
+
+    return result
+
+
+def get_available_admins_to_add(case_id):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT login FROM "user" WHERE login not in '
+                    '(SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id WHERE case_id=%s AND role=%s)'
+                    ' ORDER BY login',
+                    (case_id, 'admin'))
 
         users = cur.fetchall()
         result = []
@@ -246,6 +285,7 @@ def insert_init_note_for_case(case_name, login):
 
     conn.close()
 
+
 def get_note_for_case(case_name, login):
     conn = get_db_connection()
 
@@ -278,6 +318,7 @@ def update_note_for_case(updated_note, case_name, login):
 
     conn.close()
 
+
 def get_all_marks_for_case_and_user(case_name, login):
     conn = get_db_connection()
 
@@ -309,7 +350,6 @@ def insert_mark(case_name, login, id):
         cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
         case_id = cur.fetchone()[0]
 
-        print(id, case_id, user_id)
         cur.execute('INSERT INTO "mark" (id, case_id, user_id) VALUES (%s, %s, %s)', (id, case_id, user_id))
         conn.commit()
 
@@ -331,6 +371,180 @@ def delete_mark(case_name, login, id):
         conn.commit()
 
     conn.close()
+
+
+def get_all_cluster_definitons():
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id, name, definition, description, filter_id FROM "cluster" ORDER BY id')
+        cluster_definitions = cur.fetchall()
+
+        normalized_result = []
+        for cluster_definition in cluster_definitions:
+            filter_id = cluster_definition[4]
+
+            cur.execute('SELECT id, name, definition FROM "filter" WHERE id=%s', (filter_id,))
+            filter_db = cur.fetchone()
+            normalized_cluster_definition = {
+                'id': cluster_definition[0],
+                'name': cluster_definition[1],
+                'definition': cluster_definition[2],
+                'description': cluster_definition[3],
+                'filter_id': filter_db[0],
+                'filter_name': filter_db[1],
+                'filter_definition': filter_db[2]
+            }
+
+            normalized_result.append(normalized_cluster_definition)
+
+    conn.close()
+    return normalized_result
+
+
+def insert_cluster_definition(name, definition, description, filter_name):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "filter" WHERE name=%s', (filter_name,))
+        filter_id = cur.fetchone()[0]
+
+        cur.execute('INSERT INTO "cluster" (name, definition, description, filter_id) VALUES (%s, %s, %s, %s)', (name, definition, description, filter_id))
+        conn.commit()
+    conn.close()
+
+
+def delete_cluster_definition(id):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('DELETE FROM "cluster" WHERE id=%s', (id,))
+        conn.commit()
+
+    conn.close()
+
+
+def get_filters():
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT name FROM "filter"')
+
+        filters = cur.fetchall()
+
+    conn.close()
+
+    normalized_result = []
+    for filter in filters:
+        normalized_result.append(filter[0])
+
+
+    return normalized_result
+
+
+def get_clusters_for_user_and_case(login, case_name):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+
+        cur.execute('SELECT cluster_id FROM "user-cluster-case" WHERE case_id=%s AND user_id=%s ORDER BY cluster_id', (case_id, user_id))
+
+        cluster_ids = cur.fetchall()
+
+        clusters = []
+        for cluster_id in cluster_ids:
+            cur.execute('SELECT id, name, definition, description, filter_id FROM "cluster" WHERE id=%s ORDER BY id', (cluster_id[0],))
+            cluster_definition = cur.fetchone()
+
+            filter_id = cluster_definition[4]
+            cur.execute('SELECT id, name, definition FROM "filter" WHERE id=%s', (filter_id,))
+            filter_db = cur.fetchone()
+            normalized_cluster_definition = {
+                'id': cluster_definition[0],
+                'name': cluster_definition[1],
+                'definition': cluster_definition[2],
+                'description': cluster_definition[3],
+                'filter_id': filter_db[0],
+                'filter_name': filter_db[1],
+                'filter_definition': filter_db[2]
+            }
+
+            clusters.append(normalized_cluster_definition)
+
+    conn.close()
+
+    return clusters
+
+
+def add_user_clusters_for_case(login, case_name, cluster_ids):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        for cluster_id in cluster_ids:
+            cur.execute('INSERT INTO "user-cluster-case" (cluster_id, user_id, case_id) VALUES (%s, %s, %s)', (cluster_id, user_id, case_id))
+
+        conn.commit()
+
+    conn.close()
+
+
+def delete_user_clusters_from_case(login, case_name, cluster_ids):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
+        user_id = cur.fetchone()[0]
+
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        for cluster_id in cluster_ids:
+            cur.execute('DELETE FROM "user-cluster-case" WHERE cluster_id=%s AND user_id=%s AND case_id=%s', (cluster_id, user_id, case_id))
+
+        conn.commit()
+
+    conn.close()
+
+
+def add_access_for_many_users_to_case(case_name, full_access_user_ids, read_access_user_ids, cluster_ids):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "case" WHERE name=%s', (case_name,))
+        case_id = cur.fetchone()[0]
+
+        for id in full_access_user_ids:
+            cur.execute('INSERT INTO "access" (user_id, case_id, role) VALUES (%s, %s, %s)', (id, case_id, 'admin'))
+            cur.execute('INSERT INTO "note" (user_id, case_id, text) VALUES (%s, %s, %s)', (id, case_id, 'Initial note'))
+
+            for cluster_id in cluster_ids:
+                cur.execute('INSERT INTO "user-cluster-case" (cluster_id, user_id, case_id) VALUES (%s, %s, %s)',
+                            (cluster_id, id, case_id))
+
+        for id in read_access_user_ids:
+            cur.execute('INSERT INTO "access" (user_id, case_id, role) VALUES (%s, %s, %s)', (id, case_id, 'user'))
+            cur.execute('INSERT INTO "note" (user_id, case_id, text) VALUES (%s, %s, %s)', (id, case_id, 'Initial note'))
+
+            for cluster_id in cluster_ids:
+                cur.execute('INSERT INTO "user-cluster-case" (cluster_id, user_id, case_id) VALUES (%s, %s, %s)',
+                            (cluster_id, id, case_id))
+
+        conn.commit()
+
+    conn.close()
+
 
 
 

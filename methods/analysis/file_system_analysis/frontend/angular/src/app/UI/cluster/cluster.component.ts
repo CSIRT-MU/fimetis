@@ -6,6 +6,10 @@ import {Subject, Subscription} from 'rxjs';
 import {StateService} from '../../services/state.service';
 import {ComputationDialogComponent} from '../dialog/computation-dialog/computation-dialog.component';
 import {ClusterService} from '../../services/cluster.service';
+import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters.component';
+import {FilterModel} from '../../models/filter.model';
+import {FilterParamModel} from '../../models/filterParam.model';
+
 
 @Component({
     selector: 'app-cluster',
@@ -147,5 +151,123 @@ export class ClusterComponent implements OnInit, OnDestroy {
     computeClustersItemCount(additionalFilters: object) {
         this.clusterService.countEntriesOfClusters(this.stateService.selectedCase, this.clusters, additionalFilters);
     }
+
+    async manageClusters() {
+        const dialogRef = this.dialog.open(SelectClustersComponent, {
+            data: {
+                currentClustersIds: this.getCurrentClustersIds(),
+                allClusters: await this.getAllClusters()
+            },
+            minWidth: '350px',
+
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                const currentClusters = this.getCurrentClustersIds();
+                const currentClustersInArray = Array.from(currentClusters);
+                const newClusters = result;
+                const newClustersInArray = Array.from(result);
+
+                const clustersToAdd = [];
+
+                for (let i = 0; i < newClustersInArray.length; i++) {
+                    if (!currentClusters.has(newClustersInArray[i])) {
+                        clustersToAdd.push(newClustersInArray[i]);
+                    }
+                }
+
+                const clustersToDel = [];
+
+                for (let i = 0; i < currentClustersInArray.length; i++) {
+                    if (!newClusters.has(currentClustersInArray[i])) {
+                        clustersToDel.push(currentClustersInArray[i]);
+                    }
+                }
+
+                this.updateClusters(clustersToAdd, clustersToDel);
+            }
+        });
+
+
+    }
+
+    async getAllClusters() {
+        const clusters = (await  this.clusterService.loadClustersFromDatabase()).cluster_definitions;
+        return (await this.clusterService.loadClustersFromDatabase()).cluster_definitions;
+    }
+
+    getCurrentClustersIds() {
+        const ids = new Set();
+        for (let i = 0; i < this.clusters.length; i++) {
+            ids.add(this.clusters[i].id);
+        }
+
+        return ids;
+    }
+
+    async updateClusters(clustersToAdd, clustersToDel) {
+        await this.clusterService.addUserClustersForCase(this.stateService.selectedCase, clustersToAdd);
+        await this.clusterService.deleteUserClustersForCase(this.stateService.selectedCase, clustersToDel);
+
+        // save manual clusters
+        const manualClusters = [];
+        for (let i = 0; i < this.clusters.length; i++) {
+            if (this.clusters[i].filters[0].name === 'highlighted_text') {
+                manualClusters.push(this.clusters[i]);
+            }
+        }
+
+        this.clusters = [];
+
+
+        const loaded_from_db = (await this.clusterService.loadClustersForUserAndCase(this.stateService.selectedCase)).cluster_definitions;
+
+        for (let i = 0; i < loaded_from_db.length; i++) {
+            const db_cluster = new ClusterModel;
+
+            db_cluster.id = loaded_from_db[i].id;
+            db_cluster.color = 'red';
+            db_cluster.name = loaded_from_db[i].name;
+            console.log(db_cluster.name);
+            db_cluster.count = 0;
+            db_cluster.totalCount = 0;
+            db_cluster.selectMode = 0;
+            db_cluster.description = 'description';
+
+            const filter = new FilterModel();
+            filter.isSelected = true;
+            filter.name = 'filename_regex';
+            filter.json = loaded_from_db[i].filter_definition;
+
+
+            const filter_param = new FilterParamModel();
+
+            if (loaded_from_db[i].filter_name === 'Select All') {
+                filter_param.name = 'Select All';
+                db_cluster.selectMode = 1;
+            } else {
+                filter_param.name = filter.json.match(/.*\${{(.*)}}\$.*/)[1];
+            }
+            filter_param.type = 'REGEX';
+            filter_param.value = loaded_from_db[i].definition;
+
+            filter.params.push(filter_param);
+            db_cluster.filters.push(filter);
+
+            this.clusters.push(db_cluster);
+
+        }
+
+        for (let i = 0; i < manualClusters.length; i++) {
+            this.clusters.push(manualClusters[i]);
+        }
+
+        this.computeClustersItemCount(this.stateService.additionalFilters);
+    }
+
+
+
+
 
 }

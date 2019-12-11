@@ -55,6 +55,10 @@ import { CaseManagementComponent } from './UI/case-management/case-management.co
 import { AccessManagementComponent } from './UI/access-management/access-management.component';
 import { NoteDialogComponent } from './UI/dialog/note-dialog/note-dialog.component';
 import { MarkListDialogComponent } from './UI/dialog/mark-list-dialog/mark-list-dialog.component';
+import { ClusterManagementComponent } from './UI/cluster-management/cluster-management.component';
+import { AddClusterDefinitionComponent } from './UI/dialog/add-cluster-definition/add-cluster-definition.component';
+import { SelectClustersComponent } from './UI/dialog/select-clusters/select-clusters.component';
+import { SelectUsersComponent } from './UI/dialog/select-users/select-users.component';
 
 
 
@@ -80,7 +84,11 @@ import { MarkListDialogComponent } from './UI/dialog/mark-list-dialog/mark-list-
         CaseManagementComponent,
         AccessManagementComponent,
         NoteDialogComponent,
-        MarkListDialogComponent
+        MarkListDialogComponent,
+        ClusterManagementComponent,
+        AddClusterDefinitionComponent,
+        SelectClustersComponent,
+        SelectUsersComponent
     ],
     imports: [
         BrowserModule,
@@ -129,7 +137,10 @@ import { MarkListDialogComponent } from './UI/dialog/mark-list-dialog/mark-list-
         ScrollDialogComponent,
         MarkForbidenDialogComponent,
         NoteDialogComponent,
-        MarkListDialogComponent
+        MarkListDialogComponent,
+        AddClusterDefinitionComponent,
+        SelectClustersComponent,
+        SelectUsersComponent
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

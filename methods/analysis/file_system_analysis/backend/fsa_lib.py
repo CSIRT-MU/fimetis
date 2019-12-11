@@ -242,6 +242,7 @@ def apply_filter(filter_model, params):
         if param.type == 'REGEX':
             escaped_param = str(escaped_param).replace('\\', '\\\\')
         result = result.replace('${{' + param.name + '}}$', escaped_param)
+
     return json.loads(result)
 
 

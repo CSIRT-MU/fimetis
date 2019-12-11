@@ -18,6 +18,7 @@ import * as d3 from 'd3';
 import {Subscription} from 'rxjs';
 import {StateService} from '../../services/state.service';
 import {CaseService} from '../../services/case.service';
+import {FilterParamModel} from '../../models/filterParam.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -192,7 +193,45 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     async initPreLoadedClusters() {
         this.preloadedClusters = [];
         const configManager = new ConfigManager();
-        this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
+        //this.preloadedClusters = configManager.loadPreparedClusters()['prepared_clusters'];
+
+        let loaded_from_db = [];
+        //loaded_from_db = (await this.clusterService.loadClustersFromDatabase()).cluster_definitions;
+        loaded_from_db = (await this.clusterService.loadClustersForUserAndCase(this.selectedCase)).cluster_definitions;
+
+        for (let i = 0; i < loaded_from_db.length; i++) {
+            const db_cluster = new ClusterModel;
+
+            db_cluster.id = loaded_from_db[i].id;
+            db_cluster.color = '#886644';
+            db_cluster.name = loaded_from_db[i].name;
+            db_cluster.count = 0;
+            db_cluster.totalCount = 0;
+            db_cluster.selectMode = 0;
+            db_cluster.description = 'description';
+
+            const filter = new FilterModel();
+            filter.isSelected = true;
+            filter.name = 'filename_refgex';
+            filter.json = loaded_from_db[i].filter_definition;
+
+            const filter_param = new FilterParamModel();
+
+            if (loaded_from_db[i].filter_name === 'Select All') {
+                filter_param.name = 'Select All';
+                db_cluster.selectMode = 1;
+            } else {
+                filter_param.name = filter.json.match(/.*\${{(.*)}}\$.*/)[1];
+            }
+            filter_param.type = 'REGEX';
+            filter_param.value = loaded_from_db[i].definition;
+
+            filter.params.push(filter_param);
+            db_cluster.filters.push(filter);
+
+            this.preloadedClusters.push(db_cluster);
+        }
+
         this.computeClustersItemCount(this.listViewComponent.additionalFilters);
         this.stateService.clusters = this.preloadedClusters;
     }
