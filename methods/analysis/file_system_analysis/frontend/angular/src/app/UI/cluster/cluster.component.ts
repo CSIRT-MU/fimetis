@@ -227,7 +227,7 @@ export class ClusterComponent implements OnInit, OnDestroy {
             const db_cluster = new ClusterModel;
 
             db_cluster.id = loaded_from_db[i].id;
-            db_cluster.color = 'red';
+            db_cluster.color = '#886644';
             db_cluster.name = loaded_from_db[i].name;
             console.log(db_cluster.name);
             db_cluster.count = 0;
@@ -264,6 +264,7 @@ export class ClusterComponent implements OnInit, OnDestroy {
         }
 
         this.computeClustersItemCount(this.stateService.additionalFilters);
+        this.clusterSelectionDebouncer.next(this.clusters);
     }
 
 

@@ -115,7 +115,7 @@ def get_accessible_cases(user_name):
             normalized_result.append(normalized_case)
 
     conn.close()
-    
+
     return normalized_result
 
 

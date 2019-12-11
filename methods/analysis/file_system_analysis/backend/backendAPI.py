@@ -218,7 +218,6 @@ def upload(current_user):
 
                 full_access_ids = json.loads(request.form['full_access_ids'])
                 read_access_ids = json.loads(request.form['read_access_ids'])
-                print(full_access_ids, read_access_ids)
 
                 pg.add_access_for_many_users_to_case(case_name, full_access_ids, read_access_ids, cluster_ids)
 
