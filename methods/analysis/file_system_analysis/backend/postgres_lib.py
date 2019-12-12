@@ -119,81 +119,6 @@ def get_accessible_cases(user_name):
     return normalized_result
 
 
-def get_administrated_cases(user_name):
-    conn = get_db_connection()
-
-    with closing(conn.cursor()) as cur:
-        cur.execute('SELECT is_super_admin FROM "user" WHERE login=%s', (user_name,))
-        is_super_admin = cur.fetchone()[0]
-
-        if is_super_admin:
-            cur.execute('SELECT id,name,description,created FROM "case" ORDER BY NAME')
-            cases = cur.fetchall()
-        else:
-            cur.execute(
-                'SELECT "case".id,"case".name,description,created,role '
-                'FROM "case" INNER JOIN "access" ON "case".id="access".case_id '
-                'INNER JOIN "user" ON "user".id="access".user_id WHERE login=%s AND role=%s ORDER BY name',
-                (user_name, 'admin')
-            )
-            cases = cur.fetchall()
-
-        normalized_result = []
-        for case in cases:
-            normalized_case = {
-                'id': case[0],
-                'name': case[1],
-                'description': case[2],
-                'created': case[3],
-                'admins': [],
-                'users': []
-            }
-
-            cur.execute(
-                'SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id '
-                'WHERE case_id=%s AND role=%s ORDER BY login',
-                (normalized_case['id'], 'admin')
-            )
-            admins = cur.fetchall()
-
-            for admin in admins:
-                normalized_case['admins'].append(admin[0])
-
-            cur.execute(
-                'SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id '
-                'WHERE case_id=%s AND role=%s ORDER BY login',
-                (normalized_case['id'], 'user')
-            )
-            users = cur.fetchall()
-
-            for user in users:
-                normalized_case['users'].append(user[0])
-
-            normalized_result.append(normalized_case)
-
-    conn.close()
-
-    return normalized_result
-
-
-def get_available_users_to_add(case_id):
-    conn = get_db_connection()
-
-    with closing(conn.cursor()) as cur:
-        cur.execute('SELECT login FROM "user" WHERE login not in '
-                    '(SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id WHERE case_id=%s AND role=%s)'
-                    ' ORDER BY login',
-                    (case_id, 'user'))
-
-        users = cur.fetchall()
-        result = []
-        for user in users:
-            result.append(user[0])
-
-    conn.close()
-    return result
-
-
 def get_all_users(login):
     conn = get_db_connection()
 
@@ -208,56 +133,6 @@ def get_all_users(login):
     conn.close()
 
     return result
-
-
-def get_available_admins_to_add(case_id):
-    conn = get_db_connection()
-
-    with closing(conn.cursor()) as cur:
-        cur.execute('SELECT login FROM "user" WHERE login not in '
-                    '(SELECT login FROM "user" INNER JOIN "access" ON "user".id="access".user_id WHERE case_id=%s AND role=%s)'
-                    ' ORDER BY login',
-                    (case_id, 'admin'))
-
-        users = cur.fetchall()
-        result = []
-        for user in users:
-            result.append(user[0])
-
-    conn.close()
-    return result
-
-
-def add_user_access_to_case(case_id, login, role):
-    conn = get_db_connection()
-
-    with closing(conn.cursor()) as cur:
-        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
-        user_id = cur.fetchone()[0]
-
-        cur.execute('INSERT INTO "access" (case_id, user_id, role) VALUES (%s, %s, %s)', (case_id, user_id, role))
-
-        cur.execute('SELECT text FROM "note" WHERE case_id=%s AND user_id=%s', (case_id, user_id))
-        note = cur.fetchone()
-
-        if note is None:
-            cur.execute('INSERT INTO "note" (text, case_id, user_id) VALUES (%s, %s, %s)', ('Initial note', case_id, user_id))
-        conn.commit()
-
-    conn.close()
-
-
-def delete_user_access_to_case(case_id, login):
-    conn = get_db_connection()
-
-    with closing(conn.cursor()) as cur:
-        cur.execute('SELECT id FROM "user" WHERE login=%s', (login,))
-        user_id = cur.fetchone()[0]
-
-        cur.execute('DELETE FROM "access" WHERE user_id=%s AND case_id=%s', (user_id, case_id))
-        conn.commit()
-
-    conn.close()
 
 
 def update_case_description(case_id, description):
@@ -438,7 +313,6 @@ def get_filters():
     for filter in filters:
         normalized_result.append(filter[0])
 
-
     return normalized_result
 
 
@@ -546,6 +420,43 @@ def add_access_for_many_users_to_case(case_name, full_access_user_ids, read_acce
     conn.close()
 
 
+def get_user_ids_with_access_to_case(case_id, role):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT user_id FROM "access" WHERE case_id=%s AND role=%s', (case_id, role))
+        ids = cur.fetchall()
+
+        result = []
+        for id in ids:
+            result.append(id[0])
+
+        conn.close()
 
 
+    return result
 
+
+def manage_access_for_many_users_to_case(case_id, role, user_ids_to_add, user_ids_to_del):
+    conn = get_db_connection()
+
+    with closing(conn.cursor()) as cur:
+        cur.execute('SELECT id FROM "cluster" ORDER BY id')
+        cluster_ids = cur.fetchall()
+
+        for user_id in user_ids_to_add:
+            cur.execute('INSERT INTO "access" (user_id, case_id, role) VALUES (%s, %s, %s)', (user_id, case_id, role))
+            cur.execute('INSERT INTO "note" (text, case_id, user_id) VALUES (%s, %s, %s)', ('Initial note', case_id, user_id))
+
+            for cluster_id in cluster_ids:
+                cur.execute('INSERT INTO "user-cluster-case" (cluster_id, user_id, case_id) VALUES (%s, %s, %s)',
+                            (cluster_id[0], user_id, case_id))
+
+        for user_id in user_ids_to_del:
+            cur.execute('DELETE FROM "user-cluster-case" WHERE user_id=%s AND case_id=%s', (user_id, case_id))
+            cur.execute('DELETE FROM "note" WHERE user_id=%s AND case_id=%s', (user_id, case_id))
+            cur.execute('DELETE FROM "access" WHERE user_id=%s AND case_id=%s AND role=%s', (user_id, case_id, role))
+
+        conn.commit()
+
+        conn.close()

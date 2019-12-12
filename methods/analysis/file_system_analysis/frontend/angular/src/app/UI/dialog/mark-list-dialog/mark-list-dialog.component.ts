@@ -30,4 +30,8 @@ export class MarkListDialogComponent implements OnInit {
     onDeleteClick() {
       this.dialogRef.close(this.selected_marks);
     }
+
+    onCancelClick() {
+        this.dialogRef.close(false);
+    }
 }

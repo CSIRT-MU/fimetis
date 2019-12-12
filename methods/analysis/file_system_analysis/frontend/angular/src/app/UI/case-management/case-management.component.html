@@ -1,5 +1,5 @@
 <table class="table table-hover table-responsive " style="width: 90%; margin: auto; margin-top: 20px;">
-    <thead><th>SELECT</th><th>CASE</th><th>RIGHTS</th><th>DESCRIPTION</th><th>CREATED</th><th>EXTEND</th><th>REMOVE</th></thead>
+    <thead><th>SELECT</th><th>CASE</th><th>ACCESS</th><th colspan="2">MANAGE ACCESS</th><th>DESCRIPTION</th><th>UPLOADED AT</th><th>EXTEND</th><th>REMOVE</th></thead>
     <tbody *ngFor="let case of cases">
     <tr [ngStyle]="{'font-weight': getTrFontWeightForCase(case.name)}">
         <td style="width: 5%">
@@ -11,6 +11,16 @@
         <td style="width: 15%">
             <span *ngIf="case.isAdmin">FULL ACCESS</span>
             <span *ngIf="!case.isAdmin">READ ONLY</span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-default" [disabled]="!case.isAdmin" (click)="selectAccess('full-access', case.id)">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"><br>Full-access</span>
+            </button>
+        </td>
+        <td>
+            <button type="button" class="btn btn-default" [disabled]="!case.isAdmin" (click)="selectAccess('read-access', case.id)">
+                <span class="glyphicon glyphicon-user"><br>Read-access</span>
+            </button>
         </td>
         <td style="width: 35%">
             <mat-form-field style="width: 100%" appearance="outline">

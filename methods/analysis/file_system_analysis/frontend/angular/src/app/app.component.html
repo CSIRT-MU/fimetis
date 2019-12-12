@@ -16,13 +16,13 @@
                     <input type="checkbox" [ngModel]="advancedMode" class="fimetis-slider" id="advancedModeCheckbox">
                     <label for="advancedModeCheckbox"></label>
                 </button>
+                <button mat-menu-item routerLink="/" routerLinkActive="active"
+                        *ngIf="getRouter().url !== '/'">
+                    <span>DASHBOARD</span>
+                </button>
                 <button mat-menu-item routerLink="/case-management" routerLinkActive="active"
                 *ngIf="getRouter().url !== '/case-management'">
                     CASE MANAGEMENT
-                </button>
-                <button mat-menu-item routerLink="/access-management" routerLinkActive="active"
-                        *ngIf="getRouter().url !== '/access-management'">
-                    ACCESS MANAGEMENT
                 </button>
                 <button mat-menu-item routerLink="/cluster-management" routerLinkActive="active"
                         *ngIf="getRouter().url !== '/cluster-management'">
@@ -32,10 +32,7 @@
                         *ngIf="getRouter().url !== '/upload'">
                     <span>UPLOAD FILE TO DATASET</span>
                 </button>
-                <button mat-menu-item routerLink="/" routerLinkActive="active"
-                        *ngIf="getRouter().url !== '/'">
-                    <span>DASHBOARD</span>
-                </button>
+
                 <button mat-menu-item (click)="logout()" >
                     <span>LOG OUT</span>
                 </button>

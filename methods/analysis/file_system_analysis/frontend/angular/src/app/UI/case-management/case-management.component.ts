@@ -5,6 +5,8 @@ import {StateService} from '../../services/state.service';
 import {AuthenticationService} from '../../auth/authentication.service';
 import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirmation-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters.component';
+import {SelectUsersComponent} from '../dialog/select-users/select-users.component';
 
 @Component({
     selector: 'app-case-management',
@@ -14,6 +16,7 @@ import {MatDialog} from '@angular/material/dialog';
 export class CaseManagementComponent implements OnInit {
 
     cases = [];
+    users = [];
     constructor(
         public dialog: MatDialog,
         private baseService: BaseService,
@@ -24,6 +27,7 @@ export class CaseManagementComponent implements OnInit {
 
     ngOnInit() {
         this.loadAllCases();
+        this.getAllUsers();
     }
 
     loadAllCases() {
@@ -98,5 +102,59 @@ export class CaseManagementComponent implements OnInit {
             }
         );
     }
+
+    async selectAccess(access_type, case_id) {
+        const currentUserIdsInArray = (await this.baseService.getUserIdsWithAccessToCase(case_id, access_type)).user_ids;
+        const currentUserIds = new Set(currentUserIdsInArray);
+        console.log(currentUserIds, currentUserIdsInArray);
+
+        const dialogRef = this.dialog.open(SelectUsersComponent, {
+            data: {
+                type: access_type,
+                curentUserIds: new Set(currentUserIds),
+                allUsers: this.users
+            },
+            minWidth: '75%',
+
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                const newUserIds = result;
+                const newUserIdsInArray = Array.from(result);
+
+                console.log(currentUserIds);
+                console.log(newUserIds);
+
+                const usersToAdd = [];
+
+                for (let i = 0; i < newUserIdsInArray.length; i++) {
+                    if (!currentUserIds.has(newUserIdsInArray[i])) {
+                        usersToAdd.push(newUserIdsInArray[i]);
+                    }
+                }
+
+                const usersToDel = [];
+
+                for (let i = 0; i < currentUserIdsInArray.length; i++) {
+                    if (!newUserIds.has(currentUserIdsInArray[i])) {
+                        usersToDel.push(currentUserIdsInArray[i]);
+                    }
+                }
+
+                this.baseService.manageAccessForManyUsersToCase(case_id, access_type, usersToAdd, usersToDel);
+
+            }
+
+
+        });
+
+    }
+
+    async getAllUsers() {
+        this.users = (await this.baseService.getAllUsers()).users;
+    }
+
+
 
 }

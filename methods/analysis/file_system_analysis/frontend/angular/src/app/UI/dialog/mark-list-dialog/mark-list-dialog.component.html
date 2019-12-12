@@ -17,11 +17,15 @@
     </tr>
     </tbody>
 </table>
-<div style="text-align: center">
-    <button class="btn btn-default btn-s" (click)="onDeleteClick()">
-    <span>
-        DELETE
-    </span>
-    </button>
+<br>
+<div style="text-align: center; align-content: center; width: 100%">
+    <div style="width: 30%; margin: auto">
+        <button type="button" class="btn btn-default" style="float: left" (click)="onDeleteClick()">
+            <span>DELETE</span>
+        </button>
+        <button type="button" class="btn btn btn-default" style="float: right" (click)="onCancelClick()">
+            <span>CANCEL</span>
+        </button>
+    </div>
 </div>
 

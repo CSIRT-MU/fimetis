@@ -128,9 +128,12 @@ export class UploadComponent implements OnInit {
     selectAccess(access_type) {
         const dialogRef = this.dialog.open(SelectUsersComponent, {
             data: {
+                type: access_type,
+                curentUserIds: new Set(),
                 allUsers: this.users
             },
-            minWidth: '550px',
+            minWidth: '75%',
+            minHeight: '70%'
         });
 
         dialogRef.afterClosed().subscribe(result => {

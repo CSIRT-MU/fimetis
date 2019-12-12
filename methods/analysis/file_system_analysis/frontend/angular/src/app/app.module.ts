@@ -52,7 +52,6 @@ import {D3HistogramComponent} from './UI/graph/d3Histogram/d3Histogram.component
 import {MatIconModule} from '@angular/material/icon';
 import {MarkForbidenDialogComponent} from './UI/dialog/mark-all-forbiden-dialog/mark-forbiden-dialog.component';
 import { CaseManagementComponent } from './UI/case-management/case-management.component';
-import { AccessManagementComponent } from './UI/access-management/access-management.component';
 import { NoteDialogComponent } from './UI/dialog/note-dialog/note-dialog.component';
 import { MarkListDialogComponent } from './UI/dialog/mark-list-dialog/mark-list-dialog.component';
 import { ClusterManagementComponent } from './UI/cluster-management/cluster-management.component';
@@ -82,7 +81,6 @@ import { SelectUsersComponent } from './UI/dialog/select-users/select-users.comp
         FilterComponent,
         D3HistogramComponent,
         CaseManagementComponent,
-        AccessManagementComponent,
         NoteDialogComponent,
         MarkListDialogComponent,
         ClusterManagementComponent,

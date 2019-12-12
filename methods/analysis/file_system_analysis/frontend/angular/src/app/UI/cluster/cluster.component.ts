@@ -158,7 +158,7 @@ export class ClusterComponent implements OnInit, OnDestroy {
                 currentClustersIds: this.getCurrentClustersIds(),
                 allClusters: await this.getAllClusters()
             },
-            minWidth: '350px',
+            minWidth: '75%',
 
         });
 

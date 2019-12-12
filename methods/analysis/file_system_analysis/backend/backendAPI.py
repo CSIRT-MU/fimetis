@@ -254,52 +254,11 @@ def accessible_cases(current_user):
     return jsonify(cases=pg.get_accessible_cases(current_user['username']))
 
 
-@app.route('/case/administrated', methods=['GET'])
-@token_required
-def administrated_cases(current_user):
-    logging.info('Listed administrated cases for user %s', (current_user['username']))
-    return jsonify(cases=pg.get_administrated_cases(current_user['username']))
-
-
-@app.route('/user/available', methods=['POST'])
-@token_required
-def get_available_users_to_add(current_user):
-    case_id = request.json.get('case_id')
-
-    logging.info('Listed available users to add access to case %s', (case_id))
-    return jsonify(cases=pg.get_available_users_to_add(case_id))
-
-
 @app.route('/user/all', methods=['GET'])
 @token_required
 def get_all_users(current_user):
 
     return jsonify(users=pg.get_all_users(current_user['username']))
-
-
-@app.route('/case/add-user', methods=['POST'])
-@token_required
-def add_user_access_to_case(current_user):
-    case_id = request.json.get('case_id')
-    user_login = request.json.get('user_login')
-    role = request.json.get('role')
-
-    pg.add_user_access_to_case(case_id, user_login, role)
-
-    logging.info('User %s access to case %s added', (user_login, case_id))
-    return jsonify({'user access to case added': 'OK'}), 200
-
-
-@app.route('/case/delete-user', methods=['POST'])
-@token_required
-def delete_user_access_to_case(current_user):
-    case_id = request.json.get('case_id')
-    user_login = request.json.get('user_login')
-
-    pg.delete_user_access_to_case(case_id, user_login)
-
-    logging.info('User %s access to case %s deleted', (user_login, case_id))
-    return jsonify({'user access to case deleted': 'OK'}), 200
 
 
 @app.route('/case/update-description', methods=['POST'])
@@ -703,6 +662,24 @@ def delete_user_clusters_for_case(current_user, case):
     pg.delete_user_clusters_from_case(current_user['username'], case, cluster_ids)
 
     return jsonify({'user clusters deleted from case': 'OK'}), 200
+
+
+@app.route('/case/<string:case>/access/<string:role>', methods=['GET'])
+@token_required
+def get_user_ids_with_access_to_case(current_user, case, role):
+
+    return jsonify(user_ids=pg.get_user_ids_with_access_to_case(case, role))
+
+
+@app.route('/case/<string:case>/access/<string:role>/manage', methods=['POST'])
+@token_required
+def manage_access_for_many_users_to_case(current_user, case, role):
+    user_ids_to_add = request.json.get('user_ids_to_add')
+    user_ids_to_del = request.json.get('user_ids_to_del')
+
+    pg.manage_access_for_many_users_to_case(case, role, user_ids_to_add, user_ids_to_del)
+
+    return jsonify({'user access managed': 'OK'}), 200
 
 
 if __name__ == '__main__':

@@ -47,8 +47,8 @@ export class ClusterManagementComponent implements OnInit {
 
   addClusterDefinition() {
     const dialogRef = this.dialog.open(AddClusterDefinitionComponent, {
-      width: '70%',
-      height: '50%',
+      minWidth: '75%',
+      minHeight: '70%',
       data: {
         title: 'Add new cluster definition',
         filters: this.filters

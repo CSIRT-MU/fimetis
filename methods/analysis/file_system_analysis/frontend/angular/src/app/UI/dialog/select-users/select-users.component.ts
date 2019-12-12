@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SelectClustersComponent} from '../select-clusters/select-clusters.component';
 
 @Component({
   selector: 'app-select-users',
@@ -9,7 +8,7 @@ import {SelectClustersComponent} from '../select-clusters/select-clusters.compon
 })
 export class SelectUsersComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<SelectClustersComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+  constructor(public dialogRef: MatDialogRef<SelectUsersComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ids = new Set();
 
@@ -17,7 +16,7 @@ export class SelectUsersComponent implements OnInit {
   }
 
   onSaveClick() {
-    this.dialogRef.close(this.ids);
+    this.dialogRef.close(this.data.curentUserIds);
 
   }
 
@@ -26,10 +25,11 @@ export class SelectUsersComponent implements OnInit {
   }
 
   onChecked(id) {
-    if (this.ids.has(id)) {
-      this.ids.delete(id);
+    console.log('checking');
+    if (this.data.curentUserIds.has(id)) {
+      this.data.curentUserIds.delete(id);
     } else {
-      this.ids.add(id);
+      this.data.curentUserIds.add(id);
     }
 
   }

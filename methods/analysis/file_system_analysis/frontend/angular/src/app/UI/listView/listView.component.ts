@@ -1489,8 +1489,8 @@ export class ListViewComponent {
     async displayNotepad() {
         const note = (await this.baseService.getNoteForCase(this.case)).note;
         const dialogRef = this.dialog.open(NoteDialogComponent, {
-            width: '50%',
-            height: '70%',
+            minWidth: '75%',
+            minHeight: '70%',
             data: {
                 note: note
             }
@@ -1522,8 +1522,8 @@ export class ListViewComponent {
 
         }
         const dialogRef = this.dialog.open(MarkListDialogComponent, {
-            width: '80%',
-            height: '70%',
+            minWidth: '75%',
+            minHeight: '70%',
             data: {
                 marks: marks,
                 case: this.case

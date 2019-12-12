@@ -18,6 +18,30 @@ export class BaseService {
         return this.http.get<any>(environment.backendUrl + '/user/all').toPromise();
     }
 
+    getUserIdsWithAccessToCase(case_id, access_type) {
+        let role = '';
+        if (access_type === 'full-access') {
+            role = 'admin';
+        } else {
+            role = 'user';
+        }
+
+        return this.http.get<any>(environment.backendUrl + '/case/' + case_id + '/access/' + role).toPromise();
+    }
+
+    manageAccessForManyUsersToCase(case_id, access_type, usersToAdd, usersToDel) {
+        let role = '';
+        if (access_type === 'full-access') {
+            role = 'admin';
+        } else {
+            role = 'user';
+        }
+
+        return this.http.post<any>(environment.backendUrl + '/case/' + case_id + '/access/' + role + '/manage',
+            {'user_ids_to_add' : usersToAdd, 'user_ids_to_del' : usersToDel}).toPromise();
+    }
+
+
     getAvailableUsersToAdd(case_id) {
         return this.http.post<any>(environment.backendUrl + '/user/available', {'case_id': case_id}).toPromise();
     }

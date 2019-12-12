@@ -17,10 +17,15 @@
         <mat-option *ngFor="let filter of this.data.filters" [value]="filter">{{filter}}</mat-option>
     </mat-select>
 </mat-form-field>
-<div style="text-align: center">
-    <button class="btn btn-default btn-s" (click)="onSaveClick()">
-    <span>
-        SAVE
-    </span>
-    </button>
+<br>
+<div style="text-align: center; align-content: center; width: 100%">
+    <div style="width: 30%; margin: auto">
+        <button type="button" class="btn btn-default" style="float: left" (click)="onSaveClick()">
+            <span>SAVE</span>
+        </button>
+        <button type="button" class="btn btn btn-default" style="float: right" (click)="onCancelClick()">
+            <span>CANCEL</span>
+        </button>
+    </div>
+
 </div>

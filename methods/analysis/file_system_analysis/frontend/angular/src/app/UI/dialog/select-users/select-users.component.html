@@ -1,3 +1,5 @@
+<h3>Manage {{ this.data.type }}</h3>
+
 <table class="table table-hover table-responsive " style="width: 90%; margin: auto; margin-top: 20px;">
     <thead><th>ID</th><th>USER</th><th>SELECT</th></thead>
     <tbody *ngFor="let user of data.allUsers">
@@ -5,11 +7,8 @@
         <td>{{ user.id }}</td>
         <td>{{ user.login }}</td>
         <td>
-            <mat-checkbox [id]="user.id"  (change)="onChecked(user.id); ngOnInit()" >
+            <mat-checkbox [id]="user.id"  [checked]="this.data.curentUserIds.has(user.id)" (change)="onChecked(user.id); ngOnInit()" >
             </mat-checkbox>
-            <!--            <button class="btn btn-default btn-sm" (click)="removeSelectedClusterDefinition(clusterDefinition.id);">-->
-            <!--                <span class="glyphicon glyphicon-remove"></span>-->
-            <!--            </button>-->
         </td>
     </tr>
     </tbody>
@@ -26,3 +25,4 @@
     </div>
 
 </div>
+

@@ -42,4 +42,7 @@ export class AddClusterDefinitionComponent implements OnInit {
         });
     }
 
+    onCancelClick() {
+        this.dialogRef.close(false);
+    }
 }
