@@ -40,3 +40,28 @@ CREATE TABLE "mark" (
   user_id int REFERENCES "user"(id),
   case_id int REFERENCES "case"(id)
 );
+
+CREATE SEQUENCE filter_id_seq;
+
+CREATE TABLE "filter" (
+  id int NOT NULL PRIMARY KEY default nextval('filter_id_seq'),
+  name varchar(64) NOT NULL,
+  definition varchar(2048) NOT NULL
+);
+
+CREATE SEQUENCE cluster_id_seq;
+
+CREATE TABLE "cluster" (
+  id int NOT NULL PRIMARY KEY default nextval('cluster_id_seq'),
+  name varchar(128) NOT NULL,
+  filter_id int REFERENCES "filter"(id),
+  definition varchar(2048) NOT NULL,
+  description varchar(2048)
+);
+
+CREATE TABLE "user-cluster-case" (
+  cluster_id int REFERENCES "cluster"(id),
+  user_id int REFERENCES "user"(id),
+  case_id int REFERENCES "case"(id)
+);
+

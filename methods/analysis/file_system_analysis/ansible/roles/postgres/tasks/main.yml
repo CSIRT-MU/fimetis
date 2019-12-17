@@ -36,9 +36,19 @@
   - name: Create linux user for accessing postgres role in db
     shell: sudo adduser --disabled-password --gecos "" {{ pg_user }}
 
-  - name: Copy init database file from role
+  - name: Copy init database sql file from role
     copy:
       src: "{{ role_path }}/files/init.sql"
+      dest: /tmp/
+
+  - name: Copy filter database sql file from role
+    copy:
+      src: "{{ role_path }}/files/filter.sql"
+      dest: /tmp/
+
+  - name: Copy cluster database sql file from role
+    copy:
+      src: "{{ role_path }}/files/cluster.sql"
       dest: /tmp/
 
   - name: Copying import_super_admin.py in /tmp/
@@ -53,6 +63,17 @@
     shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f init.sql"
     args:
       chdir: /tmp/
+
+  - name: Init filters
+    shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f filter.sql"
+    args:
+      chdir: /tmp/
+
+  - name: Init clusters
+    shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f cluster.sql"
+    args:
+      chdir: /tmp/
+
 
 #  - name: Cleaning used init database file
 #    shell: rm /tmp/init.sql
