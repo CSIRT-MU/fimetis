@@ -159,8 +159,7 @@ export class ClusterComponent implements OnInit, OnDestroy {
                 allClusters: await this.getAllClusters()
             },
             minWidth: '75%',
-            maxHeight: '80%',
-            overflow-y: 'scroll'
+            maxHeight: '80%'
 
         });
 
