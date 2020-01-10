@@ -107,7 +107,8 @@ export class UploadComponent implements OnInit {
                 currentClustersIds: selected_ids,
                 allClusters: clusters
             },
-            minWidth: '350px',
+            minWidth: '75%',
+            minHeight: '70%'
         });
 
         dialogRef.afterClosed().subscribe(result => {
