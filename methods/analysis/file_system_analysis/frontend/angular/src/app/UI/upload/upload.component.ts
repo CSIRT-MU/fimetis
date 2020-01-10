@@ -108,7 +108,8 @@ export class UploadComponent implements OnInit {
                 allClusters: clusters
             },
             minWidth: '75%',
-            minHeight: '70%'
+            maxHeight: '80%',
+            overflow-y: 'scroll'
         });
 
         dialogRef.afterClosed().subscribe(result => {
