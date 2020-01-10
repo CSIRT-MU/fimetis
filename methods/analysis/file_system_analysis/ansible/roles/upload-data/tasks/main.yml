@@ -27,7 +27,7 @@
       chdir: /tmp
 
   - name: Loading data to elastic
-    shell: source /opt/backend/venv/bin/activate && python3 /opt/backend/import_metadata.py test /opt/metadata-uploader/test.mac  
+    shell: source /opt/backend/venv/bin/activate && python3 /opt/backend/import_metadata.py --input_file /opt/metadata-uploader/test.mac --case test --format mactime  
     args:
       executable: /bin/bash
 
