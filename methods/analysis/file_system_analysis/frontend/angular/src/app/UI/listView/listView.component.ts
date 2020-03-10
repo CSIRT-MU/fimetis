@@ -176,7 +176,7 @@ export class ListViewComponent {
                 'Shortcut ' + (shift === view_size ? '' : shift) + 'k'
             );
             return false; // Prevent bubbling
-        }, undefined, 'Scroll page up, or by number of lines up if used in format xk'));
+        }, undefined, 'Scroll page up, or by number of lines up if used in format xPageUp'));
         this._hotkeysService.add(new Hotkey(['pagedown'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
             const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
@@ -190,7 +190,7 @@ export class ListViewComponent {
                 'Shortcut ' + (shift === view_size ? '' : shift) + 'j'
             );
             return false; // Prevent bubbling
-        }, undefined, 'Scroll page down, or by number of lines down if used in format xj'));
+        }, undefined, 'Scroll page down, or by number of lines down if used in format xPageDown'));
         this._hotkeysService.add(new Hotkey(['ctrl+f', '/'], (event: KeyboardEvent): boolean => {
             this.searchField.nativeElement.focus();
             return false; // Prevent bubbling
