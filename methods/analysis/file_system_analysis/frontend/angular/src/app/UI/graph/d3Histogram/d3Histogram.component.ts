@@ -780,16 +780,20 @@ export class D3HistogramComponent implements OnDestroy {
                     .attr('fill', 'rgba(255, 255, 255, 1)');
 
                 // left arrow
-                svg.selectAll('.zoomNavLeftIcon').remove();
-                svg.append('svg:foreignObject')
-                    .attr('class', 'zoomNavLeftIcon')
-                    .attr('x', 10 + margin.left)
-                    .attr('y', (contentHeight / 2) + margin.top - 10)
-                    .attr('width', 20)
-                    .attr('height', 20)
-                    .append('xhtml:span')
-                    .attr('class', 'glyphicon glyphicon-chevron-left');
-                svg.selectAll('.zoomNavLeft').remove();
+                console.log(actualX(thisClass.min_date_boundary));
+                if (actualX(thisClass.min_date_boundary) < 0) {
+                    svg.selectAll('.zoomNavLeftIcon').remove();
+                    svg.append('svg:foreignObject')
+                        .attr('class', 'zoomNavLeftIcon')
+                        .attr('x', 10 + margin.left)
+                        .attr('y', (contentHeight / 2) + margin.top - 10)
+                        .attr('width', 20)
+                        .attr('height', 20)
+                        .append('xhtml:span')
+                        .attr('class', 'glyphicon glyphicon-chevron-left');
+                    svg.selectAll('.zoomNavLeft').remove();
+                }
+
                 svg.append('rect')
                     .attr('class', 'zoomNavLeft')
                     .attr('x', margin.left)
@@ -806,15 +810,18 @@ export class D3HistogramComponent implements OnDestroy {
                     });
 
                 // right arrow
-                svg.selectAll('.zoomNavRightIcon').remove();
-                svg.append('svg:foreignObject')
-                    .attr('class', 'zoomNavRightIcon')
-                    .attr('x', contentWidth - 20 + margin.left)
-                    .attr('y', (contentHeight / 2) + margin.top - 10)
-                    .attr('width', 20)
-                    .attr('height', 20)
-                    .append('xhtml:span')
-                    .attr('class', 'glyphicon glyphicon-chevron-right');
+                console.log()
+                if (contentWidth - actualX(thisClass.max_date_boundary) < 0) {
+                    svg.selectAll('.zoomNavRightIcon').remove();
+                    svg.append('svg:foreignObject')
+                        .attr('class', 'zoomNavRightIcon')
+                        .attr('x', contentWidth - 20 + margin.left)
+                        .attr('y', (contentHeight / 2) + margin.top - 10)
+                        .attr('width', 20)
+                        .attr('height', 20)
+                        .append('xhtml:span')
+                        .attr('class', 'glyphicon glyphicon-chevron-right');
+                }
                 svg.selectAll('.zoomNavRight').remove();
                 svg.append('rect')
                     .attr('class', 'zoomNavRight')
