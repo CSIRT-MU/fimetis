@@ -163,7 +163,7 @@ export class ListViewComponent {
             );
             return false; // Prevent bubbling
         }, undefined, 'Scroll to end, or to line number x if used in format xG'));
-        this._hotkeysService.add(new Hotkey(['k'], (event: KeyboardEvent): boolean => {
+        this._hotkeysService.add(new Hotkey(['pageup'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
             const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
             if (shift === 0) {
@@ -177,7 +177,7 @@ export class ListViewComponent {
             );
             return false; // Prevent bubbling
         }, undefined, 'Scroll page up, or by number of lines up if used in format xk'));
-        this._hotkeysService.add(new Hotkey(['j'], (event: KeyboardEvent): boolean => {
+        this._hotkeysService.add(new Hotkey(['pagedown'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
             const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
             if (shift === 0) {
