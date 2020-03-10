@@ -194,7 +194,6 @@ export class ClusterComponent implements OnInit, OnDestroy {
     }
 
     async getAllClusters() {
-        const clusters = (await  this.clusterService.loadClustersFromDatabase()).cluster_definitions;
         return (await this.clusterService.loadClustersFromDatabase()).cluster_definitions;
     }
 
@@ -234,7 +233,7 @@ export class ClusterComponent implements OnInit, OnDestroy {
             db_cluster.count = 0;
             db_cluster.totalCount = 0;
             db_cluster.selectMode = 0;
-            db_cluster.description = 'description';
+            db_cluster.description = loaded_from_db[i].description;
 
             const filter = new FilterModel();
             filter.isSelected = true;

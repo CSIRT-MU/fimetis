@@ -208,7 +208,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             db_cluster.count = 0;
             db_cluster.totalCount = 0;
             db_cluster.selectMode = 0;
-            db_cluster.description = 'description';
+            db_cluster.description = loaded_from_db[i].description;
 
             const filter = new FilterModel();
             filter.isSelected = true;
