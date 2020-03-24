@@ -165,11 +165,12 @@ export class ListViewComponent {
         }, undefined, 'Scroll to end, or to line number x if used in format xG'));
         this._hotkeysService.add(new Hotkey(['pageup'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
-            const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+            const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex - 2;
+
             if (shift === 0) {
                 shift = view_size;
             }
-            this.scrollToIndex(this.visibleDataFirstIndex - shift);
+            this.scrollToIndex(this.visibleDataFirstIndex - shift + 3);
             this.pressedNumbers = [];
             this.toaster.success(
                 'You have scrolled up by ' + (shift === view_size ? 'one page' : shift + ' lines') ,
@@ -179,9 +180,14 @@ export class ListViewComponent {
         }, undefined, 'Scroll page up, or by number of lines up if used in format xPageUp'));
         this._hotkeysService.add(new Hotkey(['pagedown'], (event: KeyboardEvent): boolean => {
             let shift = this.createNumberFromPressedNumberKeys();
-            const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex;
+            const view_size = this.visibleDataLastIndex - this.visibleDataFirstIndex - 2;
+
             if (shift === 0) {
                 shift = view_size;
+            }
+
+            if (this.visibleDataFirstIndex != 0) {
+                shift += 1
             }
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
             this.pressedNumbers = [];
@@ -459,10 +465,8 @@ export class ListViewComponent {
      * @param $event Virtual scroll event
      */
     loadVisibleData($event) {
-        // console.log($event);
         const start = $event['startIndex'];
-        const end = $event['endIndex'] + this.marked_rows_id.size;
-        // console.log('visible start index:',  start, this.visibleDataFirstIndex);
+        const end = $event['endIndex'];
         this.visibleDataFirstIndex = start < 0 ? 0 : start;
         this.visibleDataLastIndex = end < 0 ? 0 : end;
         if (this.virtualArray.length > 0) { // get rid of fake loading state if empty
@@ -1563,5 +1567,4 @@ export class ListViewComponent {
         }
         await this.getMarksIdsPresentInCurrentCluster();
     }
-
 }
