@@ -320,9 +320,12 @@ def build_multi_time_range_filter(select_filters):
 
 
 def build_additional_types_filter(types):
+    if len(types) == 0:
+        return {'bool': {'should': [{'wildcard': {'Type.keyword': ''}}]}}
     filters = []
     for m_type in types:
         filters.append(build_additional_type_filter(m_type))
+
     return {'bool': {'should': filters}}
 
 
