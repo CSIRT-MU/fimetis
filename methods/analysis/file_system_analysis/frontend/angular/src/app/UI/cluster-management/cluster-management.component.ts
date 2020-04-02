@@ -5,6 +5,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirmation-dialog.component';
 import {AddClusterDefinitionComponent} from '../dialog/add-cluster-definition/add-cluster-definition.component';
 import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters.component';
+import {AuthenticationService} from '../../auth/authentication.service';
 
 @Component({
   selector: 'app-cluster-management',
@@ -13,9 +14,12 @@ import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters
 })
 export class ClusterManagementComponent implements OnInit {
 
-  constructor(public dialog: MatDialog,
-              private clusterService: ClusterService,
-              private baseService: BaseService) { }
+  constructor(
+      public dialog: MatDialog,
+      private clusterService: ClusterService,
+      private baseService: BaseService,
+      public authenticationService: AuthenticationService
+  ) { }
 
   clusterDefinitions = [];
   filters = [];
@@ -51,7 +55,8 @@ export class ClusterManagementComponent implements OnInit {
       minHeight: '70%',
       data: {
         title: 'Add new cluster definition',
-        filters: this.filters
+        filters: this.filters,
+        clusters: this.clusterDefinitions
       }
     });
 

@@ -58,7 +58,12 @@ import { ClusterManagementComponent } from './UI/cluster-management/cluster-mana
 import { AddClusterDefinitionComponent } from './UI/dialog/add-cluster-definition/add-cluster-definition.component';
 import { SelectClustersComponent } from './UI/dialog/select-clusters/select-clusters.component';
 import { SelectUsersComponent } from './UI/dialog/select-users/select-users.component';
-
+import { AuthCallbackComponent } from './UI/user/auth-callback/auth-callback.component';
+import { UserGroupManagementComponent } from './UI/user-group-management/user-group-management.component';
+import { AddUserComponent } from './UI/dialog/add-user/add-user.component';
+import { AddGroupComponent } from './UI/dialog/add-group/add-group.component';
+import { SelectGroupsComponent } from './UI/dialog/select-groups/select-groups.component';
+import { UserProfileComponent } from './UI/user/user-profile/user-profile.component';
 
 
 @NgModule({
@@ -86,7 +91,13 @@ import { SelectUsersComponent } from './UI/dialog/select-users/select-users.comp
         ClusterManagementComponent,
         AddClusterDefinitionComponent,
         SelectClustersComponent,
-        SelectUsersComponent
+        SelectUsersComponent,
+        AuthCallbackComponent,
+        UserGroupManagementComponent,
+        AddUserComponent,
+        AddGroupComponent,
+        SelectGroupsComponent,
+        UserProfileComponent
     ],
     imports: [
         BrowserModule,
@@ -138,7 +149,10 @@ import { SelectUsersComponent } from './UI/dialog/select-users/select-users.comp
         MarkListDialogComponent,
         AddClusterDefinitionComponent,
         SelectClustersComponent,
-        SelectUsersComponent
+        SelectUsersComponent,
+        SelectGroupsComponent,
+        AddUserComponent,
+        AddGroupComponent
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

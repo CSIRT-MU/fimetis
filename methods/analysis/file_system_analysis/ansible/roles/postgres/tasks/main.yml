@@ -41,6 +41,18 @@
       src: "{{ role_path }}/files/init.sql"
       dest: /tmp/
 
+  - name: Setting user group params into sql
+    lineinfile:
+      dest: /tmp/init.sql
+      regexp: ".*oidc_user_group_name.*"
+      line: "INSERT INTO \"group\" (name, urn, role, is_external) VALUES('{{ oidc_user_group_name }}', '{{ oidc_user_group_urn }}', 'user', TRUE);"
+
+  - name: Setting admin group params into sql
+    lineinfile:
+      dest: /tmp/init.sql
+      regexp: ".*oidc_admin_group_name.*"
+      line: "INSERT INTO \"group\" (name, urn, role, is_external) VALUES('{{ oidc_admin_group_name }}', '{{ oidc_admin_group_urn }}', 'admin', TRUE);"
+
   - name: Copy filter database sql file from role
     copy:
       src: "{{ role_path }}/files/filter.sql"

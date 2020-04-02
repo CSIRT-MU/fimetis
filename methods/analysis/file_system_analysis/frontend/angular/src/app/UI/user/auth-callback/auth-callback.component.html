@@ -1,0 +1,37 @@
+<div style="text-align: center">
+    <h2>
+        Information provided by OIDC provider
+    </h2>
+</div>
+<table class="table table-hover table-responsive " style="width: 40%; margin: auto; margin-top: 20px;">
+<tbody>
+<tr>
+    <td>Login:</td>
+    <td>{{ authenticationService.getOidcLogin() }}</td>
+</tr>
+<tr>
+    <td>Name:</td>
+    <td>{{ authenticationService.getOidcName() }}</td>
+</tr>
+<tr>
+    <td>Email:</td>
+    <td>{{ authenticationService.getOidcEmail() }}</td>
+</tr>
+<tr>
+    <td>Preferred Name:</td>
+    <td>{{ authenticationService.getOidcPreferredUserName() }}</td>
+</tr>
+<tr>
+    <td>Groups:</td>
+    <td>
+        <span *ngFor="let group of authenticationService.getOidcGroups()">{{ group }}<br></span>
+    </td>
+</tr>
+</tbody>
+</table>
+<br>
+<div style="text-align: center;">
+    <button class="btn btn-primary" routerLink="/" routerLinkActive="active">Continue to dashboard</button>
+</div>
+
+

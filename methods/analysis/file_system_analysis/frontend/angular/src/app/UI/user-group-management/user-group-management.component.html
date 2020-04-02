@@ -1,0 +1,62 @@
+<div *ngIf="!authenticationService.isAdmin()" style="text-align: center;">
+    <h2>
+        Access only for administrator
+    </h2>
+</div>
+<div *ngIf="authenticationService.isAdmin()">
+    <div style="text-align: center">
+        <h2>Groups</h2>
+    </div>
+    <table class="table table-hover table-responsive" style="width: 90%; margin: auto; margin-top: 20px;">
+        <thead><th>NAME</th><th>URN</th><th>ROLE</th><th>EXTERNAL</th><th>USERS</th></thead>
+        <tbody *ngFor="let group of groups">
+        <tr>
+            <td>{{ group.name }}</td>
+            <td>{{ group.urn }}</td>
+            <td>{{ group.role }}</td>
+            <td>
+                <span *ngIf="group.is_external" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+            </td>
+            <td>
+                <button type="button" class="btn btn-default" (click)="manageUsers(group.id)" [disabled]="group.is_external">
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                </button></td>
+        </tr>
+        </tbody>
+    </table>
+    <div style="text-align: center">
+        <button type="button" class="btn btn-default " (click)="addGroup()">
+            <span>add new group</span>
+        </button>
+    </div>
+    <hr>
+    <div style="text-align: center;">
+        <h2>Users</h2>
+    </div>
+    <table class="table table-hover table-responsive" style="width: 90%; margin: auto; margin-top: 20px;">
+        <thead><th>LOGIN</th><th>NAME</th><th>PREFERRED USERNAME</th><th>EMAIL</th><th>EXTERNAL</th><th>SUPER ADMIN</th><th>GROUPS</th></thead>
+        <tbody *ngFor="let user of users">
+        <tr>
+            <td>{{ user.login }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.preferred_username}}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <span *ngIf="user.is_external" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+            </td>
+            <td>
+                <span *ngIf="user.is_super_admin" class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+            </td>
+            <td>
+                <span *ngFor="let group of user.groups">{{ group }}<br></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div style="text-align: center">
+        <button type="button" class="btn btn-default " (click)="addUser()">
+            <span>add new user</span>
+        </button>
+    </div>
+</div>
+

@@ -1,5 +1,5 @@
 <table class="table table-hover table-responsive " style="width: 90%; margin: auto; margin-top: 20px;">
-    <thead><th>SELECT</th><th>CASE</th><th>ACCESS</th><th colspan="2">MANAGE ACCESS</th><th>DESCRIPTION</th><th>UPLOADED AT</th><th>EXTEND</th><th>REMOVE</th></thead>
+    <thead><th>SELECT</th><th>CASE</th><th>ACCESS</th><th colspan="3">MANAGE ACCESS</th><th>DESCRIPTION</th><th>UPLOADED AT</th><th>EXTEND</th><th>REMOVE</th></thead>
     <tbody *ngFor="let case of cases">
     <tr [ngStyle]="{'font-weight': getTrFontWeightForCase(case.name)}">
         <td style="width: 5%">
@@ -7,7 +7,7 @@
                 <span [ngStyle]="{'color': getColorForSelectButton(case.name)}" class="glyphicon glyphicon-ok-sign"></span>
             </button>
         </td>
-        <td style="width: 20%">{{case.name}}</td>
+        <td style="width: 15%">{{case.name}}</td>
         <td style="width: 15%">
             <span *ngIf="case.isAdmin">FULL ACCESS</span>
             <span *ngIf="!case.isAdmin">READ ONLY</span>
@@ -20,6 +20,11 @@
         <td>
             <button type="button" class="btn btn-default" [disabled]="!case.isAdmin" (click)="selectAccess('read-access', case.id)">
                 <span class="glyphicon glyphicon-user"><br>Read-access</span>
+            </button>
+        </td>
+        <td style="width: 10%">
+            <button type="button" class="btn btn-default" [disabled]="!case.isAdmin" (click)="selectGroups(case.id)">
+                <span class="glyphicon glyphicon-user"><br>Group</span>
             </button>
         </td>
         <td style="width: 35%">

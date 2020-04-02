@@ -7,6 +7,7 @@ import {ConfirmationDialogComponent} from '../dialog/confirmation-dialog/confirm
 import {MatDialog} from '@angular/material/dialog';
 import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters.component';
 import {SelectUsersComponent} from '../dialog/select-users/select-users.component';
+import {SelectGroupsComponent} from '../dialog/select-groups/select-groups.component';
 
 @Component({
     selector: 'app-case-management',
@@ -17,6 +18,7 @@ export class CaseManagementComponent implements OnInit {
 
     cases = [];
     users = [];
+    groups = [];
     constructor(
         public dialog: MatDialog,
         private baseService: BaseService,
@@ -28,6 +30,7 @@ export class CaseManagementComponent implements OnInit {
     ngOnInit() {
         this.loadAllCases();
         this.getAllUsers();
+        this.getAllGroups();
     }
 
     loadAllCases() {
@@ -141,20 +144,56 @@ export class CaseManagementComponent implements OnInit {
                         usersToDel.push(currentUserIdsInArray[i]);
                     }
                 }
-
                 this.baseService.manageAccessForManyUsersToCase(case_id, access_type, usersToAdd, usersToDel);
-
             }
+        });
+    }
 
+    async selectGroups(case_id) {
+        const currentGroupsIdsWithAccessCaseInArray = (await this.baseService.getGroupIdsWithAccessToCase(case_id)).group_ids;
+        const currentGroupIds = new Set(currentGroupsIdsWithAccessCaseInArray);
+
+        const dialogRef = this.dialog.open(SelectGroupsComponent, {
+            data: {
+                curentGroupIds: new Set(currentGroupIds),
+                allGroups: this.groups
+            },
+            minWidth: '75%',
 
         });
 
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                const newGroupIds = result;
+                const newGroupIdsInArray = Array.from(result);
+
+                const groupsToAdd = [];
+
+                for (let i = 0; i < newGroupIdsInArray.length; i++) {
+                    if (!currentGroupIds.has(newGroupIdsInArray[i])) {
+                        groupsToAdd.push(newGroupIdsInArray[i]);
+                    }
+                }
+
+                const groupsToDel = [];
+
+                for (let i = 0; i < currentGroupsIdsWithAccessCaseInArray.length; i++) {
+                    if (!newGroupIds.has(currentGroupsIdsWithAccessCaseInArray[i])) {
+                        groupsToDel.push(currentGroupsIdsWithAccessCaseInArray[i]);
+                    }
+                }
+                this.baseService.manageAccessForManyGroupsToCase(case_id, groupsToAdd, groupsToDel);
+            }
+        });
     }
 
     async getAllUsers() {
         this.users = (await this.baseService.getAllUsers()).users;
     }
 
+    async getAllGroups() {
+        this.groups = (await this.baseService.getAllInternalGroups()).groups;
+    }
 
 
 }

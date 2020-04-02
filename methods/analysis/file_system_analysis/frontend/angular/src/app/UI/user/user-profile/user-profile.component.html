@@ -1,0 +1,42 @@
+<table class="table table-hover table-responsive " style="width: 40%; margin: auto; margin-top: 20px;">
+    <tbody>
+    <tr>
+        <td>Login:</td>
+        <td>{{ user.username }}</td>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td>{{ user.name }}</td>
+    </tr>
+    <tr>
+        <td>Email:</td>
+        <td>{{ user.email }}</td>
+    </tr>
+    <tr>
+        <td>Preferred Name:</td>
+        <td>{{ user.preferred_username }}</td>
+    </tr>
+    <tr>
+        <td>Is external:</td>
+        <td><span *ngIf="user.is_external" class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+    </tr>
+    <tr>
+        <td>
+            Is super admin
+        </td>
+        <td><span *ngIf="user.is_super_admin" class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+    </tr>
+    <tr>
+        <td>Groups:</td>
+        <td>
+            <span *ngFor="let group of user.groups">{{ group }}<br></span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div style="text-align: center">
+    <button type="button" class="btn btn-default " (click)="authenticationService.logout()">
+        <span>logout</span>
+    </button>
+</div>
+<br>

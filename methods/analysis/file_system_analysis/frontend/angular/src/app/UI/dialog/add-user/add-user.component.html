@@ -1,0 +1,40 @@
+<h3>
+    {{ data.title }}
+</h3>
+<mat-form-field style="width: 100%;" appearance="outline">
+    <mat-label>Name</mat-label>
+    <input [value]="name" (change)="updateName($event.currentTarget.value)" matInput placeholder="Name">
+</mat-form-field>
+<mat-error *ngIf="isLoginValid.invalid" style="margin-left: 5px;">
+    Login is required and must be at least 3 characters long.
+</mat-error>
+<mat-error *ngIf="!(isLoginUnique())">This login is already taken.</mat-error><br>
+<mat-form-field style="width: 100%;" appearance="outline">
+    <mat-label>Login</mat-label>
+    <input [value]="login" [formControl]="isLoginValid" (change)="updateLogin($event.currentTarget.value)" matInput placeholder="Login" required>
+</mat-form-field>
+<mat-error *ngIf="isPasswordValid.invalid" style="margin-left: 5px;">
+    Password is required and must be at least 8 characters long.
+</mat-error>
+<mat-form-field style="width: 100%;" appearance="outline">
+    <mat-label>Password</mat-label>
+    <input [value]="password" [formControl]="isPasswordValid" (change)="updatePassword($event.currentTarget.value)" minlength="8" matInput placeholder="Password" required>
+</mat-form-field>
+<mat-error *ngIf="isEmailValid.invalid" style="margin-left: 5px;">
+    Email is optional, but it must be in user@domain format.
+</mat-error>
+<mat-form-field style="width: 100%;" appearance="outline">
+    <mat-label>Email</mat-label>
+    <input [value]="email" [formControl]="isEmailValid" (change)="updateEmail($event.currentTarget.value)" matInput placeholder="Email">
+</mat-form-field>
+<br>
+<div style="text-align: center; align-content: center; width: 100%">
+    <div style="width: 30%; margin: auto">
+        <button type="button" class="btn btn-default" style="float: left" (click)="onSaveClick()" [disabled]="(isLoginValid.invalid || isPasswordValid.invalid || isEmailValid.invalid)">
+            <span>SAVE</span>
+        </button>
+        <button type="button" class="btn btn btn-default" style="float: right" (click)="onCancelClick()">
+            <span>CANCEL</span>
+        </button>
+    </div>
+</div>

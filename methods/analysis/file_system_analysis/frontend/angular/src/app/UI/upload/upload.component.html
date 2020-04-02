@@ -9,13 +9,14 @@
         <button style="margin-right: 5px;" type="button" class="btn btn-default" (click)="selectClusters()" [disabled]="datasetExtended()">
             <span>Specify suitable clusters</span>
         </button>
-        &nbsp;
-        <button type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectAccess('full-access')">
-            <span>Manage full access</span>
+        <button style="margin-right: 5px;" type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectAccess('full-access')">
+            <span>Manage user full access</span>
         </button>
-        &nbsp;
-        <button type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectAccess('read-access')">
-            <span>Manage read access</span>
+        <button style="margin-right: 5px;" type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectAccess('read-access')">
+            <span>Manage user read access</span>
+        </button>
+        <button style="margin-right: 5px;" type="button" class="btn btn-default" [disabled]="datasetExtended()" (click)="selectGroups()">
+            <span>Manage group access</span>
         </button>
     </div>
 

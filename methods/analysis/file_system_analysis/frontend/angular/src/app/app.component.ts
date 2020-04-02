@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {User} from './models/user.model';
+import {UserProfile} from './models/user-profile.model';
 import {AuthenticationService} from './auth/authentication.service';
 import {Router} from '@angular/router';
 import {UserSettingsService} from './services/userSettings.service';
@@ -17,7 +17,7 @@ import {CaseService} from './services/case.service';
 export class AppComponent {
     title = 'TIMESIX 2.0';
     description = 'Angular Frontend';
-    currentUser: User;
+    currentUser: UserProfile;
     advancedMode = false;
 
     constructor(

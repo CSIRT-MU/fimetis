@@ -1,0 +1,36 @@
+---
+# Tasks for installing and setting up postgres
+
+  - name: Placing root part incident in metadata-uploader
+    copy:
+      src: "{{ role_path }}/files/incident-root.mac"
+      dest: /tmp
+
+  - name: Placing home part incident in metadata-uploader
+    copy:
+      src: "{{ role_path }}/files/incident-home.mac"
+      dest: /tmp
+
+  - name: Copying sql file with initialitazion of case and users
+    copy:
+      src: "{{ role_path }}/files/eval_prep.py"
+      dest: /opt/backend
+
+  - name: Chmod +x eval_prep.py
+    shell: chmod +x /opt/backend/eval_prep.py
+
+  - name: Import users for evaluation to database
+    shell: "source /opt/backend/venv/bin/activate && /opt/backend/eval_prep.py"
+    args:
+      executable: /bin/bash
+
+  - name: Loading root part of incident in elastic
+    shell: source /opt/backend/venv/bin/activate && python3 /opt/backend/import_metadata.py --case incident --input_file /tmp/incident-root.mac --format mactime
+    args:
+      executable: /bin/bash
+
+  - name: Loading home part of icident in elastic
+    shell: source /opt/backend/venv/bin/activate && python3 /opt/backend/import_metadata.py --cas incident --input_file /tmp/incident-home.mac --format mactim
+    args:
+      executable: /bin/bash
+

@@ -18,6 +18,24 @@ export class BaseService {
         return this.http.get<any>(environment.backendUrl + '/user/all').toPromise();
     }
 
+    getAllGroups() {
+        return this.http.get<any>(environment.backendUrl + '/group/all').toPromise();
+    }
+
+    getAllInternalGroups() {
+        return this.http.get<any>(environment.backendUrl + '/group/internal/all').toPromise();
+    }
+    
+    addUser(login, password, name, email) {
+        return this.http.post<any>(environment.backendUrl + '/user/add',
+            {'login': login, 'password': password, 'name': name, 'email': email }).toPromise();
+    }
+
+    addGroup(name, role) {
+        return this.http.post<any>(environment.backendUrl + '/group/add',
+            {'name': name, 'role': role}).toPromise();
+    }
+
     getUserIdsWithAccessToCase(case_id, access_type) {
         let role = '';
         if (access_type === 'full-access') {
@@ -27,6 +45,14 @@ export class BaseService {
         }
 
         return this.http.get<any>(environment.backendUrl + '/case/' + case_id + '/access/' + role).toPromise();
+    }
+
+    getGroupIdsWithAccessToCase(case_id) {
+        return this.http.get<any>(environment.backendUrl + '/case/' + case_id + '/access/groups').toPromise();
+    }
+
+    getUsersInGroup(group_id) {
+        return this.http.get<any>(environment.backendUrl + '/group/' + group_id + '/users').toPromise();
     }
 
     manageAccessForManyUsersToCase(case_id, access_type, usersToAdd, usersToDel) {
@@ -41,6 +67,16 @@ export class BaseService {
             {'user_ids_to_add' : usersToAdd, 'user_ids_to_del' : usersToDel}).toPromise();
     }
 
+    manageAccessForManyGroupsToCase(case_id, groupsToAdd, groupsToDel) {
+        return this.http.post<any>(environment.backendUrl + '/case/' + case_id + '/access/group/manage',
+            {'group_ids_to_add' : groupsToAdd, 'group_ids_to_del' : groupsToDel}).toPromise();
+    }
+
+    manageUsersInGroup(group_id, usersToAdd, usersToDel) {
+        return this.http.post<any>(environment.backendUrl + '/group/users/manage',
+            {'group_id': group_id, 'user_ids_to_add': usersToAdd, 'user_ids_to_del': usersToDel}).toPromise();
+
+    }
 
     getAvailableUsersToAdd(case_id) {
         return this.http.post<any>(environment.backendUrl + '/user/available', {'case_id': case_id}).toPromise();

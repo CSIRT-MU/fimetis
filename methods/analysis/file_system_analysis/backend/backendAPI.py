@@ -15,6 +15,9 @@ import type_recognizer
 import postgres_lib as pg
 import tempfile
 import logging
+from base64 import b64encode
+import requests
+
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO)
 
@@ -34,6 +37,9 @@ app.config['elastic_port'] = 9200
 app.config['pg_user'] = 'fimetis'
 app.config['pg_db'] = 'fimetis'
 es = Elasticsearch([{'host': app.config['elastic_host'], 'port': app.config['elastic_port']}])
+app.config['oidc_introspect_url'] = 'https://oidc.muni.cz/oidc/introspect'
+app.config['oidc_client_id'] = 'client-id'
+app.config['oidc_client_secret'] = 'XXXXXXX'
 
 
 def token_required(f):
@@ -107,8 +113,11 @@ def login():
 
     username = request.get_json()['username']
     user = pg.get_user_by_login(username)
+    group_names = pg.get_user_groups_names_by_login(username)
     password_hash = user[0]
     is_super_admin = user[1]
+    email = user[2]
+    name = user[3]
 
     if check_password_hash(password_hash, request.get_json()['password']):
         token = jwt.encode(
@@ -119,10 +128,65 @@ def login():
             }, app.config['SECRET_KEY']
         )
         logging.warning('LOGIN - successful for user: ' + str(username) + ' from ' + str(request.remote_addr))
-        return jsonify({'username': username, 'is_super_admin': is_super_admin, 'token': token.decode('UTF-8')})
+        return jsonify({
+            'username': username,
+            'is_super_admin': is_super_admin,
+            'email': email,
+            'name': name,
+            'groups': group_names,
+            'token': token.decode('UTF-8')}
+        )
 
     logging.warning('LOGIN - Wrong username or password')
     return jsonify({'message': 'Wrong username or password'}), 400
+
+
+@app.route('/oidc-login', methods=['POST'])
+def oidc_login():
+    access_token = request.get_json()['access_token']
+    key_and_secret_encoded = b64encode(
+        (app.config['oidc_client_id'] + ':' + app.config['oidc_client_secret']).encode()
+    )
+    payload = 'token=' + access_token + '&token_type_hint=access_token'
+    headers = {
+        'Authorization': 'Basic ' + key_and_secret_encoded.decode(),
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    r = requests.post(app.config['oidc_introspect_url'], headers=headers, data=payload)
+
+    if r.status_code != 200:
+        return jsonify({'message': 'Token introspection not successful'}), 400
+
+    response_json = json.loads(r.text)
+
+    if response_json['active']:
+        pg.process_oidc_user_login(
+            response_json['sub'],
+            response_json['name'],
+            response_json['preferred_username'],
+            response_json['email'],
+            response_json['eduperson_entitlement']
+        )
+        group_names = pg.get_user_groups_names_by_login(response_json['sub'])
+        
+        token = jwt.encode(
+            {
+                'username': response_json['sub'],
+                'is_super_admin': False,
+                'exp': datetime.datetime.utcnow() + app.config['TOKEN_EXPIRATION']
+            }, app.config['SECRET_KEY']
+        )
+
+        return jsonify({
+            'username': response_json['sub'],
+            'name': response_json['name'],
+            'email': response_json['email'],
+            'preferred_username': response_json['preferred_username'],
+            'groups': response_json['eduperson_entitlement'] + group_names,
+            'is_external': True,
+            'token': token.decode('UTF-8')}), 200
+    else:
+        return jsonify({'message': 'Token is not valid'}), 400
 
 
 @app.route('/authenticated', methods=['GET', 'POST'])
@@ -215,11 +279,11 @@ def upload(current_user):
                 cluster_ids = json.loads(request.form['cluster_ids'])
                 pg.add_user_clusters_for_case(current_user['username'], case_name, cluster_ids)
 
-
                 full_access_ids = json.loads(request.form['full_access_ids'])
                 read_access_ids = json.loads(request.form['read_access_ids'])
 
                 pg.add_access_for_many_users_to_case(case_name, full_access_ids, read_access_ids, cluster_ids)
+                pg.update_note_and_clusters_for_case_for_external_users(case_name)
 
     return jsonify({'status': 'OK', 'message': 'uploading files'})
 
@@ -257,9 +321,19 @@ def accessible_cases(current_user):
 @app.route('/user/all', methods=['GET'])
 @token_required
 def get_all_users(current_user):
+    return jsonify(users=pg.get_all_users())
 
-    return jsonify(users=pg.get_all_users(current_user['username']))
 
+@app.route('/group/all', methods=['GET'])
+@token_required
+def get_all_groups(current_user):
+    return jsonify(groups=pg.get_all_groups())
+
+
+@app.route('/group/internal/all', methods=['GET'])
+@token_required
+def get_all_internal_groups(current_user):
+    return jsonify(groups=pg.get_all_internal_groups())
 
 @app.route('/case/update-description', methods=['POST'])
 @token_required
@@ -671,6 +745,13 @@ def get_user_ids_with_access_to_case(current_user, case, role):
     return jsonify(user_ids=pg.get_user_ids_with_access_to_case(case, role))
 
 
+@app.route('/group/<string:group_id>/users', methods=['GET'])
+@token_required
+def get_user_ids_in_group(current_user, group_id):
+
+    return jsonify(user_ids=pg.get_user_ids_in_group(group_id))
+
+
 @app.route('/case/<string:case>/access/<string:role>/manage', methods=['POST'])
 @token_required
 def manage_access_for_many_users_to_case(current_user, case, role):
@@ -680,6 +761,58 @@ def manage_access_for_many_users_to_case(current_user, case, role):
     pg.manage_access_for_many_users_to_case(case, role, user_ids_to_add, user_ids_to_del)
 
     return jsonify({'user access managed': 'OK'}), 200
+
+
+@app.route('/case/<string:case>/access/group/manage', methods=['POST'])
+@token_required
+def manage_access_for_many_groups_to_case(current_user, case):
+    group_ids_to_add = request.json.get('group_ids_to_add')
+    group_ids_to_del = request.json.get('group_ids_to_del')
+
+    pg.manage_access_for_many_groups_to_case(case, group_ids_to_add, group_ids_to_del)
+
+    return jsonify({'group access managed': 'OK'}), 200
+
+
+@app.route('/group/users/manage', methods=['POST'])
+@token_required
+def manage_users_in_group(current_user):
+    user_ids_to_add = request.json.get('user_ids_to_add')
+    user_ids_to_del = request.json.get('user_ids_to_del')
+    group_id = request.json.get('group_id')
+    pg.manage_users_in_group(group_id, user_ids_to_add, user_ids_to_del)
+
+    return jsonify({'user access managed': 'OK'}), 200
+
+
+@app.route('/user/add', methods=['POST'])
+@token_required
+def add_user(current_user):
+    login = request.json.get('login')
+    password = generate_password_hash(request.json.get('password'))
+    name = request.json.get('name')
+    email = request.json.get('email')
+
+    pg.add_user(login, password, name, email)
+
+    return jsonify({'user added': 'OK'}), 200
+
+
+@app.route('/group/add', methods=['POST'])
+@token_required
+def add_group(current_user):
+    name = request.json.get('name')
+    role = request.json.get('role')
+
+    pg.add_group(name, role)
+
+    return jsonify({'grouped added': 'OK'}), 200
+
+
+@app.route('/case/<string:case_id>/access/groups', methods=['GET'])
+@token_required
+def get_group_ids_with_access_to_case(current_user, case_id):
+    return jsonify(group_ids=pg.get_group_ids_with_access_to_case(case_id))
 
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@ import { HttpEvent, HttpResponse} from '@angular/common/http';
 import {ngf} from 'angular-file';
 import {Subscription} from 'rxjs';
 import {UploadService} from '../../services/upload.service';
+import {AuthenticationService} from '../../auth/authentication.service';
 import {ToastrService} from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
@@ -11,7 +12,7 @@ import {SelectClustersComponent} from '../dialog/select-clusters/select-clusters
 import {ClusterService} from '../../services/cluster.service';
 import {BaseService} from '../../services/base.service';
 import {SelectUsersComponent} from '../dialog/select-users/select-users.component';
-
+import {SelectGroupsComponent} from '../dialog/select-groups/select-groups.component';
 
 @Component({
   selector: 'app-upload',
@@ -33,10 +34,13 @@ export class UploadComponent implements OnInit {
     removeDeletedRealloc = true;
     cluster_ids = [];
     users = [];
+    groups = [];
     readAccessIds = [];
     fullAccessIds = [];
+    groupAccessIds = [];
 
     constructor(
+        private authenticationService: AuthenticationService,
         private uploadService: UploadService,
         private clusterService: ClusterService,
         private baseService: BaseService,
@@ -51,6 +55,7 @@ export class UploadComponent implements OnInit {
             this._case = case_name;
         } else {
             this.getAllUsers();
+            this.getAllGroups();
         }
 
 
@@ -124,6 +129,19 @@ export class UploadComponent implements OnInit {
 
     async getAllUsers() {
         this.users = (await this.baseService.getAllUsers()).users;
+
+        let index = null;
+        for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i]['login'] === this.authenticationService.getUserLogin()) {
+                index = i;
+                break;
+            }
+        }
+        this.users.splice(index, 1);
+    }
+
+    async getAllGroups(){
+        this.groups = (await this.baseService.getAllInternalGroups()).groups;
     }
 
     selectAccess(access_type) {
@@ -146,6 +164,23 @@ export class UploadComponent implements OnInit {
                 }
             }
         });
+    }
 
+    selectGroups() {
+        console.log(this.groups);
+        const dialogRef = this.dialog.open(SelectGroupsComponent, {
+            data: {
+                curentGroupIds: new Set(),
+                allGroups: this.groups
+            },
+            minWidth: '75%',
+            minHeight: '70%'
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.groupAccessIds = Array.from(result);
+            }
+        });
     }
 }

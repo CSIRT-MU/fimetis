@@ -11,11 +11,13 @@ CREATE SEQUENCE user_id_seq;
 
 CREATE TABLE "user" (
   id int NOT NULL PRIMARY KEY default nextval('user_id_seq'), 
-  login varchar(64) NOT NULL, 
-  password varchar(256) NOT NULL,
-  name varchar(128), 
-  mail varchar(64),
-  is_super_admin boolean NOT NULL default FALSE
+  login character varying(64) NOT NULL,
+  password character varying(256),
+  name character varying(128),
+  email character varying(64),
+  is_super_admin boolean DEFAULT false NOT NULL,
+  preferred_username character varying(64),
+  is_external boolean DEFAULT false
 );
 
 CREATE TYPE fimetis_role AS ENUM ('admin', 'user');
@@ -64,4 +66,29 @@ CREATE TABLE "user-cluster-case" (
   user_id int REFERENCES "user"(id),
   case_id int REFERENCES "case"(id)
 );
+
+CREATE SEQUENCE group_id_seq;
+
+CREATE TABLE "group" (
+  id int NOT NULL PRIMARY KEY default nextval('group_id_seq'),
+  name varchar(128) NOT NULL,
+  urn varchar(256) NOT NULL,
+  role fimetis_role NOT NULL DEFAULT 'user',
+  is_external boolean DEFAULT false
+);
+
+INSERT INTO "group" (name, urn, role) VALUES({{ oidc_user_group_name }}, {{ oidc_user_group_urn }}, 'user');
+INSERT INTO "group" (name, urn, role) VALUES({{ oidc_admin_group_name }}, {{ oidc_admin_group_urn }}, 'admin');
+
+
+CREATE TABLE "user-group" (
+  user_id int REFERENCES "user"(id),
+  group_id int REFERENCES "group"(id)
+);
+
+CREATE TABLE "group-access" (
+  group_id int REFERENCES "group"(id),
+  case_id int REFERENCES "case"(id)
+);
+
 

@@ -7,6 +7,7 @@
     vars:
       packages:
       - python3-pip
+      - python-pip
       - python3-dev
       - build-essential
       - libssl-dev
@@ -26,14 +27,14 @@
       name: python3-pip
       update_cache: yes
    
-  - name: Downloading repo from gitlab 
-    shell: git clone https://ouath2:pNDgUXuui5kznGnn2_-p@gitlab.ics.muni.cz/kypo2/kypo2-analytical-node.git
-    args: 
-      chdir: /tmp
+  - name: Copy source code to server
+    copy:
+      src: ../../../backend/
+      dest: /tmp/fimetis/backend
 
-  - name: Moving angular app code to /tmp
-    shell: mv /tmp/kypo2-analytical-node/methods/analysis/file_system_analysis/backend /opt --backup=numbered
-
+  - name: Moving flask backend code to /opt
+    shell: mv /tmp/fimetis/backend /opt --backup=numbered
+    
   - name: Setting fimetis user and db for postgres
     lineinfile:
       dest: /opt/backend/postgres_lib.py
@@ -46,6 +47,35 @@
       regexp: "^PG_USER =.*"
       line: "PG_USER = '{{ pg_user }}'"
     
+  - name: Setting external user group
+    lineinfile:
+      dest: /opt/backend/postgres_lib.py
+      regexp: "^EXTERNAL_USER_GROUP =.*"
+      line: "EXTERNAL_USER_GROUP = '{{ oidc_user_group_urn }}'"
+
+  - name: Setting external admin group
+    lineinfile:
+      dest: /opt/backend/postgres_lib.py
+      regexp: "^EXTERNAL_ADMIN_GROUP =.*"
+      line: "EXTERNAL_ADMIN_GROUP = '{{ oidc_admin_group_urn }}'"
+
+  - name: Setting token introspect url
+    lineinfile:
+      dest: /opt/backend/backendAPI.py
+      regexp: "^app\\.config\\['oidc_introspect_url'\\] =.*"
+      line: "app.config['oidc_introspect_url'] = '{{ oidc_introspect_url }}'"
+
+  - name: Setting oidc client_id
+    lineinfile:
+      dest: /opt/backend/backendAPI.py
+      regexp: "^app\\.config\\['oidc_client_id'\\] =.*"
+      line: "app.config['oidc_client_id'] = '{{ oidc_client_id }}'"
+
+  - name: Setting oidc client_secret
+    lineinfile:
+      dest: /opt/backend/backendAPI.py
+      regexp: "^app\\.config\\['oidc_client_secret'\\] =.*"
+      line: "app.config['oidc_client_secret'] = '{{ oidc_client_secret }}'"
 
   - name: Cleaning nonused source codes from downloaded repo
     file:

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-
+import {environment} from '../../../../environments/environment';
 import { AuthenticationService } from '../../../auth/authentication.service';
 
 @Component({
@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
     submitted = false;
     returnUrl: string;
     error = '';
+    oidcEnabled = false;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -25,6 +26,9 @@ export class LoginComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        if (environment.oidc_enabled === 'true') {
+            this.oidcEnabled = true;
+        }
         this.loginForm = this.formBuilder.group({
             username: ['', Validators.required],
             password: ['', Validators.required]
@@ -59,5 +63,9 @@ export class LoginComponent implements OnInit {
                     this.error = error;
                     this.loading = false;
                 });
+    }
+
+    startOidcLogin() {
+        this.authenticationService.startAuthentication();
     }
 }

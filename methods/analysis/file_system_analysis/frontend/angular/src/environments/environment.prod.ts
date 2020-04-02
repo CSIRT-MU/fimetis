@@ -1,4 +1,14 @@
 export const environment = {
-    production: true,
-    backendUrl: 'http://78.128.250.225:5001'
+    production: false,
+    backendUrl: 'http://localhost:5000',
+    oidc_enabled: '',
+    oidc_authority: '',
+    oidc_client_id: '',
+    oidc_client_secret: '',
+    oidc_redirect_uri: '',
+    oidc_post_logout_redirect_uri: '',
+    oidc_scope: '',
+    oidc_response_type: '',
+    oidc_admin_group_urn: '',
+    oidc_user_group_urn: ''
 };

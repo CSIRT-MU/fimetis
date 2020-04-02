@@ -7,3 +7,4 @@ uwsgi
 python-dateutil
 werkzeug
 psycopg2
+requests

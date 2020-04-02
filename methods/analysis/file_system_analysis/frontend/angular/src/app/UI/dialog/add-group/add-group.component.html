@@ -1,0 +1,27 @@
+<h3>
+    {{ data.title }}
+</h3>
+<mat-error *ngIf="isNameValid.invalid">Name is required and must be at least 3 characters long</mat-error>
+<mat-error *ngIf="!isNameUnique()">Name must be unique</mat-error>
+<mat-form-field style="width: 100%;" appearance="outline">
+    <mat-label>Name</mat-label>
+    <input [value]="name" [formControl]="isNameValid" (change)="updateName($event.currentTarget.value)" matInput placeholder="Name" required>
+</mat-form-field>
+<mat-form-field appearance="outline" style="width: 100%">
+    <mat-label>Role</mat-label>
+    <mat-select placeholder="SELECT ROLE" [(value)]="role" required>
+        <mat-option  [value]="role">user</mat-option>
+        <mat-option  [value]="role">admin</mat-option>
+    </mat-select>
+</mat-form-field>
+<br>
+<div style="text-align: center; align-content: center; width: 100%">
+    <div style="width: 30%; margin: auto">
+        <button type="button" class="btn btn-default" style="float: left" (click)="onSaveClick()" [disabled]="isNameValid.invalid">
+            <span>SAVE</span>
+        </button>
+        <button type="button" class="btn btn btn-default" style="float: right" (click)="onCancelClick()">
+            <span>CANCEL</span>
+        </button>
+    </div>
+</div>

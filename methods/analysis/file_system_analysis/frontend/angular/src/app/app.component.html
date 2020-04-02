@@ -2,7 +2,9 @@
     <div class="app-bar">
         <div class="user-info">
             <span *ngIf="currentUser">
-                <span class="fas fa-user"></span> {{currentUser.username}}
+                <button class="btn btn-default" routerLink="/user-profile" routerLinkActive="active">
+                    <span class="fas fa-user"></span> {{currentUser.username}}
+                </button>
             </span>
         </div>
         <span class="main-title">
@@ -27,6 +29,10 @@
                 <button mat-menu-item routerLink="/cluster-management" routerLinkActive="active"
                         *ngIf="getRouter().url !== '/cluster-management'">
                     CLUSTER MANAGEMENT
+                </button>
+                <button mat-menu-item routerLink="/user-group-management" routerLinkActive="active"
+                        *ngIf="getRouter().url !== '/user-group-management'">
+                    USER & GROUP MANAGEMENT
                 </button>
                 <button mat-menu-item routerLink="/upload/empty" routerLinkActive="active"
                         *ngIf="getRouter().url !== '/upload'">
