@@ -36,7 +36,7 @@ app.config['elastic_host'] = 'localhost'
 app.config['elastic_port'] = 9200
 app.config['pg_user'] = 'fimetis'
 app.config['pg_db'] = 'fimetis'
-es = Elasticsearch([{'host': app.config['elastic_host'], 'port': app.config['elastic_port']}])
+es = Elasticsearch([{'host': app.config['elastic_host'], 'port': app.config['elastic_port'], 'timeout': 3600}])
 app.config['oidc_introspect_url'] = 'https://oidc.muni.cz/oidc/introspect'
 app.config['oidc_client_id'] = 'client-id'
 app.config['oidc_client_secret'] = 'XXXXXXX'
@@ -296,7 +296,6 @@ def delete_case(current_user, case):
         return jsonify({'status': 'failed', 'message': 'User has not admin access for this case'})
 
     pg.delete_case(case)
-
     query = {
       'query': {
         'match_phrase': {
@@ -308,6 +307,7 @@ def delete_case(current_user, case):
     res = es.delete_by_query(index=app.config['elastic_metadata_index'],
                              doc_type=app.config['elastic_metadata_type'],
                              body=query)
+
     return jsonify(res)
 
 
