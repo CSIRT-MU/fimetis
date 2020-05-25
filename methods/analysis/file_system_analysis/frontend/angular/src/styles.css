@@ -338,3 +338,8 @@ virtual-scroller.vertical.selfScroll::-webkit-scrollbar-thumb:hover {
 .mat-progress-bar {
     border-radius: 5px !important;
 }
+
+.cfp-hotkeys{
+    overflow-y: scroll !important;
+    display: block !important;
+}
