@@ -1875,7 +1875,7 @@ export class D3HistogramComponent implements OnDestroy {
         let dragStartX = null;
         let dragShiftStartX = null;
         function dragStart() {
-            if (d3.event.sourceEvent.ctrlKey) {
+            if (d3.event.sourceEvent.shiftKey) {
                 dragShiftStartX = null;
                 if (d3.event.x - margin.left > 0 && d3.event.x - margin.left < contentWidth) {
                     dragStartX = d3.event.x - margin.left;
@@ -1959,7 +1959,7 @@ export class D3HistogramComponent implements OnDestroy {
         }
 
         function dragging() {
-            if (d3.event.sourceEvent.ctrlKey) {
+            if (d3.event.sourceEvent.shiftKey) {
                 const dragSelectionX = d3.event.x - margin.left;
 
                 // Stops draging to right if get to closest selection

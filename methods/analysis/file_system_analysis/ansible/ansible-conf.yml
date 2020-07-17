@@ -26,7 +26,7 @@ super_admin_login: admin
 super_admin_passwd: timesix-elk
 
 # OIDC
-oidc_enabled: 'true'
+oidc_enabled: 'false'
 oidc_authority: 'https://oidc.muni.cz/oidc/'
 oidc_client_id: 'client-id'
 oidc_client_secret: 'XXXXXXX'

@@ -278,6 +278,10 @@ export class ListViewComponent {
         });
         this.total = counts.total;
         this.totalOf = counts.total_all;
+        console.log(this.total);
+        await this.getMarksFromDatabase();
+        // Count marks that are in current cluster
+        await this.getMarksIdsPresentInCurrentCluster();
 
         // Load init data to list
         const resp = await this.clusterService.getData(this.case,
@@ -285,7 +289,7 @@ export class ListViewComponent {
             Array.from(this.marked_rows_id),
             this.additionalFilters,
             this.visibleDataFirstIndex,
-            initSize,
+            initSize + this.marked_rows_id.size - this.marked_rows_id_in_current_cluster.size,
             this.pageSortString,
             this.pageSortOrder).catch(
             () => {
@@ -298,7 +302,8 @@ export class ListViewComponent {
         // this.total = resp.total;
         this.preloadedData = resp.data;
         this.preloadedBegin = this.visibleDataFirstIndex;
-        this.preloadedEnd = this.visibleDataFirstIndex + initSize;
+        this.preloadedEnd = this.visibleDataFirstIndex + initSize + this.marked_rows_id.size - this.marked_rows_id_in_current_cluster.size;
+        console.log(this.preloadedEnd);
         // compute number of pages and length of virtual array
         if (this.total + this.marked_rows_id.size > this.page_size) {
             if (this.page_number * this.page_size > this.total + this.marked_rows_id.size) {
@@ -311,6 +316,7 @@ export class ListViewComponent {
         }
         this.loadingData = false;
         this.visibleData = this.data;
+        console.log(this.data);
         if (this.visibleDataFirstIndex + shift > this.total ) {
             this.scrollToIndex(this.total);
         } else {
@@ -318,9 +324,9 @@ export class ListViewComponent {
         }
         this.oldClusters = lodash.cloneDeep(this.clusters);
 
-        this.getMarksFromDatabase();
+        //this.getMarksFromDatabase();
         // Count marks that are in current cluster
-        this.getMarksIdsPresentInCurrentCluster();
+        //this.getMarksIdsPresentInCurrentCluster();
     }
     isAllSelected() {
         const numSelected = this.tableSelection.selected.length;
@@ -466,7 +472,7 @@ export class ListViewComponent {
      */
     loadVisibleData($event) {
         const start = $event['startIndex'];
-        const end = $event['endIndex'];
+        const end = $event['endIndex'] + this.marked_rows_id.size - this.marked_rows_id_in_current_cluster.size;
         this.visibleDataFirstIndex = start < 0 ? 0 : start;
         this.visibleDataLastIndex = end < 0 ? 0 : end;
         if (this.virtualArray.length > 0) { // get rid of fake loading state if empty

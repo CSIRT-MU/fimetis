@@ -8,7 +8,7 @@
   - { role: java }
   - { role: elasticsearch }
   - { role: angular }
-  - { role: kibana }
+#  - { role: kibana }
   - { role: nginx }
   - { role: flask }
   - { role: postgres }
