@@ -134,7 +134,7 @@ def login():
             'email': email,
             'name': name,
             'groups': group_names,
-            'token': token.decode('UTF-8')}
+            'token': token}
         )
 
     logging.warning('LOGIN - Wrong username or password')
