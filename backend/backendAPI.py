@@ -54,11 +54,13 @@ def token_required(f):
             return jsonify({'message': 'Token is missing!'}), 401
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, app.config['SECRET_KEY'], options={"verify_signature": False})
             current_user = {'username': data['username'],
                             'is_super_admin': data['is_super_admin']}
-        except:
+        except jwt.exceptions.PyJWTError as e:
+            logging.error("Failed to decode token: %s" % (e))
             return jsonify({'message': 'Token is invalid!'}), 401
+
         return f(current_user, *args, **kwargs)
 
     return decorated
