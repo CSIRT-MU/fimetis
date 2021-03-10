@@ -1,8 +1,17 @@
 ---
 - hosts: all
-  strategy: free
+  remote_user: ubuntu
+  become: yes
+
   vars_files:
     - ansible-conf.yml
+
+  pre_tasks:
+    - name: Check we're on expected OS
+      assert:
+        that:
+          - ansible_distribution == "Ubuntu" and ansible_distribution_version == "20.04"
+        msg: "Ubuntu 20.04 is required at the moment"
 
   roles:
   - { role: java }
