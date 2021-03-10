@@ -1,8 +1,0 @@
-# Production
-#147.251.21.123 ansible_user=root
-
-# Development
-#147.251.21.120 ansible_user=root
-
-# Presentation
-#147.251.21.16 ansible_user=root
