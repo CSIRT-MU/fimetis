@@ -1,9 +1,18 @@
 ---
 # Tasks for elasticsearch
+
+  - name: Make sure Java is available
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+    loop:
+      - default-jre
+      - default-jdk
   
   - name: Downloading and installing the public signing key for elasticsearch
     apt_key:
        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+       id: 46095ACC8548582C1A2699A9D27D666CD88E42B4
        state: present
 
   - name: Installing apt-transport-https as a prerequisite
