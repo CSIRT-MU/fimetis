@@ -13,4 +13,3 @@
   - { role: flask }
   - { role: postgres }
   - { role: upload-data }
-  - { role: eval_prep }
