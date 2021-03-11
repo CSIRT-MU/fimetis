@@ -8,7 +8,7 @@ import argparse
 
 # FIND FROM LIFT
 # mtime, atime, ctime, mode, user, group, name
-# do_command "find /dev/shm/mount_ro -xdev -print0 | xargs -0 stat -c '%Y %X %Z %A %U %G %n'"
+# do_command "find /dev/shm/mount_ro -xdev -print0 | xargs -0 stat -c '%Y %X %Z %A %U %G %s %n'"
 
 
 class Entry():
@@ -44,8 +44,9 @@ def process(input_file):
         line = csv.reader(file_stream, delimiter=' ', quotechar='"')
         for row in line:
             tmp_entry = Entry()
-            tmp_entry.file_name = row[6]
+            tmp_entry.file_name = row[7]
             tmp_entry.mode = row[3]
+            tmp_entry.size = row[6]
 
             if row[4] == 'root':
                 tmp_entry.uid = 0

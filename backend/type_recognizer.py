@@ -28,7 +28,7 @@ def recognize_type(filename):
         if columns == 1:
             splited_header = header.split(" ")
             columns = len(splited_header)
-            if columns == 7:
+            if columns == 8:
                 return "find"
     else:
         return False
