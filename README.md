@@ -1,5 +1,5 @@
 # Filesystem Metadata Analysis
-The analysis of file systems is a crucial part of investigations of security incidents. The Fimetis tool enables analysis of metadata (timestamps, ownership, etc.) collected from file systems and streamlines processing of a large volumes of such data. Using the visual controls it is straightforward to navigate through the dataset. The analysis can also benefit from a set of pre-defined clusters identifying common file structures and operations (like crontab rules, files with weak permissions, signs of compilation on the spot, etc.).
+The analysis of file systems is a crucial part of investigations of security incidents. The Fimetis tool enables analysis of metadata (timestamps, ownership, etc.) collected from file systems and streamlines processing of a large volumes of such data. Using the visual controls it is straightforward to navigate through the dataset and the analysis can also benefit from a set of pre-defined clusters identifying common file patterns and operations (like crontab rules, files with weak permissions, signs of compilation on the spot, etc.).
 
 ![ui](https://user-images.githubusercontent.com/1067311/110324418-344c8d00-8016-11eb-8911-a510e075e2ea.png)
 
