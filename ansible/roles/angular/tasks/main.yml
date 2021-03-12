@@ -18,87 +18,87 @@
 
   - name: Copy source code to server
     copy:
-      src: ../../../frontend/angular/
-      dest: /tmp/fimetis/frontend/angular
+      src: ../../../frontend
+      dest: /tmp/fimetis/frontend
 
   - name: Setting backend api url
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*backendUrl.*"
       line: "    backendUrl{{':'}} 'http{{':'}}//{{ inventory_hostname}}{{':'}}{{ backend_port }}',"
 
   - name: Setting oidc enabled indicator
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_enabled.*"
       line: "    oidc_enabled: '{{ oidc_enabled }}',"
 
   - name: Setting oidc authority
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_authority.*"
       line: "    oidc_authority: '{{ oidc_authority }}',"
 
   - name: Setting oidc client_id
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_client_id.*"
       line: "    oidc_client_id: '{{ oidc_client_id }}',"
 
   - name: Setting oidc client_secret
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_client_secret.*"
       line: "    oidc_client_secret: '{{ oidc_client_secret }}',"
 
   - name: Setting oidc redirect_uri
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_redirect_uri.*"
       line: "    oidc_redirect_uri: '{{ oidc_redirect_uri }}',"
 
   - name: Setting oidc post_logout_redirect_uri
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_post_logout_redirect_uri.*"
       line: "    oidc_post_logout_redirect_uri: '{{ oidc_post_logout_redirect_uri }}',"
 
   - name: Setting oidc scope
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_scope.*"
       line: "    oidc_scope: '{{ oidc_scope }}',"
 
   - name: Setting oidc response_type
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_response_type.*"
       line: "    oidc_response_type: '{{ oidc_response_type }}',"
 
   - name: Setting oidc admin_group_urn
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_admin_group_urn.*"
       line: "    oidc_admin_group_urn: '{{ oidc_admin_group_urn }}',"
 
   - name: Setting oidc user_group_urn
     lineinfile:
-      path: /tmp/fimetis/frontend/angular/src/environments/environment.prod.ts
+      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
       regexp: "^.*oidc_user_group_urn.*"
       line: "    oidc_user_group_urn: '{{ oidc_user_group_urn }}',"
 
   - name: Install npm in angular app
     shell: npm install --unsafe-perm
     args:
-      chdir: /tmp/fimetis/frontend/angular
+      chdir: /tmp/fimetis/frontend
 
   - name: Building production build of angular app
     shell: ng build --prod
     args:
-      chdir: /tmp/fimetis/frontend/angular
+      chdir: /tmp/fimetis/frontend
 
   - name:  Placing build app to /opt/
-    shell: mv /tmp/fimetis/frontend/angular/dist/fimetis-angular /opt/
+    shell: mv /tmp/fimetis/frontend/dist/fimetis-angular /opt/
 
   - name: Cleaning source codes from /tmp
     file:
