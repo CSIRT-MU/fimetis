@@ -3,6 +3,8 @@ The analysis of file systems is a crucial part of investigations of security inc
 
 ![ui](https://user-images.githubusercontent.com/1067311/110324418-344c8d00-8016-11eb-8911-a510e075e2ea.png)
 
+The application UI runs in the browser and processes data indexed using ElasticSearch. While the application runs in all modern browsers, the best behavior is achieved with Chromium.
+
 Basic concepts are described in the following paper:
 
 * M. Beran, F. Hrdina, D. Kouřil, R. Ošlejšek, K. Zákopčanová. Exploratory Analysis of File System Metadata for Rapid Investigation of Security Incidents. In 2020 IEEE Symposium on Visualization for Cyber Security (VizSec). doi:10.1109/VizSec51108.2020.00008.
