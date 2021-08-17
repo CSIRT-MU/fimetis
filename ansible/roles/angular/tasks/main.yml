@@ -13,7 +13,7 @@
       update_cache: yes
 
   - name: Installing angular 
-    command: npm install -g @angular/cli
+    command: npm install -g @angular/cli@v10-lts
     become: true
 
   - name: Copy source code to server
