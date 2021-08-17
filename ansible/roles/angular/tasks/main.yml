@@ -19,7 +19,7 @@
   - name: Copy source code to server
     copy:
       src: ../../../frontend
-      dest: /tmp/fimetis/frontend
+      dest: /tmp/fimetis/
 
   - name: Setting backend api url
     lineinfile:
@@ -96,6 +96,11 @@
     shell: ng build --prod
     args:
       chdir: /tmp/fimetis/frontend
+
+  - name: Clear the final location
+    file:
+      path: /opt/fimetis-angular
+      state: absent
 
   - name:  Placing build app to /opt/
     shell: mv /tmp/fimetis/frontend/dist/fimetis-angular /opt/

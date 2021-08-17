@@ -136,11 +136,12 @@
       line: "    listen {{ backend_port }};"
 
   - name: Creating symlinks for nginx config to sites-enabled
-    shell: ln -s /etc/nginx/sites-available/{{ item }} /etc/nginx/sites-enabled
+    file:
+      src: "/etc/nginx/sites-available/{{ item }}"
+      dest: "/etc/nginx/sites-enabled{{ item }}"
+      state: link
     with_items:
       - backendAPI
-    args:
-      warn: false
 
   - name: Restarting nginx
     systemd: 

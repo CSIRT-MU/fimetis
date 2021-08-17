@@ -87,18 +87,22 @@
       password: "{{ kibana_passwd }}"
 
   - name: Removing default config for nginx 
-    shell: rm /etc/nginx/sites-available/default && rm /etc/nginx/sites-enabled/default
-    args:
-      warn: false 
+    file:
+      path: "{{ item }}"
+      state: absent
+    loop:
+      - /etc/nginx/sites-available/default
+      - /etc/nginx/sites-enabled/default
  
   - name: Creating symlinks for nginx configs to sites-enabled
-    shell: ln -s /etc/nginx/sites-available/{{ item }} /etc/nginx/sites-enabled
+    file:
+      src: "/etc/nginx/sites-available/{{ item }}"
+      dest: "/etc/nginx/sites-enabled{{ item }}"
+      state: link
     with_items:
       - elastic-reverse-proxy
       - kibana
       - angular
-    args:
-      warn: false
 
   - name: Setting nginx to run after boot
     systemd: 
