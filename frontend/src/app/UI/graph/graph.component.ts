@@ -666,13 +666,13 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     typeTooltip(type) {
         switch (type) {
             case 'm':
-                return 'Modification type of metadata time describes time of last change of file content';
+                return 'When the file content was last changed';
             case 'a':
-                return 'Access type of metadata time describes time of last access to file';
+                return 'When the file was last accessed';
             case 'c':
-                return 'Change type of metadata time describes time of last change of file metadata but not its content';
+                return 'When the file metadata was last changed';
             case 'b':
-                return 'Birth type of metadata time describes creation time of file';
+                return 'When the file was created';
             case 'all':
                 return 'All types';
         }
