@@ -432,6 +432,15 @@ virtual-scroll {
     display: inline-block;
 }
 
+.mat-paginator{
+    color: unset;
+    font: unset;
+}
+
+:host ::ng-deep.mat-paginator .mat-paginator-container{
+    min-height: 0px;
+}
+
 .timestamp-field{
     padding-right: 5px;
 }

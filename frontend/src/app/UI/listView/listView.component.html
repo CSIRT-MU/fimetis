@@ -1,12 +1,14 @@
 <div class="list-view-header">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <span class="text-gray title"><h4>Interactive List View</h4></span><span class="glyphicon panel-header-button"
                                                                                  [ngClass]="{'glyphicon-chevron-down': !tablePanelOpenState, 'glyphicon-chevron-up': tablePanelOpenState}"
                                                                                  (click)="tablePanelOpenState = !tablePanelOpenState"></span>
         <span class="text-gray total-count-block">Total: {{total}} of: {{totalOf}}</span>
     </div>
-    <div class="col-md-6 table-controls">
-        <mat-paginator class="pagination-control" *ngIf="total > page_size" (page)="changePage($event.pageIndex + 1)" [hidePageSize]="true" [pageIndex]="page_number - 1" [pageSize]="page_size" [length]="total"></mat-paginator>
+    <div class="col-md-4">
+	<mat-paginator class="pagination-control" *ngIf="total > page_size" (page)="changePage($event.pageIndex + 1)" [hidePageSize]="true" [pageIndex]="page_number - 1" [pageSize]="page_size" [length]="total"></mat-paginator>
+    </div>
+    <div class="col-md-4 table-controls">
         <span class="mat-stroked-button fimetis-button" *ngIf="searchString" (click)="searchString=''; searchByString()"><span class="glyphicon glyphicon-remove"></span> RESET SEARCH</span>
         <form #searchForm="ngForm" (submit)="searchByString()" class="search-field-form">
             <input #searchField id="searchField" type="text" name="searchString" placeholder="search by File Name" [(ngModel)]="searchString" class="search-field" (change)="searchByString()">
