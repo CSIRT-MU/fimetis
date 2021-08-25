@@ -101,7 +101,7 @@ export class ListViewComponent {
     highlightedTextDateId: number;
     // pagination
     page_number = 1;
-    page_size = 1500000;
+    page_size = 1000000;
     // Virtual scroll
     @ViewChild(VirtualScrollerComponent, {static: false}) virtualScroller: VirtualScrollerComponent;
     virtualArray: VirtualArrayModel = new VirtualArrayModel();
