@@ -64,6 +64,7 @@ import { AddUserComponent } from './UI/dialog/add-user/add-user.component';
 import { AddGroupComponent } from './UI/dialog/add-group/add-group.component';
 import { SelectGroupsComponent } from './UI/dialog/select-groups/select-groups.component';
 import { UserProfileComponent } from './UI/user/user-profile/user-profile.component';
+import { HTTPService } from './services/http.service';
 
 
 @NgModule({
@@ -156,7 +157,9 @@ import { UserProfileComponent } from './UI/user/user-profile/user-profile.compon
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }],
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        HTTPService,
+    ],
     bootstrap: [AppComponent]
 })
 
