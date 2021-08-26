@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {ClusterModel} from '../models/cluster.model';
+import { HTTPService } from './http.service';
 
 @Injectable({ providedIn: 'root' })
 export class GraphService {
-    constructor(private http: HttpClient) { }
+    constructor(private http: HTTPService) { }
 
     getData(_case: string,
             _clusters: ClusterModel[],
             _additional_filters: object,
             mac_type: string,
             frequency: string) {
-        return this.http.post<any>(environment.backendUrl + '/graph/data/' + _case, {
+        return this.http.post('/graph/data/' + _case, {
             'clusters': _clusters,
             'additional_filters': JSON.stringify(_additional_filters),
             'mac_type': mac_type,
@@ -34,7 +33,7 @@ export class GraphService {
             _clusters: ClusterModel[],
             _additional_filters: object,
             mac_type: string) {
-        return this.http.post<any>(environment.backendUrl + '/graph/first_and_last/' + _case, {
+        return this.http.post('/graph/first_and_last/' + _case, {
         }).toPromise().then(
             response => {
                 const timestamps = [];
@@ -80,7 +79,7 @@ export class GraphService {
     }
 
     async isMarkInCurrentCluster(_case: string, _clusters: ClusterModel[], id: string) {
-        return this.http.post<any>(environment.backendUrl + '/graph/is_mark_in_cluster/' + _case, {
+        return this.http.post('/graph/is_mark_in_cluster/' + _case, {
             'clusters': _clusters,
             'id': id
         }).toPromise().then(
@@ -94,7 +93,7 @@ export class GraphService {
     }
 
     getAllMarks(_case: string) {
-        return this.http.get<any>(environment.backendUrl + '/mark/all/' + _case).toPromise().then(
+        return this.http.get('/mark/all/' + _case).toPromise().then(
             response => {
                 return response.marks;
             }, error => {
@@ -105,7 +104,7 @@ export class GraphService {
     }
 
     getMarkInfo(_id: string) {
-        return this.http.get<any>(environment.backendUrl + '/mark/get/' + _id).toPromise().then(
+        return this.http.get('/mark/get/' + _id).toPromise().then(
             response => {
                 return response.hits.hits[0];
             }, error => {
@@ -116,7 +115,7 @@ export class GraphService {
     }
 
     insertMark(_id: string, _case: string) {
-        return this.http.post<any>(environment.backendUrl + '/mark/insert/', {'id': _id, 'case': _case}).toPromise().then(
+        return this.http.post('/mark/insert/', {'id': _id, 'case': _case}).toPromise().then(
             response => {
                 return response;
             }, error => {
@@ -127,7 +126,7 @@ export class GraphService {
     }
 
     deleteMark(_id: string, _case: string) {
-        return this.http.post<any>(environment.backendUrl + '/mark/delete/', {'id': _id, 'case': _case}).toPromise().then(
+        return this.http.post('/mark/delete/', {'id': _id, 'case': _case}).toPromise().then(
             response => {
                 return response;
             }, error => {

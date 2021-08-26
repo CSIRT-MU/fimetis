@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { UserProfile } from '../models/user-profile.model';
 import {environment} from '../../environments/environment';
 import { UserManager, UserManagerSettings, User } from 'oidc-client';
+import { HTTPService } from '../services/http.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +19,7 @@ export class AuthenticationService {
 
     private manager = new UserManager(getClientSettings());
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HTTPService) {
         this.currentUserSubject = new BehaviorSubject<UserProfile>(JSON.parse(localStorage.getItem('currentUser')));
         this.currentUser = this.currentUserSubject.asObservable();
     }
@@ -38,7 +38,7 @@ export class AuthenticationService {
 
 
     login(username: string, password: string) {
-        return this.http.post<any>(environment.backendUrl + '/login', { username, password })
+        return this.http.post('/login', { username, password })
             .pipe(map(user => {
                 // login successful if there's a jwt token in the response
                 if (user && user.token) {
@@ -124,7 +124,7 @@ export class AuthenticationService {
     }
 
     public oidc_login() {
-        return this.http.post<any>(environment.backendUrl + '/oidc-login', { 'access_token': this.oidcUser.access_token })
+        return this.http.post('/oidc-login', { 'access_token': this.oidcUser.access_token })
             .pipe(map(user => {
                 // login successful if there's a jwt token in the response
                 if (user && user.token) {

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {ClusterModel} from '../models/cluster.model';
 import {DataModel} from '../models/data.model';
+import { HTTPService } from './http.service';
 
 @Injectable({ providedIn: 'root' })
 export class ClusterService {
-    constructor(private http: HttpClient) { }
+    constructor(private http: HTTPService) { }
 
     getData(_case: string,
             _clusters: ClusterModel[],
@@ -16,7 +15,7 @@ export class ClusterService {
             page_size: number,
             sort: string,
             sort_order: string) {
-        return this.http.post<any>(environment.backendUrl + '/clusters/data/' + _case, {
+        return this.http.post('/clusters/data/' + _case, {
             'clusters': _clusters,
             'marks_ids': marks_ids,
             'additional_filters': JSON.stringify(_additional_filters),
@@ -44,7 +43,7 @@ export class ClusterService {
                   sort_order: string,
                   mark_id: string
                   ) {
-        return this.http.post<any>(environment.backendUrl + '/clusters/get_rank_of_marked_mactime_by_id/' + _case, {
+        return this.http.post('/clusters/get_rank_of_marked_mactime_by_id/' + _case, {
             'clusters': _clusters,
             'marks_ids': marks_ids,
             'additional_filters': JSON.stringify(_additional_filters),
@@ -68,7 +67,7 @@ export class ClusterService {
                   sort_order: string,
                   date: Date
     ) {
-        return this.http.post<any>(environment.backendUrl + '/clusters/get_rank_of_mactime_by_timestamp/' + _case, {
+        return this.http.post('/clusters/get_rank_of_mactime_by_timestamp/' + _case, {
             'clusters': _clusters,
             'marks_ids': marks_ids,
             'additional_filters': JSON.stringify(_additional_filters),
@@ -86,7 +85,7 @@ export class ClusterService {
     countAllDataTotal(_case: string,
               _clusters: ClusterModel[],
               _additional_filters: object) {
-        return this.http.post<any>(environment.backendUrl + '/clusters/data_counts/' + _case, {
+        return this.http.post('/clusters/data_counts/' + _case, {
             'clusters': _clusters,
             'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
@@ -102,7 +101,7 @@ export class ClusterService {
     countData(_case: string,
             _cluster: ClusterModel,
             _additional_filters: object) {
-        return this.http.post<any>(environment.backendUrl + '/cluster/count/' + _case, {
+        return this.http.post('/cluster/count/' + _case, {
             'cluster': _cluster,
             'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
@@ -131,7 +130,7 @@ export class ClusterService {
                     _additional_filters: object,
                     timeBorder: string) {
         _additional_filters['timeBorder'] = timeBorder;
-        return this.http.post<any>(environment.backendUrl + '/clusters/entries_border/' + _case, {
+        return this.http.post('/clusters/entries_border/' + _case, {
             'clusters': _clusters,
             'additional_filters': JSON.stringify(_additional_filters)
         }).toPromise().then(
@@ -157,7 +156,7 @@ export class ClusterService {
     }
 
     loadClustersFromDatabase() {
-        return this.http.get<any>(environment.backendUrl + '/cluster-definition/all').toPromise().then(
+        return this.http.get('/cluster-definition/all').toPromise().then(
             response => {
                 return response;
             }, error => {
@@ -167,7 +166,7 @@ export class ClusterService {
     }
 
     loadClustersForUserAndCase(case_name) {
-        return this.http.get<any>(environment.backendUrl + '/cluster-definition/case/' + case_name).toPromise().then(
+        return this.http.get('/cluster-definition/case/' + case_name).toPromise().then(
             response => {
                 return response;
             }, error => {
@@ -177,22 +176,22 @@ export class ClusterService {
     }
 
     addClusterDefinition(name, definition, description, filter_name) {
-        return this.http.post<any>(environment.backendUrl + '/cluster-definition/add',
+        return this.http.post('/cluster-definition/add',
             {'name': name, 'definition': definition, 'description': description, 'filter_name': filter_name}).toPromise();
 
     }
 
     deleteClusterDefinition(id) {
-        return this.http.get<any>(environment.backendUrl + '/cluster-definition/delete/' + id).toPromise();
+        return this.http.get('/cluster-definition/delete/' + id).toPromise();
     }
 
     addUserClustersForCase(case_name, cluster_ids) {
-        return this.http.post<any>(environment.backendUrl + '/cluster-definition/case/' + case_name + '/add-user-clusters',
+        return this.http.post('/cluster-definition/case/' + case_name + '/add-user-clusters',
             {'cluster_ids' : cluster_ids}).toPromise();
     }
 
     deleteUserClustersForCase(case_name, cluster_ids) {
-        return this.http.post<any>(environment.backendUrl + '/cluster-definition/case/' + case_name + '/delete-user-clusters',
+        return this.http.post('/cluster-definition/case/' + case_name + '/delete-user-clusters',
             {'cluster_ids' : cluster_ids}).toPromise();
     }
 

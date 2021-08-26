@@ -1,39 +1,38 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {FilterModel} from '../models/filter.model';
+import { HTTPService } from './http.service';
+
 @Injectable({ providedIn: 'root' })
 export class BaseService {
-    constructor(private http: HttpClient) { }
+    constructor(private http: HTTPService) { }
 
     getAccessibleCases() {
-        return this.http.get<any>(environment.backendUrl + '/case/accessible').toPromise();
+        return this.http.get('/case/accessible').toPromise();
     }
 
     getAdministratedCases() {
-        return this.http.get<any>(environment.backendUrl + '/case/administrated').toPromise();
+        return this.http.get('/case/administrated').toPromise();
     }
 
     getAllUsers() {
-        return this.http.get<any>(environment.backendUrl + '/user/all').toPromise();
+        return this.http.get('/user/all').toPromise();
     }
 
     getAllGroups() {
-        return this.http.get<any>(environment.backendUrl + '/group/all').toPromise();
+        return this.http.get('/group/all').toPromise();
     }
 
     getAllInternalGroups() {
-        return this.http.get<any>(environment.backendUrl + '/group/internal/all').toPromise();
+        return this.http.get('/group/internal/all').toPromise();
     }
     
     addUser(login, password, name, email) {
-        return this.http.post<any>(environment.backendUrl + '/user/add',
+        return this.http.post('/user/add',
             {'login': login, 'password': password, 'name': name, 'email': email }).toPromise();
     }
 
     addGroup(name, role) {
-        return this.http.post<any>(environment.backendUrl + '/group/add',
-            {'name': name, 'role': role}).toPromise();
+        return this.http.post('/group/add', {'name': name, 'role': role}).toPromise();
     }
 
     getUserIdsWithAccessToCase(case_id, access_type) {
@@ -44,15 +43,15 @@ export class BaseService {
             role = 'user';
         }
 
-        return this.http.get<any>(environment.backendUrl + '/case/' + case_id + '/access/' + role).toPromise();
+        return this.http.get('/case/' + case_id + '/access/' + role).toPromise();
     }
 
     getGroupIdsWithAccessToCase(case_id) {
-        return this.http.get<any>(environment.backendUrl + '/case/' + case_id + '/access/groups').toPromise();
+        return this.http.get('/case/' + case_id + '/access/groups').toPromise();
     }
 
     getUsersInGroup(group_id) {
-        return this.http.get<any>(environment.backendUrl + '/group/' + group_id + '/users').toPromise();
+        return this.http.get('/group/' + group_id + '/users').toPromise();
     }
 
     manageAccessForManyUsersToCase(case_id, access_type, usersToAdd, usersToDel) {
@@ -63,60 +62,50 @@ export class BaseService {
             role = 'user';
         }
 
-        return this.http.post<any>(environment.backendUrl + '/case/' + case_id + '/access/' + role + '/manage',
+        return this.http.post('/case/' + case_id + '/access/' + role + '/manage',
             {'user_ids_to_add' : usersToAdd, 'user_ids_to_del' : usersToDel}).toPromise();
     }
 
     manageAccessForManyGroupsToCase(case_id, groupsToAdd, groupsToDel) {
-        return this.http.post<any>(environment.backendUrl + '/case/' + case_id + '/access/group/manage',
+        return this.http.post('/case/' + case_id + '/access/group/manage',
             {'group_ids_to_add' : groupsToAdd, 'group_ids_to_del' : groupsToDel}).toPromise();
     }
 
     manageUsersInGroup(group_id, usersToAdd, usersToDel) {
-        return this.http.post<any>(environment.backendUrl + '/group/users/manage',
+        return this.http.post('/group/users/manage',
             {'group_id': group_id, 'user_ids_to_add': usersToAdd, 'user_ids_to_del': usersToDel}).toPromise();
 
     }
 
     getAvailableUsersToAdd(case_id) {
-        return this.http.post<any>(environment.backendUrl + '/user/available', {'case_id': case_id}).toPromise();
+        return this.http.post('/user/available', {'case_id': case_id}).toPromise();
     }
 
     addUserAccessToCase(case_id, login, role) {
-        return this.http.post<any>(
-            environment.backendUrl + '/case/add-user', {'case_id': case_id, 'user_login': login, 'role': role}
-            ).toPromise();
+        return this.http.post('/case/add-user', {'case_id': case_id, 'user_login': login, 'role': role}).toPromise();
     }
 
     deleteUserAccessToCase(case_id, login) {
-        return this.http.post<any>(
-            environment.backendUrl + '/case/delete-user', {'case_id': case_id, 'user_login': login}
-            ).toPromise();
+        return this.http.post('/case/delete-user', {'case_id': case_id, 'user_login': login}).toPromise();
     }
 
     updateCaseDescription(case_id, description) {
-        return this.http.post<any>(
-            environment.backendUrl + '/case/update-description', {'case_id': case_id, 'description': description}
-            ).toPromise();
+        return this.http.post('/case/update-description', {'case_id': case_id, 'description': description}).toPromise();
     }
 
     async getNoteForCase(case_name) {
-        return this.http.post<any>(
-            environment.backendUrl + '/case/note', {'case_name': case_name}
-        ).toPromise();
+        return this.http.post('/case/note', {'case_name': case_name}).toPromise();
     }
 
     updateNoteForCase(case_name, updated_note) {
-        return this.http.post<any>(
-            environment.backendUrl + '/case/note/update', {'case_name': case_name, 'updated_note': updated_note}
-        ).toPromise();
+        return this.http.post('/case/note/update', {'case_name': case_name, 'updated_note': updated_note}).toPromise();
     }
     getFilters() {
-        return this.http.get<any>(environment.backendUrl + '/filter/all').toPromise();
+        return this.http.get('/filter/all').toPromise();
     }
 
     getFilterByName(name: string) {
-        return this.http.post<any>(environment.backendUrl + '/filter/name', {'name': name}).toPromise().then(response => {
+        return this.http.post('/filter/name', {'name': name}).toPromise().then(response => {
             const filter = new FilterModel();
             filter.name = response.name;
             filter.json = response.json;
@@ -130,7 +119,7 @@ export class BaseService {
     }
 
     loadFiltersFromDatabase() {
-        return this.http.get<any>(environment.backendUrl + '/filter-db/all').toPromise().then(
+        return this.http.get('/filter-db/all').toPromise().then(
             response => {
                 return response;
             }, error => {
@@ -140,7 +129,7 @@ export class BaseService {
     }
 
     deleteCase(_case: string) {
-        return this.http.delete(environment.backendUrl + '/case/delete/' + _case).toPromise();
+        return this.http.delete('/case/delete/' + _case).toPromise();
     }
 
     buildAdditionSearchFilter(searchString: string) {
