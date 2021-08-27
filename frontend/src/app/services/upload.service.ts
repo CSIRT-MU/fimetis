@@ -8,7 +8,7 @@ export class UploadService {
     constructor(private http: HttpClient) { }
 
     upload(formData) {
-        const request = new HttpRequest<FormData>('POST', environment.backendUrl + '/upload', formData, {
+        const request = new HttpRequest<FormData>('POST', environment.backendLocation + '/upload', formData, {
             reportProgress: true
         });
         return this.http.request(request);

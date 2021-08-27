@@ -9,15 +9,15 @@ export class HTTPService {
     }
 
     post(path: string, body: any)  {
-        return this.http.post<any>(environment.backendUrl + path, body);
+        return this.http.post<any>(environment.backendLocation + path, body);
     }
 
     get(path: string) {
-        return this.http.get<any>(environment.backendUrl + path);
+        return this.http.get<any>(environment.backendLocation + path);
     }
 
     delete(path:string) {
-        return this.http.delete(environment.backendUrl + path);
+        return this.http.delete(environment.backendLocation + path);
     }
 
 }
