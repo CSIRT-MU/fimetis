@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    backendUrl: 'http://localhost:5000',
+    backendLocation: '/api',
     oidc_enabled: '',
     oidc_authority: '',
     oidc_client_id: '',
