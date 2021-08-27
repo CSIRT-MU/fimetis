@@ -21,12 +21,6 @@
       src: ../../../frontend
       dest: /tmp/fimetis/
 
-  - name: Setting backend api url
-    lineinfile:
-      path: /tmp/fimetis/frontend/src/environments/environment.prod.ts
-      regexp: "^.*backendUrl.*"
-      line: "    backendUrl{{':'}} 'http{{':'}}//{{ inventory_hostname}}{{':'}}{{ backend_port }}',"
-
   - name: Setting oidc enabled indicator
     lineinfile:
       path: /tmp/fimetis/frontend/src/environments/environment.prod.ts

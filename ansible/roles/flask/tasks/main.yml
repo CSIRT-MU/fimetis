@@ -123,25 +123,13 @@
       daemon_reload: yes
       enabled: yes
       state: started 
- 
-  - name: Placing backendAPI template for nginx to sites-available
-    template:
-      src: backendAPI.j2
-      dest: /etc/nginx/sites-available/backendAPI
 
-  - name: Setting backend flask reverse port in sites-available
-    lineinfile:
-      dest: /etc/nginx/sites-available/backendAPI
-      regexp: "^.*listen .*"
-      line: "    listen {{ backend_port }};"
-
-  - name: Creating symlinks for nginx config to sites-enabled
-    file:
-      src: "/etc/nginx/sites-available/{{ item }}"
-      dest: "/etc/nginx/sites-enabled{{ item }}"
-      state: link
-    with_items:
-      - backendAPI
+  - name: The backend API is reachable as part of the application endpoint
+    replace:
+      path: /etc/nginx/sites-available/angular
+      after: 'location /'
+      regexp: '^}$'
+      replace: '\nclient_max_body_size 100G;\nlocation /api/ {\n  rewrite /api/(.+) /$1 break;\n  include uwsgi_params;\n  uwsgi_pass unix:/opt/backend/backendAPI.sock;\n}\n}'
 
   - name: Restarting nginx
     systemd: 
