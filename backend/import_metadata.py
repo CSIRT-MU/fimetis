@@ -14,6 +14,8 @@ import argparse
 
 # logging.basicConfig(format='%(asctime)s %(levelname)-8s %(name)s %(message)s', level=logging.INFO)
 
+# the 4096 limit on filename below should be long enough, I'm not sure about performance implications though.
+# Consider using the wildcard keyword that was introduced by ES 7.9
 mappings =  {
   "properties": {
     "@timestamp": { "type": "date" },
