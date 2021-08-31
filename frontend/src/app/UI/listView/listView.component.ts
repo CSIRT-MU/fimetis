@@ -172,10 +172,6 @@ export class ListViewComponent {
             }
             this.scrollToIndex(this.visibleDataFirstIndex - shift + 3);
             this.pressedNumbers = [];
-            this.toaster.success(
-                'You have scrolled up by ' + (shift === view_size ? 'one page' : shift + ' lines') ,
-                'Shortcut ' + (shift === view_size ? '' : shift) + 'k'
-            );
             return false; // Prevent bubbling
         }, undefined, 'Scroll page up, or by number of lines up if used in format xPageUp'));
         this._hotkeysService.add(new Hotkey(['pagedown'], (event: KeyboardEvent): boolean => {
@@ -191,10 +187,6 @@ export class ListViewComponent {
             }
             this.scrollToIndex(this.visibleDataFirstIndex + shift);
             this.pressedNumbers = [];
-            this.toaster.success(
-                'You have scrolled down by ' + (shift === view_size ? 'one page' : shift + ' lines'),
-                'Shortcut ' + (shift === view_size ? '' : shift) + 'j'
-            );
             return false; // Prevent bubbling
         }, undefined, 'Scroll page down, or by number of lines down if used in format xPageDown'));
         this._hotkeysService.add(new Hotkey(['ctrl+f', '/'], (event: KeyboardEvent): boolean => {
