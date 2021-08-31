@@ -14,16 +14,64 @@ import argparse
 
 # logging.basicConfig(format='%(asctime)s %(levelname)-8s %(name)s %(message)s', level=logging.INFO)
 
+mappings =  {
+  "properties": {
+    "@timestamp": { "type": "date" },
+    "File Name": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 4096
+        }
+      }
+    },
+    "GID": { "type": "long" },
+    "Meta": { "type": "long" },
+    "Mode": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 10
+        }
+      }
+    },
+    "Size": { "type": "long" },
+    "Type": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 4
+        }
+      }
+    },
+    "UID": { "type": "long" },
+    "case": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
+        }
+      }
+    }
+  }
+}
 
-def create_index(client, index):
+
+def create_index(client, index, es_type):
     create_index_body = {
       'settings': {
         # 'number_of_shards': 1,
         'max_result_window': 20000000,
+      },
+      'mappings': {
+        es_type: mappings,
       }
     }
 
-    # create empty index
     try:
         client.indices.create(
             index=index,
@@ -107,7 +155,7 @@ def mactime_stream(csv_file_path, case_name, remove_deleted=True, remove_deleted
 
 def import_csv(csv_file_path, file_type, es_client, es_index, es_type, case_name, remove_deleted=True, remove_deleted_realloc=True,
                delete_source=True):
-    create_index(es_client, es_index)
+    create_index(es_client, es_index, es_type)
     logging.info('Import file %s to case: %s' % (csv_file_path, case_name))
     if es_type is None:
         es_type = ''
