@@ -78,7 +78,7 @@ def l2tcsv_stream(csv_file_path, case_name, remove_deleted=True, remove_deleted_
                 else:
                     yield line
             except ValueError as valueException:
-                logging.error('ERROR ValueError: ' + str(valueException))
+                logging.error('ERROR ValueError: ' + str(line))
                 pass
 
 
@@ -101,7 +101,7 @@ def mactime_stream(csv_file_path, case_name, remove_deleted=True, remove_deleted
                 else:
                     yield line
             except ValueError as valueException:
-                logging.error('ERROR ValueError: ' + str(valueException))
+                logging.error('ERROR ValueError: ' + str(line))
                 pass
 
 
