@@ -10,8 +10,15 @@ exact HW parameters depend on planned workload and volume of processed data.
 
 Once the service has been deployed, it can be accessed using http://<IP>/. The
 access credentials can be looked up in the ansible-conf.yml configuration
-file. You start by "Upload file to dataset" (see the menu in the top right)
-and then displaying the Dashboard.
+file.
 
-The input data should be in the format produced by the fls tool from the
-Sleuthkit.
+You start by "Upload file to dataset" (see the menu in the top right)
+and then displaying the Dashboard. The input data should be in the format
+produced by the fls or mactime tools from the Sleuthkit. It's better to
+check the Fimetis log file to see the progress. The log is by default
+available as /var/log/fimetis/error.log on the server.
+
+When the data is uploaded, it is necessary to enable the clusters providing
+views on the data. Click the button titled "Managed Clusters" (in the bottom
+left corned), select all cluster and save the settings. The GUI will display
+the whole datasets now.
