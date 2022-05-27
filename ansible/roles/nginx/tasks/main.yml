@@ -92,12 +92,11 @@
       state: absent
     loop:
       - /etc/nginx/sites-available/default
-      - /etc/nginx/sites-enabled/default
  
   - name: Creating symlinks for nginx configs to sites-enabled
     file:
       src: "/etc/nginx/sites-available/{{ item }}"
-      dest: "/etc/nginx/sites-enabled{{ item }}"
+      dest: "/etc/nginx/sites-enabled/{{ item }}"
       state: link
     with_items:
       - elastic-reverse-proxy
