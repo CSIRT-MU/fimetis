@@ -92,6 +92,7 @@
       state: absent
     loop:
       - /etc/nginx/sites-available/default
+      - /etc/nginx/sites-enabled/default
  
   - name: Creating symlinks for nginx configs to sites-enabled
     file:
