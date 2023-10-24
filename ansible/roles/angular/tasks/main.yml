@@ -4,8 +4,6 @@
   
   - name: Downloading installation script for nodejs
     shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-    args:
-      warn: false
 
   - name: Installing nodejs
     apt: 
