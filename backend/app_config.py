@@ -2,11 +2,19 @@ import configparser
 
 section = 'fimetis'
 
+app_defaults = {
+    'db_name': 'fimetis',
+    'db_user': 'fimetis',
+    'ext_user_group_urn': 'urn:geant:muni.cz:res:CSIRT-MU#idm.ics.muni.cz',
+    'ext_admin_group_urn': 'urn:geant:muni.cz:res:handlingCSIRTMU#idm.ics.muni.cz',
+
+}
+
 class AppConfig:
     config = None
 
     def __init__(self, path):
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(defaults=app_defaults)
         config.read(path)
         self.config = config
 
