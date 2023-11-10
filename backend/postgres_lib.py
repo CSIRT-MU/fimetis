@@ -1,15 +1,12 @@
 import psycopg2
 from contextlib import closing
 
-PG_USER = 'fimetis'
-PG_DB = 'fimetis'
-
-EXTERNAL_USER_GROUP = 'urn:geant:muni.cz:res:CSIRT-MU#idm.ics.muni.cz'
-EXTERNAL_ADMIN_GROUP = 'urn:geant:muni.cz:res:handlingCSIRTMU#idm.ics.muni.cz'
+from app_config import AppConfig
 
 
 def get_db_connection():
-    return psycopg2.connect(database=PG_DB, user=PG_USER, password=None)
+    conf = AppConfig()
+    return psycopg2.connect(database=conf.get_str('db_name'), user=conf.get_str('db_user'), password=None)
 
 
 def insert_case(name, description):
@@ -113,10 +110,12 @@ def get_accessible_cases(user_name):
         is_super_admin = user[0]
         user_id = user[1]
 
+        conf = AppConfig()
+
         cur.execute(
             'SELECT urn FROM "group" INNER JOIN "user-group" '
             'ON "user-group".group_id="group".id and "group".urn=%s and "group".is_external=%s and user_id=%s',
-            (EXTERNAL_ADMIN_GROUP, True, user_id)
+            (conf.get_str('ext_admin_group_urn'), True, user_id)
         )
 
         external_super_admin = cur.fetchone() is not None
@@ -124,7 +123,7 @@ def get_accessible_cases(user_name):
         cur.execute(
             'SELECT urn FROM "group" INNER JOIN "user-group" '
             'ON "user-group".group_id="group".id and "group".urn=%s and "group".is_external=%s and user_id=%s',
-            (EXTERNAL_USER_GROUP, True, user_id)
+            (conf.get_str('ext_user_group_urn'), True, user_id)
         )
 
         external_super_reader = cur.fetchone() is not None
@@ -548,8 +547,9 @@ def is_user_in_external_group(user_id):
 
     conn.close()
 
+    conf = AppConfig()
     for group in groups:
-        if group[0] in [EXTERNAL_USER_GROUP, EXTERNAL_ADMIN_GROUP]:
+        if group[0] in [conf.get_str('ext_admin_group_urn'), conf.get_str('ext_admin_group_urn')]:
             return True
 
     return False
