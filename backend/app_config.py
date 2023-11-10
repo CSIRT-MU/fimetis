@@ -13,7 +13,7 @@ app_defaults = {
 class AppConfig:
     config = None
 
-    def __init__(self, path):
+    def __init__(self, path='/etc/fimetis.conf'):
         config = configparser.ConfigParser(defaults=app_defaults)
         config.read(path)
         self.config = config
