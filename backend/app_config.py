@@ -7,7 +7,7 @@ app_defaults = {
     'db_user': 'fimetis',
     'ext_user_group_urn': 'urn:geant:muni.cz:res:CSIRT-MU#idm.ics.muni.cz',
     'ext_admin_group_urn': 'urn:geant:muni.cz:res:handlingCSIRTMU#idm.ics.muni.cz',
-
+    'authentication': True,
 }
 
 class AppConfig:

@@ -18,6 +18,8 @@ import logging
 from base64 import b64encode
 import requests
 
+from app_config import AppConfig
+
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO)
 
@@ -45,8 +47,12 @@ app.config['oidc_client_secret'] = 'XXXXXXX'
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
+        conf = AppConfig()
+        if conf.get_bool('authentication') == False:
+            current_user = {'username': 'analyst', 'is_super_admin': True }
+            return f(current_user, *args, **kwargs)
 
+        token = None
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
 
