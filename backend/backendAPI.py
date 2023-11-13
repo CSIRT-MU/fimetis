@@ -49,7 +49,7 @@ def token_required(f):
     def decorated(*args, **kwargs):
         conf = AppConfig()
         if conf.get_bool('authentication') == False:
-            current_user = {'username': 'analyst', 'is_super_admin': True }
+            current_user = {'username': 'anonymous', 'is_super_admin': True }
             return f(current_user, *args, **kwargs)
 
         token = None
