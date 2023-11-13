@@ -19,10 +19,10 @@ class AppConfig:
         self.config = config
 
     def get_str(self, key):
-        return self.config.get(section, key)
+        return self.config.get(section, key, fallback=app_defaults[key])
 
     def get_int(self, key):
-        return self.config.getint(section, key)
+        return self.config.getint(section, key, fallback=app_defaults[key])
 
     def get_bool(self, key):
-        return self.config.getboolean(section, key)
+        return self.config.getboolean(section, key, fallback=app_defaults[key])
