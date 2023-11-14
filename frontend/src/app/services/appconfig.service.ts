@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 export interface AppConfig {
+    disable_authentication: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
