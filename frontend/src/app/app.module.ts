@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AppRoutingModule} from './app-routing.module';
@@ -65,7 +65,11 @@ import { AddGroupComponent } from './UI/dialog/add-group/add-group.component';
 import { SelectGroupsComponent } from './UI/dialog/select-groups/select-groups.component';
 import { UserProfileComponent } from './UI/user/user-profile/user-profile.component';
 import { HTTPService } from './services/http.service';
+import { AppConfigService } from './services/appconfig.service';
 
+export function initConfig(appConfig: AppConfigService) {
+    return () => appConfig.loadConfig();
+}
 
 @NgModule({
     declarations: [
@@ -158,6 +162,7 @@ import { HTTPService } from './services/http.service';
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        { provide: APP_INITIALIZER, useFactory: initConfig, deps: [AppConfigService], multi: true },
         HTTPService,
     ],
     bootstrap: [AppComponent]
