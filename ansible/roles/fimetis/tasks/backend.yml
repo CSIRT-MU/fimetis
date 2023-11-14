@@ -1,0 +1,47 @@
+---
+
+- name: Fimetis prerequisites are installed
+  apt:
+    name: [ python3-pip, python3-dev, build-essential, libssl-dev, libffi-dev, python3-setuptools, python-setuptools, libpq-dev, sleuthkit, python3-venv ]
+    update_cache: yes
+
+- name: Python virtualenv is installed
+  shell: pip3 install virtualenv
+
+- name: A virtualenv for Fimetis is created
+  shell: virtualenv "{{ fimetis_root }}/backend-venv" -p python3 creates="{{ fimetis_root }}/backend-venv"
+
+- name: Updating pip in virtualenv for flask
+  shell: source "{{ fimetis_root }}/backend-venv/bin/activate" && pip install -U pip
+  args:
+    executable: /bin/bash
+
+- name: Installing flask requirements into virtualenv
+  pip:
+    requirements: "{{ fimetis_root }}/src/backend/py_requirements"
+    executable: "{{ fimetis_root }}/backend-venv/bin/pip"
+
+- name: Fimetis configuration is created
+  template:
+    src: fimetis.conf.j2
+    dest: /etc/fimetis.conf
+    owner: root
+
+- name: Systemd service unit for Fimetis is configured
+  template:
+    src: fimetis.service.j2
+    dest: /etc/systemd/system/fimetis.service
+
+- name: Directory for Fimetis logs exists
+  file:
+     path: /var/log/fimetis/
+     owner: root
+     group: root
+     state: directory
+
+- name: Fimetis service is enabled and running
+  systemd:
+    name: fimetis
+    daemon_reload: yes
+    enabled: yes
+    state: restarted

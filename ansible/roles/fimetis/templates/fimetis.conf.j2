@@ -1,0 +1,20 @@
+[fimetis]
+db_name = {{ fimetis_db_name }}
+db_user = {{ fimetis_db_user }}
+authentication = {{ fimetis_authentication }}
+
+[uwsgi]
+module = wsgi:app
+
+master = true
+processes = 5
+
+socket = /var/run/fimetis.sock
+chown-socket = root:www-data
+chmod-socket = 664
+vacuum = true
+
+die-on-term = true
+
+req-logger = file:/var/log/fimetis/access.log
+logger = file:/var/log/fimetis/error.log

@@ -1,0 +1,47 @@
+---
+
+- name: Directory for the Fimetis component is created
+  file:
+     path: "{{ fimetis_root }}"
+     owner: root
+     group: root
+     state: directory
+
+- name: Fimetis sources are pulled
+  git:
+    repo: https://github.com/CSIRT-MU/fimetis.git
+    dest: "{{ fimetis_root }}/src"
+
+- include_tasks: frontend.yml
+
+#- name: The backend API is reachable as part of the application endpoint
+#  replace:
+#    path: /etc/nginx/sites-available/angular
+#    after: 'location /'
+#    regexp: '^}$'
+#    replace: '\nclient_max_body_size 100G;\nlocation /api/ {\n  rewrite /api/(.+) /$1 break;\n  include uwsgi_params;\n  uwsgi_pass unix:/opt/fimetis/backend/backendAPI.sock;\n}\n}'
+#
+#- name: Restarting nginx
+#  systemd:
+#    name: nginx
+#    state: restarted
+
+- include_tasks: backend.yml
+
+- name: ngnix configuration for Fimetis is available
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/fimetis.conf
+  register: nginx_config
+
+- name: ngnix configuration for Fimetis is active
+  file:
+    src: /etc/nginx/sites-available/fimetis.conf
+    dest: /etc/nginx/sites-enabled/fimetis.conf
+    state: link
+
+- name: ngnix is restarted
+  service:
+    name: nginx
+    state: restarted
+  when: nginx_config.changed

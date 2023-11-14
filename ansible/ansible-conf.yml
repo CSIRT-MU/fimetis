@@ -10,9 +10,6 @@ kibana_passwd: timesix-elk
 kibana_localhost_port: 5601
 kibana_app_port: 8080
 
-# Angular UI app
-angular_app_port: 80
-
 # Backend flask api
 backend_port: 5001
 backend_localhost_port: 5000

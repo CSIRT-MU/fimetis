@@ -29,17 +29,6 @@
       src: kibana.j2
       dest: /etc/nginx/sites-available/kibana
 
-  - name: Placing template angular config
-    template:
-      src: angular.j2
-      dest: /etc/nginx/sites-available/angular
-
-  - name: Setting of angular app port
-    lineinfile:
-      dest: /etc/nginx/sites-available/angular
-      regexp: "^.*listen .*;"
-      line: "    listen {{ angular_app_port }};"
-
   - name: Setting elasticsearch localhost port
     lineinfile:
       dest: /etc/nginx/sites-available/elastic-reverse-proxy 
@@ -102,7 +91,6 @@
     with_items:
       - elastic-reverse-proxy
       - kibana
-      - angular
 
   - name: Setting nginx to run after boot
     systemd: 

@@ -1,0 +1,11 @@
+---
+
+- include_tasks: build-frontend.yml
+
+- name: Existing frontend installation is purged
+  file:
+    path: "{{ fimetis_root }}/fimetis-angular"
+    state: absent
+
+- name:  Placing build app to /opt/
+  shell: mv "{{ fimetis_root }}/src/frontend/dist/fimetis-angular" "{{ fimetis_root }}"

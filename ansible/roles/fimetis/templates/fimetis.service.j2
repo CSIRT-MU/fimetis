@@ -1,0 +1,13 @@
+[Unit]
+Description = Fimetis backend
+After = network.target
+
+[Service]
+User = root
+Group = root
+WorkingDirectory = {{ fimetis_root }}/src/backend
+Environment = "PATH={{ fimetis_root}}/backend-venv/bin:/usr/bin:/usr/sbin"
+ExecStart = {{ fimetis_root }}/backend-venv/bin/uwsgi --ini /etc/fimetis.conf
+
+[Install]
+WantedBy = multi-user.target
