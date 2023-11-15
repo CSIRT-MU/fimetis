@@ -77,10 +77,6 @@ CREATE TABLE "group" (
   is_external boolean DEFAULT false
 );
 
-INSERT INTO "group" (name, urn, role) VALUES({{ oidc_user_group_name }}, {{ oidc_user_group_urn }}, 'user');
-INSERT INTO "group" (name, urn, role) VALUES({{ oidc_admin_group_name }}, {{ oidc_admin_group_urn }}, 'admin');
-
-
 CREATE TABLE "user-group" (
   user_id int REFERENCES "user"(id),
   group_id int REFERENCES "group"(id)
