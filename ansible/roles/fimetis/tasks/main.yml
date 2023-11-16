@@ -1,5 +1,9 @@
 ---
 
+- name: Required packages are installed
+  apt:
+    name: [ git ]
+
 - name: Directory for the Fimetis component is created
   file:
      path: "{{ fimetis_root }}"
