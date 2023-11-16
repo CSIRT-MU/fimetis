@@ -4,7 +4,7 @@
   apt:
     name: [ git ]
 
-- name: Directory for the Fimetis component is created
+- name: Application directory is created
   file:
      path: "{{ fimetis_root }}"
      owner: root
