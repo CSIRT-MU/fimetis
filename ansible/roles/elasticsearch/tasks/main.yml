@@ -1,13 +1,14 @@
 ---
 # Tasks for elasticsearch
 
-  - name: Make sure Java is available
+  - name: Make sure required packages are available
     apt:
       name: "{{ item }}"
       update_cache: yes
     loop:
       - default-jre
       - default-jdk
+      - curl
   
   - name: Downloading and installing the public signing key for elasticsearch
     apt_key:
