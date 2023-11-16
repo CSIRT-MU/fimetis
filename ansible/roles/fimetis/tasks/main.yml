@@ -28,8 +28,13 @@
 - include_tasks: frontend.yml
 - include_tasks: backend.yml
 
-- name: Importing super admin user to database
+- name: Create the application admin user
   shell: "{{ fimetis_root }}/src/backend/import_super_admin.py --user {{ super_admin_login }} --passwd {{ super_admin_passwd }}"
+  become_user: "{{ fimetis_user}}"
+  become: yes
+
+- name: Create an anymous user for unauthenticated sessions
+  shell: "{{ fimetis_root }}/src/backend/import_super_admin.py --user anonymous --passwd disabled"
   become_user: "{{ fimetis_user}}"
   become: yes
 

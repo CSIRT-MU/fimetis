@@ -15,7 +15,12 @@ def main():
 
     cur = conn.cursor()
 
-    cur.execute('INSERT INTO "user" (login, password, is_super_admin) VALUES (%s, %s, %s)', (args.user, generate_password_hash(args.passwd), True))
+    if args.passwd == "disabled":
+        passwd = "!" # this won't clash with any hash value
+    else:
+        passwd = generate_password_hash(args.passwd)
+
+    cur.execute('INSERT INTO "user" (login, password, is_super_admin) VALUES (%s, %s, %s)', (args.user, passwd, True))
 
     conn.commit()
     cur.close()
