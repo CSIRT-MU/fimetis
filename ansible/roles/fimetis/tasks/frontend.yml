@@ -9,3 +9,8 @@
 
 - name:  Placing build app to /opt/
   shell: mv "{{ fimetis_root }}/src/frontend/dist/fimetis-angular" "{{ fimetis_root }}"
+
+- name: Set the frontend authentication
+  template:
+    src: fimetis.json.j2
+    dest: "{{ fimetis_root }}/fimetis-angular/assets/fimetis.json"
