@@ -1,5 +1,4 @@
 fimetis_db_name: fimetis
-fimetis_db_user: fimetis
 fimetis_user: fimetis
 fimetis_authentication: on
 fimetis_root: /opt/fimetis

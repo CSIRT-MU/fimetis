@@ -14,10 +14,6 @@ kibana_app_port: 8080
 backend_port: 5001
 backend_localhost_port: 5000
 
-# Postgres db for case & user management
-pg_user: fimetis
-pg_db: fimetis
-
 # Super admin account
 super_admin_login: admin
 super_admin_passwd: timesix-elk

@@ -1,83 +1,38 @@
 ---
+- name: Prerequisites for setting up DB are installed
+  apt:
+    name: [ postgresql-client-common ]
 
-- name: Create postgres user for fimetis
-  shell: sudo -u postgres createuser -s {{ pg_user }}
+- name: DB user for Fimetis is created
+  shell: createuser -s {{ fimetis_user }}
+  become: yes
+  become_user: postgres
 
 - name: Create database for fimetis
-  shell: sudo -u postgres createdb {{ pg_db }}
+  shell: createdb -O {{ fimetis_user }} {{ fimetis_db_name }}
+  become: yes
+  become_user: postgres
 
-- name: Create linux user for accessing postgres role in db
-  shell: sudo adduser --disabled-password --gecos "" {{ pg_user }}
+- name: Fimetis database schema is created
+  shell: "psql -f {{ fimetis_root }}/src/backend/sql/init.sql"
+  become_user: "{{ fimetis_user}}"
+  become: yes
 
-- name: Copy init database sql file from role
-  copy:
-    src: "{{ role_path }}/files/init.sql"
-    dest: /tmp/
+- name: Basic database content is populated
+  shell: "psql -f {{ fimetis_root }}/src/backend/sql/{{ item }}"
+  become_user: "{{ fimetis_user}}"
+  become: yes
+  loop:
+    - filter.sql
+    - cluster.sql
 
-- name: Setting user group params into sql
-  lineinfile:
-    dest: /tmp/init.sql
-    regexp: ".*oidc_user_group_name.*"
-    line: "INSERT INTO \"group\" (name, urn, role, is_external) VALUES('{{ oidc_user_group_name }}', '{{ oidc_user_group_urn }}', 'user', TRUE);"
-
-- name: Setting admin group params into sql
-  lineinfile:
-    dest: /tmp/init.sql
-    regexp: ".*oidc_admin_group_name.*"
-    line: "INSERT INTO \"group\" (name, urn, role, is_external) VALUES('{{ oidc_admin_group_name }}', '{{ oidc_admin_group_urn }}', 'admin', TRUE);"
-
-- name: Copy filter database sql file from role
-  copy:
-    src: "{{ role_path }}/files/filter.sql"
-    dest: /tmp/
-
-- name: Copy cluster database sql file from role
-  copy:
-    src: "{{ role_path }}/files/cluster.sql"
-    dest: /tmp/
-
-- name: Copying import_super_admin.py in /tmp/
-  copy:
-    src: "{{ role_path }}/files/import_super_admin.py"
-    dest: /opt/backend/
-
-- name: Chmod +x superamin.py
-  shell: chmod +x /opt/backend/import_super_admin.py
-
-- name: Init fimetis tables
-  shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f init.sql"
-  args:
-    chdir: /tmp/
-
-- name: Init filters
-  shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f filter.sql"
-  args:
-    chdir: /tmp/
-
-- name: Init clusters
-  shell: "sudo -u {{ pg_user }} psql {{ pg_user }} {{ pg_db }} -f cluster.sql"
-  args:
-    chdir: /tmp/
-
-
-#  - name: Cleaning used init database file
-#    shell: rm /tmp/init.sql
-
-- name: Grant priveleges
-  postgresql_pg_hba:
-    dest: /etc/postgresql/12/main/pg_hba.conf
-    contype: local
-    users: "{{ pg_user }}"
-    databases: "{{ pg_db }}"
-    method: trust
-    create: true
-
-- name: Restarting postgresql 
-  service:
-    name: postgresql
-    state: restarted
- 
 - name: Importing super admin user to database
-  shell: "source /opt/backend/venv/bin/activate && /opt/backend/import_super_admin.py --user {{ super_admin_login }} --passwd {{ super_admin_passwd }}"
-  args:
-    executable: /bin/bash
+  shell: "{{ fimetis_root }}/src/backend/import_super_admin.py --user {{ super_admin_login }} --passwd {{ super_admin_passwd }}"
+  become_user: "{{ fimetis_user}}"
+  become: yes
+
+#- name: OIDC groups are set in the database
+#  shell: psql postgresql://{{ fimetis_db_user }}:{{ fimetis_db_passwd }}@localhost/{{ fimetis_db_name }} -c '{{ item }}'
+#  loop:
+#    - INSERT INTO "group" (name, urn, role) VALUES({{ oidc_user_group_name }}, {{ oidc_user_group_urn }}, "user");
+#    - INSERT INTO "group" (name, urn, role) VALUES({{ oidc_admin_group_name }}, {{ oidc_admin_group_urn }}, "admin");
