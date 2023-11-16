@@ -28,6 +28,11 @@
 - include_tasks: frontend.yml
 - include_tasks: backend.yml
 
+- name: Importing super admin user to database
+  shell: "{{ fimetis_root }}/src/backend/import_super_admin.py --user {{ super_admin_login }} --passwd {{ super_admin_passwd }}"
+  become_user: "{{ fimetis_user}}"
+  become: yes
+
 - name: ngnix configuration for Fimetis is available
   template:
     src: nginx.conf.j2

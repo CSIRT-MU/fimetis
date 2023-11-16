@@ -26,11 +26,6 @@
     - filter.sql
     - cluster.sql
 
-- name: Importing super admin user to database
-  shell: "{{ fimetis_root }}/src/backend/import_super_admin.py --user {{ super_admin_login }} --passwd {{ super_admin_passwd }}"
-  become_user: "{{ fimetis_user}}"
-  become: yes
-
 #- name: OIDC groups are set in the database
 #  shell: psql postgresql://{{ fimetis_db_user }}:{{ fimetis_db_passwd }}@localhost/{{ fimetis_db_name }} -c '{{ item }}'
 #  loop:
