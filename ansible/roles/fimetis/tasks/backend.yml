@@ -5,8 +5,12 @@
     name: [ python3-pip, python3-dev, build-essential, libssl-dev, libffi-dev, python3-setuptools, python-setuptools, libpq-dev, sleuthkit, python3-venv ]
     update_cache: yes
 
-- name: Python virtualenv is installed
-  shell: pip3 install virtualenv
+- name: Required PIP packages are installed
+  shell: pip3 install {{ item }}
+  loop:
+    - virtualenv
+    - psycopg2
+    - werkzeug
 
 - name: A virtualenv for Fimetis is created
   shell: virtualenv "{{ fimetis_root }}/backend-venv" -p python3 creates="{{ fimetis_root }}/backend-venv"

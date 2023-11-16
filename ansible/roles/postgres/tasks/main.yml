@@ -14,12 +14,6 @@
   - name: upgrade setuptools
     shell: pip3 install --upgrade setuptools
 
-  - name: psycopg2
-    shell: pip3 install psycopg2
-
-  - name: werkzeug
-    shell: pip3 install werkzeug
- 
   - name: Starting and setting running postgresql after boot
     systemd:
       name: postgresql
