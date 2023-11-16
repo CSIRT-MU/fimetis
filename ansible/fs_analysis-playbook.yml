@@ -24,4 +24,4 @@
   - { role: nginx }
   - { role: elasticsearch }
   - { role: fimetis }
-  - { role: upload-data }
+#  - { role: upload-data }
