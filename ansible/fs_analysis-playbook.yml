@@ -20,10 +20,8 @@
         - apt-get -y install python3
 
   roles:
-  - { role: elasticsearch }
-  - { role: angular }
-#  - { role: kibana }
-  - { role: nginx }
-  - { role: flask }
   - { role: postgres }
+  - { role: nginx }
+  - { role: elasticsearch }
+  - { role: fimetis }
   - { role: upload-data }
