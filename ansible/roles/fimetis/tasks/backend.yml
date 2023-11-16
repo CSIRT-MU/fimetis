@@ -39,9 +39,16 @@
 - name: Directory for Fimetis logs exists
   file:
      path: /var/log/fimetis/
-     owner: root
+     owner: "{{ fimetis_user }}"
      group: root
      state: directory
+
+- name: Directory for Fimetis socket exists
+  file:
+    path: /var/run/fimetis
+    owner: "{{ fimetis_user }}"
+    group: www-data
+    state: directory
 
 - name: Fimetis service is enabled and running
   systemd:

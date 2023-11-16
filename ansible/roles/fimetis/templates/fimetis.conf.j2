@@ -9,8 +9,8 @@ module = wsgi:app
 master = true
 processes = 5
 
-socket = /var/run/fimetis.sock
-chown-socket = root:www-data
+socket = /var/run/fimetis/fimetis.sock
+chown-socket = {{ fimetis_user }}:www-data
 chmod-socket = 664
 vacuum = true
 

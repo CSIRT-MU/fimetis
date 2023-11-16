@@ -13,6 +13,6 @@ server {
     location /api/ {
         rewrite /api/(.+) /$1 break;
         include uwsgi_params;
-        uwsgi_pass unix:/var/run/fimetis.sock;
+        uwsgi_pass unix:/var/run/fimetis/fimetis.sock;
     }
 }

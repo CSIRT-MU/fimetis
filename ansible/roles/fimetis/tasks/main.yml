@@ -12,6 +12,14 @@
     repo: https://github.com/CSIRT-MU/fimetis.git
     dest: "{{ fimetis_root }}/src"
 
+- name: Service system account is created
+  user:
+    name: "{{ fimetis_user }}"
+    comment: Fimetis
+    home: "{{ fimetis_root }}"
+    create_home: False
+    password_lock: True
+
 - include_tasks: frontend.yml
 
 #- name: The backend API is reachable as part of the application endpoint

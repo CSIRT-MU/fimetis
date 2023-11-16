@@ -3,8 +3,8 @@ Description = Fimetis backend
 After = network.target
 
 [Service]
-User = root
-Group = root
+User = {{ fimetis_user }}
+Group = www-data
 WorkingDirectory = {{ fimetis_root }}/src/backend
 Environment = "PATH={{ fimetis_root}}/backend-venv/bin:/usr/bin:/usr/sbin"
 ExecStart = {{ fimetis_root }}/backend-venv/bin/uwsgi --ini /etc/fimetis.conf
