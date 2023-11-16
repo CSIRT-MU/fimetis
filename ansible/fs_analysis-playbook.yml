@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  remote_user: ubuntu
+  remote_user: root
   become: yes
 
   vars_files:
@@ -16,8 +16,8 @@
     - name: Make sure Python is available
       raw: "{{ item }}"
       loop:
-        - sudo apt-get update
-        - sudo apt-get -y install python3
+        - apt-get update
+        - apt-get -y install python3
 
   roles:
   - { role: elasticsearch }
