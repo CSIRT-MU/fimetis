@@ -8,7 +8,6 @@
       - postgresql-contrib
       - python3-pip
       - libpq-dev
-      - python-ipaddress
       update_cache: yes
 
   - name: upgrade setuptools

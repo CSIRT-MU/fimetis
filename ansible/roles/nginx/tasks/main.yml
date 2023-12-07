@@ -6,14 +6,6 @@
     apt: 
       name: python-setuptools
 
-  - name: Install passlib
-    apt:
-      name: python3-passlib
-
-  - name: install passlib
-    apt: 
-      name: python-passlib
-
   - name: Installing nginx
     apt:
       name: nginx
