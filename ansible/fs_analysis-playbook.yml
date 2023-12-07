@@ -10,8 +10,8 @@
     - name: Check we're on expected OS
       assert:
         that:
-          - ansible_distribution == "Ubuntu" and ansible_distribution_version == "20.04"
-        msg: "Ubuntu 20.04 is required at the moment"
+          - ansible_distribution == "Ubuntu" and ansible_distribution_version == "22.04"
+        msg: "Ubuntu 22.04 is required at the moment"
 
     - name: Make sure Python is available
       raw: "{{ item }}"

@@ -5,7 +5,7 @@ ansible-playbook -i <IP>, fs_analysis-playbook.yml
 
 Ansible v. 2.9 or better is required.
 
-The target system needs Ubuntu 20.04, it should have at least 8 GB RAM. The
+The target system needs Ubuntu 22.04, it should have at least 8 GB RAM. The
 exact HW parameters depend on planned workload and volume of processed data.
 
 Once the service has been deployed, it can be accessed using http://<IP>/. The
