@@ -33,40 +33,6 @@
       regexp: "^.*listen .*"
       line: "    listen {{ elastic_reverse_proxy_port }};"
 
-  - name: Setting kibana local port
-    lineinfile:
-      dest: /etc/nginx/sites-available/kibana
-      regexp: "^.*proxy_pass .*"
-      line: "        proxy_pass http{{':'}}//localhost{{':'}}{{ kibana_localhost_port }};"
-
-  - name: Setting kibana app port
-    lineinfile:
-      dest: /etc/nginx/sites-available/kibana
-      regexp: "^.*listen .*"
-      line: "    listen {{ kibana_app_port }};"
-
-  - name: Installing pip3
-    apt:
-      name: python3-pip
-      state: present
-
-#  - name: Installing passlib
-#    pip:
-#      name: passlib
-#      executable: pip3
-
-#  - name: Creating passwd file for elastic
-#    htpasswd:
-#      path: /etc/nginx/.elastic-user
-#      name: "{{ elastic_user }}"
-#      password: "{{ elastic_passwd }}"
-
-  - name: Creating passwd file for kibana
-    htpasswd: 
-      path: /etc/nginx/.kibana-user
-      name: "{{ kibana_user }}"
-      password: "{{ kibana_passwd }}"
-
   - name: Removing default config for nginx 
     file:
       path: "{{ item }}"
