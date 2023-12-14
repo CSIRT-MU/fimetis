@@ -13,11 +13,6 @@
       src: elastic-reverse-proxy.j2
       dest: /etc/nginx/sites-available/elastic-reverse-proxy
 
-  - name: Placing template of kibana config
-    template:
-      src: kibana.j2
-      dest: /etc/nginx/sites-available/kibana
-
   - name: Setting elasticsearch localhost port
     lineinfile:
       dest: /etc/nginx/sites-available/elastic-reverse-proxy 
@@ -45,7 +40,6 @@
       state: link
     with_items:
       - elastic-reverse-proxy
-      - kibana
 
   - name: Setting nginx to run after boot
     systemd: 
