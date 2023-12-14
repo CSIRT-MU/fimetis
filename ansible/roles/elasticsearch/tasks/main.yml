@@ -1,23 +1,14 @@
 ---
   - name: Make sure required packages are available
     apt:
-      name: "{{ item }}"
+      name: [ default-jre, default-jdk, curl, gpg, apt-transport-https ]
       update_cache: yes
-    loop:
-      - default-jre
-      - default-jdk
-      - curl
   
   - name: Downloading and installing the public signing key for elasticsearch
     apt_key:
        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
        id: 46095ACC8548582C1A2699A9D27D666CD88E42B4
        state: present
-
-  - name: Installing apt-transport-https as a prerequisite
-    apt: 
-       name: apt-transport-https
-       update_cache: yes
 
   - name: Saving the repository definition of elasticsearch 6
     apt_repository: 
