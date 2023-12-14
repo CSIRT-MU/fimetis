@@ -2,7 +2,7 @@
 
 - name: Required packages are installed
   apt:
-    name: [ git ]
+    name: [ git, sudo ]
 
 - name: Application directory is created
   file:

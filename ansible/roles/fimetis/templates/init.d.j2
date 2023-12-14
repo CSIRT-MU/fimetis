@@ -1,0 +1,19 @@
+#! /bin/sh
+
+set -e
+
+. /lib/lsb/init-functions
+
+case "$1" in
+    start|reload)
+        export PATH=/opt/fimetis/backend-venv/bin:/usr/bin:/usr/sbin
+        cd /opt/fimetis/src/backend || exit 1
+        sudo -u {{ fimetis_user }} -g www-data {{ fimetis_root }}/backend-venv/bin/uwsgi --ini /etc/fimetis.conf &
+    ;;
+    restart|force-reload)
+        exit 1
+    ;;
+    stop|status)
+        killall uwsgi
+    ;;
+esac

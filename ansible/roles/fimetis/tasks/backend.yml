@@ -36,6 +36,12 @@
     src: fimetis.service.j2
     dest: /etc/systemd/system/fimetis.service
 
+- name: The legacy init.d script is available
+  template:
+    src: init.d.j2
+    dest: /etc/init.d/fimetis
+    mode: 755
+
 - name: Directory for Fimetis logs exists
   file:
      path: /var/log/fimetis/
