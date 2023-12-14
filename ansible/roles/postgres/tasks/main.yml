@@ -4,12 +4,7 @@
       pkg:
       - postgresql
       - postgresql-contrib
-      - python3-pip
-      - libpq-dev
       update_cache: yes
-
-  - name: upgrade setuptools
-    shell: pip3 install --upgrade setuptools
 
   - name: Starting and setting running postgresql after boot
     systemd:
