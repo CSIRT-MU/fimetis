@@ -6,9 +6,8 @@
       - postgresql-contrib
       update_cache: yes
 
-  - name: Starting and setting running postgresql after boot
-    systemd:
+  - name: postgresql is started and enabled upon boot
+    service:
       name: postgresql
-      daemon_reload: yes
-      enabled: yes
+      enabled: true
       state: started

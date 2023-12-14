@@ -56,9 +56,8 @@
     group: www-data
     state: directory
 
-- name: Fimetis service is enabled and running
-  systemd:
+- name: fimetis backend is started and enabled upon boot
+  service:
     name: fimetis
-    daemon_reload: yes
-    enabled: yes
-    state: restarted
+    enabled: true
+    state: started

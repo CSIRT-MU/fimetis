@@ -41,12 +41,8 @@
     with_items:
       - elastic-reverse-proxy
 
-  - name: Setting nginx to run after boot
-    systemd: 
+  - name: nginx is started and enabled upon boot
+    service:
       name: nginx
-      enabled: yes
-
-  - name: Restarting nginx
-    systemd: 
-      name: nginx
-      state: restarted
+      enabled: true
+      state: started

@@ -61,11 +61,10 @@
       path: /etc/elasticsearch/elasticsearch.yml
       line: indices.query.bool.max_clause_count{{':'}} 500000
 
-  - name: Starting and setting running elastic after boot 
-    systemd:
+  - name: elasticsearch is started and enabled upon boot
+    service:
       name: elasticsearch
-      daemon_reload: yes
-      enabled: yes
+      enabled: true
       state: started
 
   - name: Waiting for elastic is ready
@@ -90,8 +89,3 @@
       line: "-Xmx{{ elastic_heap_size }}g"
 
 
-  - name: Reloading elastic
-    systemd:
-      name: elasticsearch
-      daemon_reload: yes
-      state: restarted
