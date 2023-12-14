@@ -1,7 +1,4 @@
 ---
-
-# Tasks for nginx settings
-  
   - name: Installing setuptools
     apt: 
       name: python-setuptools
@@ -59,4 +56,3 @@
     systemd: 
       name: nginx
       state: restarted
-

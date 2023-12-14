@@ -1,6 +1,4 @@
 ---
-# Tasks for elasticsearch
-
   - name: Make sure required packages are available
     apt:
       name: "{{ item }}"
@@ -106,4 +104,3 @@
       name: elasticsearch
       daemon_reload: yes
       state: restarted
-

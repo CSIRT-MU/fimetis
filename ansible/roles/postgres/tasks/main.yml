@@ -1,6 +1,4 @@
 ---
-# Tasks for installing and setting up postgres
-
   - name: Installing postgresql
     apt:
       pkg:
@@ -19,19 +17,3 @@
       daemon_reload: yes
       enabled: yes
       state: started
-
-
-#  - name: Move generate hash to tmp
-#    copy:
-#      src: "{{ role_path }}/files/generate_hash.py"
-#      dest: /tmp/
-
-#  - name: rights
-#    shell: chmod +x /tmp/generate_hash.py
-
-#  - name: generate password
-#    shell: /tmp/generate_hash.py --passwd {{ super_admin_passwd }}
-#    register: hash
-  
-#  - name: print hash
-#    shell: echo {{ hash.stdout }} > /tmp/test.txt
