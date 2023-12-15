@@ -14,16 +14,37 @@ set -e
 
 . /lib/lsb/init-functions
 
+export PATH={{ fimetis_root }}/backend-venv/bin:/usr/bin:/usr/sbin
+
+UWSGI={{ fimetis_root }}/backend-venv/bin/uwsgi
+FIMETIS_PIDFILE=/var/run/fimetis.pid
+
 case "$1" in
-    start|reload)
-        export PATH=/opt/fimetis/backend-venv/bin:/usr/bin:/usr/sbin
-        cd /opt/fimetis/src/backend || exit 1
-        sudo -u {{ fimetis_user }} -g www-data {{ fimetis_root }}/backend-venv/bin/uwsgi --ini /etc/fimetis.conf &
-    ;;
+    start)
+        start-stop-daemon --start \
+            --background \
+            --no-close \
+            --pidfile "$FIMETIS_PIDFILE" \
+            --make-pidfile \
+            --chuid {{ fimetis_user }}:www-data \
+            --chdir {{ fimetis_root }}/src/backend \
+            --exec "$UWSGI" \
+            -- \
+            --ini /etc/fimetis.conf
+        ;;
+
+    stop)
+        if [ -f "$FIMETIS_PIDFILE" ]; then
+            start-stop-daemon --stop --pidfile "$FIMETIS_PIDFILE" --retry 5
+        fi
+        ;;
+
     restart|force-reload)
-        exit 1
-    ;;
-    stop|status)
-        killall uwsgi
-    ;;
+        $0 stop
+        $0 start
+        ;;
+
+    status)
+        status_of_proc -p "$FIMETIS_PIDFILE" "$UWSGI" "Fimetis"
+        ;;
 esac
