@@ -1,9 +1,9 @@
 INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (6, 'user SSH files', 1, '\/(home|root).*\.ssh\/(id_rsa|authorized_keys).*', 'files according to regex .*.ssh\/(id_rsa|authorized_keys*).');
 INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (7, 'standard executables', 1, '\/bin\/.*|\/sbin\/.*|\/usr\/bin\/.*|\/usr\/sbin\/.*|\/usr\/local\/bin.*|\/usr\/local\/sbin.*', 'files in /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin');
-INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (8, 'python scripts', 1, '.*\.py', 'files with .py extension');
-INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (9, 'shell scripts', 1, '.*\.sh', 'files with .sh extension');
-INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (10, 'php scripts', 1, '.*\.php', 'files with .php extension');
-INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (11, 'perl scripts', 1, '.*\.pl', 'files with .pl extension');
+INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (8, 'python scripts', 1, '.*\.py( \(\$FILE_NAME\))?( \(deleted\)| \(deleted-realloc\))?', 'files with .py extension');
+INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (9, 'shell scripts', 1, '.*\.sh( \(\$FILE_NAME\))?( \(deleted\)| \(deleted-realloc\))?', 'files with .sh extension');
+INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (10, 'php scripts', 1, '.*\.php( \(\$FILE_NAME\))?( \(deleted\)| \(deleted-realloc\))?', 'files with .php extension');
+INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (11, 'perl scripts', 1, '.*\.pl( \(\$FILE_NAME\))?( \(deleted\)| \(deleted-realloc\))?', 'files with .pl extension');
 INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (12, 'cron definition', 1, '(\/var\/spool\/cron\/.*|\/etc\/cron\.d\/.*|\/etc\/cron\/.*|\/etc\/anacrontab\/.*)', 'cron definition in /var/spool/cron /etc/cron.d/ /etc/cron/ /etc/anacrontab');
 INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (13, 'starts with "."', 1, '.*\/\..*', 'files that starts with a .');
 INSERT INTO public.cluster (id, name, filter_id, definition, description) VALUES (14, 'suspicious files', 1, '.*\/\.\.\..*|.*\/\\s{2,}.*|.*\/\.{3,}.*', 'files that match regex .*\/\.\.\..*|.*\/[\s.]* (consists of dots and white spaces)');
