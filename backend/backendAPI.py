@@ -213,7 +213,7 @@ def es_info():
 @token_required
 def upload(current_user):
     if 'case' not in request.form:
-        return jsonify({'status': 'failed', 'message': 'Case name is missing in form'})
+        return {'status': 'failed', 'message': 'Case name is missing in form'}, 400
     else:
         case_name = request.form['case']
 
@@ -230,17 +230,18 @@ def upload(current_user):
     if 'removeDeletedRealloc' not in request.form:
         remove_deleted_realloc = True
     else:
-        remove_deleted_realloc = request.form['removeDeletedRealloc'] in ('true', '1')
+        remove_deleted_realloc = request.form['removeDeletedRealloc'] in (
+            'true', '1')
 
+    if len(request.files.keys()) != 1:
+        return {'status': 'failed', 'message': 'No file to upload' if len(request.files.keys()) == 0
+                else 'Only one file can be uploaded at a time'}, 400
 
-
-    if 'file' not in request.files:
-        return jsonify({'status': 'failed', 'message': 'No file to upload'})
-
-    for file in request.files.getlist('file'):
+    for file_data in request.files.items():     # keeping this logic for multiple files
+        file = file_data[1]     # file_data[0] is currently file name
         logging.info('upload file: ' + str(file) + ' to case: ' + str(case_name))
         if file.filename == '':
-            return jsonify({'status': 'failed', 'message': 'Invalid file name'})
+            return {'status': 'failed', 'message': 'Invalid file name'}, 400
         if file:
             tf = tempfile.NamedTemporaryFile(suffix='-' + secure_filename(file.filename),
                                              dir=app.config['UPLOAD_FOLDER'],
@@ -255,9 +256,11 @@ def upload(current_user):
             elif file_type == 'find':
                 normalized_file = tf.name + '.norm'
                 fls_file = tf.name + '.fls'
-                os.system('python3 find2fls.py --input_file %s --output_file %s' % (tf.name, fls_file))
+                os.system(
+                    'python3 find2fls.py --input_file %s --output_file %s' % (tf.name, fls_file))
                 os.system('rm %s' % (tf.name))
-                os.system('mactime -b %s -d > %s' % (fls_file, normalized_file))
+                os.system('mactime -b %s -d > %s' %
+                          (fls_file, normalized_file))
                 os.system('rm %s' % fls_file)
             elif file_type == 'mactime_noheader':
                 normalized_file = tf.name
@@ -293,8 +296,7 @@ def upload(current_user):
                 pg.add_access_for_many_users_to_case(case_name, full_access_ids, read_access_ids, cluster_ids)
                 pg.update_note_and_clusters_for_case_for_external_users(case_name)
 
-    return jsonify({'status': 'OK', 'message': 'uploading files'})
-
+    return {'status': 'OK', 'message': 'uploading files'}
 
 @app.route('/case/delete/<string:case>', methods=['DELETE'])
 @token_required
