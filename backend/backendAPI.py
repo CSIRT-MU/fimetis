@@ -213,7 +213,7 @@ def es_info():
 @token_required
 def upload(current_user):
     if 'case' not in request.form:
-        return {'status': 'failed', 'message': 'Case name is missing in form'}, 400
+        return {'status': 'failed', 'message': 'Case name is missing in form'}
     else:
         case_name = request.form['case']
 
@@ -235,13 +235,13 @@ def upload(current_user):
 
     if len(request.files.keys()) != 1:
         return {'status': 'failed', 'message': 'No file to upload' if len(request.files.keys()) == 0
-                else 'Only one file can be uploaded at a time'}, 400
+                else 'Only one file can be uploaded at a time'}
 
     for file_data in request.files.items():     # keeping this logic for multiple files
         file = file_data[1]     # file_data[0] is currently file name
         logging.info('upload file: ' + str(file) + ' to case: ' + str(case_name))
         if file.filename == '':
-            return {'status': 'failed', 'message': 'Invalid file name'}, 400
+            return {'status': 'failed', 'message': 'Invalid file name'}
         if file:
             tf = tempfile.NamedTemporaryFile(suffix='-' + secure_filename(file.filename),
                                              dir=app.config['UPLOAD_FOLDER'],
