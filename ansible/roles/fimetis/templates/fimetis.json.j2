@@ -1,7 +1,3 @@
 {
-    {% if fimetis_authentication %}
-    "disable_authentication": false
-    {% else %}
-    "disable_authentication": true
-    {% endif %}
+    "disable_authentication": {{ not fimetis_authentication }}
 }
